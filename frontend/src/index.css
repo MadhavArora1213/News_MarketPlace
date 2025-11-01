@@ -18,9 +18,13 @@
 
   /* Semantic Colors */
   --success: #4CAF50;
+  --success-light: #e8f5e8;
   --warning: #FF9800;
+  --warning-light: #fff3e0;
   --error: #F44336;
+  --error-light: #ffebee;
   --info: #9C27B0;
+  --info-light: #f3e5f5;
 
   /* Neutral Grays */
   --gray-900: #212121;
@@ -267,12 +271,35 @@
 .text-error { color: var(--error); }
 .text-info { color: var(--info); }
 
+/* Alert Styles */
+.alert-success {
+  background-color: var(--success-light);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0.375rem;
+  margin-bottom: var(--space-4);
+}
+
+.alert-error {
+  background-color: var(--error-light);
+  border: 1px solid var(--error);
+  color: var(--error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0.375rem;
+  margin-bottom: var(--space-4);
+}
+
 .bg-primary { background-color: var(--primary); }
 .bg-secondary { background-color: var(--secondary); }
 .bg-success { background-color: var(--success); }
+.bg-success-light { background-color: var(--success-light); }
 .bg-warning { background-color: var(--warning); }
+.bg-warning-light { background-color: var(--warning-light); }
 .bg-error { background-color: var(--error); }
+.bg-error-light { background-color: var(--error-light); }
 .bg-info { background-color: var(--info); }
+.bg-info-light { background-color: var(--info-light); }
 
 /* Responsive Design */
 @media (max-width: 768px) {

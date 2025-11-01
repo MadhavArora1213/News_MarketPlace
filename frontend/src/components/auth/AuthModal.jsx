@@ -127,8 +127,8 @@ const AuthModal = ({ isOpen, onClose }) => {
           <Icon name="close" size="sm" />
         </button>
 
-        <div className="text-center mb-6">
-          <h2 className="heading-2 mb-2">
+        <div className="text-center mb-8">
+          <h2 className="heading-2 mb-3">
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h2>
           <p className="body-regular text-gray-600">
@@ -140,20 +140,20 @@ const AuthModal = ({ isOpen, onClose }) => {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="alert-error">
+            <p className="text-sm">{error}</p>
           </div>
         )}
 
         {message && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-green-600 text-sm">{message}</p>
+          <div className="alert-success">
+            <p className="text-sm">{message}</p>
           </div>
         )}
 
         {step === 'form' ? (
           <form onSubmit={mode === 'login' ? handleLogin : handleRegister}>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {mode === 'register' && (
                 <>
                   <div>
@@ -237,7 +237,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
             <button
               type="submit"
-              className="btn-primary w-full mt-6"
+              className="btn-primary w-full mt-8"
               disabled={loading}
             >
               {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
@@ -270,7 +270,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
             <button
               type="submit"
-              className="btn-primary w-full mt-6"
+              className="btn-primary w-full mt-8"
               disabled={loading}
             >
               {loading ? 'Verifying...' : 'Verify Code'}
@@ -279,7 +279,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={() => setStep('form')}
-              className="btn-secondary w-full mt-3"
+              className="btn-secondary w-full mt-4"
             >
               Back
             </button>
@@ -287,7 +287,7 @@ const AuthModal = ({ isOpen, onClose }) => {
         )}
 
         {step === 'form' && mode === 'login' && (
-          <div className="text-center mt-6 space-y-2">
+          <div className="text-center mt-8 space-y-3">
             <button
               type="button"
               onClick={() => setShowForgotPassword(true)}
@@ -309,7 +309,7 @@ const AuthModal = ({ isOpen, onClose }) => {
         )}
 
         {step === 'form' && mode === 'register' && (
-          <div className="text-center mt-6">
+          <div className="text-center mt-8">
             <p className="text-sm text-gray-600">
               Already have an account?
               <button
