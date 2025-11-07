@@ -18,7 +18,8 @@ const SIZE_MAP = {
 
 export default function Icon({ name = '', size = 'md', className = '', style = {}, ...rest }) {
   const s = typeof size === 'number' ? size : (SIZE_MAP[size] || SIZE_MAP.md);
-  const common = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const strokeWidth = size === 'sm' ? 1.5 : 2;
+  const common = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', stroke: 'currentColor', strokeWidth, strokeLinecap: 'round', strokeLinejoin: 'round' };
 
   // Simple mapping of icon names used in the admin UI -> inline SVG paths
   switch (name) {
@@ -311,12 +312,6 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         </svg>
       );
 
-    case 'home':
-      return (
-        <svg {...common} className={className} style={style} {...rest}>
-          <path d="M11.47 3.84a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 0 1 0 1.06l-8.69 8.69a.75.75 0 0 1-1.06 0l-8.69-8.69a.75.75 0 0 1 0-1.06l8.69-8.69zM12 5.43L19.569 13H18.25v6.75a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75V18a.75.75 0 0 1 .75-.75h1.5V13H12V5.43z" />
-        </svg>
-      );
 
     case 'pencil':
       return (
@@ -407,6 +402,156 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         <svg {...common} className={className} style={style} {...rest}>
           <circle cx="12" cy="12" r="9" />
           <path d="M15 9l-6 6M9 9l6 6" />
+        </svg>
+      );
+
+    case 'language':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+        </svg>
+      );
+
+    case 'mail':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <path d="M22 6l-10 7L2 6" />
+        </svg>
+      );
+
+    case 'user-plus':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+          <line x1="20" y1="8" x2="20" y2="14" />
+          <line x1="23" y1="11" x2="17" y2="11" />
+        </svg>
+      );
+
+    case 'login':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <path d="M10 17l5-5-5-5" />
+          <path d="M15 12H3" />
+        </svg>
+      );
+
+    case 'building':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+          <path d="M6 12h4" />
+          <path d="M6 16h4" />
+          <path d="M16 12h2" />
+          <path d="M16 16h2" />
+        </svg>
+      );
+
+    case 'file-text':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+          <path d="M16 13H8" />
+          <path d="M16 17H8" />
+          <path d="M10 9H8" />
+        </svg>
+      );
+
+    case 'download':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <path d="M7 10l5 5 5-5" />
+          <path d="M12 15V3" />
+        </svg>
+      );
+
+    case 'help-circle':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <path d="M12 17h.01" />
+        </svg>
+      );
+
+    case 'menu':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      );
+
+    case 'x':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      );
+
+    case 'shield':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      );
+
+    case 'award':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <circle cx="12" cy="8" r="7" />
+          <path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" />
+        </svg>
+      );
+
+    case 'calendar':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+
+    case 'send':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+        </svg>
+      );
+
+    case 'trophy':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34" />
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+        </svg>
+      );
+
+    case 'package':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+          <path d="M3.27 6.96L12 12.01l8.73-5.05" />
+          <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+      );
+
+    case 'dollar-sign':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
       );
 

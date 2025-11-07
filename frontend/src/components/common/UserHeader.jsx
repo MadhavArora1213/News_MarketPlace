@@ -2,48 +2,225 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Icon from './Icon';
 
-export default function UserHeader({ onSearch }) {
-  const [open, setOpen] = useState(false);
-  const { isAuthenticated, user } = useAuth();
-  const theme = { primary: '#0D3B66', muted: '#F1F5F9', text: '#0F172A' };
+const UserHeader = ({ onShowAuth }) => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [language, setLanguage] = useState('en');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const socialMediaIcons = [
+    { name: 'facebook', href: '#', label: 'Facebook' },
+    { name: 'twitter', href: '#', label: 'Twitter' },
+    { name: 'linkedin', href: '#', label: 'LinkedIn' },
+    { name: 'instagram', href: '#', label: 'Instagram' }
+  ];
+
+  const contactIcons = [
+    { name: 'whatsapp', href: '#', label: 'WhatsApp' },
+    { name: 'telegram', href: '#', label: 'Telegram' },
+    { name: 'youtube', href: '#', label: 'YouTube' },
+    { name: 'phone', href: 'tel:+1234567890', label: 'Phone' }
+  ];
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 900, background: '#fff', borderBottom: '1px solid #eef2f7' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button onClick={() => setOpen(!open)} aria-label="Toggle menu" style={{ background: 'transparent', border: 'none', display: 'inline-flex', alignItems: 'center', padding: 6 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '0 0 auto' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: '#e6f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="shield-check" size="md" style={{ color: theme.primary }} />
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Top Row: Icons Left, Logo Center, Language & Icons Right */}
+        <div className="flex justify-between items-center py-1.5 border-b border-gray-100">
+          {/* Left: Social Media Icons - Hidden on mobile */}
+          <div className="hidden md:flex items-center space-x-1.5">
+            {socialMediaIcons.map((icon) => (
+              <a
+                key={icon.name}
+                href={icon.href}
+                aria-label={icon.label}
+                className="text-gray-400 hover:text-blue-600 transition-colors p-1"
+              >
+                <Icon name={icon.name} size="xs" />
+              </a>
+            ))}
           </div>
-          <div style={{ fontWeight: 800, color: theme.text }}>News Marketplace</div>
+
+          {/* Center: Logo */}
+          <div className="flex items-center">
+            <Icon name="newspaper" size="lg" className="text-blue-600 mr-1.5" />
+            <h1 className="text-2xl md:text-4xl font-bold text-blue-600">News MarketPlace</h1>
+          </div>
+
+          {/* Right: Language, Contact Icons, Menu Icon (mobile) */}
+          <div className="flex items-center space-x-2">
+            {/* Language - Hidden on mobile */}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="hidden md:block text-xs py-1 px-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+            >
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+              <option value="fr">FR</option>
+              <option value="de">DE</option>
+            </select>
+
+            {/* Contact Icons - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-1">
+              {contactIcons.map((icon) => (
+                <a
+                  key={icon.name}
+                  href={icon.href}
+                  aria-label={icon.label}
+                  className="text-gray-400 hover:text-blue-600 transition-colors p-1"
+                >
+                  <Icon name={icon.name} size="xs" />
+                </a>
+              ))}
+            </div>
+
+            {/* Mobile: Menu Icon */}
+            <button
+              className="md:hidden text-gray-600 hover:text-blue-600 p-1"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <Icon name={isMobileMenuOpen ? 'x' : 'menu'} size="lg" />
+            </button>
+          </div>
         </div>
 
-        <nav style={{ marginLeft: 24, display: open ? 'block' : 'flex', gap: 16, alignItems: 'center', flex: 1 }}>
-          <a href="/" style={{ color: theme.text, textDecoration: 'none', fontWeight: 600 }}>Home</a>
-          <a href="/news" style={{ color: theme.text, textDecoration: 'none' }}>News</a>
-          <a href="/sections" style={{ color: theme.text, textDecoration: 'none' }}>Sections</a>
-          <a href="/about" style={{ color: theme.text, textDecoration: 'none' }}>About</a>
+        {/* Bottom Row: Navigation and Action Buttons - Desktop */}
+        <div className="hidden md:flex justify-between items-center py-1.5">
+          {/* Left: Navigation Links */}
+          <nav className="flex items-center space-x-6">
+            <a href="#blog" className="text-base text-gray-600 hover:text-primary transition-colors font-medium">
+              Blog
+            </a>
+            <a href="#media-partnerships" className="text-base text-gray-600 hover:text-primary transition-colors font-medium">
+              Media Partnerships
+            </a>
+          </nav>
 
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <input
-              onChange={(e) => onSearch && onSearch(e.target.value)}
-              placeholder="Search news..."
-              style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid #e6e9ef', background: '#fff', minWidth: 180 }}
-            />
-            {isAuthenticated ? (
-              <a href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: theme.text }}>
-                <Icon name="user-circle" size="md" style={{ color: theme.primary }} />
-                <span style={{ fontWeight: 600 }}>{user?.first_name}</span>
-              </a>
+          {/* Right: Action Buttons */}
+          <div className="flex items-center space-x-2">
+            {!isAuthenticated ? (
+              <>
+                <button className="btn-outline-success">
+                  Agency Registration
+                </button>
+                <button className="btn-outline-warning">
+                  Editor Registration
+                </button>
+                <button className="btn-outline-info">
+                  Submit Publication
+                </button>
+                <button onClick={onShowAuth} className="btn-primary">
+                  Sign In / Sign Up
+                </button>
+              </>
             ) : (
-              <button style={{ background: theme.primary, color: '#fff', padding: '8px 12px', borderRadius: 8, border: 'none', fontWeight: 700, cursor: 'pointer' }}>Sign in</button>
+              <>
+                <span className="text-sm text-gray-600 font-medium">
+                  {user?.email || `Welcome, ${user?.first_name}!`}
+                </span>
+                <button className="btn-outline-info">
+                  Submit Publication
+                </button>
+                <button onClick={logout} className="btn-outline-danger">
+                  Logout
+                </button>
+              </>
             )}
           </div>
-        </nav>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-100 py-2 space-y-2">
+            {/* Navigation Links */}
+            <div className="space-y-1">
+              <a href="#blog" className="block text-base text-gray-600 hover:text-primary py-1 font-medium">
+                Blog
+              </a>
+              <a href="#media-partnerships" className="block text-base text-gray-600 hover:text-primary py-1 font-medium">
+                Media Partnerships
+              </a>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="pt-2 space-y-2">
+              {!isAuthenticated ? (
+                <>
+                  <button className="w-full btn-outline-success">
+                    Agency Registration
+                  </button>
+                  <button className="w-full btn-outline-warning">
+                    Editor Registration
+                  </button>
+                  <button className="w-full btn-outline-info">
+                    Submit Publication
+                  </button>
+                  <button onClick={onShowAuth} className="w-full btn-primary">
+                    Sign In / Sign Up
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm text-gray-600 font-medium py-1">
+                    {user?.email || `Welcome, ${user?.first_name}!`}
+                  </div>
+                  <button className="w-full btn-outline-info">
+                    Submit Publication
+                  </button>
+                  <button onClick={logout} className="w-full btn-outline-danger">
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Language and Contact Icons - Mobile */}
+            <div className="pt-2 space-y-2">
+              <div className="flex justify-center items-center space-x-4">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="text-sm py-2 px-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                >
+                  <option value="en">EN</option>
+                  <option value="es">ES</option>
+                  <option value="fr">FR</option>
+                  <option value="de">DE</option>
+                </select>
+                {contactIcons.map((icon) => (
+                  <a
+                    key={icon.name}
+                    href={icon.href}
+                    aria-label={icon.label}
+                    className="text-gray-400 hover:text-primary transition-colors p-2"
+                  >
+                    <Icon name={icon.name} size="md" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Social Media Icons - Mobile */}
+            <div className="pt-2 border-t border-gray-100">
+              <div className="flex justify-center space-x-4">
+                {socialMediaIcons.map((icon) => (
+                  <a
+                    key={icon.name}
+                    href={icon.href}
+                    aria-label={icon.label}
+                    className="text-gray-400 hover:text-primary transition-colors p-2"
+                  >
+                    <Icon name={icon.name} size="md" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
-}
+};
+
+export default UserHeader;

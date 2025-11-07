@@ -7,6 +7,9 @@ import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
 import UserHeader from './components/common/UserHeader';
 import UserFooter from './components/common/UserFooter';
+import FeatureSlider from './components/common/FeatureSlider';
+import TopHeader from './components/common/TopHeader';
+import ServiceHeader from './components/common/ServiceHeader';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -51,8 +54,14 @@ const HomePage = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <UserHeader />
+    <div className="min-h-screen bg-gray-80">
+      <UserHeader onShowAuth={() => setShowAuthModal(true)} />
+
+      {/* Feature Slider */}
+      <FeatureSlider />
+
+      <TopHeader />
+      <ServiceHeader />
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
