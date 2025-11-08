@@ -18,6 +18,8 @@ import AboutUs from './pages/AboutUs';
 import FAQ from './pages/FAQ';
 import ContactUs from './pages/ContactUs';
 import Home from './pages/Home';
+import ServicesOverview from './pages/ServicesOverview';
+import HowItWorks from './pages/HowItWorks';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -239,6 +241,8 @@ function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/services-overview" element={<ServicesOverview />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route
               path="/dashboard"
               element={

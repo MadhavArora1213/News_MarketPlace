@@ -58,12 +58,14 @@ export default function UserFooter() {
           <div>
             <h4 className="heading-4 text-gray-900 mb-4">Company</h4>
             <ul className="space-y-2">
-              <li><a href="#about-us" className="body-small text-gray-600 hover:text-primary transition-colors">About Us</a></li>
+              <li><a href="/about-us" className="body-small text-gray-600 hover:text-primary transition-colors">About Us</a></li>
+              <li><a href="/services-overview" className="body-small text-gray-600 hover:text-primary transition-colors">Services Overview</a></li>
+              <li><a href="/how-it-works" className="body-small text-gray-600 hover:text-primary transition-colors">How It Works</a></li>
               <li><a href="#blog" className="body-small text-gray-600 hover:text-primary transition-colors">Blog Section</a></li>
               <li><a href="#csr" className="body-small text-gray-600 hover:text-primary transition-colors">CSR</a></li>
               <li><a href="#career" className="body-small text-gray-600 hover:text-primary transition-colors">Career</a></li>
-              <li><a href="#contact-us" className="body-small text-gray-600 hover:text-primary transition-colors">Contact US</a></li>
-              <li><a href="#faq" className="body-small text-gray-600 hover:text-primary transition-colors">FAQ</a></li>
+              <li><a href="/contact-us" className="body-small text-gray-600 hover:text-primary transition-colors">Contact US</a></li>
+              <li><a href="/faq" className="body-small text-gray-600 hover:text-primary transition-colors">FAQ</a></li>
             </ul>
           </div>
 

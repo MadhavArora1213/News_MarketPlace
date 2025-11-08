@@ -95,6 +95,14 @@ const UserHeader = ({ onShowAuth }) => {
         <div className="hidden md:flex justify-between items-center py-2">
           {/* Left: Navigation Links */}
           <nav className="flex items-center space-x-6">
+            <a href="/services-overview" className="text-[#212121] hover:text-[#1976D2] transition-colors duration-300 font-medium text-sm relative group">
+              Services
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="/how-it-works" className="text-[#212121] hover:text-[#1976D2] transition-colors duration-300 font-medium text-sm relative group">
+              How It Works
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
+            </a>
             <a href="#blog" className="text-[#212121] hover:text-[#1976D2] transition-colors duration-300 font-medium text-sm relative group">
               Blog
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
@@ -155,6 +163,14 @@ const UserHeader = ({ onShowAuth }) => {
             <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
               {/* Navigation Links */}
               <div className="space-y-2 mb-3">
+                <a href="/services-overview" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
+                  <Icon name="cog-6-tooth" size="xs" />
+                  <span>Services</span>
+                </a>
+                <a href="/how-it-works" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
+                  <Icon name="question-mark-circle" size="xs" />
+                  <span>How It Works</span>
+                </a>
                 <a href="#blog" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
                   <Icon name="book" size="xs" />
                   <span>Blog</span>
