@@ -12,6 +12,7 @@ import TopHeader from './components/common/TopHeader';
 import ServiceHeader from './components/common/ServiceHeader';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AboutUs from './pages/AboutUs';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -224,6 +225,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route
