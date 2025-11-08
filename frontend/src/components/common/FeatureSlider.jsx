@@ -153,31 +153,6 @@ const FeatureSlider = () => {
               ))}
             </div>
           </div>
-
-          {/* Enhanced Dots Indicator */}
-          <div className="flex justify-center mt-4 md:mt-6 space-x-2 md:space-x-3">
-            {features.map((feature, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`relative transition-all duration-300 group ${
-                  index === currentSlide
-                    ? 'scale-110 md:scale-125'
-                    : 'hover:scale-105 md:hover:scale-110'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              >
-                <div className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide
-                    ? `bg-${feature.color} shadow-md`
-                    : 'bg-gray-300 hover:bg-gray-400 group-hover:shadow-sm'
-                }`} />
-                {index === currentSlide && (
-                  <div className={`absolute inset-0 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-${feature.color} opacity-50 animate-ping`} />
-                )}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </section>

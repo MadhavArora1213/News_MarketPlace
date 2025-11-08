@@ -11,6 +11,7 @@ import FeatureSlider from './components/common/FeatureSlider';
 import TopHeader from './components/common/TopHeader';
 import ServiceHeader from './components/common/ServiceHeader';
 import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -57,6 +58,52 @@ const AdminProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
 };
 
+// New: small rounded badge that matches Terms page icon style (ensure it uses inline Icon component or the SVGIcon)
+const IconBadge = ({ name = 'document', size = 20, bg = '#E3F2FD', color = '#0D47A1', className = '' }) => {
+  // simple mapping to inline SVG for HomePage use
+  const Svg = ({ n }) => {
+    switch (n) {
+      case 'pencil':
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        );
+      case 'eye':
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.3"/>
+          </svg>
+        );
+      case 'bell':
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        );
+      default:
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="1.4"/>
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <div
+      className={`w-12 h-12 rounded-lg flex items-center justify-center ${className}`}
+      style={{ backgroundColor: bg }}
+      aria-hidden="true"
+    >
+      <Svg n={name} />
+    </div>
+  );
+};
+
 // Home Page Component
 const HomePage = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -94,17 +141,23 @@ const HomePage = () => {
           {isAuthenticated && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
               <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-                <Icon name="pencil" size="lg" className="text-primary mb-6 mx-auto" />
+                <div className="mb-6 flex justify-center">
+                  <IconBadge name="pencil" />
+                </div>
                 <h3 className="heading-4 mb-4">Write Articles</h3>
                 <p className="body-small">Create and publish your own news content</p>
               </div>
               <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-                <Icon name="eye" size="lg" className="text-primary mb-6 mx-auto" />
+                <div className="mb-6 flex justify-center">
+                  <IconBadge name="eye" />
+                </div>
                 <h3 className="heading-4 mb-4">Read Premium</h3>
                 <p className="body-small">Access exclusive articles and insights</p>
               </div>
               <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-                <Icon name="bell" size="lg" className="text-primary mb-6 mx-auto" />
+                <div className="mb-6 flex justify-center">
+                  <IconBadge name="bell" />
+                </div>
                 <h3 className="heading-4 mb-4">Stay Updated</h3>
                 <p className="body-small">Get notified about latest news and trends</p>
               </div>
@@ -172,6 +225,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route
               path="/dashboard"
               element={

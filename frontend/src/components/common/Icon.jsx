@@ -371,6 +371,50 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         </svg>
       );
 
+    case 'light-bulb':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      );
+
+    case 'lock-closed':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z" />
+        </svg>
+      );
+
+    case 'user-check':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+          <path d="M17 11l-5 5-3-3" />
+        </svg>
+      );
+
+    case 'info':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+        </svg>
+      );
+
+    case 'check':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M5 13l4 4L19 7" />
+        </svg>
+      );
+
+    case 'chat-bubble-left':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      );
+
     case 'pencil-square':
       return (
         <svg {...common} className={className} style={style} {...rest}>
