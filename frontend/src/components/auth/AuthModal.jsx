@@ -279,17 +279,17 @@ const AuthModal = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
         <button
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 z-10"
+          className="absolute top-3 right-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors duration-200 z-10"
           onClick={onClose}
           aria-label="Close modal"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600 hover:text-gray-900">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 hover:text-gray-600">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
 
-        <div className="text-center mb-6 pt-6">
+        <div className="text-center mb-6 pt-8 px-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2 font-['Inter']">
             {step === 'select' ? 'Welcome to News Marketplace' :
              mode === 'login' ? 'Welcome Back' :
