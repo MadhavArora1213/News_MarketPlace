@@ -1,0 +1,180 @@
+const Radio = require('../models/Radio');
+const { body, validationResult } = require('express-validator');
+
+class RadioController {
+  // Validation rules
+  createValidation = [
+    body('sn').trim().isLength({ min: 1 }).withMessage('Radio SN is required'),
+    body('radio_name').trim().isLength({ min: 1 }).withMessage('Radio name is required'),
+    body('frequency').trim().isLength({ min: 1 }).withMessage('Frequency is required'),
+    body('radio_language').trim().isLength({ min: 1 }).withMessage('Radio language is required'),
+    body('emirate_state').trim().isLength({ min: 1 }).withMessage('Emirate/State is required'),
+    body('group_id').optional().isInt().withMessage('Group ID must be an integer'),
+    body('radio_website').optional({ checkFalsy: true }).isURL().withMessage('Valid radio website URL is required'),
+    body('radio_linkedin').optional({ checkFalsy: true }).isURL().withMessage('Valid LinkedIn URL is required'),
+    body('radio_instagram').optional({ checkFalsy: true }).isURL().withMessage('Valid Instagram URL is required'),
+  ];
+
+  updateValidation = [
+    body('sn').optional().trim().isLength({ min: 1 }).withMessage('Radio SN is required'),
+    body('radio_name').optional().trim().isLength({ min: 1 }).withMessage('Radio name is required'),
+    body('frequency').optional().trim().isLength({ min: 1 }).withMessage('Frequency is required'),
+    body('radio_language').optional().trim().isLength({ min: 1 }).withMessage('Radio language is required'),
+    body('emirate_state').optional().trim().isLength({ min: 1 }).withMessage('Emirate/State is required'),
+    body('group_id').optional().isInt().withMessage('Group ID must be an integer'),
+    body('radio_website').optional({ checkFalsy: true }).isURL().withMessage('Valid radio website URL is required'),
+    body('radio_linkedin').optional({ checkFalsy: true }).isURL().withMessage('Valid LinkedIn URL is required'),
+    body('radio_instagram').optional({ checkFalsy: true }).isURL().withMessage('Valid Instagram URL is required'),
+  ];
+
+  // Create a new radio
+  async create(req, res) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const radioData = req.body;
+      const radio = await Radio.create(radioData);
+      res.status(201).json({
+        message: 'Radio created successfully',
+        radio: radio.toJSON()
+      });
+    } catch (error) {
+      console.error('Create radio error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get all radios with filtering
+  async getAll(req, res) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        group_id,
+        radio_name
+      } = req.query;
+
+      const filters = {};
+      if (group_id) filters.group_id = parseInt(group_id);
+
+      // Add search filters
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (radio_name) {
+        searchSql += ` AND radio_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${radio_name}%`);
+        searchParamCount++;
+      }
+
+      const offset = (page - 1) * limit;
+      const radios = await Radio.findAll(filters, searchSql, searchValues, limit, offset);
+
+      res.json({
+        radios: radios.map(radio => radio.toJSON()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: radios.length // This should be improved with a count query
+        }
+      });
+    } catch (error) {
+      console.error('Get radios error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get radio by ID
+  async getById(req, res) {
+    try {
+      const { id } = req.params;
+      const radio = await Radio.findById(id);
+
+      if (!radio) {
+        return res.status(404).json({ error: 'Radio not found' });
+      }
+
+      res.json({ radio: radio.toJSON() });
+    } catch (error) {
+      console.error('Get radio by ID error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Update radio
+  async update(req, res) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const { id } = req.params;
+      const radio = await Radio.findById(id);
+
+      if (!radio) {
+        return res.status(404).json({ error: 'Radio not found' });
+      }
+
+      const updatedRadio = await radio.update(req.body);
+      res.json({
+        message: 'Radio updated successfully',
+        radio: updatedRadio.toJSON()
+      });
+    } catch (error) {
+      console.error('Update radio error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Delete radio
+  async delete(req, res) {
+    try {
+      const { id } = req.params;
+      const radio = await Radio.findById(id);
+
+      if (!radio) {
+        return res.status(404).json({ error: 'Radio not found' });
+      }
+
+      await radio.delete();
+      res.json({ message: 'Radio deleted successfully' });
+    } catch (error) {
+      console.error('Delete radio error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get group for a radio
+  async getGroup(req, res) {
+    try {
+      const { id } = req.params;
+      const radio = await Radio.findById(id);
+
+      if (!radio) {
+        return res.status(404).json({ error: 'Radio not found' });
+      }
+
+      const group = await radio.getGroup();
+      res.json({
+        radio: radio.toJSON(),
+        group: group ? group.toJSON() : null
+      });
+    } catch (error) {
+      console.error('Get radio group error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+}
+
+module.exports = new RadioController();

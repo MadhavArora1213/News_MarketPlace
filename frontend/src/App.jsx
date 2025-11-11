@@ -30,6 +30,11 @@ import DownloadCenter from './pages/DownloadCenter';
 import ResourceLibrary from './pages/ResourceLibrary';
 import PublicationsPage from './pages/PublicationsPage';
 import PublicationDetailPage from './pages/PublicationDetailPage';
+import Radio from './pages/Radio';
+import RadioDetails from './pages/RadioDetails';
+import Paparazzi from './pages/Paparazzi';
+import PaparazziDetailPage from './pages/PaparazziDetailPage';
+import PaparazziSubmissionPage from './pages/PaparazziSubmissionPage';
 import UserProfile from './pages/UserProfile';
 import PowerlistPage from './pages/PowerlistPage';
 import PowerListDetailPage from './pages/PowerListDetailPage';
@@ -38,6 +43,8 @@ import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
 import AwardManagement from './components/admin/AwardManagement';
 import AwardSubmissionManagement from './components/admin/AwardSubmissionManagement';
+import RadioManagement from './components/admin/RadioManagement';
+import PaparazziManagement from './components/admin/PaparazziManagement';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -305,6 +312,18 @@ function App() {
             />
             <Route path="/publications" element={<PublicationsPage />} />
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
+            <Route path="/radio" element={<Radio />} />
+            <Route path="/radio/:id" element={<RadioDetails />} />
+            <Route path="/paparazzi" element={<Paparazzi />} />
+            <Route path="/paparazzi/:id" element={<PaparazziDetailPage />} />
+            <Route
+              path="/paparazzi/submit"
+              element={
+                <ProtectedRoute>
+                  <PaparazziSubmissionPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/power-lists" element={<PowerlistPage />} />
             <Route path="/power-lists/:id" element={<PowerListDetailPage />} />
             <Route path="/awards" element={<AwardsPage />} />
@@ -394,6 +413,26 @@ function App() {
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
                     <AwardSubmissionManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/radios"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <RadioManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/paparazzi"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <PaparazziManagement />
                   </div>
                 </AdminProtectedRoute>
               }

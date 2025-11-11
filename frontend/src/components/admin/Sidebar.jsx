@@ -204,6 +204,30 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/radios"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>Radio Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/paparazzi"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
+                <span>Paparazzi Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/users"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#F0F9FF'}
@@ -244,6 +268,8 @@ export default function Sidebar({
             <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/contacts" style={{ color: '#212121', textDecoration: 'none' }}>Contacts</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/users" style={{ color: '#212121', textDecoration: 'none' }}>Users</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/news" style={{ color: '#212121', textDecoration: 'none' }}>News</a></li>

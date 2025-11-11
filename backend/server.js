@@ -17,6 +17,8 @@ const notificationRoutes = require('./src/routes/notifications');
 const powerlistRoutes = require('./src/routes/powerlist');
 const awardsRoutes = require('./src/routes/awards');
 const awardSubmissionsRoutes = require('./src/routes/awardSubmissions');
+const radioRoutes = require('./src/routes/radios');
+const paparazziRoutes = require('./src/routes/paparazzi');
 // const userRoutes = require('./src/routes/users');
 // const articleRoutes = require('./src/routes/articles');
 // const paymentRoutes = require('./src/routes/payments');
@@ -85,6 +87,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/powerlist', powerlistRoutes);
 app.use('/api/awards', awardsRoutes);
 app.use('/api/award-submissions', awardSubmissionsRoutes);
+app.use('/api/radios', radioRoutes);
+app.use('/api/paparazzi', paparazziRoutes);
 // app.use('/api/users', userRoutes);
 // app.use('/api/articles', articleRoutes);
 // app.use('/api/payments', paymentRoutes);
@@ -107,6 +111,8 @@ app.get('/', (req, res) => {
       payments: '/api/payments',
       awards: '/api/awards',
       awardSubmissions: '/api/award-submissions',
+      radios: '/api/radios',
+      paparazzi: '/api/paparazzi',
       admin: '/api/admin',
       uploads: '/api/uploads'
     }
