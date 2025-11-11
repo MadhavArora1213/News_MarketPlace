@@ -1,6 +1,32 @@
 const fs = require('fs');
 const path = require('path');
-const { query } = require('../config/database');
+const { Pool } = require('pg');
+
+// Create a separate pool for migrations to avoid conflicts
+const migrationPool = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  max: 5, // Smaller pool for migrations
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+});
+
+// Migration query helper
+const migrationQuery = async (text, params) => {
+  const start = Date.now();
+  try {
+    const res = await migrationPool.query(text, params);
+    const duration = Date.now() - start;
+    console.log('Migration query executed', { text: text.substring(0, 100) + '...', duration, rows: res.rowCount });
+    return res;
+  } catch (err) {
+    console.error('Migration query error', { text: text.substring(0, 100) + '...', err: err.message });
+    throw err;
+  }
+};
 
 class MigrationRunner {
   constructor() {
@@ -28,12 +54,51 @@ class MigrationRunner {
       const sql = fs.readFileSync(filePath, 'utf8');
       console.log(`Running migration: ${filename}`);
 
-      // Split by semicolon and execute each statement
-      const statements = sql.split(';').filter(stmt => stmt.trim().length > 0);
+      // Split by semicolon but handle multi-line statements properly
+      const statements = [];
+      let currentStatement = '';
+      let inDollarQuote = false;
+      let dollarQuoteStart = '';
+
+      const lines = sql.split('\n');
+
+      for (const line of lines) {
+        currentStatement += line + '\n';
+
+        // Check for dollar quoting
+        if (line.includes('$$')) {
+          if (!inDollarQuote) {
+            inDollarQuote = true;
+            dollarQuoteStart = '$$';
+          } else if (line.includes('$$')) {
+            inDollarQuote = false;
+          }
+        }
+
+        // If we hit a semicolon and we're not in a dollar-quoted string, this is a complete statement
+        if (line.trim().endsWith(';') && !inDollarQuote) {
+          statements.push(currentStatement.trim());
+          currentStatement = '';
+        }
+      }
+
+      // Add any remaining statement
+      if (currentStatement.trim()) {
+        statements.push(currentStatement.trim());
+      }
 
       for (const statement of statements) {
         if (statement.trim()) {
-          await query(statement);
+          try {
+            await migrationQuery(statement);
+          } catch (error) {
+            // If it's an "already exists" error, continue (idempotent migrations)
+            if (error.code === '42710' || error.code === '42P07') { // 42710 = duplicate object, 42P07 = duplicate table
+              console.log(`⚠️  Skipping duplicate object: ${error.message.split('"')[1] || 'unknown'}`);
+              continue;
+            }
+            throw error;
+          }
         }
       }
 
@@ -77,7 +142,12 @@ class MigrationRunner {
       );
     `;
 
-    await query(sql);
+    await migrationQuery(sql);
+  }
+
+  // Cleanup migration pool
+  async close() {
+    await migrationPool.end();
   }
 }
 

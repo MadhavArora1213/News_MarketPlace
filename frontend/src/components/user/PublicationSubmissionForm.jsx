@@ -40,6 +40,7 @@ const PublicationSubmissionForm = ({ onClose, onSuccess }) => {
 
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [groupsLoading, setGroupsLoading] = useState(true);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null); // null, 'success', 'error'
@@ -61,10 +62,16 @@ const PublicationSubmissionForm = ({ onClose, onSuccess }) => {
 
   const fetchGroups = async () => {
     try {
+      setGroupsLoading(true);
+      console.log('Fetching groups...');
       const response = await api.get('/groups');
+      console.log('Groups response:', response.data);
       setGroups(response.data.groups || []);
     } catch (error) {
       console.error('Error fetching groups:', error);
+      setGroups([]);
+    } finally {
+      setGroupsLoading(false);
     }
   };
 
@@ -431,9 +438,15 @@ const PublicationSubmissionForm = ({ onClose, onSuccess }) => {
                 required
               >
                 <option value="">Select Group</option>
-                {groups.map(group => (
-                  <option key={group.id} value={group.id}>{group.group_name}</option>
-                ))}
+                {groupsLoading ? (
+                  <option value="" disabled>Loading groups...</option>
+                ) : groups.length > 0 ? (
+                  groups.map(group => (
+                    <option key={group.id} value={group.id}>{group.group_name}</option>
+                  ))
+                ) : (
+                  <option value="" disabled>No groups available</option>
+                )}
               </select>
               {errors.group_id && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.group_id}</div>}
             </div>

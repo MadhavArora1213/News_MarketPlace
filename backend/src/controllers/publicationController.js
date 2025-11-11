@@ -152,9 +152,13 @@ class PublicationController {
         filters.status = 'approved';
         filters.is_active = true;
         filters.live_on_platform = true;
-      } else if (req.admin && show_deleted !== 'true') {
-        // For admins, by default only show active publications unless explicitly requesting deleted ones
-        filters.is_active = true;
+      } else if (req.admin) {
+        // For all admins (including super admin), show all active publications by default
+        // Only filter out inactive ones if show_deleted is not explicitly set to true
+        if (show_deleted !== 'true') {
+          filters.is_active = true;
+        }
+        // Super admins can see everything, other admins see active publications
       }
 
       // Add search filters
@@ -503,7 +507,7 @@ class PublicationController {
 
           // Send approval email notification
           try {
-            await this.sendApprovalNotification(updatedPublication);
+            await sendApprovalNotification(updatedPublication);
           } catch (emailError) {
             console.error('Failed to send approval email:', emailError);
             // Log email failure but don't fail the approval process
@@ -624,7 +628,7 @@ class PublicationController {
 
           // Send rejection email notification
           try {
-            await this.sendRejectionNotification(updatedPublication);
+            await sendRejectionNotification(updatedPublication);
           } catch (emailError) {
             console.error('Failed to send rejection email:', emailError);
             // Log email failure but don't fail the rejection process
@@ -795,7 +799,7 @@ class PublicationController {
 
       // Send approval email notification
       try {
-        await this.sendApprovalNotification(updatedPublication);
+        await sendApprovalNotification(updatedPublication);
       } catch (emailError) {
         console.error('Failed to send approval email:', emailError);
         // Log email failure but don't fail the approval process
@@ -1470,6 +1474,143 @@ class PublicationController {
       </html>
     `;
   }
+}
+
+// Helper functions for email notifications
+async function sendApprovalNotification(publication) {
+  try {
+    // Get the user who submitted the publication
+    const user = await User.findById(publication.submitted_by);
+    if (!user) {
+      console.warn('User not found for publication approval notification');
+      return;
+    }
+
+    const subject = 'Your Publication Has Been Approved!';
+    const htmlContent = generateApprovalEmailTemplate(publication, user);
+
+    await emailService.sendCustomEmail(user.email, subject, htmlContent);
+  } catch (error) {
+    console.error('Error sending approval notification:', error);
+    throw error;
+  }
+}
+
+async function sendRejectionNotification(publication) {
+  try {
+    // Get the user who submitted the publication
+    const user = await User.findById(publication.submitted_by);
+    if (!user) {
+      console.warn('User not found for publication rejection notification');
+      return;
+    }
+
+    const subject = 'Publication Submission Update';
+    const htmlContent = generateRejectionEmailTemplate(publication, user);
+
+    await emailService.sendCustomEmail(user.email, subject, htmlContent);
+  } catch (error) {
+    console.error('Error sending rejection notification:', error);
+    throw error;
+  }
+}
+
+function generateApprovalEmailTemplate(publication, user) {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+          .publication-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #4CAF50; }
+          .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎉 Publication Approved!</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${user.first_name}!</h2>
+            <p>Great news! Your publication submission has been reviewed and <strong>approved</strong> by our team.</p>
+
+            <div class="publication-details">
+              <h3>Publication Details:</h3>
+              <p><strong>Name:</strong> ${publication.publication_name}</p>
+              <p><strong>Website:</strong> ${publication.publication_website}</p>
+              <p><strong>Status:</strong> <span style="color: #4CAF50; font-weight: bold;">Approved</span></p>
+              <p><strong>Approved on:</strong> ${new Date().toLocaleDateString()}</p>
+            </div>
+
+            <p>Your publication is now live on our platform and available for users to browse and purchase.</p>
+            <p>You can view your approved publications in your dashboard.</p>
+
+            <p>If you have any questions, feel free to contact our support team.</p>
+          </div>
+          <div class="footer">
+            <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function generateRejectionEmailTemplate(publication, user) {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #F44336; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+          .publication-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #F44336; }
+          .rejection-reason { background: #FFF3E0; padding: 15px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #FF9800; }
+          .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Publication Review Update</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${user.first_name},</h2>
+            <p>Thank you for submitting your publication to News Marketplace. After careful review, we regret to inform you that your submission has not been approved at this time.</p>
+
+            <div class="publication-details">
+              <h3>Publication Details:</h3>
+              <p><strong>Name:</strong> ${publication.publication_name}</p>
+              <p><strong>Website:</strong> ${publication.publication_website}</p>
+              <p><strong>Status:</strong> <span style="color: #F44336; font-weight: bold;">Rejected</span></p>
+            </div>
+
+            ${publication.rejection_reason ? `
+            <div class="rejection-reason">
+              <h4>Reason for Rejection:</h4>
+              <p>${publication.rejection_reason}</p>
+            </div>
+            ` : ''}
+
+            <p>You can edit and resubmit your publication after addressing the issues mentioned above. We're here to help you improve your submission!</p>
+
+            <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+          </div>
+          <div class="footer">
+            <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
 }
 
 module.exports = new PublicationController();

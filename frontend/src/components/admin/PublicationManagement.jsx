@@ -555,7 +555,7 @@ const PublicationManagement = () => {
   const [regionFilter, setRegionFilter] = useState('');
   const [industryFilter, setIndustryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 2000]);
   const [daRange, setDaRange] = useState([0, 100]);
   const [drRange, setDrRange] = useState([0, 100]);
   const [sponsoredFilter, setSponsoredFilter] = useState('');
@@ -1073,11 +1073,35 @@ const PublicationManagement = () => {
 
   // Advanced filtering logic with AI-optimized search
   const filteredPublications = useMemo(() => {
-    // Start with AI-powered search results if search term exists
+    // If there's a search term, use AI search. Otherwise, use all publications
     let baseResults = debouncedSearchTerm ? performAISearch : publications;
 
-    // Apply additional filters using efficient algorithms
-    return baseResults.filter(publication => {
+    // If no search term, ensure we're showing all publications for admin view
+    // (This is the key fix for showing all active publications)
+    if (!debouncedSearchTerm && baseResults.length > 0) {
+      console.log('SHOWING ALL PUBLICATIONS (no search term):', {
+        totalBaseResults: baseResults.length,
+        sampleStatuses: baseResults.slice(0, 5).map(p => ({ name: p.publication_name, status: p.status }))
+      });
+    }
+
+    // Apply additional filters only if there are active filters
+    const hasActiveFilters = groupFilter || regionFilter || industryFilter ||
+                           selectedStatusFilters.length > 0 || languageFilter ||
+                           sponsoredFilter !== '' || liveFilter !== '' || dofollowFilter !== '' ||
+                           tatFilter.length > 0;
+
+    if (!hasActiveFilters && !debouncedSearchTerm) {
+      // No filters applied and no search - show all base results
+      console.log('NO FILTERS APPLIED - SHOWING ALL:', {
+        totalPublications: publications.length,
+        baseResultsCount: baseResults.length
+      });
+      return baseResults;
+    }
+
+    // Apply filters when they are active
+    const filtered = baseResults.filter(publication => {
       // Group filter - O(1) lookup using hash map
       const matchesGroup = !groupFilter || publication.group_id === parseInt(groupFilter);
 
@@ -1085,16 +1109,8 @@ const PublicationManagement = () => {
       const matchesRegion = !regionFilter || publication.publication_region.toLowerCase().includes(regionFilter.toLowerCase());
       const matchesIndustry = !industryFilter || publication.publication_primary_industry.toLowerCase().includes(industryFilter.toLowerCase());
 
-      // Status filter - multi-select support
+      // Status filter - multi-select support (show all if no status filters selected)
       const matchesStatus = selectedStatusFilters.length === 0 || selectedStatusFilters.includes(publication.status);
-
-      // Range filters - mathematical comparisons
-      const matchesPrice = publication.publication_price >= priceRange[0] && publication.publication_price <= priceRange[1];
-      const matchesDA = publication.da >= daRange[0] && publication.da <= daRange[1];
-      const matchesDR = publication.dr >= drRange[0] && publication.dr <= drRange[1];
-      const matchesNewsIndex = publication.website_news_index >= newsIndexRange[0] && publication.website_news_index <= newsIndexRange[1];
-      const matchesWordsLimit = publication.words_limit >= wordsLimitRange[0] && publication.words_limit <= wordsLimitRange[1];
-      const matchesImages = publication.number_of_images >= imagesRange[0] && publication.number_of_images <= imagesRange[1];
 
       // Language filter
       const matchesLanguage = !languageFilter || publication.publication_language.toLowerCase().includes(languageFilter.toLowerCase());
@@ -1116,12 +1132,43 @@ const PublicationManagement = () => {
         }
       });
 
-      // Early return for performance - fail fast
+      // Debug logging for filtered results
+      if (!matchesGroup || !matchesRegion || !matchesIndustry || !matchesStatus ||
+          !matchesLanguage || !matchesSponsored || !matchesLive || !matchesDofollow || !matchesTAT) {
+        console.log('PUBLICATION FILTERED OUT:', {
+          name: publication.publication_name,
+          status: publication.status,
+          matchesGroup,
+          matchesRegion,
+          matchesIndustry,
+          matchesStatus,
+          matchesLanguage,
+          matchesSponsored,
+          matchesLive,
+          matchesDofollow,
+          matchesTAT
+        });
+      }
+
+      // Only apply the most important filters for admin view
       return matchesGroup && matchesRegion && matchesIndustry && matchesStatus &&
-             matchesPrice && matchesDA && matchesDR && matchesNewsIndex &&
-             matchesWordsLimit && matchesImages && matchesLanguage && matchesSponsored &&
-             matchesLive && matchesDofollow && matchesTAT;
+             matchesLanguage && matchesSponsored && matchesLive && matchesDofollow && matchesTAT;
     });
+
+    // Final debug logging
+    console.log('FILTERING RESULTS:', {
+      totalPublications: publications.length,
+      baseResultsCount: baseResults.length,
+      filteredCount: filtered.length,
+      hasActiveFilters,
+      selectedStatusFilters,
+      groupFilter,
+      regionFilter,
+      industryFilter,
+      searchTerm: debouncedSearchTerm
+    });
+
+    return filtered;
   }, [publications, performAISearch, debouncedSearchTerm, groupFilter, regionFilter, industryFilter, selectedStatusFilters, priceRange, daRange, drRange, newsIndexRange, wordsLimitRange, imagesRange, languageFilter, tatFilter, sponsoredFilter, liveFilter, dofollowFilter]);
 
   // Sorting logic
@@ -1232,21 +1279,22 @@ const PublicationManagement = () => {
 
   const hasActiveFilters = () => {
     return debouncedSearchTerm ||
-           groupFilter ||
-           regionFilter ||
-           industryFilter ||
-           selectedStatusFilters.length > 0 ||
-           priceRange[0] > 0 || priceRange[1] < 2000 ||
-           daRange[0] > 0 || daRange[1] < 100 ||
-           drRange[0] > 0 || drRange[1] < 100 ||
-           newsIndexRange[0] > 0 || newsIndexRange[1] < 100 ||
-           wordsLimitRange[0] > 0 || wordsLimitRange[1] < 10000 ||
-           imagesRange[0] > 0 || imagesRange[1] < 50 ||
-           languageFilter ||
-           tatFilter.length > 0 ||
-           sponsoredFilter !== '' ||
-           liveFilter !== '' ||
-           dofollowFilter !== '';
+            groupFilter ||
+            regionFilter ||
+            industryFilter ||
+            selectedStatusFilters.length > 0 ||
+            priceRange[0] > 0 || priceRange[1] < 2000 ||
+            daRange[0] > 0 || daRange[1] < 100 ||
+            drRange[0] > 0 || drRange[1] < 100 ||
+            newsIndexRange[0] > 0 || newsIndexRange[1] < 100 ||
+            wordsLimitRange[0] > 0 || wordsLimitRange[1] < 10000 ||
+            imagesRange[0] > 0 || imagesRange[1] < 50 ||
+            languageFilter ||
+            tatFilter.length > 0 ||
+            sponsoredFilter !== '' ||
+            liveFilter !== '' ||
+            dofollowFilter !== '' ||
+            showDeleted;
   };
 
   const getPublicationStats = () => {
@@ -1254,9 +1302,10 @@ const PublicationManagement = () => {
     const total = dataSource.length;
     const approved = dataSource.filter(p => p.status === 'approved').length;
     const pending = dataSource.filter(p => p.status === 'pending').length;
+    const rejected = dataSource.filter(p => p.status === 'rejected').length;
     const active = dataSource.filter(p => p.is_active).length;
 
-    return { total, approved, pending, active };
+    return { total, approved, pending, rejected, active };
   };
 
   const stats = getPublicationStats();
@@ -1913,7 +1962,7 @@ const PublicationManagement = () => {
                     </label>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {statusOptions.map(option => {
-                        const count = publications.filter(p => p.status === option.value).length;
+                        const count = publications.filter(p => p.status === option.value && p.is_active).length;
                         return (
                           <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }}>
                             <input
@@ -2786,6 +2835,7 @@ const PublicationManagement = () => {
                 { label: 'Total Publications', value: stats.total, icon: 'document-text', bg: '#e6f0ff' },
                 { label: 'Approved', value: stats.approved, icon: 'check-circle', bg: '#dcfce7' },
                 { label: 'Pending', value: stats.pending, icon: 'clock', bg: '#fef3c7' },
+                { label: 'Rejected', value: stats.rejected, icon: 'x-circle', bg: '#fee2e2' },
                 { label: 'Active', value: stats.active, icon: 'eye', bg: '#e0f2fe' }
               ].map((stat, index) => (
                 <div key={index} style={{ background: '#fff', borderRadius: 12, padding: 18, boxShadow: '0 8px 20px rgba(2,6,23,0.06)', display: 'flex', alignItems: 'center', gap: 12 }}>
