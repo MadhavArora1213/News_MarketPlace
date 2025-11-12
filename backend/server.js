@@ -19,6 +19,10 @@ const awardsRoutes = require('./src/routes/awards');
 const awardSubmissionsRoutes = require('./src/routes/awardSubmissions');
 const radioRoutes = require('./src/routes/radios');
 const paparazziRoutes = require('./src/routes/paparazzi');
+const themeRoutes = require('./src/routes/themes');
+const websitesRoutes = require('./src/routes/websites');
+const pressPackRoutes = require('./src/routes/pressPacks');
+const agenciesRoutes = require('./src/routes/agencies');
 // const userRoutes = require('./src/routes/users');
 // const articleRoutes = require('./src/routes/articles');
 // const paymentRoutes = require('./src/routes/payments');
@@ -55,6 +59,15 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
 });
 
+// Stricter rate limiting for admin authentication
+const adminAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 admin login attempts per windowMs (development)
+  message: 'Too many admin login attempts from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -72,14 +85,21 @@ app.use(cors({
   credentials: true
 }));
 app.use(morgan('combined'));
-app.use(limiter);
+
+// Apply global rate limiter to non-admin routes
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/admin/')) {
+    return next();
+  }
+  return limiter(req, res, next);
+});
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/admin/auth', adminAuthRoutes);
+app.use('/api/admin/auth', adminAuthLimiter, adminAuthRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/publications', publicationRoutes);
@@ -89,6 +109,10 @@ app.use('/api/awards', awardsRoutes);
 app.use('/api/award-submissions', awardSubmissionsRoutes);
 app.use('/api/radios', radioRoutes);
 app.use('/api/paparazzi', paparazziRoutes);
+app.use('/api/themes', themeRoutes);
+app.use('/api/websites', websitesRoutes);
+app.use('/api/press-packs', pressPackRoutes);
+app.use('/api/agencies', agenciesRoutes);
 // app.use('/api/users', userRoutes);
 // app.use('/api/articles', articleRoutes);
 // app.use('/api/payments', paymentRoutes);
@@ -113,6 +137,8 @@ app.get('/', (req, res) => {
       awardSubmissions: '/api/award-submissions',
       radios: '/api/radios',
       paparazzi: '/api/paparazzi',
+      themes: '/api/themes',
+      pressPacks: '/api/press-packs',
       admin: '/api/admin',
       uploads: '/api/uploads'
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext';
@@ -36,6 +36,7 @@ import Paparazzi from './pages/Paparazzi';
 import PaparazziDetailPage from './pages/PaparazziDetailPage';
 import PaparazziSubmissionPage from './pages/PaparazziSubmissionPage';
 import UserProfile from './pages/UserProfile';
+import AgencyRegistrationPage from './pages/AgencyRegistrationPage';
 import PowerlistPage from './pages/PowerlistPage';
 import PowerListDetailPage from './pages/PowerListDetailPage';
 import PowerListManagement from './components/admin/PowerListManagement';
@@ -43,8 +44,18 @@ import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
 import AwardManagement from './components/admin/AwardManagement';
 import AwardSubmissionManagement from './components/admin/AwardSubmissionManagement';
+import ThemesPage from './pages/ThemesPage';
+import ThemeDetailPage from './pages/ThemeDetailPage';
+import ThemeSubmissionPage from './pages/ThemeSubmissionPage';
+import WebsiteSubmissionPage from './pages/WebsiteSubmissionPage';
+import PressPacksPage from './pages/PressPacksPage';
+import PressPackDetailPage from './pages/PressPackDetailPage';
 import RadioManagement from './components/admin/RadioManagement';
+import ThemeManagement from './components/admin/ThemeManagement';
+import PressPackManagement from './components/admin/PressPackManagement';
 import PaparazziManagement from './components/admin/PaparazziManagement';
+import AgencyManagement from './components/admin/AgencyManagement';
+import WebsiteManagement from './components/admin/WebsiteManagement';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -71,8 +82,9 @@ const ProtectedRoute = ({ children }) => {
 
 // Admin Protected Route Component
 const AdminProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAdminAuth();
+  const { isAuthenticated, loading, admin } = useAdminAuth();
 
+  // Show loading state during initial auth check
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -88,7 +100,13 @@ const AdminProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
+  // If authenticated and admin data is loaded, show children
+  if (isAuthenticated && admin) {
+    return children;
+  }
+
+  // If not authenticated or no admin data, redirect to login
+  return <Navigate to="/admin/login" replace />;
 };
 
 // New: small rounded badge that matches Terms page icon style (ensure it uses inline Icon component or the SVGIcon)
@@ -328,11 +346,40 @@ function App() {
             <Route path="/power-lists/:id" element={<PowerListDetailPage />} />
             <Route path="/awards" element={<AwardsPage />} />
             <Route path="/awards/:id" element={<AwardDetailPage />} />
+            <Route path="/themes" element={<ThemesPage />} />
+            <Route path="/themes/:id" element={<ThemeDetailPage />} />
+            <Route
+              path="/themes/submit"
+              element={
+                <ProtectedRoute>
+                  <ThemeSubmissionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/press-packs" element={<PressPacksPage />} />
+            <Route path="/press-packs/:id" element={<PressPackDetailPage />} />
             <Route
               path="/profile"
               element={
                 <ProtectedRoute>
                   <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/agency-registration"
+              element={
+                <ProtectedRoute>
+                  <AgencyRegistrationPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/website-submission"
+              element={
+                <ProtectedRoute>
+                  <WebsiteSubmissionPage />
                 </ProtectedRoute>
               }
             />
@@ -428,11 +475,51 @@ function App() {
               }
             />
             <Route
+              path="/admin/themes"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <ThemeManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/press-packs"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <PressPackManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/paparazzi"
               element={
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
                     <PaparazziManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/agencies"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <AgencyManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/websites"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <WebsiteManagement />
                   </div>
                 </AdminProtectedRoute>
               }

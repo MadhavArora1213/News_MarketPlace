@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from './Icon';
@@ -125,7 +126,7 @@ const UserHeader = ({ onShowAuth }) => {
           <div className="flex items-center space-x-2">
             {!isAuthenticated ? (
               <>
-                <button className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20">
+                <button onClick={onShowAuth} className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20">
                   Agency Registration
                 </button>
                 <button className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#1976D2] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20">
@@ -155,6 +156,14 @@ const UserHeader = ({ onShowAuth }) => {
                     {user?.email || `Welcome, ${user?.first_name}!`}
                   </span>
                 </a>
+                <Link to="/agency-registration" className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20">
+                  Agency Registration
+                </Link>
+                {!isAdminAuthenticated && (
+                  <Link to="/website-submission" className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20">
+                    Upload Website
+                  </Link>
+                )}
                 <button
                   onClick={() => setShowPublicationForm(true)}
                   className="px-4 py-1.5 bg-white/60 backdrop-blur-sm text-[#9C27B0] font-medium text-sm rounded-lg hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border border-white/20"
@@ -204,7 +213,7 @@ const UserHeader = ({ onShowAuth }) => {
               <div className="space-y-2">
                 {!isAuthenticated ? (
                   <>
-                    <button className="w-full bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm">
+                    <button onClick={onShowAuth} className="w-full bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm">
                       Agency Registration
                     </button>
                     <button className="w-full bg-white/60 backdrop-blur-sm text-[#1976D2] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm">
@@ -234,6 +243,14 @@ const UserHeader = ({ onShowAuth }) => {
                         {user?.email || `Welcome, ${user?.first_name}!`}
                       </span>
                     </a>
+                    <Link to="/agency-registration" className="w-full bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm text-center">
+                      Agency Registration
+                    </Link>
+                    {!isAdminAuthenticated && (
+                      <Link to="/website-submission" className="w-full bg-white/60 backdrop-blur-sm text-[#4CAF50] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm text-center">
+                        Upload Website
+                      </Link>
+                    )}
                     <button
                       onClick={() => setShowPublicationForm(true)}
                       className="w-full bg-white/60 backdrop-blur-sm text-[#9C27B0] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm"

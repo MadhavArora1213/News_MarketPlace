@@ -192,6 +192,15 @@ const requireOwnership = (resourceType) => {
           resourceOwnerId = publication.submitted_by;
           break;
 
+        case 'theme':
+          const Theme = require('../models/Theme');
+          const theme = await Theme.findById(resourceId);
+          if (!theme) {
+            return res.status(404).json({ error: 'Theme not found' });
+          }
+          resourceOwnerId = theme.submitted_by;
+          break;
+
         case 'user':
           resourceOwnerId = resourceId;
           break;
@@ -232,7 +241,9 @@ const requireAdminPermission = (permission) => {
 
     const permissionLevels = {
       'manage_publications': 1,
+      'manage_themes': 1,
       'approve_publications': 2,
+      'approve_themes': 2,
       'manage_users': 3,
       'manage_admins': 4,
       'system_admin': 5
