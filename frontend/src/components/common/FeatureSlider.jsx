@@ -70,7 +70,7 @@ const FeatureSlider = () => {
   }, []);
 
   return (
-    <section className="bg-gradient-to-br from-[#FAFAFA] via-[#E3F2FD] to-[#E0F2F1] py-8 md:py-12 relative overflow-hidden">
+    <section className="bg-[#E3F2FD] py-8 md:py-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -84,21 +84,6 @@ const FeatureSlider = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="relative">
-          {/* Navigation Arrows */}
-          <button
-            onClick={prevSlide}
-            className="hidden md:block absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 backdrop-blur-md text-[#212121] hover:text-[#1976D2] p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-[#E0E0E0]/30"
-            aria-label="Previous slide"
-          >
-            <Icon name="chevron-left" size="md" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="hidden md:block absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 backdrop-blur-md text-[#212121] hover:text-[#1976D2] p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-[#E0E0E0]/30"
-            aria-label="Next slide"
-          >
-            <Icon name="chevron-right" size="md" />
-          </button>
 
           {/* Slider Container */}
           <div className="overflow-hidden rounded-2xl shadow-2xl bg-white/60 backdrop-blur-md border border-white/30">
@@ -144,7 +129,7 @@ const FeatureSlider = () => {
                           </button>
 
                           {/* Feature Highlights */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
                             <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
                               <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
                               <span className="whitespace-nowrap font-medium">Easy Setup</span>

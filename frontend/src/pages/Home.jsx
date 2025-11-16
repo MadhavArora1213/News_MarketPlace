@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import TopHeader from '../components/common/TopHeader';
 import UserHeader from '../components/common/UserHeader';
 import FeatureSlider from '../components/common/FeatureSlider';
@@ -12,6 +13,10 @@ import AuthModal from '../components/auth/AuthModal';
 
 const Home = () => {
   const [showAuth, setShowAuth] = useState(false);
+  const { scrollYProgress } = useScroll();
+
+  // Set the entire page background to primary light color
+  const backgroundColor = '#E3F2FD';
 
   const handleShowAuth = () => {
     setShowAuth(true);
@@ -22,7 +27,10 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <motion.div
+      className="min-h-screen"
+      style={{ backgroundColor }}
+    >
       {/* Top Header */}
 
       {/* Main Header */}
@@ -52,7 +60,7 @@ const Home = () => {
 
       {/* Auth Modal */}
       <AuthModal isOpen={showAuth} onClose={handleCloseAuth} />
-    </div>
+    </motion.div>
   );
 };
 

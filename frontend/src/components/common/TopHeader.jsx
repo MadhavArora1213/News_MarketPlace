@@ -90,7 +90,7 @@ const TopHeader = () => {
 	};
 
 	return (
-		<div className="bg-white border-b border-gray-200 shadow-sm ">
+		<div className="bg-[#E3F2FD] border-b border-gray-200 shadow-sm ">
 			<div className="w-full px-2 sm:px-3 lg:px-6">
 				{/* Mobile Layout (< 640px) */}
 				<div className="sm:hidden pt-2">
@@ -526,7 +526,7 @@ const TopHeader = () => {
 				</div>
 
 				{/* Subtle Animation Bar */}
-				<div className="h-0.5 bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 opacity-20"></div>
+				<div className="h-0.5 bg-[#E3F2FD] opacity-20"></div>
 			</div>
 
 			{/* Auth Modal */}
