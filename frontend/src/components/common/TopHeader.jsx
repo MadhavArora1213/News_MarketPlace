@@ -33,6 +33,18 @@ const TopHeader = () => {
 			text: "Terms & Policies",
 			icon: "shield-check",
 			description: "Legal information and platform policies"
+		},
+		{
+			href: "#published-articles-press-releases",
+			text: "Published Articles and Press Releases",
+			icon: "newspaper",
+			description: "Browse published articles and press releases"
+		},
+		{
+			href: "#published-work-testimony",
+			text: "Published Work/Testimony",
+			icon: "document-text",
+			description: "View published work and testimonies"
 		}
 	];
 
@@ -42,12 +54,12 @@ const TopHeader = () => {
 		{ name: 'Websites', href: '#websites', icon: 'globe-alt' },
 		{ name: 'Radio', href: '#radio', icon: 'microphone' },
 		{ name: 'Paparazzi', href: '#paparazzi', icon: 'camera' }, // Move to position 4 (index 4)
-		{ name: 'Power List', href: '#power-list', icon: 'trending-up' }, // Move to position 5 (index 5)
-		{ name: 'Theme Pages', href: '#theme-pages', icon: 'collection' },
-		{ name: 'Awards', href: '#awards', icon: 'badge-check' },
+		{ name: 'Power List', href: '#power-list', icon: 'chart-bar' }, // Move to position 5 (index 5)
+		{ name: 'Theme Pages', href: '#theme-pages', icon: 'tag' },
+		{ name: 'Awards', href: '#awards', icon: 'award' },
 		{ name: 'Events', href: '#events-awards', icon: 'calendar' },
 		{ name: 'Press Release', href: '#press-release', icon: 'megaphone' },
-		{ name: 'Podcasters', href: '#podcasters', icon: 'music-note' },
+		{ name: 'Podcasters', href: '#podcasters', icon: 'microphone' },
 		{ name: 'Real Estate', href: '#real-estate', icon: 'home' }
 	];
 
@@ -129,7 +141,7 @@ const TopHeader = () => {
 									className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
 								>
 									<Icon
-										name="dots-horizontal"
+										name="menu"
 										size="xs"
 										className="mb-1 text-gray-500 hover:text-blue-600 transition-colors"
 									/>
@@ -158,7 +170,7 @@ const TopHeader = () => {
 							<div className="group relative flex-shrink-0">
 								<button className="flex items-center space-x-1 px-2 py-1.5 text-xs font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 whitespace-nowrap">
 									<Icon
-										name="collection"
+										name="boxes"
 										size="sm"
 										className="text-gray-500 group-hover:text-blue-600 transition-colors"
 									/>
@@ -227,7 +239,7 @@ const TopHeader = () => {
 								<div className="group relative flex-shrink-0">
 									<button className="flex items-center space-x-1 px-2 py-1.5 text-xs font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 whitespace-nowrap">
 										<Icon
-											name="dots-horizontal"
+											name="menu"
 											size="sm"
 											className="text-gray-500 group-hover:text-blue-600 transition-colors"
 										/>
@@ -276,7 +288,7 @@ const TopHeader = () => {
 							<div className="group relative">
 								<button className="flex items-center space-x-1.5 px-2.5 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md">
 									<Icon
-										name="collection"
+										name="boxes"
 										size="sm"
 										className="text-gray-500 group-hover:text-blue-600 transition-colors"
 									/>
@@ -345,7 +357,7 @@ const TopHeader = () => {
 								<div className="group relative">
 									<button className="flex items-center space-x-1.5 px-2.5 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md">
 										<Icon
-											name="dots-horizontal"
+											name="menu"
 											size="sm"
 											className="text-gray-500 group-hover:text-blue-600 transition-colors"
 										/>
@@ -398,7 +410,7 @@ const TopHeader = () => {
 						<div className="group relative">
 							<button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md">
 								<Icon
-									name="collection"
+									name="boxes"
 									size="sm"
 									className="text-gray-500 group-hover:text-blue-600 transition-colors"
 								/>
@@ -469,7 +481,7 @@ const TopHeader = () => {
 							<div className="group relative">
 								<button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md">
 									<Icon
-										name="dots-horizontal"
+										name="menu"
 										size="sm"
 										className="text-gray-500 group-hover:text-blue-600 transition-colors"
 									/>
