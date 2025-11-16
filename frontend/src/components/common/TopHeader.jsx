@@ -6,6 +6,7 @@ import AuthModal from '../auth/AuthModal';
 const TopHeader = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+	const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
 	const { isAuthenticated } = useAuth();
 
 	const menuItems = [
@@ -50,6 +51,11 @@ const TopHeader = () => {
 		{ name: 'Real Estate', href: '#real-estate', icon: 'home' }
 	];
 
+	const allItems = [
+		...menuItems.map(item => ({ name: item.text, href: item.href, icon: item.icon })),
+		...services
+	];
+
 	// Updated responsive breakpoint logic to show more services directly
 	const getDisplayedServices = (breakpoint) => {
 		switch (breakpoint) {
@@ -72,85 +78,75 @@ const TopHeader = () => {
 	};
 
 	return (
-		<div className="bg-white border-b border-gray-200 shadow-sm">
+		<div className="bg-white border-b border-gray-200 shadow-sm ">
 			<div className="w-full px-2 sm:px-3 lg:px-6">
 				{/* Mobile Layout (< 640px) */}
-				<div className="sm:hidden">
-					<div className="flex items-center justify-between py-1.5">
-						<h3 className="text-xs font-semibold text-gray-900">Quick Access</h3>
-						<button
-							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-							className="flex items-center space-x-1 px-2 py-1 text-xs text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-						>
-							<span className="font-medium">Menu</span>
-							<Icon
-								name={isMobileMenuOpen ? "chevron-up" : "chevron-down"}
-								size="xs"
-								className="transition-transform"
-							/>
-						</button>
-					</div>
-
-					<div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-						isMobileMenuOpen ? 'max-h-screen pb-2' : 'max-h-0'
-					}`}>
-						<div className="grid grid-cols-2 gap-1 mb-2">
-							{menuItems.map((item, index) => (
+				<div className="sm:hidden pt-2">
+					<div className="pb-2">
+						<div className="grid grid-cols-3 gap-1">
+							{mobileShowAllItems ? allItems.map((item, index) => (
 								<a
 									key={index}
 									href={item.href}
-									className="flex flex-col items-center text-center p-1.5 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 group"
+									className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
 									onClick={(e) => {
 										if (!isAuthenticated) {
 											e.preventDefault();
 											setIsAuthModalOpen(true);
 										}
-										setIsMobileMenuOpen(false);
 									}}
 								>
-									<div className="w-5 h-5 bg-blue-50 rounded-md flex items-center justify-center mb-1 group-hover:bg-blue-100 transition-colors">
-										<Icon
-											name={item.icon}
-											size="xs"
-											className="text-blue-600 group-hover:text-blue-700 transition-colors"
-										/>
-									</div>
-									<span className="text-xs font-medium leading-tight text-center">{item.text}</span>
+									<Icon
+										name={item.icon}
+										size="xs"
+										className="mb-1 text-gray-500 hover:text-blue-600 transition-colors"
+									/>
+									<span className="text-xs leading-tight truncate w-full">{item.name}</span>
+								</a>
+							)) : allItems.slice(0, 5).map((item, index) => (
+								<a
+									key={index}
+									href={item.href}
+									className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
+									onClick={(e) => {
+										if (!isAuthenticated) {
+											e.preventDefault();
+											setIsAuthModalOpen(true);
+										}
+									}}
+								>
+									<Icon
+										name={item.icon}
+										size="xs"
+										className="mb-1 text-gray-500 hover:text-blue-600 transition-colors"
+									/>
+									<span className="text-xs leading-tight truncate w-full">{item.name}</span>
 								</a>
 							))}
-						</div>
-
-						<div className="border-t pt-2">
-							<h4 className="text-xs font-semibold text-gray-600 mb-1">Services</h4>
-							<div className="grid grid-cols-3 gap-1">
-								{services.slice(0, 6).map((service, index) => (
-									<a
-										key={index}
-										href={service.href}
-										className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
-										onClick={(e) => {
-											if (!isAuthenticated) {
-												e.preventDefault();
-												setIsAuthModalOpen(true);
-											}
-											setIsMobileMenuOpen(false);
-										}}
-									>
-										<Icon
-											name={service.icon}
-											size="xs"
-											className="mb-1 text-gray-500 hover:text-blue-600 transition-colors"
-										/>
-										<span className="text-xs leading-tight truncate w-full">{service.name}</span>
-									</a>
-								))}
-							</div>
-							{services.length > 6 && (
-								<div className="text-center mt-1">
-									<span className="text-xs text-gray-500">+{services.length - 6} more</span>
-								</div>
+							{!mobileShowAllItems && allItems.length > 5 && (
+								<button
+									onClick={() => setMobileShowAllItems(true)}
+									className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
+								>
+									<Icon
+										name="dots-horizontal"
+										size="xs"
+										className="mb-1 text-gray-500 hover:text-blue-600 transition-colors"
+									/>
+									<span className="text-xs leading-tight truncate w-full">More</span>
+								</button>
 							)}
 						</div>
+						{mobileShowAllItems && (
+							<div className="text-center mt-2">
+								<button
+									onClick={() => setMobileShowAllItems(false)}
+									className="text-xs text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors"
+								>
+									Show Less
+								</button>
+							</div>
+						)}
 					</div>
 				</div>
 

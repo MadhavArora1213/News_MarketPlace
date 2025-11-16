@@ -227,7 +227,7 @@ const AdminDashboard = () => {
                 aria-label="Toggle sidebar"
                 style={{ background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+                <Icon name="menu" size="md" style={{ color: theme.textPrimary }} />
               </button>
 
               {/* Desktop toggle button */}
@@ -237,7 +237,7 @@ const AdminDashboard = () => {
                 aria-label="Toggle sidebar"
                 style={{ background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+                <Icon name="menu" size="md" style={{ color: theme.textPrimary }} />
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

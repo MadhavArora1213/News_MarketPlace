@@ -116,14 +116,6 @@ const UserHeader = ({ onShowAuth }) => {
               Media Partnerships
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
             </a>
-            <a href="/awards" className="text-[#212121] hover:text-[#1976D2] transition-colors duration-300 font-medium text-sm relative group">
-              Awards
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a href="/careers" className="text-[#212121] hover:text-[#1976D2] transition-colors duration-300 font-medium text-sm relative group">
-              Careers
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9800] group-hover:w-full transition-all duration-300"></span>
-            </a>
           </nav>
 
           {/* Right: Action Buttons */}
@@ -212,14 +204,6 @@ const UserHeader = ({ onShowAuth }) => {
                 <a href="#media-partnerships" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
                   <Icon name="handshake" size="xs" />
                   <span>Media Partnerships</span>
-                </a>
-                <a href="/awards" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
-                  <Icon name="trophy" size="xs" />
-                  <span>Awards</span>
-                </a>
-                <a href="/careers" className="flex items-center space-x-2 text-[#212121] hover:text-[#1976D2] py-2 px-3 rounded-lg hover:bg-white/50 transition-all duration-300 font-medium text-sm backdrop-blur-sm">
-                  <Icon name="briefcase" size="xs" />
-                  <span>Careers</span>
                 </a>
               </div>
               
