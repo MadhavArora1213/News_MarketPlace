@@ -252,7 +252,7 @@ const Articles = () => {
   ];
 
   return (
-    <section className="py-16 relative overflow-hidden">
+    <section className="pt-24 pb-16 md:pt-16 relative overflow-hidden">
       {/* Layered Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white"></div>
@@ -292,9 +292,28 @@ const Articles = () => {
             View All Articles
           </CosmicButton>
         </div>
+
       </div>
+
+      <svg height={0} width={0}>
+        <filter id="handDrawnNoise">
+          <feTurbulence result="noise" numOctaves={8} baseFrequency="0.1" type="fractalNoise" />
+          <feDisplacementMap yChannelSelector="G" xChannelSelector="R" scale={3} in2="noise" in="SourceGraphic" />
+        </filter>
+        <filter id="handDrawnNoise2">
+          <feTurbulence result="noise" numOctaves={8} baseFrequency="0.1" seed={1010} type="fractalNoise" />
+          <feDisplacementMap yChannelSelector="G" xChannelSelector="R" scale={3} in2="noise" in="SourceGraphic" />
+        </filter>
+        <filter id="handDrawnNoiset">
+          <feTurbulence result="noise" numOctaves={8} baseFrequency="0.1" type="fractalNoise" />
+          <feDisplacementMap yChannelSelector="G" xChannelSelector="R" scale={6} in2="noise" in="SourceGraphic" />
+        </filter>
+        <filter id="handDrawnNoiset2">
+          <feTurbulence result="noise" numOctaves={8} baseFrequency="0.1" seed={1010} type="fractalNoise" />
+          <feDisplacementMap yChannelSelector="G" xChannelSelector="R" scale={6} in2="noise" in="SourceGraphic" />
+        </filter>
+      </svg>
     </section>
   );
 };
-
 export default Articles;

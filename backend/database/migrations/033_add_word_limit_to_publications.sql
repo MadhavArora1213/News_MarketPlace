@@ -1,0 +1,1 @@
+ALTER TABLE publications ADD COLUMN word_limit INTEGER DEFAULT 500;

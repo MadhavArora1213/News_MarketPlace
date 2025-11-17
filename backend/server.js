@@ -30,6 +30,10 @@ const affiliateEnquiriesRoutes = require('./src/routes/affiliateEnquiries');
 const careersRoutes = require('./src/routes/careers');
 const blogsRoutes = require('./src/routes/blogs');
 const realEstatesRoutes = require('./src/routes/realEstates');
+const publishedWorksRoutes = require('./src/routes/publishedWorks');
+const articleSubmissionsRoutes = require('./src/routes/articleSubmissions');
+const adminArticleSubmissionsRoutes = require('./src/routes/adminArticleSubmissions');
+console.log('Admin Article Submissions Routes loaded:', typeof adminArticleSubmissionsRoutes);
 const rolePermissionsRoutes = require('./src/routes/rolePermissions');
 // const userRoutes = require('./src/routes/users');
 // const articleRoutes = require('./src/routes/articles');
@@ -95,12 +99,13 @@ app.use(cors({
 app.use(morgan('combined'));
 
 // Apply global rate limiter to non-admin routes
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/admin/')) {
-    return next();
-  }
-  return limiter(req, res, next);
-});
+// Temporarily disabled for testing
+// app.use((req, res, next) => {
+//   if (req.path.startsWith('/api/admin/')) {
+//     return next();
+//   }
+//   return limiter(req, res, next);
+// });
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -108,9 +113,29 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 // Static file serving for uploads
 app.use('/api/uploads', express.static('uploads'));
 
+// Test route (moved to top)
+app.get('/api/test', (req, res) => {
+  console.log('Test route hit');
+  res.json({ message: 'Test route working' });
+});
+
+// Ultra simple test
+app.get('/simple-test', (req, res) => {
+  console.log('Simple test route working!');
+  res.json({ message: 'Simple test working!' });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthLimiter, adminAuthRoutes);
+// Test direct route mounting
+app.get('/test-admin-routes', (req, res) => {
+  console.log('Direct test route working!');
+  res.json({ message: 'Direct test route working!' });
+});
+
+console.log('Mounting admin article submissions at /api/admin/article-submissions');
+app.use('/api/admin/article-submissions', adminArticleSubmissionsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/publications', publicationRoutes);
@@ -131,6 +156,8 @@ app.use('/api/affiliate-enquiries', affiliateEnquiriesRoutes);
 app.use('/api/careers', careersRoutes);
 app.use('/api/blogs', blogsRoutes);
 app.use('/api/real-estates', realEstatesRoutes);
+app.use('/api/published-works', publishedWorksRoutes);
+app.use('/api/article-submissions', articleSubmissionsRoutes);
 app.use('/api/admin/role-permissions', rolePermissionsRoutes);
 // app.use('/api/users', userRoutes);
 // app.use('/api/articles', articleRoutes);

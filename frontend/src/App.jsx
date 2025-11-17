@@ -52,6 +52,7 @@ import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
 import AwardManagement from './components/admin/AwardManagement';
 import AwardSubmissionManagement from './components/admin/AwardSubmissionManagement';
+import ArticleSubmissionsManagement from './components/admin/ArticleSubmissionsManagement';
 import ThemesPage from './pages/ThemesPage';
 import ThemeDetailPage from './pages/ThemeDetailPage';
 import ThemeSubmissionPage from './pages/ThemeSubmissionPage';
@@ -75,6 +76,12 @@ import CareerManagement from './components/admin/CareerManagement';
 import BlogManagement from './components/admin/BlogManagement';
 import BlogListingPage from './pages/BlogListingPage';
 import BlogDetailPage from './pages/BlogDetailPage';
+import PublishedWorksPage from './pages/PublishedWorksPage';
+import PublishedWorkDetailPage from './pages/PublishedWorkDetailPage';
+import PublishedWorkManagement from './components/admin/PublishedWorkManagement';
+import ArticlesPage from './pages/ArticlesPage';
+import ArticleDetailPage from './pages/ArticleDetailPage';
+import ArticleSubmissionPage from './pages/ArticleSubmissionPage';
 import RolePermissionManagement from './components/admin/RolePermissionManagement';
 import Icon from './components/common/Icon';
 
@@ -358,6 +365,10 @@ function App() {
             <Route path="/radio" element={<Radio />} />
             <Route path="/publications" element={<PublicationsPage />} />
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
+            <Route path="/published-works" element={<PublishedWorksPage />} />
+            <Route path="/published-works/:id" element={<PublishedWorkDetailPage />} />
+            <Route path="/articles" element={<ArticlesPage />} />
+            <Route path="/articles/:slug" element={<ArticleDetailPage />} />
             <Route path="/careers" element={<CareersPage />} />
             <Route path="/careers/:id" element={<CareerDetailPage />} />
             <Route path="/radio" element={<Radio />} />
@@ -427,6 +438,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <WebsiteSubmissionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/submit-article"
+              element={
+                <ProtectedRoute>
+                  <ArticleSubmissionPage />
                 </ProtectedRoute>
               }
             />
@@ -515,6 +534,16 @@ function App() {
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
                     <AwardSubmissionManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/article-submissions"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <ArticleSubmissionsManagement />
                   </div>
                 </AdminProtectedRoute>
               }
@@ -645,6 +674,16 @@ function App() {
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
                     <BlogManagement />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/published-works"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <PublishedWorkManagement />
                   </div>
                 </AdminProtectedRoute>
               }

@@ -1,0 +1,577 @@
+const ArticleSubmission = require('../models/ArticleSubmission');
+const Publication = require('../models/Publication');
+const { body, validationResult } = require('express-validator');
+const { verifyRecaptcha } = require('../services/recaptchaService');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { query } = require('../config/database');
+
+console.log('ArticleSubmissionController loaded - UPDATED VERSION');
+
+// Helper function to delete image file
+const deleteImageFile = (filename) => {
+  if (!filename) return;
+  const filePath = path.join(__dirname, '../../uploads/article-submissions', filename);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    console.log(`Deleted image file: ${filename}`);
+  }
+};
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../../uploads/article-submissions');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'article-submission-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
+
+class ArticleSubmissionController {
+
+  // Validation rules for create submission
+  createValidation = [
+    body('user_id').optional().isInt({ min: 1 }).withMessage('Valid user ID is required'),
+    body('publication_id').isInt({ min: 1 }).withMessage('Valid publication ID is required'),
+    body('title').trim().isLength({ min: 1, max: 255 }).withMessage('Title is required and must be less than 255 characters'),
+    body('sub_title').optional().trim().isLength({ max: 255 }).withMessage('Subtitle must be less than 255 characters'),
+    body('by_line').optional().trim().isLength({ max: 255 }).withMessage('By line must be less than 255 characters'),
+    body('tentative_publish_date').optional().isISO8601().withMessage('Invalid date format'),
+    body('article_text').trim().isLength({ min: 1 }).withMessage('Article text is required'),
+    body('website_link').optional().isURL().withMessage('Invalid website URL format'),
+    body('instagram_link').optional().isURL().withMessage('Invalid Instagram URL format'),
+    body('facebook_link').optional().isURL().withMessage('Invalid Facebook URL format'),
+    body('terms_agreed').equals('true').withMessage('Terms must be agreed to'),
+    body('recaptcha_token').trim().isLength({ min: 1 }).withMessage('Captcha verification is required')
+  ];
+
+  // Validation rules for update submission (all fields optional)
+  updateValidation = [
+    body('user_id').optional().isInt({ min: 1 }).withMessage('Valid user ID is required'),
+    body('publication_id').optional().isInt({ min: 1 }).withMessage('Valid publication ID is required'),
+    body('title').optional().trim().isLength({ min: 1, max: 255 }).withMessage('Title must be less than 255 characters'),
+    body('sub_title').optional().trim().isLength({ max: 255 }).withMessage('Subtitle must be less than 255 characters'),
+    body('by_line').optional().trim().isLength({ max: 255 }).withMessage('By line must be less than 255 characters'),
+    body('tentative_publish_date').optional().isISO8601().withMessage('Invalid date format'),
+    body('article_text').optional().trim().isLength({ min: 1 }).withMessage('Article text is required'),
+    body('website_link').optional().isURL().withMessage('Invalid website URL format'),
+    body('instagram_link').optional().isURL().withMessage('Invalid Instagram URL format'),
+    body('facebook_link').optional().isURL().withMessage('Invalid Facebook URL format'),
+    body('terms_agreed').optional().isBoolean().withMessage('Terms agreed must be boolean'),
+    body('delete_image1').optional().isBoolean().withMessage('Delete image1 must be boolean'),
+    body('delete_image2').optional().isBoolean().withMessage('Delete image2 must be boolean')
+  ];
+
+  // Create a new article submission (user or admin)
+  async createSubmission(req, res) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      // For admin requests, user_id is optional; for user requests, required
+      const userId = req.body.user_id || req.user?.userId || null;
+      const {
+        publication_id,
+        title,
+        sub_title,
+        by_line,
+        tentative_publish_date,
+        article_text,
+        website_link,
+        instagram_link,
+        facebook_link,
+        terms_agreed,
+        recaptcha_token
+      } = req.body;
+
+      // Verify captcha
+      const captchaScore = await verifyRecaptcha(recaptcha_token);
+      if (captchaScore === null || captchaScore < 0.5) {
+        return res.status(400).json({
+          error: 'Captcha verification failed',
+          message: 'Please complete the captcha verification'
+        });
+      }
+
+      // Get publication to check word limit
+      const publication = await Publication.findById(publication_id);
+      if (!publication) {
+        return res.status(404).json({ error: 'Publication not found' });
+      }
+
+      // Validate title: <= 12 words, no special characters
+      const titleWords = title.trim().split(/\s+/);
+      if (titleWords.length > 12) {
+        return res.status(400).json({ error: 'Title must be 12 words or less' });
+      }
+      const specialCharsRegex = /[^a-zA-Z0-9\s]/;
+      if (specialCharsRegex.test(title)) {
+        return res.status(400).json({ error: 'Title cannot contain special characters' });
+      }
+
+      // Validate article text word count <= publication word_limit
+      const articleWords = article_text.trim().split(/\s+/).length;
+      if (articleWords > publication.word_limit) {
+        return res.status(400).json({
+          error: `Article text exceeds word limit of ${publication.word_limit} words`
+        });
+      }
+
+      // Handle image uploads
+      let image1 = null;
+      let image2 = null;
+
+      if (req.files && req.files.image1 && req.files.image1[0]) {
+        image1 = req.files.image1[0].filename;
+        // TODO: Validate landscape orientation
+      }
+
+      if (req.files && req.files.image2 && req.files.image2[0]) {
+        image2 = req.files.image2[0].filename;
+        // TODO: Validate landscape orientation
+      }
+
+      const submissionData = {
+        user_id: userId,
+        publication_id,
+        title,
+        sub_title,
+        by_line,
+        tentative_publish_date,
+        article_text,
+        image1,
+        image2,
+        website_link,
+        instagram_link,
+        facebook_link,
+        terms_agreed: terms_agreed === 'true'
+      };
+
+      const submission = await ArticleSubmission.create(submissionData);
+
+      res.status(201).json({
+        message: 'Article submission created successfully',
+        submission: submission.toJSON()
+      });
+    } catch (error) {
+      console.error('Create article submission error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get all submissions (admin only, paginated with filters)
+  async getAllSubmissions(req, res) {
+    try {
+      console.log('getAllSubmissions called');
+      const {
+        page = 1,
+        limit = 10,
+        status,
+        user_id,
+        publication_id,
+        search
+      } = req.query;
+
+      const filters = {};
+      if (status) filters.status = status;
+      if (user_id) filters.user_id = parseInt(user_id);
+      if (publication_id) filters.publication_id = parseInt(publication_id);
+
+      const offset = (page - 1) * limit;
+      const submissions = await ArticleSubmission.findAll(filters, parseInt(limit), offset, search);
+      console.log(`Found ${submissions.length} submissions`);
+
+      // Build associations from joined data
+      const submissionsWithAssociations = submissions.map(submission => {
+        const json = submission.toJSON();
+        console.log(`Submission ${submission.id}: publication_name = ${submission.publication_name}, publication_id = ${submission.publication_id}`);
+
+        // Build user object
+        let user = null;
+        if (submission.user_first_name || submission.user_last_name || submission.user_email) {
+          user = {
+            first_name: submission.user_first_name,
+            last_name: submission.user_last_name,
+            email: submission.user_email
+          };
+        }
+
+        // Build publication object
+        let publication = null;
+        if (submission.publication_name) {
+          publication = {
+            publication_name: submission.publication_name
+          };
+        }
+
+        return {
+          ...json,
+          user,
+          publication
+        };
+      });
+
+      // Get total count for pagination
+      const totalCount = await ArticleSubmission.getTotalCount(filters, search);
+      const totalPages = Math.ceil(totalCount / limit);
+
+      res.json({
+        submissions: submissionsWithAssociations,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: totalCount,
+          totalPages
+        }
+      });
+    } catch (error) {
+      console.error('Get all submissions error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get submission by ID (admin only)
+  async getSubmissionById(req, res) {
+    try {
+      const { id } = req.params;
+      const submission = await ArticleSubmission.findById(parseInt(id));
+
+      if (!submission) {
+        return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      // Load associations
+      const user = await submission.getUser();
+      const publication = await submission.getPublication();
+
+      res.json({
+        submission: {
+          ...submission.toJSON(),
+          user: user ? user.toJSON() : null,
+          publication: publication ? publication.toJSON() : null
+        }
+      });
+    } catch (error) {
+      console.error('Get submission by ID error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Update submission (admin only)
+  async updateSubmission(req, res) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const { id } = req.params;
+      const submission = await ArticleSubmission.findById(parseInt(id));
+
+      if (!submission) {
+        return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      const updateData = { ...req.body };
+
+      // Handle image uploads and deletions
+      const { delete_image1, delete_image2 } = req.body;
+
+      // Handle image1
+      if (req.files && req.files.image1 && req.files.image1[0]) {
+        // New image uploaded - delete old one if exists
+        if (submission.image1) {
+          deleteImageFile(submission.image1);
+        }
+        updateData.image1 = req.files.image1[0].filename;
+      } else if (delete_image1 === 'true' || delete_image1 === true) {
+        // Explicitly delete image1
+        if (submission.image1) {
+          deleteImageFile(submission.image1);
+        }
+        updateData.image1 = null;
+      }
+
+      // Handle image2
+      if (req.files && req.files.image2 && req.files.image2[0]) {
+        // New image uploaded - delete old one if exists
+        if (submission.image2) {
+          deleteImageFile(submission.image2);
+        }
+        updateData.image2 = req.files.image2[0].filename;
+      } else if (delete_image2 === 'true' || delete_image2 === true) {
+        // Explicitly delete image2
+        if (submission.image2) {
+          deleteImageFile(submission.image2);
+        }
+        updateData.image2 = null;
+      }
+
+      // Remove delete flags from update data
+      delete updateData.delete_image1;
+      delete updateData.delete_image2;
+
+      // Validate word count if article_text is being updated
+      if (updateData.article_text) {
+        const publication = await Publication.findById(submission.publication_id);
+        if (publication) {
+          const articleWords = updateData.article_text.trim().split(/\s+/).length;
+          if (articleWords > publication.word_limit) {
+            return res.status(400).json({
+              error: `Article text exceeds word limit of ${publication.word_limit} words`
+            });
+          }
+        }
+      }
+
+      // Validate title if being updated
+      if (updateData.title) {
+        const titleWords = updateData.title.trim().split(/\s+/);
+        if (titleWords.length > 12) {
+          return res.status(400).json({ error: 'Title must be 12 words or less' });
+        }
+        const specialCharsRegex = /[^a-zA-Z0-9\s]/;
+        if (specialCharsRegex.test(updateData.title)) {
+          return res.status(400).json({ error: 'Title cannot contain special characters' });
+        }
+      }
+
+      const updatedSubmission = await submission.update(updateData);
+      res.json({
+        message: 'Article submission updated successfully',
+        submission: updatedSubmission.toJSON()
+      });
+    } catch (error) {
+      console.error('Update submission error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Delete submission (admin only)
+  async deleteSubmission(req, res) {
+    try {
+      const { id } = req.params;
+      const submission = await ArticleSubmission.findById(parseInt(id));
+
+      if (!submission) {
+        return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      await submission.delete();
+      res.json({ message: 'Article submission deleted successfully' });
+    } catch (error) {
+      console.error('Delete submission error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Approve submission (admin only)
+  async approveSubmission(req, res) {
+    try {
+      const { id } = req.params;
+      const submission = await ArticleSubmission.findById(parseInt(id));
+
+      if (!submission) {
+        return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      const approvedSubmission = await submission.approve();
+      res.json({
+        message: 'Article submission approved successfully',
+        submission: approvedSubmission.toJSON()
+      });
+    } catch (error) {
+      console.error('Approve submission error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Reject submission (admin only)
+  async rejectSubmission(req, res) {
+    try {
+      const { id } = req.params;
+      const submission = await ArticleSubmission.findById(parseInt(id));
+
+      if (!submission) {
+        return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      const rejectedSubmission = await submission.reject();
+      res.json({
+        message: 'Article submission rejected successfully',
+        submission: rejectedSubmission.toJSON()
+      });
+    } catch (error) {
+      console.error('Reject submission error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get my submissions (user only)
+  async getMySubmissions(req, res) {
+    try {
+      const userId = req.user.userId;
+      const { page = 1, limit = 10 } = req.query;
+
+      const offset = (page - 1) * limit;
+      const submissions = await ArticleSubmission.findByUserId(userId, parseInt(limit), offset);
+
+      // Get total count for pagination
+      const totalCount = await this.getUserSubmissionCount(userId);
+      const totalPages = Math.ceil(totalCount / limit);
+
+      res.json({
+        submissions: submissions.map(s => s.toJSON()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: totalCount,
+          totalPages
+        }
+      });
+    } catch (error) {
+      console.error('Get my submissions error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get approved articles (public)
+  async getApprovedArticles(req, res) {
+    try {
+      const { page = 1, limit = 10 } = req.query;
+      const offset = (page - 1) * parseInt(limit);
+      const limitInt = parseInt(limit);
+
+      // Get submissions with publication data
+      const sql = `
+        SELECT asub.*, p.publication_name
+        FROM article_submissions asub
+        LEFT JOIN publications p ON asub.publication_id = p.id
+        WHERE asub.status = 'approved'
+        ORDER BY asub.created_at DESC
+        LIMIT $1 OFFSET $2
+      `;
+      const values = [limitInt, offset];
+      const result = await query(sql, values);
+
+      // Get total count
+      const countSql = "SELECT COUNT(*) FROM article_submissions WHERE status = 'approved'";
+      const countResult = await query(countSql);
+      const totalCount = parseInt(countResult.rows[0].count);
+      const totalPages = Math.ceil(totalCount / limitInt);
+
+      // Build submissions with associations
+      const submissionsWithAssociations = result.rows.map(row => {
+        const submission = new ArticleSubmission(row);
+        submission.publication_name = row.publication_name;
+
+        const json = submission.toJSON();
+
+        // Build publication object
+        let publication = null;
+        if (submission.publication_name) {
+          publication = {
+            publication_name: submission.publication_name
+          };
+        }
+
+        return {
+          ...json,
+          publication
+        };
+      });
+
+      res.json({
+        articles: submissionsWithAssociations,
+        pagination: {
+          page: parseInt(page),
+          limit: limitInt,
+          total: totalCount,
+          totalPages
+        }
+      });
+    } catch (error) {
+      console.error('Get approved articles error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get approved article by slug (public)
+  async getApprovedArticleById(req, res) {
+    try {
+      const { slug } = req.params;
+      const submission = await ArticleSubmission.findBySlug(slug);
+
+      if (!submission || submission.status !== 'approved') {
+        return res.status(404).json({ error: 'Approved article not found' });
+      }
+
+      // Load associations
+      const user = await submission.getUser();
+      const publication = await submission.getPublication();
+
+      res.json({
+        article: {
+          ...submission.toJSON(),
+          user: user ? user.toJSON() : null,
+          publication: publication ? publication.toJSON() : null
+        }
+      });
+    } catch (error) {
+      console.error('Get approved article by slug error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Helper method to get total count
+  static async getTotalCount(filters = {}) {
+    // This would need to be implemented in the model or use a separate query
+    // For now, return approximate count
+    return 100; // TODO: Implement proper count
+  }
+
+  // Helper method to get user submission count
+  static async getUserSubmissionCount(userId) {
+    // This would need to be implemented in the model
+    // For now, return approximate count
+    return 10; // TODO: Implement proper count
+  }
+
+  // Helper method to get approved count
+  static async getApprovedCount() {
+    const sql = "SELECT COUNT(*) FROM article_submissions WHERE status = 'approved'";
+    const result = await query(sql);
+    return parseInt(result.rows[0].count);
+  }
+}
+
+module.exports = new ArticleSubmissionController();

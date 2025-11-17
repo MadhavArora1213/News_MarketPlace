@@ -4,7 +4,27 @@ import Icon from '../common/Icon';
 export default function Sidebar({
   admin,
   roleDisplayNames = {},
-  theme,
+  theme = {
+    primary: '#1976D2',
+    primaryDark: '#0D47A1',
+    primaryLight: '#E3F2FD',
+    secondary: '#00796B',
+    secondaryDark: '#004D40',
+    secondaryLight: '#E0F2F1',
+    success: '#4CAF50',
+    warning: '#FF9800',
+    danger: '#F44336',
+    info: '#9C27B0',
+    textPrimary: '#212121',
+    textSecondary: '#757575',
+    textDisabled: '#BDBDBD',
+    background: '#FFFFFF',
+    backgroundAlt: '#FAFAFA',
+    backgroundSoft: '#F5F5F5',
+    borderLight: '#E0E0E0',
+    borderMedium: '#BDBDBD',
+    borderDark: '#757575',
+  },
   sidebarOpen,
   setSidebarOpen,
   sidebarStyles,
@@ -57,7 +77,7 @@ export default function Sidebar({
     <>
       {/* Desktop aside (fixed on viewport left when not mobile) */}
       <aside
-        style={{ ...desktopStyleToUse, padding: 18 }}
+        style={{ ...desktopStyleToUse, paddingTop: 18, paddingBottom: 18, paddingLeft: 18, paddingRight: 18 }}
         aria-hidden={!sidebarOpen}
         role="navigation"
       >
@@ -181,6 +201,18 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/published-works"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="book-open" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Published Works Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/power-lists"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
@@ -212,6 +244,18 @@ export default function Sidebar({
               >
                 <span style={navIconCircle('#f3e5f5')}><Icon name="document-plus" size="sm" style={{ color: '#9C27B0' }} /></span>
                 <span>Award Submissions</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/article-submissions"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Article Submissions</span>
               </a>
             </li>
 
@@ -395,9 +439,11 @@ export default function Sidebar({
             <li style={{ marginBottom: 12 }}><a href="/admin/agencies" style={{ color: '#212121', textDecoration: 'none' }}>Agency Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/websites" style={{ color: '#212121', textDecoration: 'none' }}>Website Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Publications</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/published-works" style={{ color: '#212121', textDecoration: 'none' }}>Published Works Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/article-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Article Submissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>

@@ -217,7 +217,7 @@ const UserHeader = ({ onShowAuth }) => {
                     <button className="w-full bg-white/60 backdrop-blur-sm text-[#1976D2] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm">
                       Editor Registration
                     </button>
-                    <Link to="/reporter-registration" className="w-full bg-white/60 backdrop-blur-sm text-[#FF5722] font-medium py-2 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm text-center">
+                    <Link to="/reporter-registration" className="bg-white/60 backdrop-blur-sm text-[#FF5722] font-medium py-2 px-4 rounded-lg hover:bg-white/80 transition-all duration-300 border border-white/20 text-sm text-center mx-auto block w-fit">
                       Reporter Registration
                     </Link>
                     <button

@@ -1,60 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
+import api from '../../services/api';
 
 const PowerList = () => {
-  const powerListItems = [
-    {
-      id: 1,
-      rank: 1,
-      name: "Tech Innovators Alliance",
-      category: "Technology",
-      description: "Leading the charge in AI and machine learning solutions",
-      followers: "2.5M",
-      growth: "+15%",
-      avatar: "/api/placeholder/60/60"
-    },
-    {
-      id: 2,
-      rank: 2,
-      name: "Global Media Network",
-      category: "Media",
-      description: "World's largest independent media conglomerate",
-      followers: "1.8M",
-      growth: "+12%",
-      avatar: "/api/placeholder/60/60"
-    },
-    {
-      id: 3,
-      rank: 3,
-      name: "Content Creators Hub",
-      category: "Content",
-      description: "Empowering the next generation of digital storytellers",
-      followers: "1.2M",
-      growth: "+20%",
-      avatar: "/api/placeholder/60/60"
-    },
-    {
-      id: 4,
-      rank: 4,
-      name: "Business Leaders Forum",
-      category: "Business",
-      description: "Connecting visionaries shaping the future of commerce",
-      followers: "950K",
-      growth: "+8%",
-      avatar: "/api/placeholder/60/60"
-    },
-    {
-      id: 5,
-      rank: 5,
-      name: "Innovation Labs",
-      category: "Research",
-      description: "Pioneering breakthrough discoveries in science and technology",
-      followers: "780K",
-      growth: "+18%",
-      avatar: "/api/placeholder/60/60"
+  const [powerListItems, setPowerListItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPowerlists();
+  }, []);
+
+  const fetchPowerlists = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/powerlist/public?limit=5');
+      const transformedData = transformData(response.data.powerlists || []);
+      setPowerListItems(transformedData);
+    } catch (error) {
+      console.error('Error fetching powerlists:', error);
+      setPowerListItems([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const transformData = (data) => {
+    return data.map((item, index) => ({
+      id: item.id,
+      rank: index + 1,
+      name: item.name,
+      category: item.company_industry || 'General',
+      description: item.position || 'Influential Professional',
+      followers: 'N/A',
+      growth: '+0%',
+      avatar: '/api/placeholder/60/60'
+    }));
+  };
 
   const getRankColor = (rank) => {
     switch (rank) {
@@ -75,125 +57,146 @@ const PowerList = () => {
   };
 
   return (
-    <section className="py-12 bg-[#E3F2FD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className=" bg-[#E3F2FD] relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-20 left-10 w-40 h-40 bg-[#1976D2]/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-32 h-32 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-[#1976D2]/5 rounded-full blur-xl"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-[#1976D2] rounded-full mb-6">
-            <Icon name="trophy" size="xl" className="text-[#FFFFFF]" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
-            Power List 2024
+        <div className="text-center mb-20">
+          
+          <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
+            Power List <span className="text-[#1976D2]">2024</span>
           </h1>
-          <p className="text-xl text-[#757575] max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light">
             Celebrating the most influential organizations and leaders shaping the media and publishing landscape.
           </p>
+          <div className="mt-8 flex justify-center space-x-6">
+            <div className="w-20 h-1 bg-[#1976D2] rounded-full"></div>
+            <div className="w-12 h-1 bg-[#42A5F5] rounded-full"></div>
+            <div className="w-6 h-1 bg-[#90CAF9] rounded-full"></div>
+          </div>
         </div>
 
         {/* Power List Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-          {powerListItems.map((item, index) => (
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-b-2 border-[#1976D2]"></div>
+            <p className="text-lg text-[#757575]">Loading power list...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-24">
+            {powerListItems.map((item, index) => (
             <div
               key={item.id}
-              className="bg-[#FFFFFF] rounded-xl shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
+              className="bg-[#FFFFFF] rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group relative"
             >
               {/* Rank Header */}
-              <div className="relative bg-[#E3F2FD] p-6 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className={`w-14 h-14 rounded-full bg-[#1976D2] flex items-center justify-center shadow-md`}>
+              <div className="relative bg-gradient-to-r from-[#E3F2FD] to-[#BBDEFB] p-8 pb-6">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-[#1976D2]/10 rounded-full -mr-10 -mt-10"></div>
+                <div className="flex items-center justify-between relative z-10">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${getRankColor(item.rank)} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
                     <div className="text-center">
-                      <Icon name={getRankIcon(item.rank)} size="md" className="text-[#FFFFFF] mb-1" />
+                      <Icon name={getRankIcon(item.rank)} size="lg" className="text-[#FFFFFF] mb-1" />
                       <span className="text-[#FFFFFF] font-bold text-xs">#{item.rank}</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-[#212121]">{item.followers}</div>
-                    <div className="text-sm text-[#757575]">followers</div>
+                    <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{item.followers}</div>
+                    <div className="text-sm text-[#757575] font-medium">followers</div>
                   </div>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#1976D2] transition-colors">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-[#212121] mb-4 group-hover:text-[#1976D2] transition-colors duration-300 leading-tight">
                   {item.name}
                 </h3>
-                <p className="text-[#757575] mb-4 leading-relaxed">{item.description}</p>
+                <p className="text-[#757575] mb-6 leading-relaxed text-lg">{item.description}</p>
 
                 {/* Category Badge */}
-                <div className="mb-4">
-                  <span className="bg-[#1976D2]/10 text-[#1976D2] px-3 py-1 rounded-full text-sm font-medium">
+                <div className="mb-6">
+                  <span className="bg-[#1976D2]/10 text-[#1976D2] px-4 py-2 rounded-full text-sm font-semibold border border-[#1976D2]/20">
                     {item.category}
                   </span>
                 </div>
 
                 {/* Growth Stats */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Icon name="trending-up" size="sm" className="text-[#4CAF50]" />
-                    <span className="text-[#4CAF50] font-semibold">{item.growth}</span>
-                    <span className="text-[#757575] text-sm">growth</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#4CAF50]/10 rounded-lg flex items-center justify-center">
+                      <Icon name="trending-up" size="sm" className="text-[#4CAF50]" />
+                    </div>
+                    <div>
+                      <span className="text-[#4CAF50] font-bold text-lg">{item.growth}</span>
+                      <span className="text-[#757575] text-sm ml-1">growth</span>
+                    </div>
                   </div>
-                  <CosmicButton variant="small" textColor="#000000">
+                  <CosmicButton variant="small" textColor="#000000" className="shadow-md hover:shadow-lg transition-shadow duration-300">
                     View Profile
                   </CosmicButton>
                 </div>
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Call to Action Section */}
-        <div className="bg-[#FFFFFF] rounded-2xl p-8 md:p-12 shadow-lg border border-[#E0E0E0]">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#212121] mb-4">
+        <div className="bg-[#FFFFFF] rounded-3xl p-12 md:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/30 to-transparent"></div>
+          <div className="text-center mb-12 relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
               Join the Elite
             </h2>
-            <p className="text-lg text-[#757575] max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed">
               Want to be featured in our Power List? Join the ranks of industry leaders and innovators who are shaping the future of media and publishing.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#1976D2] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Icon name="star" size="md" className="text-[#FFFFFF]" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+            <div className="space-y-8">
+              <div className="flex items-start space-x-6 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#1976D2] to-[#42A5F5] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                  <Icon name="star" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#212121] mb-2">Recognition</h3>
-                  <p className="text-[#757575]">Get recognized as a leader in your field</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#1976D2] transition-colors duration-300">Recognition</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">Get recognized as a leader in your field</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#4CAF50] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Icon name="user-group" size="md" className="text-[#FFFFFF]" />
+              <div className="flex items-start space-x-6 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#4CAF50] to-[#66BB6A] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                  <Icon name="user-group" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#212121] mb-2">Networking</h3>
-                  <p className="text-[#757575]">Connect with industry leaders and peers</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#4CAF50] transition-colors duration-300">Networking</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">Connect with industry leaders and peers</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#9C27B0] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Icon name="megaphone" size="md" className="text-[#FFFFFF]" />
+              <div className="flex items-start space-x-6 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#9C27B0] to-[#BA68C8] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                  <Icon name="megaphone" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#212121] mb-2">Visibility</h3>
-                  <p className="text-[#757575]">Increase your brand visibility globally</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#9C27B0] transition-colors duration-300">Visibility</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">Increase your brand visibility globally</p>
                 </div>
               </div>
             </div>
 
-            <div className="text-center space-y-6">
-              <div className="bg-[#E3F2FD] rounded-xl p-6">
-                <h3 className="text-xl font-bold text-[#212121] mb-4">Apply Now</h3>
-                <p className="text-[#757575] mb-6">Submit your application for consideration</p>
-                <div className="flex flex-col gap-3">
-                  <CosmicButton variant="small" textColor="#000000">
+            <div className="text-center space-y-8">
+              <div className="bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB] rounded-3xl p-8 shadow-xl border border-[#E0E0E0]">
+                <h3 className="text-2xl font-bold text-[#212121] mb-6">Apply Now</h3>
+                <p className="text-[#757575] mb-8 text-lg">Submit your application for consideration</p>
+                <div className="flex flex-col gap-4">
+                  <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
                     Apply for Power List
                   </CosmicButton>
-                  <CosmicButton variant="small" textColor="#000000">
+                  <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
                     Nominate Someone
                   </CosmicButton>
                 </div>

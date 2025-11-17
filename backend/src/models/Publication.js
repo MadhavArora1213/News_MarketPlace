@@ -21,6 +21,7 @@ class Publication {
     this.dr = data.dr;
     this.sponsored_or_not = data.sponsored_or_not || false;
     this.words_limit = data.words_limit;
+    this.word_limit = data.word_limit || 500;
     this.number_of_images = data.number_of_images;
     this.do_follow_link = data.do_follow_link || false;
     this.example_link = data.example_link;
@@ -63,6 +64,7 @@ class Publication {
       dr,
       sponsored_or_not,
       words_limit,
+      word_limit,
       number_of_images,
       do_follow_link,
       example_link,
@@ -79,7 +81,7 @@ class Publication {
         group_id, publication_sn, publication_grade, publication_name, publication_website,
         publication_price, agreement_tat, practical_tat, publication_socials_icons,
         publication_language, publication_region, publication_primary_industry,
-        website_news_index, da, dr, sponsored_or_not, words_limit, number_of_images,
+        website_news_index, da, dr, sponsored_or_not, words_limit, word_limit, number_of_images,
         do_follow_link, example_link, excluding_categories, other_remarks, tags_badges,
         live_on_platform, submitted_by, submitted_by_admin
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
@@ -90,7 +92,7 @@ class Publication {
       group_id, publication_sn, publication_grade, publication_name, publication_website,
       publication_price, agreement_tat, practical_tat, publication_socials_icons,
       publication_language, publication_region, publication_primary_industry,
-      website_news_index, da, dr, sponsored_or_not, words_limit, number_of_images,
+      website_news_index, da, dr, sponsored_or_not, words_limit, word_limit, number_of_images,
       do_follow_link, example_link, excluding_categories, other_remarks, tags_badges,
       live_on_platform, submitted_by, submitted_by_admin
     ];
@@ -327,6 +329,7 @@ class Publication {
       dr: this.dr,
       sponsored_or_not: this.sponsored_or_not,
       words_limit: this.words_limit,
+      word_limit: this.word_limit,
       number_of_images: this.number_of_images,
       do_follow_link: this.do_follow_link,
       example_link: this.example_link,

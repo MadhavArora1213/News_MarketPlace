@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import TopHeader from '../components/common/TopHeader';
 import UserHeader from '../components/common/UserHeader';
+import FloatingLines from '../components/common/FloatingLines';
 import FeatureSlider from '../components/common/FeatureSlider';
 import Articles from '../components/common/Articles';
 import About from '../components/common/About';
@@ -66,8 +67,21 @@ const Home = () => {
         <UserHeader onShowAuth={handleShowAuth} />
         <TopHeader />
 
-        {/* Feature Slider */}
-        <FeatureSlider />
+        {/* Hero Section */}
+        <div style={{ width: '100%', height: '600px', position: 'relative' }}>
+          <FloatingLines
+            enabledWaves={['top', 'middle', 'bottom']}
+            lineCount={[10, 15, 20]}
+            lineDistance={[8, 6, 4]}
+            bendRadius={5.0}
+            bendStrength={-0.5}
+            interactive={true}
+            parallax={true}
+          />
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
+            <FeatureSlider />
+          </div>
+        </div>
 
         {/* Articles Section */}
         <Articles />

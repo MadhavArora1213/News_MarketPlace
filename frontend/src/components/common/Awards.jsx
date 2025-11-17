@@ -67,64 +67,75 @@ const Awards = () => {
   ];
 
   return (
-    <section className="py-12 bg-[#E3F2FD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 bg-[#E3F2FD] relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-[#1976D2]/10 rounded-full blur-2xl"></div>
+      <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-[#1976D2]/5 rounded-full blur-xl"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-[#1976D2] rounded-full mb-6">
-            <Icon name="trophy" size="xl" className="text-[#FFFFFF]" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
-            Awards & Recognition
+        <div className="text-center mb-20">
+       
+          <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
+            Awards & <span className="text-[#1976D2]">Recognition</span>
           </h1>
-          <p className="text-xl text-[#757575] max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light">
             Celebrating our achievements and the recognition we've received for excellence in digital publishing and media innovation.
           </p>
+          <div className="mt-8 flex justify-center space-x-6">
+            <div className="w-20 h-1 bg-[#1976D2] rounded-full"></div>
+            <div className="w-12 h-1 bg-[#42A5F5] rounded-full"></div>
+            <div className="w-6 h-1 bg-[#90CAF9] rounded-full"></div>
+          </div>
         </div>
 
         {/* Awards Showcase */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-24">
           {awards.map((award) => (
             <div
               key={award.id}
-              className="bg-[#FFFFFF] rounded-xl shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
+              className="bg-[#FFFFFF] rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group relative"
             >
               {/* Award Visual Header */}
-              <div className="relative bg-[#E3F2FD] p-6 pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-16 h-16 bg-[#1976D2] rounded-xl flex items-center justify-center shadow-md">
-                    <Icon name={award.icon} size="lg" className="text-[#FFFFFF]" />
-                  </div>
+              <div className="relative bg-gradient-to-r from-[#E3F2FD] to-[#BBDEFB] p-8 pb-6">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-[#1976D2]/10 rounded-full -mr-10 -mt-10"></div>
+                <div className="flex items-center justify-between mb-6">
+                  
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-[#212121]">{award.year}</div>
-                    <div className="text-sm text-[#757575]">Award Year</div>
+                    <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{award.year}</div>
+                    <div className="text-sm text-[#757575] font-medium">Award Year</div>
                   </div>
                 </div>
-                <span className="bg-[#1976D2] text-[#FFFFFF] text-sm font-semibold px-3 py-1 rounded-full">
+                <span className="bg-[#1976D2]/10 text-[#1976D2] text-sm font-semibold px-4 py-2 rounded-full border border-[#1976D2]/20">
                   {award.category}
                 </span>
               </div>
 
               {/* Award Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#1976D2] transition-colors">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-[#212121] mb-4 group-hover:text-[#1976D2] transition-colors duration-300 leading-tight">
                   {award.title}
                 </h3>
-                <p className="text-[#757575] mb-4 leading-relaxed">{award.description}</p>
+                <p className="text-[#757575] mb-6 leading-relaxed text-lg">{award.description}</p>
 
                 {/* Recipient */}
-                <div className="flex items-center space-x-2 mb-4">
-                  <Icon name="user" size="sm" className="text-[#1976D2]" />
-                  <span className="text-[#1976D2] font-semibold">{award.recipient}</span>
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-[#1976D2]/10 rounded-lg flex items-center justify-center">
+                    <Icon name="user" size="sm" className="text-[#1976D2]" />
+                  </div>
+                  <span className="text-[#1976D2] font-semibold text-lg">{award.recipient}</span>
                 </div>
 
                 {/* Verification Badge */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Icon name="badge-check" size="sm" className="text-[#4CAF50]" />
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#4CAF50]/10 rounded-lg flex items-center justify-center">
+                      <Icon name="badge-check" size="sm" className="text-[#4CAF50]" />
+                    </div>
                     <span className="text-[#4CAF50] font-medium text-sm">Verified Award</span>
                   </div>
-                  <CosmicButton variant="small" textColor="#000000">
+                  <CosmicButton variant="small" textColor="#000000" className="shadow-md hover:shadow-lg transition-shadow duration-300">
                     Learn More
                   </CosmicButton>
                 </div>
@@ -134,6 +145,25 @@ const Awards = () => {
         </div>
 
         {/* Call to Action */}
+        <div className="bg-[#FFFFFF] rounded-3xl p-12 md:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/30 to-transparent"></div>
+          <div className="text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
+              Nominate for Awards
+            </h2>
+            <p className="text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed mb-10">
+              Recognize excellence in digital publishing. Nominate outstanding work or submit your achievements for consideration.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                Submit Nomination
+              </CosmicButton>
+              <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                View Past Winners
+              </CosmicButton>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
