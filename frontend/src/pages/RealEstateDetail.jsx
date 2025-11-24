@@ -269,7 +269,7 @@ const RealEstateDetail = () => {
                     <div className="relative">
                       <div className="aspect-video rounded-lg overflow-hidden bg-gray-200">
                         <img
-                          src={`/api/uploads/real-estates/${realEstate.images[currentImageIndex]}`}
+                          src={realEstate.images[currentImageIndex]}
                           alt={`${realEstate.title} - Image ${currentImageIndex + 1}`}
                           className="w-full h-full object-cover"
                         />

@@ -1,9 +1,31 @@
 const RealEstate = require('../models/RealEstate');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
+const s3Service = require('../services/s3Service');
 const User = require('../models/User');
 const UserNotification = require('../models/UserNotification');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit per file
+    files: 10 // Maximum 10 files
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 
 class RealEstateController {
@@ -102,12 +124,21 @@ class RealEstateController {
         delete realEstateData.area_sqft;
       }
 
-      // Handle image uploads
+      // Handle image uploads to S3
       const images = [];
       if (req.files && req.files.images && req.files.images.length > 0) {
-        req.files.images.forEach(file => {
-          images.push(file.filename);
-        });
+        for (const file of req.files.images) {
+          const s3Key = s3Service.generateKey('real-estates', 'image', file.originalname);
+          const contentType = s3Service.getContentType(file.originalname);
+
+          try {
+            const s3Url = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+            images.push(s3Url);
+          } catch (uploadError) {
+            console.error(`Failed to upload real estate image to S3:`, uploadError);
+            throw new Error('Failed to upload image');
+          }
+        }
       }
       realEstateData.images = images;
 
@@ -422,27 +453,39 @@ class RealEstateController {
       if (req.body.imagesToDelete && Array.isArray(req.body.imagesToDelete)) {
         const imagesToDelete = req.body.imagesToDelete;
         console.log('Images to delete:', imagesToDelete);
+
+        // Delete images from S3
+        for (const imageUrl of imagesToDelete) {
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(imageUrl);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error(`Failed to delete image from S3:`, deleteError);
+            // Continue with other deletions even if one fails
+          }
+        }
+
         currentImages = currentImages.filter(img => !imagesToDelete.includes(img));
         console.log('Current images after deletion:', currentImages);
-
-        // Delete actual files from filesystem
-        const fs = require('fs');
-        const path = require('path');
-        imagesToDelete.forEach(imageName => {
-          const imagePath = path.join(__dirname, '../../uploads/real-estates', imageName);
-          try {
-            if (fs.existsSync(imagePath)) {
-              fs.unlinkSync(imagePath);
-            }
-          } catch (error) {
-            console.error(`Failed to delete image ${imageName}:`, error);
-          }
-        });
       }
 
       // Handle new image uploads
       if (req.files && req.files.images && req.files.images.length > 0) {
-        const newImages = req.files.images.map(file => file.filename);
+        const newImages = [];
+        for (const file of req.files.images) {
+          const s3Key = s3Service.generateKey('real-estates', 'image', file.originalname);
+          const contentType = s3Service.getContentType(file.originalname);
+
+          try {
+            const s3Url = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+            newImages.push(s3Url);
+          } catch (uploadError) {
+            console.error(`Failed to upload new real estate image to S3:`, uploadError);
+            throw new Error('Failed to upload image');
+          }
+        }
         console.log('New uploaded images:', newImages);
         currentImages = [...currentImages, ...newImages];
         console.log('Combined images after upload:', currentImages);
@@ -479,6 +522,21 @@ class RealEstateController {
         }
         if (realEstate.status !== 'pending') {
           return res.status(400).json({ error: 'Cannot delete approved or rejected submissions' });
+        }
+      }
+
+      // Delete associated images from S3
+      if (realEstate.images && Array.isArray(realEstate.images)) {
+        for (const imageUrl of realEstate.images) {
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(imageUrl);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error('Failed to delete real estate image from S3:', deleteError);
+            // Continue with other deletions even if one fails
+          }
         }
       }
 

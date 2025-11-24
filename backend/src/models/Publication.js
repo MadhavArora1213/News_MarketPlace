@@ -73,7 +73,8 @@ class Publication {
       tags_badges,
       live_on_platform,
       submitted_by,
-      submitted_by_admin
+      submitted_by_admin,
+      status
     } = publicationData;
 
     const sql = `
@@ -83,8 +84,8 @@ class Publication {
         publication_language, publication_region, publication_primary_industry,
         website_news_index, da, dr, sponsored_or_not, words_limit, word_limit, number_of_images,
         do_follow_link, example_link, excluding_categories, other_remarks, tags_badges,
-        live_on_platform, submitted_by, submitted_by_admin
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
+        live_on_platform, submitted_by, submitted_by_admin, status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28)
       RETURNING *
     `;
 
@@ -94,7 +95,7 @@ class Publication {
       publication_language, publication_region, publication_primary_industry,
       website_news_index, da, dr, sponsored_or_not, words_limit, word_limit, number_of_images,
       do_follow_link, example_link, excluding_categories, other_remarks, tags_badges,
-      live_on_platform, submitted_by, submitted_by_admin
+      live_on_platform, submitted_by, submitted_by_admin, status
     ];
 
     const result = await query(sql, values);
@@ -214,6 +215,70 @@ class Publication {
 
     const result = await query(sql, values);
     return result.rows.map(row => new Publication(row));
+  }
+
+  // Get count of publications
+  static async getCount(filters = {}, searchSql = '', searchValues = []) {
+    let sql = 'SELECT COUNT(*) as count FROM publications p LEFT JOIN groups g ON p.group_id = g.id WHERE 1=1';
+    const values = [];
+    let paramCount = 1;
+
+    if (filters.status) {
+      sql += ` AND p.status = $${paramCount}`;
+      values.push(filters.status);
+      paramCount++;
+    }
+
+    if (filters.is_active !== undefined) {
+      sql += ` AND p.is_active = $${paramCount}`;
+      values.push(filters.is_active);
+      paramCount++;
+    }
+
+    if (filters.live_on_platform !== undefined) {
+      sql += ` AND p.live_on_platform = $${paramCount}`;
+      values.push(filters.live_on_platform);
+      paramCount++;
+    }
+
+    if (filters.group_id) {
+      sql += ` AND p.group_id = $${paramCount}`;
+      values.push(filters.group_id);
+      paramCount++;
+    }
+
+    // Add search conditions
+    if (searchSql) {
+      sql += searchSql;
+      values.push(...searchValues);
+      paramCount += searchValues.length;
+    }
+
+    const result = await query(sql, values);
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get count of deleted publications
+  static async getDeletedCount(filters = {}, searchSql = '', searchValues = []) {
+    let sql = 'SELECT COUNT(*) as count FROM publications p LEFT JOIN groups g ON p.group_id = g.id WHERE p.is_active = false';
+    const values = [];
+    let paramCount = 1;
+
+    if (filters.group_id) {
+      sql += ` AND p.group_id = $${paramCount}`;
+      values.push(filters.group_id);
+      paramCount++;
+    }
+
+    // Add search conditions
+    if (searchSql) {
+      sql += searchSql;
+      values.push(...searchValues);
+      paramCount += searchValues.length;
+    }
+
+    const result = await query(sql, values);
+    return parseInt(result.rows[0].count);
   }
 
   // Update publication

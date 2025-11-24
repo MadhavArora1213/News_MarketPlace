@@ -6,23 +6,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/real-estates');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const uniqueSuffix = timestamp + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'real-estate-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 // File filter for images
 const fileFilter = (req, file, cb) => {

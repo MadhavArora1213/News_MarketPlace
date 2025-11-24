@@ -137,14 +137,14 @@ const ArticleSubmissionViewModal = ({ isOpen, onClose, submission }) => {
             <div style={{ marginTop: '8px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {submission.image1 && (
                 <img
-                  src={`/api/uploads/article-submissions/${submission.image1}`}
+                  src={submission.image1}
                   alt="Article Image 1"
                   style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '4px', border: '1px solid #ddd' }}
                 />
               )}
               {submission.image2 && (
                 <img
-                  src={`/api/uploads/article-submissions/${submission.image2}`}
+                  src={submission.image2}
                   alt="Article Image 2"
                   style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '4px', border: '1px solid #ddd' }}
                 />
@@ -1161,7 +1161,7 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
                   <div style={{ marginBottom: '8px' }}>
                     <strong>Current Image:</strong>
                     <img
-                      src={`/api/uploads/article-submissions/${submission.image1}`}
+                      src={submission.image1}
                       alt="Current primary image"
                       style={{ maxWidth: '200px', maxHeight: '120px', marginTop: '4px', borderRadius: '4px', border: '1px solid #ddd' }}
                     />
@@ -1204,7 +1204,7 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
                   <div style={{ marginBottom: '8px' }}>
                     <strong>Current Image:</strong>
                     <img
-                      src={`/api/uploads/article-submissions/${submission.image2}`}
+                      src={submission.image2}
                       alt="Current secondary image"
                       style={{ maxWidth: '200px', maxHeight: '120px', marginTop: '4px', borderRadius: '4px', border: '1px solid #ddd' }}
                     />

@@ -81,9 +81,9 @@ class BlogController {
       if (search) {
         whereClause = {
           ...whereClause,
-          [require('sequelize').Op.or]: [
-            { title: { [require('sequelize').Op.iLike]: `%${search}%` } },
-            { content: { [require('sequelize').Op.iLike]: `%${search}%` } }
+          $or: [
+            { title: { $iLike: `%${search}%` } },
+            { content: { $iLike: `%${search}%` } }
           ]
         };
       }

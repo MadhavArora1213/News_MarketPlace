@@ -392,7 +392,7 @@ const ArticlesPage = () => {
                         {article.image1 && (
                           <div className="mb-4">
                             <img
-                              src={`/api/uploads/article-submissions/${article.image1}`}
+                              src={article.image1}
                               alt={article.title}
                               className="w-full h-48 object-cover rounded-lg"
                             />

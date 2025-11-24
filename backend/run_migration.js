@@ -1,7 +1,5 @@
 require('dotenv').config();
 const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -9,18 +7,34 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
 async function runMigration() {
-  const migrationPath = path.join(__dirname, 'database/migrations/036_make_user_id_nullable_in_article_submissions.sql');
-  const sql = fs.readFileSync(migrationPath, 'utf8');
-
+  const client = await pool.connect();
   try {
-    await pool.query(sql);
-    console.log('Migration 036_make_user_id_nullable_in_article_submissions.sql executed successfully');
+    console.log('Running migration: Add approval columns to podcasters table');
+
+    const sql = `
+      -- Add approval-related columns to podcasters table
+      ALTER TABLE podcasters
+      ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP,
+      ADD COLUMN IF NOT EXISTS approved_by INTEGER REFERENCES admins(id),
+      ADD COLUMN IF NOT EXISTS rejected_at TIMESTAMP,
+      ADD COLUMN IF NOT EXISTS rejected_by INTEGER REFERENCES admins(id),
+      ADD COLUMN IF NOT EXISTS rejection_reason TEXT,
+      ADD COLUMN IF NOT EXISTS admin_comments TEXT;
+    `;
+
+    await client.query(sql);
+    console.log('✅ Migration completed successfully');
+
   } catch (error) {
-    console.error('Migration failed:', error);
+    console.error('❌ Migration failed:', error);
   } finally {
+    client.release();
     await pool.end();
   }
 }

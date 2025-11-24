@@ -92,6 +92,63 @@ class RecaptchaService {
     const assessment = await this.createAssessment(token, 'CONTACT_FORM', 0.5);
     return assessment.valid;
   }
+
+  /**
+   * Verify reCAPTCHA token and return score
+   * @param {string} token - reCAPTCHA token
+   * @returns {Promise<number|null>} Score or null if failed
+   */
+  async verifyRecaptcha(token) {
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const assessment = await this.createAssessment(token, 'CONTACT_FORM', 0.5);
+      return assessment.valid ? assessment.score : null;
+    } catch (error) {
+      console.error('reCAPTCHA verification error:', error);
+      return null;
+    }
+  }
+}
+
+/**
+ * Verify reCAPTCHA token using standard API
+ * @param {string} token - reCAPTCHA token
+ * @param {string} secretKey - reCAPTCHA secret key
+ * @returns {Promise<number|null>} Score or null if failed
+ */
+async function verifyRecaptcha(token, secretKey) {
+  if (!token || !secretKey) {
+    return null;
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        secret: secretKey,
+        response: token,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      return data.score || 1.0; // v2 doesn't have score, so assume 1.0
+    } else {
+      console.log('reCAPTCHA verification failed:', data['error-codes']);
+      return null;
+    }
+  } catch (error) {
+    console.error('reCAPTCHA API error:', error);
+    return null;
+  }
 }
 
 module.exports = new RecaptchaService();
+module.exports.verifyRecaptcha = verifyRecaptcha;

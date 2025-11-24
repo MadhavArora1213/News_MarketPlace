@@ -1919,7 +1919,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
               {podcaster?.image && (
                 <div style={{ marginBottom: '12px' }}>
                   <img
-                    src={`/api/uploads/podcasters/${podcaster.image}`}
+                    src={podcaster.image}
                     alt="Current podcast image"
                     style={{
                       width: '100px',

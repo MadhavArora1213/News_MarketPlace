@@ -159,9 +159,9 @@ const AdminDashboard = () => {
         usersRes,
         rolesRes
       ] = await Promise.allSettled([
-        api.get('/blogs/admin?page=1&limit=1'),
+        api.get('/blogs?page=1&limit=1'),
         api.get('/publications/admin?page=1&limit=1'),
-        api.get('/websites/admin?page=1&limit=1'),
+        api.get('/websites/?page=1&limit=1'),
         api.get('/podcasters/admin?page=1&limit=1'),
         api.get('/reporters/admin?page=1&limit=1'),
         api.get('/real-estates/admin?page=1&limit=1'),

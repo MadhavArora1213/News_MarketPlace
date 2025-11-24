@@ -35,11 +35,11 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
   });
 
   const [files, setFiles] = useState({
-    company_incorporation_trade_license: null,
-    tax_registration_document: null,
-    agency_bank_details: null,
-    agency_owner_passport: null,
-    agency_owner_photo: null
+    company_incorporation_trade_license: { file: null, url: '', uploading: false, error: '' },
+    tax_registration_document: { file: null, url: '', uploading: false, error: '' },
+    agency_bank_details: { file: null, url: '', uploading: false, error: '' },
+    agency_owner_passport: { file: null, url: '', uploading: false, error: '' },
+    agency_owner_photo: { file: null, url: '', uploading: false, error: '' }
   });
 
   const [loading, setLoading] = useState(false);
@@ -159,15 +159,64 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     }
   };
 
-  const handleFileChange = (e) => {
+  // Upload file to S3 immediately
+  const uploadFileToS3 = async (file, fieldName) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fieldName', fieldName);
+
+    try {
+      const response = await api.post('/agencies/upload-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      return response.data.url;
+    } catch (error) {
+      console.error(`Failed to upload ${fieldName}:`, error);
+      throw new Error(`Failed to upload ${fieldName}. Please try again.`);
+    }
+  };
+
+  const handleFileChange = async (e) => {
     const { name, files: fileList } = e.target;
+    const file = fileList[0];
+
+    if (!file) {
+      setFiles(prev => ({
+        ...prev,
+        [name]: { file: null, url: '', uploading: false, error: '' }
+      }));
+      return;
+    }
+
+    // Start uploading
     setFiles(prev => ({
       ...prev,
-      [name]: fileList[0] || null
+      [name]: { file, url: '', uploading: true, error: '' }
     }));
 
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+    try {
+      const url = await uploadFileToS3(file, name);
+      setFiles(prev => ({
+        ...prev,
+        [name]: { file, url, uploading: false, error: '' }
+      }));
+
+      // Clear any previous errors
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
+
+      console.log(`Successfully uploaded ${name} to S3: ${url}`);
+    } catch (error) {
+      setFiles(prev => ({
+        ...prev,
+        [name]: { file: null, url: '', uploading: false, error: error.message }
+      }));
+
+      setErrors(prev => ({ ...prev, [name]: error.message }));
     }
   };
 
@@ -213,11 +262,11 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
       newErrors.terms_accepted = 'You must accept the terms and conditions';
     }
 
-    // File validations (required)
+    // File validations (required) - check for uploaded URLs
     const requiredFiles = ['company_incorporation_trade_license', 'tax_registration_document', 'agency_bank_details', 'agency_owner_passport', 'agency_owner_photo'];
     requiredFiles.forEach(field => {
-      if (!files[field]) {
-        newErrors[field] = 'This file is required';
+      if (!files[field].url) {
+        newErrors[field] = 'This file is required and must be uploaded successfully';
       }
     });
 
@@ -249,29 +298,20 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     setSubmitStatus(null);
 
     try {
-      const submitData = new FormData();
+      // Prepare data with file URLs
+      const submitData = {
+        ...formData,
+        recaptchaToken: recaptchaToken
+      };
 
-      // Add form data
-      Object.keys(formData).forEach(key => {
-        submitData.append(key, formData[key]);
-      });
-
-      // Add files
+      // Add file URLs
       Object.keys(files).forEach(key => {
-        if (files[key]) {
-          submitData.append(key, files[key]);
+        if (files[key].url) {
+          submitData[key] = files[key].url;
         }
       });
 
-      submitData.append('recaptchaToken', recaptchaToken);
-
-      // Country codes removed as we only need email OTP
-
-      await api.post('/agencies/register', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await api.post('/agencies/register', submitData);
 
       setSubmitStatus('success');
       setTimeout(() => {
@@ -287,13 +327,26 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
       if (error.response?.status === 429) {
         errorMessage = error.response.data.message || 'Rate limit exceeded. Please try again later.';
       } else if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        // Use the specific error message from backend if available
+        errorMessage = error.response.data.message || error.response.data.error || 'Please check your input and try again.';
+
+        // Handle validation errors
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
             validationErrors[detail.path] = detail.msg;
           });
           setErrors(validationErrors);
+        }
+
+        // Show toast notification with specific error
+        if (typeof window !== 'undefined' && window.alert) {
+          window.alert(`Registration failed: ${errorMessage}`);
+        }
+      } else if (error.response?.status === 500) {
+        errorMessage = error.response.data.message || 'Server error occurred. Please try again later.';
+        if (typeof window !== 'undefined' && window.alert) {
+          window.alert(`Server error: ${errorMessage}`);
         }
       }
 
@@ -909,7 +962,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={fileInputStyle}
                 accept=".pdf,.jpg,.jpeg,.png"
                 required
+                disabled={files.company_incorporation_trade_license.uploading}
               />
+              {files.company_incorporation_trade_license.uploading && (
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+              )}
+              {files.company_incorporation_trade_license.url && (
+                <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
+              )}
               {errors.company_incorporation_trade_license && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.company_incorporation_trade_license}</div>}
             </div>
 
@@ -924,7 +984,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={fileInputStyle}
                 accept=".pdf,.jpg,.jpeg,.png"
                 required
+                disabled={files.tax_registration_document.uploading}
               />
+              {files.tax_registration_document.uploading && (
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+              )}
+              {files.tax_registration_document.url && (
+                <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
+              )}
               {errors.tax_registration_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.tax_registration_document}</div>}
             </div>
 
@@ -939,7 +1006,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={fileInputStyle}
                 accept=".pdf,.jpg,.jpeg,.png"
                 required
+                disabled={files.agency_bank_details.uploading}
               />
+              {files.agency_bank_details.uploading && (
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+              )}
+              {files.agency_bank_details.url && (
+                <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
+              )}
               {errors.agency_bank_details && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_bank_details}</div>}
             </div>
 
@@ -954,7 +1028,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={fileInputStyle}
                 accept=".pdf,.jpg,.jpeg,.png"
                 required
+                disabled={files.agency_owner_passport.uploading}
               />
+              {files.agency_owner_passport.uploading && (
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+              )}
+              {files.agency_owner_passport.url && (
+                <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
+              )}
               {errors.agency_owner_passport && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_owner_passport}</div>}
             </div>
 
@@ -969,7 +1050,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={fileInputStyle}
                 accept=".jpg,.jpeg,.png"
                 required
+                disabled={files.agency_owner_photo.uploading}
               />
+              {files.agency_owner_photo.uploading && (
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+              )}
+              {files.agency_owner_photo.url && (
+                <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
+              )}
               {errors.agency_owner_photo && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_owner_photo}</div>}
             </div>
           </div>

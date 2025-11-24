@@ -507,7 +507,7 @@ const ArticleDetailPage = () => {
                   style={{ marginBottom: '32px' }}
                 >
                   <img
-                    src={`/api/uploads/article-submissions/${article.image1}`}
+                    src={article.image1}
                     alt={article.title}
                     style={{
                       width: '100%',
@@ -718,7 +718,7 @@ const ArticleDetailPage = () => {
                   style={{ marginBottom: '32px' }}
                 >
                   <img
-                    src={`/api/uploads/article-submissions/${article.image2}`}
+                    src={article.image2}
                     alt={`${article.title} - secondary`}
                     style={{
                       width: '100%',

@@ -2,6 +2,7 @@ const Publication = require('../models/Publication');
 const BulkOperations = require('../utils/bulkOperations');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
+const s3Service = require('../services/s3Service');
 const User = require('../models/User');
 const UserNotification = require('../models/UserNotification');
 const multer = require('multer');
@@ -186,13 +187,18 @@ class PublicationController {
 
       const offset = (page - 1) * limit;
       let publications;
+      let totalCount;
 
       if (req.admin && show_deleted === 'true') {
         // Show deleted publications for admins
         publications = await Publication.getDeleted(filters, searchSql, searchValues, limit, offset);
+        // Get total count for deleted publications
+        totalCount = await Publication.getDeletedCount(filters, searchSql, searchValues);
       } else {
         // Show active publications
         publications = await Publication.findAll(filters, searchSql, searchValues, limit, offset);
+        // Get total count for active publications
+        totalCount = await Publication.getCount(filters, searchSql, searchValues);
       }
 
       res.json({
@@ -200,7 +206,8 @@ class PublicationController {
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          total: publications.length // This should be improved with a count query
+          total: totalCount,
+          pages: Math.ceil(totalCount / limit)
         }
       });
     } catch (error) {
@@ -931,15 +938,7 @@ class PublicationController {
     }
 
     const upload = multer({
-      storage: multer.diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, path.join(__dirname, '../../uploads'));
-        },
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-          cb(null, 'bulk-upload-' + uniqueSuffix + path.extname(file.originalname));
-        }
-      }),
+      storage: multer.memoryStorage(),
       limits: {
         fileSize: 10 * 1024 * 1024, // 10MB limit
       },
@@ -969,14 +968,14 @@ class PublicationController {
           return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const filePath = req.file.path;
+        const fileBuffer = req.file.buffer;
         const mimetype = req.file.mimetype;
+        const originalFilename = req.file.originalname;
 
-        // Parse the file
-        const rawData = await BulkOperations.parseFile(filePath, mimetype);
+        // Parse the file from buffer
+        const rawData = await BulkOperations.parseFileFromBuffer(fileBuffer, mimetype);
 
         if (!rawData || rawData.length === 0) {
-          BulkOperations.cleanupFile(filePath);
           return res.status(400).json({ error: 'File is empty or contains no valid data' });
         }
 
@@ -1043,7 +1042,6 @@ class PublicationController {
           console.log('Validation errors found, returning 400');
           console.log('Group errors:', groupValidationErrors.length);
           console.log('Publication errors:', publicationValidationErrors.length);
-          BulkOperations.cleanupFile(filePath);
           return res.status(400).json({
             error: 'Validation failed for some records',
             groupValidationErrors: groupValidationErrors,
@@ -1156,11 +1154,6 @@ class PublicationController {
 
       } catch (error) {
         console.error('Bulk upload error:', error);
-
-        // Clean up file if it exists
-        if (req.file && req.file.path) {
-          BulkOperations.cleanupFile(req.file.path);
-        }
 
         res.status(500).json({
           error: 'Bulk upload failed',

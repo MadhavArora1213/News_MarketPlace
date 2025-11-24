@@ -428,7 +428,7 @@ const RealEstateList = () => {
                         <div className="relative aspect-video bg-[#E0E0E0]">
                           {realEstate.images && realEstate.images.length > 0 ? (
                             <img
-                              src={`/api/uploads/real-estates/${realEstate.images[0]}`}
+                              src={realEstate.images[0]}
                               alt={realEstate.title}
                               className="w-full h-full object-cover"
                             />
@@ -554,7 +554,7 @@ const RealEstateList = () => {
                       <div className="relative aspect-video bg-[#E0E0E0]">
                         {realEstate.images && realEstate.images.length > 0 ? (
                           <img
-                            src={`/api/uploads/real-estates/${realEstate.images[0]}`}
+                            src={realEstate.images[0]}
                             alt={realEstate.title}
                             className="w-full h-full object-cover"
                           />

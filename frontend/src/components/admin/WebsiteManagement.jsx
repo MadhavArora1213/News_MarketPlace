@@ -43,7 +43,7 @@ const WebsiteDetailsModal = ({ isOpen, onClose, website }) => {
   };
 
   const getDocumentUrl = (filename) => {
-    return filename ? `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}/uploads/websites/${filename}` : null;
+    return filename || null;
   };
 
   return (

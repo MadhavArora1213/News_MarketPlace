@@ -16,9 +16,33 @@ class BulkOperations {
     });
   }
 
+  // Parse CSV from buffer
+  static parseCSVFromBuffer(buffer) {
+    return new Promise((resolve, reject) => {
+      const results = [];
+      const stream = require('stream');
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(buffer);
+
+      bufferStream
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => resolve(results))
+        .on('error', reject);
+    });
+  }
+
   // Parse Excel file
   static parseExcel(filePath) {
     const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    return xlsx.utils.sheet_to_json(worksheet);
+  }
+
+  // Parse Excel from buffer
+  static parseExcelFromBuffer(buffer) {
+    const workbook = xlsx.read(buffer);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     return xlsx.utils.sheet_to_json(worksheet);
@@ -32,6 +56,22 @@ class BulkOperations {
       } else if (mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
                  mimetype === 'application/vnd.ms-excel') {
         return this.parseExcel(filePath);
+      } else {
+        throw new Error('Unsupported file type. Only CSV and Excel files are supported.');
+      }
+    } catch (error) {
+      throw new Error(`File parsing error: ${error.message}`);
+    }
+  }
+
+  // Parse uploaded file from buffer (CSV or Excel)
+  static async parseFileFromBuffer(buffer, mimetype) {
+    try {
+      if (mimetype === 'text/csv' || mimetype === 'application/csv') {
+        return await this.parseCSVFromBuffer(buffer);
+      } else if (mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                 mimetype === 'application/vnd.ms-excel') {
+        return this.parseExcelFromBuffer(buffer);
       } else {
         throw new Error('Unsupported file type. Only CSV and Excel files are supported.');
       }

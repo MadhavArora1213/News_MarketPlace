@@ -245,7 +245,7 @@ const PodcastersList = () => {
                       <div className="relative aspect-video bg-[#E0E0E0]">
                         {podcaster.image ? (
                           <img
-                            src={`/api/uploads/podcasters/${podcaster.image}`}
+                            src={podcaster.image}
                             alt={podcaster.podcast_name}
                             className="w-full h-full object-cover"
                           />
@@ -376,7 +376,7 @@ const PodcastersList = () => {
                     <div className="relative aspect-video bg-[#E0E0E0]">
                       {podcaster.image ? (
                         <img
-                          src={`/api/uploads/podcasters/${podcaster.image}`}
+                          src={podcaster.image}
                           alt={podcaster.podcast_name}
                           className="w-full h-full object-cover"
                         />

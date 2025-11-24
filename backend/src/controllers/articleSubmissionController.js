@@ -2,6 +2,7 @@ const ArticleSubmission = require('../models/ArticleSubmission');
 const Publication = require('../models/Publication');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
+const s3Service = require('../services/s3Service');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -9,30 +10,22 @@ const { query } = require('../config/database');
 
 console.log('ArticleSubmissionController loaded - UPDATED VERSION');
 
-// Helper function to delete image file
-const deleteImageFile = (filename) => {
-  if (!filename) return;
-  const filePath = path.join(__dirname, '../../uploads/article-submissions', filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-    console.log(`Deleted image file: ${filename}`);
+// Helper function to delete image file from S3
+const deleteImageFile = async (imageUrl) => {
+  if (!imageUrl) return;
+  try {
+    const s3Key = s3Service.extractKeyFromUrl(imageUrl);
+    if (s3Key) {
+      await s3Service.deleteFile(s3Key);
+      console.log(`Deleted image file from S3: ${s3Key}`);
+    }
+  } catch (error) {
+    console.error('Failed to delete image from S3:', error);
   }
 };
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/article-submissions');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'article-submission-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -143,18 +136,36 @@ class ArticleSubmissionController {
         });
       }
 
-      // Handle image uploads
+      // Handle image uploads to S3
       let image1 = null;
       let image2 = null;
 
       if (req.files && req.files.image1 && req.files.image1[0]) {
-        image1 = req.files.image1[0].filename;
-        // TODO: Validate landscape orientation
+        const file = req.files.image1[0];
+        const s3Key = s3Service.generateKey('article-submissions', 'image1', file.originalname);
+        const contentType = s3Service.getContentType(file.originalname);
+
+        try {
+          image1 = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+          // TODO: Validate landscape orientation
+        } catch (uploadError) {
+          console.error('Failed to upload image1 to S3:', uploadError);
+          throw new Error('Failed to upload image1');
+        }
       }
 
       if (req.files && req.files.image2 && req.files.image2[0]) {
-        image2 = req.files.image2[0].filename;
-        // TODO: Validate landscape orientation
+        const file = req.files.image2[0];
+        const s3Key = s3Service.generateKey('article-submissions', 'image2', file.originalname);
+        const contentType = s3Service.getContentType(file.originalname);
+
+        try {
+          image2 = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+          // TODO: Validate landscape orientation
+        } catch (uploadError) {
+          console.error('Failed to upload image2 to S3:', uploadError);
+          throw new Error('Failed to upload image2');
+        }
       }
 
       const submissionData = {
@@ -310,13 +321,38 @@ class ArticleSubmissionController {
       if (req.files && req.files.image1 && req.files.image1[0]) {
         // New image uploaded - delete old one if exists
         if (submission.image1) {
-          deleteImageFile(submission.image1);
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(submission.image1);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error('Failed to delete old image1 from S3:', deleteError);
+            // Continue with the update even if old image deletion fails
+          }
         }
-        updateData.image1 = req.files.image1[0].filename;
+        const file = req.files.image1[0];
+        const s3Key = s3Service.generateKey('article-submissions', 'image1', file.originalname);
+        const contentType = s3Service.getContentType(file.originalname);
+
+        try {
+          updateData.image1 = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+        } catch (uploadError) {
+          console.error('Failed to upload new image1 to S3:', uploadError);
+          throw new Error('Failed to upload image1');
+        }
       } else if (delete_image1 === 'true' || delete_image1 === true) {
         // Explicitly delete image1
         if (submission.image1) {
-          deleteImageFile(submission.image1);
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(submission.image1);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error('Failed to delete image1 from S3:', deleteError);
+            // Continue with the update even if deletion fails
+          }
         }
         updateData.image1 = null;
       }
@@ -325,13 +361,38 @@ class ArticleSubmissionController {
       if (req.files && req.files.image2 && req.files.image2[0]) {
         // New image uploaded - delete old one if exists
         if (submission.image2) {
-          deleteImageFile(submission.image2);
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(submission.image2);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error('Failed to delete old image2 from S3:', deleteError);
+            // Continue with the update even if old image deletion fails
+          }
         }
-        updateData.image2 = req.files.image2[0].filename;
+        const file = req.files.image2[0];
+        const s3Key = s3Service.generateKey('article-submissions', 'image2', file.originalname);
+        const contentType = s3Service.getContentType(file.originalname);
+
+        try {
+          updateData.image2 = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+        } catch (uploadError) {
+          console.error('Failed to upload new image2 to S3:', uploadError);
+          throw new Error('Failed to upload image2');
+        }
       } else if (delete_image2 === 'true' || delete_image2 === true) {
         // Explicitly delete image2
         if (submission.image2) {
-          deleteImageFile(submission.image2);
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(submission.image2);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error('Failed to delete image2 from S3:', deleteError);
+            // Continue with the update even if deletion fails
+          }
         }
         updateData.image2 = null;
       }
@@ -384,6 +445,14 @@ class ArticleSubmissionController {
 
       if (!submission) {
         return res.status(404).json({ error: 'Article submission not found' });
+      }
+
+      // Delete associated images from S3
+      if (submission.image1) {
+        await deleteImageFile(submission.image1);
+      }
+      if (submission.image2) {
+        await deleteImageFile(submission.image2);
       }
 
       await submission.delete();

@@ -1,6 +1,7 @@
 const Podcaster = require('../models/Podcaster');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
+const s3Service = require('../services/s3Service');
 const User = require('../models/User');
 const UserNotification = require('../models/UserNotification');
 const { body, validationResult } = require('express-validator');
@@ -8,23 +9,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/podcasters');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const uniqueSuffix = timestamp + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'podcaster-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 // File filter for images
 const fileFilter = (req, file, cb) => {
@@ -138,45 +124,101 @@ class PodcasterController {
     body('status').optional().isIn(['pending', 'approved', 'rejected']).withMessage('Invalid status')
   ];
 
+  // Upload single file to S3
+  async uploadFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const { fieldName } = req.body;
+      if (!fieldName) {
+        return res.status(400).json({ error: 'Field name is required' });
+      }
+
+      console.log(`Uploading podcaster file for field: ${fieldName}, size: ${req.file.size}`);
+
+      const s3Key = s3Service.generateKey('podcasters', fieldName, req.file.originalname);
+      const contentType = s3Service.getContentType(req.file.originalname);
+
+      const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
+
+      console.log(`Successfully uploaded podcaster ${fieldName} to S3: ${s3Url}`);
+
+      res.json({
+        success: true,
+        url: s3Url,
+        fieldName: fieldName
+      });
+    } catch (error) {
+      console.error('Podcaster file upload error:', error);
+      res.status(500).json({ error: 'Failed to upload file' });
+    }
+  }
+
   // Create a new podcaster submission
   async create(req, res) {
     try {
+      console.log('Podcaster creation request received');
+      console.log('Request body keys:', Object.keys(req.body));
+      console.log('Request file:', req.file ? `Size: ${req.file.size}, Type: ${req.file.mimetype}` : 'No file');
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
         return res.status(400).json({
           error: 'Validation failed',
-          details: errors.array()
+          details: errors.array(),
+          message: 'Please check your input and try again.'
         });
       }
 
+      console.log('Validation passed');
+
       // Verify reCAPTCHA for user submissions
       if (req.user && req.body.recaptchaToken) {
+        console.log('Verifying reCAPTCHA for user submission');
         const recaptchaScore = await verifyRecaptcha(req.body.recaptchaToken);
         if (recaptchaScore === null || recaptchaScore < 0.5) {
+          console.log('reCAPTCHA verification failed');
           return res.status(400).json({
             error: 'reCAPTCHA verification failed',
             message: 'Please complete the reCAPTCHA verification'
           });
         }
+        console.log('reCAPTCHA verification passed');
       }
 
       const podcasterData = { ...req.body };
+      console.log('Processing podcaster data');
 
       // Convert numeric fields from strings to numbers
       if (podcasterData.podcast_ig_followers && podcasterData.podcast_ig_followers !== '') {
         podcasterData.podcast_ig_followers = parseInt(podcasterData.podcast_ig_followers, 10);
+        console.log('Converted followers to number:', podcasterData.podcast_ig_followers);
       } else if (podcasterData.podcast_ig_followers === '') {
         delete podcasterData.podcast_ig_followers;
       }
       if (podcasterData.podcast_ig_engagement_rate && podcasterData.podcast_ig_engagement_rate !== '') {
         podcasterData.podcast_ig_engagement_rate = parseFloat(podcasterData.podcast_ig_engagement_rate);
+        console.log('Converted engagement rate to number:', podcasterData.podcast_ig_engagement_rate);
       } else if (podcasterData.podcast_ig_engagement_rate === '') {
         delete podcasterData.podcast_ig_engagement_rate;
       }
 
-      // Handle image upload
+      // Handle image upload to S3 if file is provided
       if (req.file) {
-        podcasterData.image = req.file.filename;
+        const s3Key = s3Service.generateKey('podcasters', 'image', req.file.originalname);
+        const contentType = s3Service.getContentType(req.file.originalname);
+
+        try {
+          const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
+          podcasterData.image = s3Url;
+          console.log('Successfully uploaded podcaster image to S3:', s3Url);
+        } catch (uploadError) {
+          console.error('Failed to upload podcaster image to S3:', uploadError);
+          throw new Error('Failed to upload image');
+        }
       }
 
       // Remove recaptchaToken from data before saving
@@ -187,14 +229,36 @@ class PodcasterController {
       podcasterData.submitted_by_admin = req.admin?.adminId;
       podcasterData.status = req.user ? 'pending' : (podcasterData.status || 'pending');
 
+      console.log('Creating podcaster in database');
       const podcaster = await Podcaster.create(podcasterData);
+      console.log('Podcaster created successfully with ID:', podcaster.id);
+
+      // Log user action (only for regular users, not admins)
+      if (req.user?.userId) {
+        try {
+          const { query } = require('../config/database');
+          await query(
+            'INSERT INTO user_actions (user_id, action, created_at) VALUES ($1, $2, NOW())',
+            [req.user.userId, `Created podcaster profile: ${podcaster.podcast_name}`]
+          );
+          console.log('User action logged successfully');
+        } catch (logError) {
+          console.error('Failed to log user action:', logError);
+          // Don't fail the request if logging fails
+        }
+      }
+
       res.status(201).json({
         message: req.user ? 'Podcaster profile submitted successfully and is pending review' : 'Podcaster profile created successfully',
         podcaster: podcaster.toJSON()
       });
     } catch (error) {
       console.error('Create podcaster error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        error: 'Registration failed',
+        message: error.message || 'An unexpected error occurred during podcaster registration.'
+      });
     }
   }
 
@@ -487,15 +551,30 @@ class PodcasterController {
         delete updateData.podcast_ig_engagement_rate;
       }
 
-      // Handle image upload
+      // Handle image upload to S3
       if (req.file) {
-        updateData.image = req.file.filename;
-        // Optionally delete old image
-        if (podcaster.image) {
-          const oldImagePath = path.join(__dirname, '../../uploads/podcasters', podcaster.image);
-          if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
+        const s3Key = s3Service.generateKey('podcasters', 'image', req.file.originalname);
+        const contentType = s3Service.getContentType(req.file.originalname);
+
+        try {
+          const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
+          updateData.image = s3Url;
+
+          // Delete old image from S3 if it exists
+          if (podcaster.image) {
+            try {
+              const oldS3Key = s3Service.extractKeyFromUrl(podcaster.image);
+              if (oldS3Key) {
+                await s3Service.deleteFile(oldS3Key);
+              }
+            } catch (deleteError) {
+              console.error('Failed to delete old podcaster image from S3:', deleteError);
+              // Continue with the update even if old image deletion fails
+            }
           }
+        } catch (uploadError) {
+          console.error('Failed to upload new podcaster image to S3:', uploadError);
+          throw new Error('Failed to upload image');
         }
       }
 
@@ -527,6 +606,19 @@ class PodcasterController {
         }
         if (podcaster.status !== 'pending') {
           return res.status(400).json({ error: 'Cannot delete approved or rejected submissions' });
+        }
+      }
+
+      // Delete associated image from S3
+      if (podcaster.image) {
+        try {
+          const s3Key = s3Service.extractKeyFromUrl(podcaster.image);
+          if (s3Key) {
+            await s3Service.deleteFile(s3Key);
+          }
+        } catch (deleteError) {
+          console.error('Failed to delete podcaster image from S3:', deleteError);
+          // Continue with deletion even if S3 deletion fails
         }
       }
 

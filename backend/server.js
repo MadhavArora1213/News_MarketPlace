@@ -113,8 +113,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-// Static file serving for uploads
-app.use('/api/uploads', express.static('uploads'));
+// Static file serving removed - all files now served from S3
 
 // Test route (moved to top)
 app.get('/api/test', (req, res) => {

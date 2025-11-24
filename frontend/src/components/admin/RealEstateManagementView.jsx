@@ -1652,7 +1652,7 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                     {existingImages.map((imageName, index) => (
                       <div key={index} style={{ position: 'relative' }}>
                         <img
-                          src={`/api/uploads/real-estates/${imageName}`}
+                          src={imageName}
                           alt={`Existing ${index + 1}`}
                           style={{
                             width: '100%',
@@ -1662,12 +1662,12 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                             border: `1px solid ${theme.borderLight}`
                           }}
                           onError={(e) => {
-                            console.error('Image failed to load:', `/api/uploads/real-estates/${imageName}`);
+                            console.error('Image failed to load:', imageName);
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                           onLoad={() => {
-                            console.log('Image loaded successfully:', `/api/uploads/real-estates/${imageName}`);
+                            console.log('Image loaded successfully:', imageName);
                           }}
                         />
                         <div

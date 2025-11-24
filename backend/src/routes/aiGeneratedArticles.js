@@ -5,20 +5,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for file uploads (same as in controller)
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/ai-articles');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'ai-article-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for file uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,

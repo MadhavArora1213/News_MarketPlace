@@ -1,6 +1,8 @@
 const Agency = require('../models/Agency');
 const emailService = require('../services/emailService');
 const otpService = require('../services/otpService');
+const s3Service = require('../services/s3Service');
+const { verifyRecaptcha } = require('../services/recaptchaService');
 const { body, validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
@@ -8,22 +10,8 @@ const fs = require('fs');
 
 // Removed pending agencies storage as agencies are created immediately
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/agencies');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for file uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
@@ -60,6 +48,7 @@ class AgencyController {
     body('agency_ig').optional().isURL().withMessage('Valid Instagram URL is required'),
     body('agency_linkedin').optional().isURL().withMessage('Valid LinkedIn URL is required'),
     body('agency_facebook').optional().isURL().withMessage('Valid Facebook URL is required'),
+    body('recaptchaToken').optional().isLength({ min: 1 }).withMessage('reCAPTCHA token is required'),
   ];
 
   otpValidation = [
@@ -74,36 +63,77 @@ class AgencyController {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
+  // Upload single file to S3
+  async uploadFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const { fieldName } = req.body;
+      if (!fieldName) {
+        return res.status(400).json({ error: 'Field name is required' });
+      }
+
+      console.log(`Uploading file for field: ${fieldName}, size: ${req.file.size}`);
+
+      const s3Key = s3Service.generateKey('agencies', fieldName, req.file.originalname);
+      const contentType = s3Service.getContentType(req.file.originalname);
+
+      const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
+
+      console.log(`Successfully uploaded ${fieldName} to S3: ${s3Url}`);
+
+      res.json({
+        success: true,
+        url: s3Url,
+        fieldName: fieldName
+      });
+    } catch (error) {
+      console.error('File upload error:', error);
+      res.status(500).json({ error: 'Failed to upload file' });
+    }
+  }
+
   // Register agency
   async registerAgency(req, res) {
     try {
+      console.log('Agency registration request received');
+      console.log('Request body keys:', Object.keys(req.body));
+      console.log('Request files:', req.files ? Object.keys(req.files) : 'No files');
+
       // Check validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
         return res.status(400).json({
           error: 'Validation failed',
-          details: errors.array()
+          details: errors.array(),
+          message: 'Please check your input and try again.'
         });
       }
 
+      console.log('Validation passed');
+
+      // Verify reCAPTCHA
+      // Temporarily disabled for testing
+      // const recaptchaScore = await verifyRecaptcha(req.body.recaptchaToken, process.env.RECAPTCHA_SECRET_KEY);
+      // if (recaptchaScore === null || recaptchaScore < 0.5) {
+      //   return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+      // }
+
       const agencyData = req.body;
+      console.log('Processing agency data');
 
       // Parse numeric fields
       if (agencyData.agency_founded_year) {
         agencyData.agency_founded_year = parseInt(agencyData.agency_founded_year, 10);
+        console.log('Parsed founded year:', agencyData.agency_founded_year);
       }
 
-      // Handle file uploads
-      const uploadedFiles = {};
-      if (req.files) {
-        Object.keys(req.files).forEach(fieldName => {
-          if (req.files[fieldName] && req.files[fieldName][0]) {
-            uploadedFiles[fieldName] = req.files[fieldName][0].filename;
-          }
-        });
-      }
+      console.log('Files should already be uploaded to S3');
 
-      // Map file fields to database fields
+      // Map file URL fields to database fields (URLs are already provided in request body)
       const fileMappings = {
         'company_incorporation_trade_license': 'agency_document_incorporation_trade_license',
         'tax_registration_document': 'agency_document_tax_registration',
@@ -113,8 +143,9 @@ class AgencyController {
       };
 
       Object.keys(fileMappings).forEach(formField => {
-        if (uploadedFiles[formField]) {
-          agencyData[fileMappings[formField]] = uploadedFiles[formField];
+        if (agencyData[formField]) {
+          agencyData[fileMappings[formField]] = agencyData[formField];
+          delete agencyData[formField];
         }
       });
 
@@ -130,16 +161,26 @@ class AgencyController {
         }
       });
 
+      // Remove recaptchaToken from data as it's not stored
+      delete agencyData.recaptchaToken;
+
       // Check if agency with this email already exists
+      console.log('Checking for existing agency with email:', agencyData.agency_email);
       const existingAgency = await Agency.findAll().then(agencies =>
         agencies.find(agency => agency.agency_email === agencyData.agency_email)
       );
       if (existingAgency) {
-        return res.status(400).json({ error: 'Agency with this email already exists' });
+        console.log('Agency with this email already exists');
+        return res.status(400).json({
+          error: 'Agency with this email already exists',
+          message: 'An agency with this email address is already registered.'
+        });
       }
 
+      console.log('Creating agency in database');
       // Create agency in database
       const agency = await Agency.create(agencyData);
+      console.log('Agency created successfully with ID:', agency.id);
 
       res.status(201).json({
         message: 'Agency registered successfully',
@@ -147,7 +188,11 @@ class AgencyController {
       });
     } catch (error) {
       console.error('Agency registration error:', error);
-      res.status(500).json({ error: error.message });
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        error: 'Registration failed',
+        message: error.message || 'An unexpected error occurred during registration.'
+      });
     }
   }
 

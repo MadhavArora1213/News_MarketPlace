@@ -37,7 +37,7 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
     message: ''
   });
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState({ file: null, url: '', uploading: false, error: '' });
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const [errors, setErrors] = useState({});
@@ -132,12 +132,50 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+  // Upload file to S3 immediately
+  const uploadFileToS3 = async (file, fieldName) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fieldName', fieldName);
 
-    if (errors.image) {
-      setErrors(prev => ({ ...prev, image: '' }));
+    try {
+      const response = await api.post('/podcasters/upload-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      return response.data.url;
+    } catch (error) {
+      console.error(`Failed to upload ${fieldName}:`, error);
+      throw new Error(`Failed to upload ${fieldName}. Please try again.`);
+    }
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      setImage({ file: null, url: '', uploading: false, error: '' });
+      return;
+    }
+
+    // Start uploading
+    setImage({ file, url: '', uploading: true, error: '' });
+
+    try {
+      const url = await uploadFileToS3(file, 'image');
+      setImage({ file, url, uploading: false, error: '' });
+
+      // Clear any previous errors
+      if (errors.image) {
+        setErrors(prev => ({ ...prev, image: '' }));
+      }
+
+      console.log(`Successfully uploaded podcaster image to S3: ${url}`);
+    } catch (error) {
+      setImage({ file: null, url: '', uploading: false, error: error.message });
+      setErrors(prev => ({ ...prev, image: error.message }));
     }
   };
 
@@ -187,6 +225,11 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
       newErrors.message = 'Message cannot exceed 500 characters';
     }
 
+    // Image validation (optional but if provided, must be uploaded successfully)
+    if (image.file && !image.url) {
+      newErrors.image = 'Please wait for the image to finish uploading';
+    }
+
     // reCAPTCHA
     if (!recaptchaToken) {
       newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
@@ -219,25 +262,18 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
     setSubmitStatus(null);
 
     try {
-      const submitData = new FormData();
+      // Prepare data with image URL
+      const submitData = {
+        ...formData,
+        recaptchaToken: recaptchaToken
+      };
 
-      // Add form data
-      Object.keys(formData).forEach(key => {
-        submitData.append(key, formData[key]);
-      });
-
-      // Add image
-      if (image) {
-        submitData.append('image', image);
+      // Add image URL if uploaded
+      if (image.url) {
+        submitData.image = image.url;
       }
 
-      submitData.append('recaptchaToken', recaptchaToken);
-
-      await api.post('/podcasters', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await api.post('/podcasters', submitData);
 
       setSubmitStatus('success');
       setTimeout(() => {
@@ -257,13 +293,26 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
       } else if (error.response?.status === 429) {
         errorMessage = error.response.data.message || 'Rate limit exceeded. Please try again later.';
       } else if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        // Use the specific error message from backend if available
+        errorMessage = error.response.data.message || error.response.data.error || 'Please check your input and try again.';
+
+        // Handle validation errors
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
             validationErrors[detail.path] = detail.msg;
           });
           setErrors(validationErrors);
+        }
+
+        // Show toast notification with specific error
+        if (typeof window !== 'undefined' && window.alert) {
+          window.alert(`Podcaster submission failed: ${errorMessage}`);
+        }
+      } else if (error.response?.status === 500) {
+        errorMessage = error.response.data.message || 'Server error occurred. Please try again later.';
+        if (typeof window !== 'undefined' && window.alert) {
+          window.alert(`Server error: ${errorMessage}`);
         }
       }
 
@@ -718,7 +767,14 @@ const PodcasterSubmissionForm = ({ onClose, onSuccess }) => {
                   onChange={handleImageChange}
                   style={fileInputStyle}
                   accept="image/*"
+                  disabled={image.uploading}
                 />
+                {image.uploading && (
+                  <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                )}
+                {image.url && (
+                  <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ Image uploaded successfully</div>
+                )}
                 {errors.image && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.image}</div>}
               </div>
             </div>

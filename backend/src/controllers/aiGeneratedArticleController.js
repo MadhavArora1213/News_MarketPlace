@@ -3,6 +3,7 @@ const Publication = require('../models/Publication');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const aiService = require('../services/aiService');
+const s3Service = require('../services/s3Service');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -10,30 +11,22 @@ const { query } = require('../config/database');
 
 console.log('AiGeneratedArticleController loaded');
 
-// Helper function to delete uploaded file
-const deleteUploadedFile = (filename) => {
-  if (!filename) return;
-  const filePath = path.join(__dirname, '../../uploads/ai-articles', filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-    console.log(`Deleted uploaded file: ${filename}`);
+// Helper function to delete uploaded file from S3
+const deleteUploadedFile = async (fileUrl) => {
+  if (!fileUrl) return;
+  try {
+    const s3Key = s3Service.extractKeyFromUrl(fileUrl);
+    if (s3Key) {
+      await s3Service.deleteFile(s3Key);
+      console.log(`Deleted uploaded file from S3: ${s3Key}`);
+    }
+  } catch (error) {
+    console.error('Failed to delete uploaded file from S3:', error);
   }
 };
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/ai-articles');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'ai-article-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for file uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -139,10 +132,18 @@ class AiGeneratedArticleController {
         return res.status(404).json({ error: 'Publication not found' });
       }
 
-      // Handle file upload
+      // Handle file upload to S3
       let uploadedFilePath = null;
       if (req.file) {
-        uploadedFilePath = req.file.filename;
+        const s3Key = s3Service.generateKey('ai-articles', 'uploaded-file', req.file.originalname);
+        const contentType = s3Service.getContentType(req.file.originalname);
+
+        try {
+          uploadedFilePath = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
+        } catch (uploadError) {
+          console.error('Failed to upload file to S3:', uploadError);
+          throw new Error('Failed to upload file');
+        }
       }
 
       // Create the AI generated article record

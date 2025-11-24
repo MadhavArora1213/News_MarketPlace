@@ -3,6 +3,7 @@ const User = require('../models/User');
 const emailService = require('../services/emailService');
 const otpService = require('../services/otpService');
 const recaptchaService = require('../services/recaptchaService');
+const s3Service = require('../services/s3Service');
 const { body, validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
@@ -12,23 +13,8 @@ const { query } = require('../config/database');
 // In-memory storage for pending website registrations
 const pendingWebsites = new Map();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/websites');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const uniqueSuffix = timestamp + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for file uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
@@ -147,14 +133,24 @@ class WebsiteController {
         return res.status(401).json({ error: 'User authentication required' });
       }
 
-      // Handle file uploads
-      const uploadedFiles = {};
+      // Handle file uploads to S3
+      const uploadedFileUrls = {};
       if (req.files) {
-        Object.keys(req.files).forEach(fieldName => {
+        for (const fieldName of Object.keys(req.files)) {
           if (req.files[fieldName] && req.files[fieldName][0]) {
-            uploadedFiles[fieldName] = req.files[fieldName][0].filename;
+            const file = req.files[fieldName][0];
+            const s3Key = s3Service.generateKey('websites', fieldName, file.originalname);
+            const contentType = s3Service.getContentType(file.originalname);
+
+            try {
+              const s3Url = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+              uploadedFileUrls[fieldName] = s3Url;
+            } catch (uploadError) {
+              console.error(`Failed to upload ${fieldName} to S3:`, uploadError);
+              throw new Error(`Failed to upload ${fieldName}`);
+            }
           }
-        });
+        }
       }
 
       // Map file fields to database fields
@@ -167,8 +163,8 @@ class WebsiteController {
       };
 
       Object.keys(fileMappings).forEach(formField => {
-        if (uploadedFiles[formField]) {
-          websiteData[fileMappings[formField]] = uploadedFiles[formField];
+        if (uploadedFileUrls[formField]) {
+          websiteData[fileMappings[formField]] = uploadedFileUrls[formField];
         }
       });
 
@@ -552,6 +548,29 @@ class WebsiteController {
         return res.status(404).json({ error: 'Website not found' });
       }
 
+      // Delete associated files from S3
+      const fileFields = [
+        'registration_document',
+        'tax_document',
+        'bank_details_document',
+        'passport_document',
+        'contact_details_document'
+      ];
+
+      for (const field of fileFields) {
+        if (website[field]) {
+          try {
+            const s3Key = s3Service.extractKeyFromUrl(website[field]);
+            if (s3Key) {
+              await s3Service.deleteFile(s3Key);
+            }
+          } catch (deleteError) {
+            console.error(`Failed to delete ${field} from S3:`, deleteError);
+            // Continue with other deletions even if one fails
+          }
+        }
+      }
+
       await website.update({ is_active: false });
 
       res.json({ message: 'Website deleted successfully' });
@@ -668,6 +687,29 @@ class WebsiteController {
         try {
           const website = await Website.findById(id);
           if (website) {
+            // Delete associated files from S3
+            const fileFields = [
+              'registration_document',
+              'tax_document',
+              'bank_details_document',
+              'passport_document',
+              'contact_details_document'
+            ];
+
+            for (const field of fileFields) {
+              if (website[field]) {
+                try {
+                  const s3Key = s3Service.extractKeyFromUrl(website[field]);
+                  if (s3Key) {
+                    await s3Service.deleteFile(s3Key);
+                  }
+                } catch (deleteError) {
+                  console.error(`Failed to delete ${field} from S3 for website ${id}:`, deleteError);
+                  // Continue with other deletions even if one fails
+                }
+              }
+            }
+
             await website.update({ is_active: false });
             return { id, success: true };
           }

@@ -16,23 +16,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/podcasters');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const uniqueSuffix = timestamp + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'podcaster-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
 
 // File filter for images
 const fileFilter = (req, file, cb) => {
@@ -60,8 +45,11 @@ const upload = multer({
 router.get('/approved', podcasterController.getApprovedPodcasters);
 router.get('/approved/:id', podcasterController.getApprovedById);
 
+// File upload route
+router.post('/upload-file', upload.single('file'), podcasterController.uploadFile);
+
 // User routes (authenticated users can create and view their own podcaster submissions)
-router.post('/', verifyToken, podcasterSubmitLimit, upload.single('image'), podcasterController.createValidation, podcasterController.create);
+router.post('/', verifyToken, podcasterSubmitLimit, podcasterController.createValidation, podcasterController.create);
 router.get('/my', verifyToken, podcasterController.getMyPodcasters);
 
 // Admin routes (admins can manage all podcaster submissions)
