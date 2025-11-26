@@ -56,7 +56,7 @@ import EventManagement from './components/admin/EventManagement';
 import AffiliateEnquiriesView from './components/admin/AffiliateEnquiriesView';
 import PowerlistPage from './pages/PowerlistPage';
 import PowerlistDetailPage from './pages/PowerlistDetailPage';
-import PowerListManagement from './components/admin/PowerListManagement';
+import PowerlistManagement from './components/admin/PowerlistManagement';
 import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
 import EventsPage from './pages/EventsPage';
@@ -487,7 +487,7 @@ function App() {
               element={
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
-                    <PowerListManagement />
+                    <PowerlistManagement />
                   </div>
                 </AdminProtectedRoute>
               }
