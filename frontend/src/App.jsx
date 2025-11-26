@@ -55,7 +55,7 @@ import EventEnquiriesView from './components/admin/EventEnquiriesView';
 import EventManagement from './components/admin/EventManagement';
 import AffiliateEnquiriesView from './components/admin/AffiliateEnquiriesView';
 import PowerlistPage from './pages/PowerlistPage';
-import PowerListDetailPage from './pages/PowerlistDetailPage';
+import PowerlistDetailPage from './pages/PowerlistDetailPage';
 import PowerListManagement from './components/admin/PowerListManagement';
 import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
@@ -341,7 +341,7 @@ function App() {
               }
             />
             <Route path="/power-lists" element={<PowerlistPage />} />
-            <Route path="/power-lists/:id" element={<PowerListDetailPage />} />
+            <Route path="/power-lists/:id" element={<PowerlistDetailPage />} />
             <Route path="/awards" element={<AwardsPage />} />
             <Route path="/awards/:id" element={<AwardDetailPage />} />
             <Route path="/events" element={<EventsPage />} />
