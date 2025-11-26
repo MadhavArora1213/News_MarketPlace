@@ -94,7 +94,7 @@ class EmailService {
       return true;
     }
 
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'https://vaas.solutions'}/reset-password?token=${resetToken}`;
     const htmlContent = this.generatePasswordResetTemplate(resetUrl);
 
     try {

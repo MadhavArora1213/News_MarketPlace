@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function debugPodcastersAPI() {
-  const baseURL = 'http://localhost:3000/api';
+  const baseURL = 'https://vaas.solutions/api';
   
   try {
     // Test 1: Check if admin login works

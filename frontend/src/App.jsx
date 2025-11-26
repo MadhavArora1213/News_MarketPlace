@@ -55,7 +55,7 @@ import EventEnquiriesView from './components/admin/EventEnquiriesView';
 import EventManagement from './components/admin/EventManagement';
 import AffiliateEnquiriesView from './components/admin/AffiliateEnquiriesView';
 import PowerlistPage from './pages/PowerlistPage';
-import PowerListDetailPage from './pages/PowerListDetailPage';
+import PowerListDetailPage from './pages/PowerlistDetailPage';
 import PowerListManagement from './components/admin/PowerListManagement';
 import AwardsPage from './pages/AwardsPage';
 import AwardDetailPage from './pages/AwardDetailPage';
