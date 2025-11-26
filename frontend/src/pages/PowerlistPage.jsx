@@ -7,7 +7,7 @@ import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
-import PowerlistSubmissionForm from '../components/user/PowerListSubmissionForm';
+import PowerlistSubmissionForm from '../components/user/PowerlistSubmissionForm';
 import {
   Search, Filter, Eye, Heart, Share, Grid, List, Star, Clock,
   TrendingUp, Globe, BookOpen, Award, Target, Zap, CheckCircle,
