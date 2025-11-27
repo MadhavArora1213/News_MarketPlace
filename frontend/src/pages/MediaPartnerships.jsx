@@ -7,7 +7,7 @@ import SEO from '../components/common/SEO';
 const MediaPartnerships = () => {
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-white">
       <SEO
         title="Media Partnerships"
         description="Partner with News Marketplace for media collaborations, brand partnerships, and content marketing opportunities. Reach our engaged audience."
@@ -15,87 +15,92 @@ const MediaPartnerships = () => {
       />
       <UserHeader />
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 max-w-5xl">
-        <div className="bg-[#FFFFFF] rounded-xl shadow-lg p-4 sm:p-6 lg:p-10 border border-[#E0E0E0]">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Icon name="users" size="xl" style={{ color: '#1976D2', marginRight: '12px' }} />
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#212121]">Media Partnerships</h1>
-            </div>
-            <p className="text-lg sm:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed">
+      {/* Hero Section */}
+      <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
+              Media Partnerships
+            </h1>
+            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
               Partner with us to reach our engaged audience through strategic media collaborations and brand partnerships.
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* Partnership Types Section */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-[#212121] mb-6 text-center">Partnership Opportunities</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-[#F8F9FA] p-6 rounded-lg border border-[#E9ECEF] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="building" size="lg" style={{ color: '#1976D2', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Brand Partnerships</h3>
+      <main className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8 lg:p-12 border border-[#E0E0E0]">
+            {/* Partnership Types Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold text-[#212121] mb-8 text-center">Partnership Opportunities</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="building" size="lg" style={{ color: '#1976D2', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Brand Partnerships</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Collaborate with brands for co-branded content, sponsored articles, and integrated marketing campaigns that resonate with our audience.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Collaborate with brands for co-branded content, sponsored articles, and integrated marketing campaigns that resonate with our audience.
-                </p>
-              </div>
 
-              <div className="bg-[#F0F8FF] p-6 rounded-lg border border-[#B3D9FF] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="megaphone" size="lg" style={{ color: '#FF9800', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Content Marketing</h3>
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="megaphone" size="lg" style={{ color: '#FF9800', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Content Marketing</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Create compelling content together through guest posts, sponsored content, and thought leadership articles.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Create compelling content together through guest posts, sponsored content, and thought leadership articles.
-                </p>
-              </div>
 
-              <div className="bg-[#FFF8E1] p-6 rounded-lg border border-[#FFE082] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="calendar" size="lg" style={{ color: '#4CAF50', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Event Sponsorship</h3>
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="calendar" size="lg" style={{ color: '#4CAF50', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Event Sponsorship</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Sponsor our events, webinars, and virtual summits to connect with industry leaders and decision-makers.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Sponsor our events, webinars, and virtual summits to connect with industry leaders and decision-makers.
-                </p>
-              </div>
 
-              <div className="bg-[#F8FFF8] p-6 rounded-lg border border-[#C8E6C9] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="globe-alt" size="lg" style={{ color: '#9C27B0', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Media Buying</h3>
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="globe-alt" size="lg" style={{ color: '#9C27B0', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Media Buying</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Reach our targeted audience through strategic media buying and advertising placements across our platforms.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Reach our targeted audience through strategic media buying and advertising placements across our platforms.
-                </p>
-              </div>
 
-              <div className="bg-[#FFF0F0] p-6 rounded-lg border border-[#FFCDD2] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="user-group" size="lg" style={{ color: '#F44336', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Influencer Marketing</h3>
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="user-group" size="lg" style={{ color: '#F44336', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Influencer Marketing</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Partner with our network of influencers and thought leaders for authentic brand endorsements and collaborations.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Partner with our network of influencers and thought leaders for authentic brand endorsements and collaborations.
-                </p>
-              </div>
 
-              <div className="bg-[#F3E5F5] p-6 rounded-lg border border-[#E1BEE7] hover:shadow-md transition-shadow duration-300">
-                <div className="flex items-center mb-4">
-                  <Icon name="chart-bar" size="lg" style={{ color: '#673AB7', marginRight: '12px' }} />
-                  <h3 className="text-xl font-semibold text-[#212121]">Affiliate Programs</h3>
+                <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <Icon name="chart-bar" size="lg" style={{ color: '#673AB7', marginRight: '12px' }} />
+                    <h3 className="text-xl font-semibold text-[#212121]">Affiliate Programs</h3>
+                  </div>
+                  <p className="text-[#757575] leading-relaxed">
+                    Join our affiliate program to earn commissions by promoting our content and driving traffic to your business.
+                  </p>
                 </div>
-                <p className="text-[#757575] leading-relaxed">
-                  Join our affiliate program to earn commissions by promoting our content and driving traffic to your business.
-                </p>
               </div>
             </div>
           </div>
-
           {/* Why Partner With Us Section */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-[#212121] mb-6 text-center">Why Partner With Us?</h2>
+            <h2 className="text-2xl font-semibold text-[#212121] mb-8 text-center">Why Partner With Us?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
@@ -176,9 +181,9 @@ const MediaPartnerships = () => {
           </div>
 
           {/* Contact Section */}
-          <div className="bg-[#F8F9FA] rounded-lg p-8 border border-[#E9ECEF]">
+          <div className="bg-white rounded-lg p-8 border border-[#E0E0E0]">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-[#212121] mb-4">Ready to Partner With Us?</h2>
+              <h2 className="text-2xl font-semibold text-[#212121] mb-4">Ready to Partner With Us?</h2>
               <p className="text-lg text-[#757575] mb-6 max-w-2xl mx-auto">
                 Contact our partnerships team to discuss collaboration opportunities and explore how we can work together to achieve your marketing goals.
               </p>
@@ -194,7 +199,7 @@ const MediaPartnerships = () => {
 
                 <a
                   href="/contact-us"
-                  className="inline-flex items-center px-6 py-3 bg-[#FFFFFF] text-[#1976D2] font-medium rounded-lg border border-[#1976D2] hover:bg-[#F8F9FA] transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="inline-flex items-center px-6 py-3 bg-white text-[#1976D2] font-medium rounded-lg border border-[#1976D2] hover:bg-[#F5F5F5] transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   <Icon name="chat-bubble-left" size="sm" style={{ color: '#1976D2', marginRight: '8px' }} />
                   Contact Form
