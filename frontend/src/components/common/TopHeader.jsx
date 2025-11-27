@@ -195,7 +195,7 @@ const TopHeader = () => {
 													onClick={(e) => {
 														if (!isAuthenticated) {
 															e.preventDefault();
-															setIsAuthModalOpen(true);
+															showAuthModal();
 														}
 													}}
 												>
@@ -313,7 +313,7 @@ const TopHeader = () => {
 													onClick={(e) => {
 														if (!isAuthenticated) {
 															e.preventDefault();
-															setIsAuthModalOpen(true);
+															showAuthModal();
 														}
 													}}
 												>
