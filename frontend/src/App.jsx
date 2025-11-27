@@ -112,7 +112,7 @@ const ProtectedRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <UserHeader onShowAuth={handleShowAuth} />
+        <UserHeader />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Icon name="arrow-path" size="lg" className="animate-spin text-primary mx-auto mb-4" />
@@ -205,7 +205,7 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <UserHeader onShowAuth={handleShowAuth} />
+      <UserHeader />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-sm p-8">
