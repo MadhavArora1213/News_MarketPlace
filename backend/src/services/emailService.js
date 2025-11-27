@@ -22,8 +22,11 @@ class EmailService {
   // Send OTP email
   async sendOTP(email, otp, type = 'verification') {
     // Always log OTP to console for development
+    console.log(`DEVELOPMENT MODE - Email OTP for ${email}: ${otp}`);
+
+    // In development, don't send actual emails
     if (process.env.NODE_ENV === 'development') {
-      console.log(`DEVELOPMENT MODE - Email OTP for ${email}: ${otp}`);
+      return true;
     }
 
     const subject = type === 'registration'
@@ -49,19 +52,18 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending OTP email:', error);
-
-      // Fallback for development
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`DEVELOPMENT MODE - Email OTP for ${email}: ${otp}`);
-        return true;
-      }
-
       throw new Error('Failed to send OTP email');
     }
   }
 
   // Send password reset email
   async sendPasswordReset(email, resetToken) {
+    // In development, don't send actual emails
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`DEVELOPMENT MODE - Password reset email for ${email}`);
+      return true;
+    }
+
     const resetUrl = `${process.env.FRONTEND_URL || 'https://vaas.solutions'}/reset-password?token=${resetToken}`;
     const htmlContent = this.generatePasswordResetTemplate(resetUrl);
 
@@ -78,18 +80,18 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending password reset email:', error);
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`DEVELOPMENT MODE - Password reset email for ${email}`);
-        return true;
-      }
-
       throw new Error('Failed to send password reset email');
     }
   }
 
   // Send welcome email
   async sendWelcome(email, firstName) {
+    // In development, don't send actual emails
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`DEVELOPMENT MODE - Welcome email for ${email}`);
+      return true;
+    }
+
     const htmlContent = this.generateWelcomeTemplate(firstName);
 
     try {
@@ -105,12 +107,6 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending welcome email:', error);
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`DEVELOPMENT MODE - Welcome email for ${email}`);
-        return true;
-      }
-
       throw new Error('Failed to send welcome email');
     }
   }
@@ -241,6 +237,12 @@ class EmailService {
 
   // Send custom email (generic method for custom content)
   async sendCustomEmail(email, subject, htmlContent) {
+    // In development, don't send actual emails
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`DEVELOPMENT MODE - Custom email to ${email} with subject: ${subject}`);
+      return true;
+    }
+
     try {
       const mailOptions = {
         from: `"${this.fromName}" <${this.fromEmail}>`,
@@ -254,13 +256,6 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending custom email:', error);
-
-      // Fallback for development
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`DEVELOPMENT MODE - Custom email to ${email} with subject: ${subject}`);
-        return true;
-      }
-
       throw new Error('Failed to send custom email');
     }
   }
