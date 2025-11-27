@@ -2886,7 +2886,7 @@ const PublicationManagement = () => {
                   }}
                   disabled={!hasAnyRole(['super_admin', 'content_manager'])}
                 >
-                  <Icon name="document-arrow-down" size="sm" style={{ color: '#fff' }} />
+                  <Icon name="table-cells" size="sm" style={{ color: '#fff' }} />
                   Template
                 </button>
                 {selectedPublications.length > 0 && (
@@ -2962,7 +2962,7 @@ const PublicationManagement = () => {
                   }}
                   disabled={!hasRole('super_admin')}
                 >
-                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  <Icon name="arrow-up-tray" size="sm" style={{ color: '#fff' }} />
                   Upload
                 </button>
                 <button
@@ -4075,7 +4075,7 @@ const BulkUploadModal = ({ isOpen, onClose, onSave }) => {
               width: '100%'
             }}
           >
-            <Icon name="document-arrow-down" size="sm" style={{ marginRight: '8px' }} />
+            <Icon name="table-cells" size="sm" style={{ marginRight: '8px' }} />
             Download Template
           </button>
         </div>
