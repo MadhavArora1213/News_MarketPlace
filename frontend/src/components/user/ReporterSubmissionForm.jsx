@@ -31,7 +31,7 @@ const useWindowWidth = () => {
 };
 
 // Reporter Submission Form Component
-const ReporterSubmissionForm = ({ onClose, onSuccess }) => {
+const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) => {
   const { isAuthenticated, user } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
@@ -408,6 +408,563 @@ const ReporterSubmissionForm = ({ onClose, onSuccess }) => {
     marginLeft: '4px'
   };
 
+  if (!renderAsModal) {
+    // Render as page component
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            Reporter Profile Submission
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Join our network of professional reporters and content creators.
+            Register your profile to start publishing articles and content.
+          </p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">
+          {/* Form content */}
+          <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
+            <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
+              Your confidentiality will be maintained all the time in any case.
+            </p>
+          </div>
+
+          {submitStatus === 'success' && (
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#e8f5e8',
+              border: `1px solid ${theme.success}`,
+              borderRadius: '8px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Icon name="check-circle" size="lg" style={{ color: theme.success }} />
+              <div>
+                <div style={{ fontWeight: '600', color: theme.success }}>Reporter Profile Submitted Successfully!</div>
+                <div style={{ fontSize: '14px', color: theme.textSecondary }}>
+                  Your reporter profile has been submitted and is pending review. You will be notified once it's approved.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {submitStatus === 'error' && (
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#ffebee',
+              border: `1px solid ${theme.danger}`,
+              borderRadius: '8px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Icon name="exclamation-triangle" size="lg" style={{ color: theme.danger }} />
+              <div>
+                <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+                <div style={{ fontSize: '14px', color: theme.textSecondary }}>
+                  {errors.submit || 'Please check your input and try again.'}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* Personal Information Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Personal Information</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                {/* Form fields content - same as modal */}
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Function Department <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="function_department"
+                    value={formData.function_department}
+                    onChange={handleInputChange}
+                    style={getInputStyle('function_department')}
+                    required
+                  >
+                    <option value="">Select department</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Procurement">Procurement</option>
+                    <option value="Publishing">Publishing</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Accounts and Finance">Accounts and Finance</option>
+                  </select>
+                  {errors.function_department && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.function_department}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Position <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="position"
+                    value={formData.position}
+                    onChange={handleInputChange}
+                    style={getInputStyle('position')}
+                    required
+                  >
+                    <option value="">Select position</option>
+                    <option value="Journalist">Journalist</option>
+                    <option value="Reporter">Reporter</option>
+                    <option value="Contributor">Contributor</option>
+                    <option value="Staff">Staff</option>
+                  </select>
+                  {errors.position && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.position}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Full Name <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    style={getInputStyle('name')}
+                    required
+                  />
+                  {errors.name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.name}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Gender <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    style={getInputStyle('gender')}
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {errors.gender && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.gender}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Email <span style={requiredAsterisk}>*</span>
+                    {user?.email && formData.email === user.email && (
+                      <span style={{ fontSize: '12px', color: theme.textSecondary, marginLeft: '8px' }}>
+                        (from your account)
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    style={getInputStyle('email')}
+                    required
+                    readOnly={user?.email && formData.email === user.email}
+                  />
+                  {errors.email && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.email}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>WhatsApp</label>
+                  <input
+                    type="tel"
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleInputChange}
+                    style={getInputStyle('whatsapp')}
+                    placeholder="+1234567890"
+                  />
+                  {errors.whatsapp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsapp}</div>}
+                </div>
+              </div>
+            </div>
+
+            {/* Publication Information Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Publication Information</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Publication Name <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="publication_name"
+                    value={formData.publication_name}
+                    onChange={handleInputChange}
+                    style={getInputStyle('publication_name')}
+                    required
+                  />
+                  {errors.publication_name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_name}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Website URL</label>
+                  <input
+                    type="url"
+                    name="website_url"
+                    value={formData.website_url}
+                    onChange={handleInputChange}
+                    style={getInputStyle('website_url')}
+                    placeholder="https://example.com"
+                  />
+                  {errors.website_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_url}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Publication Industry <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="publication_industry"
+                    value={formData.publication_industry}
+                    onChange={handleInputChange}
+                    style={getInputStyle('publication_industry')}
+                    placeholder="e.g., Technology, Finance, Health"
+                    required
+                  />
+                  {errors.publication_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_industry}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Publication Location <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="publication_location"
+                    value={formData.publication_location}
+                    onChange={handleInputChange}
+                    style={getInputStyle('publication_location')}
+                    placeholder="e.g., New York, USA"
+                    required
+                  />
+                  {errors.publication_location && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_location}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    Niche Industry <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="niche_industry"
+                    value={formData.niche_industry}
+                    onChange={handleInputChange}
+                    style={getInputStyle('niche_industry')}
+                    placeholder="e.g., AI, Blockchain, Healthcare"
+                    required
+                  />
+                  {errors.niche_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.niche_industry}</div>}
+                </div>
+              </div>
+            </div>
+
+            {/* Social Media Links Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>LinkedIn</label>
+                  <input
+                    type="url"
+                    name="linkedin"
+                    value={formData.linkedin}
+                    onChange={handleInputChange}
+                    style={getInputStyle('linkedin')}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                  {errors.linkedin && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.linkedin}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Instagram</label>
+                  <input
+                    type="url"
+                    name="instagram"
+                    value={formData.instagram}
+                    onChange={handleInputChange}
+                    style={getInputStyle('instagram')}
+                    placeholder="https://instagram.com/username"
+                  />
+                  {errors.instagram && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.instagram}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Facebook</label>
+                  <input
+                    type="url"
+                    name="facebook"
+                    value={formData.facebook}
+                    onChange={handleInputChange}
+                    style={getInputStyle('facebook')}
+                    placeholder="https://facebook.com/username"
+                  />
+                  {errors.facebook && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.facebook}</div>}
+                </div>
+              </div>
+            </div>
+
+            {/* Content Policies Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Content Policies & Requirements</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Minimum Expectation (USD)</label>
+                  <input
+                    type="number"
+                    name="minimum_expectation_usd"
+                    value={formData.minimum_expectation_usd}
+                    onChange={handleInputChange}
+                    style={getInputStyle('minimum_expectation_usd')}
+                    min="0"
+                    step="0.01"
+                  />
+                  {errors.minimum_expectation_usd && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.minimum_expectation_usd}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Articles Per Month</label>
+                  <input
+                    type="number"
+                    name="articles_per_month"
+                    value={formData.articles_per_month}
+                    onChange={handleInputChange}
+                    style={getInputStyle('articles_per_month')}
+                    min="0"
+                  />
+                  {errors.articles_per_month && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.articles_per_month}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Turnaround Time</label>
+                  <input
+                    type="text"
+                    name="turnaround_time"
+                    value={formData.turnaround_time}
+                    onChange={handleInputChange}
+                    style={getInputStyle('turnaround_time')}
+                    placeholder="e.g., 24-48 hours"
+                  />
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Sample URL</label>
+                  <input
+                    type="url"
+                    name="sample_url"
+                    value={formData.sample_url}
+                    onChange={handleInputChange}
+                    style={getInputStyle('sample_url')}
+                    placeholder="https://example.com/sample-article"
+                  />
+                  {errors.sample_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.sample_url}</div>}
+                </div>
+              </div>
+
+              <div style={{ marginTop: '16px' }}>
+                <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: theme.textPrimary }}>Article Permissions</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="company_allowed_in_title"
+                        checked={formData.company_allowed_in_title}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Company Name Allowed in Title
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="individual_allowed_in_title"
+                        checked={formData.individual_allowed_in_title}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Individual Name Allowed in Title
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="subheading_allowed"
+                        checked={formData.subheading_allowed}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Subheading Allowed
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="will_change_wordings"
+                        checked={formData.will_change_wordings}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Will Change Wordings if Required
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="article_placed_permanently"
+                        checked={formData.article_placed_permanently}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Article Placed Permanently
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="article_can_be_deleted"
+                        checked={formData.article_can_be_deleted}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Article Can Be Deleted on Request
+                    </label>
+                  </div>
+
+                  <div style={formGroupStyle}>
+                    <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                      <input
+                        type="checkbox"
+                        name="article_can_be_modified"
+                        checked={formData.article_can_be_modified}
+                        onChange={handleInputChange}
+                        style={checkboxStyle}
+                      />
+                      Article Can Be Modified on Request
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Information Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    How Did You Hear About Us? <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="how_heard_about_us"
+                    value={formData.how_heard_about_us}
+                    onChange={handleInputChange}
+                    style={getInputStyle('how_heard_about_us')}
+                    required
+                  >
+                    <option value="">Select an option</option>
+                    <option value="Social Media">Social Media</option>
+                    <option value="Search Engine">Search Engine</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Email">Email</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {errors.how_heard_about_us && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_heard_about_us}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Message</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    style={getTextareaStyle('message')}
+                    maxLength="500"
+                    placeholder="Additional comments or requirements (max 500 characters)"
+                  />
+                  <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                    {formData.message.length}/500 characters
+                  </div>
+                  {errors.message && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.message}</div>}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="checkbox"
+                  name="terms_accepted"
+                  id="terms"
+                  checked={formData.terms_accepted}
+                  onChange={handleInputChange}
+                  style={checkboxStyle}
+                />
+                <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
+                  I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                </label>
+              </div>
+            </div>
+            {errors.terms_accepted && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.terms_accepted}</div>}
+
+            {/* reCAPTCHA */}
+            <div style={{ marginTop: '24px', marginBottom: '24px' }}>
+              <div
+                id="recaptcha-container-reporter"
+                style={{ display: 'inline-block' }}
+              ></div>
+              {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
+              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
+                Complete the reCAPTCHA verification to submit your reporter profile.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px', gap: '12px', flexDirection: isMobile ? 'column' : 'row' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
+                disabled={loading}
+              >
+                {loading ? 'Submitting...' : 'Submit Reporter Profile'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Render as modal (default behavior)
   return (
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
