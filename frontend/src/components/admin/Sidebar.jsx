@@ -126,29 +126,15 @@ export default function Sidebar({
               </a>
             </li>
 
-
-
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/contacts"
+                href="/admin/affiliate-enquiries"
                 style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E0F2FE'}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e6f3ff')}><Icon name="chat-bubble-left-right" size="sm" style={{ color: '#0369a1' }} /></span>
-                <span>Contact Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/groups"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="users" size="sm" style={{ color: '#f57c00' }} /></span>
-                <span>Group Management</span>
+                <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Affiliate Enquiries</span>
               </a>
             </li>
 
@@ -166,73 +152,13 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/websites"
+                href="/admin/ai-articles"
                 style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
+                onMouseEnter={e => e.currentTarget.style.background = '#E3F2FD'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="globe" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Website Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/publications"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Publications</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/published-works"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="book-open" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Published Works Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/power-lists"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff8e1')}><Icon name="star" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Power Lists</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/awards"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff9c4')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Awards</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/award-submissions"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="document-plus" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Award Submissions</span>
+                <span style={navIconCircle('#e3f2fd')}><Icon name="cpu-chip" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>AI Articles</span>
               </a>
             </li>
 
@@ -250,97 +176,61 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/ai-articles"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E3F2FD'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e3f2fd')}><Icon name="sparkles" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>AI Articles</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/radios"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Radio Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/themes"
+                href="/admin/award-submissions"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="sparkles" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Theme Management</span>
+                <span style={navIconCircle('#f3e5f5')}><Icon name="trophy" size="sm" style={{ color: '#9C27B0' }} /></span>
+                <span>Award Submissions</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/press-packs"
+                href="/admin/awards"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff9c4')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Awards</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/blogs"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Press Pack Management</span>
+                <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Blog Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/paparazzi"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/reporters"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Reporter Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/podcasters"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="microphone" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Podcaster Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/real-estates"
+                href="/admin/careers"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Real Estate Management</span>
+                <span style={navIconCircle('#fff3e0')}><Icon name="building-office" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Career Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/contacts"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E0F2FE'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e6f3ff')}><Icon name="phone" size="sm" style={{ color: '#0369a1' }} /></span>
+                <span>Contact Management</span>
               </a>
             </li>
 
@@ -370,39 +260,148 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/affiliate-enquiries"
+                href="/admin/groups"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="users" size="sm" style={{ color: '#f57c00' }} /></span>
+                <span>Group Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/paparazzi"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
+                <span>Paparazzi Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/podcasters"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="microphone" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Podcaster Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/power-lists"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff8e1')}><Icon name="star" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Power Lists</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/press-packs"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Press Pack Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/publications"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>Publications</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/published-works"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="folder-open" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Published Works Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/radios"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>Radio Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/real-estates"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Real Estate Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/reporters"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Affiliate Enquiries</span>
+                <span>Reporter Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/careers"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="briefcase" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Career Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/blogs"
+                href="/admin/roles-permissions"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Blog Management</span>
+                <span style={navIconCircle('#e8f5e8')}><Icon name="shield-check" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Roles & Permissions</span>
               </a>
             </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/themes"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#f3e5f5')}><Icon name="palette" size="sm" style={{ color: '#9C27B0' }} /></span>
+                <span>Theme Management</span>
+              </a>
+            </li>
+
             <li style={{ marginBottom: 10 }}>
               <a
                 href="/admin/users"
@@ -417,13 +416,13 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/roles-permissions"
+                href="/admin/websites"
                 style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="shield-check" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Roles & Permissions</span>
+                <span style={navIconCircle('#f3e5f5')}><Icon name="globe" size="sm" style={{ color: '#9C27B0' }} /></span>
+                <span>Website Management</span>
               </a>
             </li>
 
@@ -441,31 +440,31 @@ export default function Sidebar({
         <nav style={{ marginTop: 8 }}>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <li style={{ marginBottom: 12 }}><a href="/admin/dashboard" style={{ color: '#212121', textDecoration: 'none', fontWeight: 600 }}>Dashboard</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/groups" style={{ color: '#212121', textDecoration: 'none' }}>Group Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/reporters" style={{ color: '#212121', textDecoration: 'none' }}>Reporter Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/podcasters" style={{ color: '#212121', textDecoration: 'none' }}>Podcaster Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/affiliate-enquiries" style={{ color: '#212121', textDecoration: 'none' }}>Affiliate Enquiries</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/agencies" style={{ color: '#212121', textDecoration: 'none' }}>Agency Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/ai-articles" style={{ color: '#212121', textDecoration: 'none' }}>AI Articles</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/article-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Article Submissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/blogs" style={{ color: '#212121', textDecoration: 'none' }}>Blog Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/careers" style={{ color: '#212121', textDecoration: 'none' }}>Career Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/contacts" style={{ color: '#212121', textDecoration: 'none' }}>Contact Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/event-enquiries" style={{ color: '#212121', textDecoration: 'none' }}>Event Enquiries</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/events" style={{ color: '#212121', textDecoration: 'none' }}>Event Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/affiliate-enquiries" style={{ color: '#212121', textDecoration: 'none' }}>Affiliate Enquiries</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/careers" style={{ color: '#212121', textDecoration: 'none' }}>Career Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/blogs" style={{ color: '#212121', textDecoration: 'none' }}>Blog Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/agencies" style={{ color: '#212121', textDecoration: 'none' }}>Agency Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/websites" style={{ color: '#212121', textDecoration: 'none' }}>Website Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/groups" style={{ color: '#212121', textDecoration: 'none' }}>Group Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/podcasters" style={{ color: '#212121', textDecoration: 'none' }}>Podcaster Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Publications</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/published-works" style={{ color: '#212121', textDecoration: 'none' }}>Published Works Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/article-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Article Submissions</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/ai-articles" style={{ color: '#212121', textDecoration: 'none' }}>AI Articles</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/contacts" style={{ color: '#212121', textDecoration: 'none' }}>Contacts</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/users" style={{ color: '#212121', textDecoration: 'none' }}>Users</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/reporters" style={{ color: '#212121', textDecoration: 'none' }}>Reporter Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/roles-permissions" style={{ color: '#212121', textDecoration: 'none' }}>Roles & Permissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/users" style={{ color: '#212121', textDecoration: 'none' }}>User Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/websites" style={{ color: '#212121', textDecoration: 'none' }}>Website Management</a></li>
           </ul>
         </nav>
       </div>
