@@ -548,6 +548,7 @@ const PublicationManagement = () => {
   }
 
   const [publications, setPublications] = useState([]);
+  const [totalPublications, setTotalPublications] = useState(0);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -798,16 +799,19 @@ const PublicationManagement = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage, pageSize, showDeleted]);
 
   const fetchPublications = async () => {
     try {
       const params = new URLSearchParams();
+      params.append('page', currentPage.toString());
+      params.append('limit', pageSize.toString());
       if (showDeleted) {
         params.append('show_deleted', 'true');
       }
       const response = await api.get(`/publications/admin?${params.toString()}`);
       setPublications(response.data.publications || []);
+      setTotalPublications(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching publications:', error);
       if (error.response?.status === 401) {
@@ -1244,7 +1248,7 @@ const PublicationManagement = () => {
     return sortedPublications.slice(startIndex, startIndex + pageSize);
   }, [sortedPublications, currentPage, pageSize]);
 
-  const totalPages = Math.ceil(sortedPublications.length / pageSize);
+  const totalPages = Math.ceil(totalPublications / pageSize);
 
   const getStatusStyle = (status) => {
     const statusOption = statusOptions.find(opt => opt.value === status);
@@ -1340,14 +1344,14 @@ const PublicationManagement = () => {
   };
 
   const getPublicationStats = () => {
-    const dataSource = hasActiveFilters() ? filteredPublications : publications;
-    const total = dataSource.length;
-    const approved = dataSource.filter(p => p.status === 'approved').length;
-    const pending = dataSource.filter(p => p.status === 'pending').length;
-    const rejected = dataSource.filter(p => p.status === 'rejected').length;
-    const active = dataSource.filter(p => p.is_active).length;
+    // For now, we'll calculate stats from the current publications
+    // In a full implementation, the backend should return these stats
+    const approved = publications.filter(p => p.status === 'approved').length;
+    const pending = publications.filter(p => p.status === 'pending').length;
+    const rejected = publications.filter(p => p.status === 'rejected').length;
+    const active = publications.filter(p => p.is_active).length;
 
-    return { total, approved, pending, rejected, active };
+    return { total: totalPublications, approved, pending, rejected, active };
   };
 
   const stats = getPublicationStats();
@@ -2886,7 +2890,7 @@ const PublicationManagement = () => {
                   }}
                   disabled={!hasAnyRole(['super_admin', 'content_manager'])}
                 >
-                  <Icon name="table-cells" size="sm" style={{ color: '#fff' }} />
+                  <Icon name="clipboard-document" size="sm" style={{ color: '#fff' }} />
                   Template
                 </button>
                 {selectedPublications.length > 0 && (
@@ -2962,7 +2966,7 @@ const PublicationManagement = () => {
                   }}
                   disabled={!hasRole('super_admin')}
                 >
-                  <Icon name="arrow-up-tray" size="sm" style={{ color: '#fff' }} />
+                  <Icon name="arrow-up-on-square" size="sm" style={{ color: '#fff' }} />
                   Upload
                 </button>
                 <button
@@ -2986,7 +2990,7 @@ const PublicationManagement = () => {
                   }}
                   disabled={!hasRole('super_admin')}
                 >
-                  <Icon name="plus" size="sm" style={{ color: '#fff' }} />
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
                   Add
                 </button>
               </div>
@@ -3213,10 +3217,7 @@ const PublicationManagement = () => {
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedPublications.length}</strong> of <strong>{sortedPublications.length}</strong> publications
-                      {sortedPublications.length !== publications.length && (
-                        <span> (filtered from {publications.length} total)</span>
-                      )}
+                      Showing <strong>{paginatedPublications.length}</strong> of <strong>{totalPublications}</strong> publications
                     </>
                   )}
                 </div>
@@ -3284,7 +3285,8 @@ const PublicationManagement = () => {
                     <select
                       value={pageSize}
                       onChange={(e) => {
-                        setPageSize(parseInt(e.target.value));
+                        const newPageSize = parseInt(e.target.value);
+                        setPageSize(newPageSize);
                         setCurrentPage(1);
                       }}
                       style={{
@@ -3760,7 +3762,7 @@ const PublicationManagement = () => {
               {totalPages > 1 && (
                 <div style={{ padding: '16px 20px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                    Page {currentPage} of {totalPages} ({sortedPublications.length} total publications)
+                    Page {currentPage} of {totalPages} ({totalPublications} total publications)
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -4075,7 +4077,7 @@ const BulkUploadModal = ({ isOpen, onClose, onSave }) => {
               width: '100%'
             }}
           >
-            <Icon name="table-cells" size="sm" style={{ marginRight: '8px' }} />
+            <Icon name="clipboard-document" size="sm" style={{ marginRight: '8px' }} />
             Download Template
           </button>
         </div>
