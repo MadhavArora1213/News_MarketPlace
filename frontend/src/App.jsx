@@ -134,14 +134,10 @@ const AdminProtectedRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Icon name="arrow-path" size="lg" className="animate-spin text-primary mx-auto mb-4" />
-            <p className="body-regular">Loading admin panel...</p>
-          </div>
+        <div className="text-center">
+          <Icon name="arrow-path" size="lg" className="animate-spin text-primary mx-auto mb-4" />
+          <p className="body-regular">Loading admin panel...</p>
         </div>
-        <UserFooter />
       </div>
     );
   }
