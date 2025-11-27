@@ -1,26 +1,19 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
 class EmailService {
   constructor() {
     this.fromEmail = process.env.BREVO_FROM_EMAIL || process.env.FROM_EMAIL;
     this.fromName = process.env.BREVO_FROM_NAME || 'Magazine Website';
 
-    // Initialize SMTP transporter
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: false, // Brevo requires secure:false for port 587
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false   // prevent hostname mismatch errors
-      }
-    });
-
-    console.log('Email service initialized with SMTP');
+    // Initialize Brevo API client
+    this.apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    if (process.env.BREVO_API_KEY) {
+      this.apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+      console.log('Email service initialized with Brevo API');
+    } else {
+      console.error('BREVO_API_KEY not found');
+    }
   }
 
   // Send OTP email
@@ -44,14 +37,16 @@ class EmailService {
     const htmlContent = this.generateOTPTemplate(otp, type);
 
     try {
-      const mailOptions = {
-        from: `"${this.fromName}" <${this.fromEmail}>`,
-        to: email,
-        subject: subject,
-        html: htmlContent,
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      sendSmtpEmail.subject = subject;
+      sendSmtpEmail.htmlContent = htmlContent;
+      sendSmtpEmail.sender = {
+        name: this.fromName,
+        email: this.fromEmail
       };
+      sendSmtpEmail.to = [{ email: email }];
 
-      const result = await this.transporter.sendMail(mailOptions);
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log('OTP email sent successfully:', result.messageId);
       return result;
     } catch (error) {
@@ -72,14 +67,16 @@ class EmailService {
     const htmlContent = this.generatePasswordResetTemplate(resetUrl);
 
     try {
-      const mailOptions = {
-        from: `"${this.fromName}" <${this.fromEmail}>`,
-        to: email,
-        subject: 'Reset Your Magazine Website Password',
-        html: htmlContent,
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      sendSmtpEmail.subject = 'Reset Your Magazine Website Password';
+      sendSmtpEmail.htmlContent = htmlContent;
+      sendSmtpEmail.sender = {
+        name: this.fromName,
+        email: this.fromEmail
       };
+      sendSmtpEmail.to = [{ email: email }];
 
-      const result = await this.transporter.sendMail(mailOptions);
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log('Password reset email sent successfully:', result.messageId);
       return result;
     } catch (error) {
@@ -99,14 +96,16 @@ class EmailService {
     const htmlContent = this.generateWelcomeTemplate(firstName);
 
     try {
-      const mailOptions = {
-        from: `"${this.fromName}" <${this.fromEmail}>`,
-        to: email,
-        subject: 'Welcome to Magazine Website!',
-        html: htmlContent,
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      sendSmtpEmail.subject = 'Welcome to Magazine Website!';
+      sendSmtpEmail.htmlContent = htmlContent;
+      sendSmtpEmail.sender = {
+        name: this.fromName,
+        email: this.fromEmail
       };
+      sendSmtpEmail.to = [{ email: email }];
 
-      const result = await this.transporter.sendMail(mailOptions);
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log('Welcome email sent successfully:', result.messageId);
       return result;
     } catch (error) {
@@ -248,14 +247,16 @@ class EmailService {
     }
 
     try {
-      const mailOptions = {
-        from: `"${this.fromName}" <${this.fromEmail}>`,
-        to: email,
-        subject: subject,
-        html: htmlContent,
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      sendSmtpEmail.subject = subject;
+      sendSmtpEmail.htmlContent = htmlContent;
+      sendSmtpEmail.sender = {
+        name: this.fromName,
+        email: this.fromEmail
       };
+      sendSmtpEmail.to = [{ email: email }];
 
-      const result = await this.transporter.sendMail(mailOptions);
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log('Custom email sent successfully:', result.messageId);
       return result;
     } catch (error) {
