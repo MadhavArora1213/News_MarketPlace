@@ -1526,65 +1526,134 @@ const ArticleSubmissionsManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ backgroundColor: theme.backgroundSoft, minHeight: '100vh', color: theme.textPrimary }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="mr-3 md:hidden p-2 rounded-lg hover:bg-[#F5F5F5] transition-colors"
-                aria-label="Toggle sidebar"
-              >
-                <Filter className="w-5 h-5 text-[#212121]" />
-              </button>
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: headerHeight,
+        backgroundColor: theme.background,
+        borderBottom: `1px solid ${theme.borderLight}`,
+        zIndex: headerZ,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.textSecondary} strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
 
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-[#1976D2]" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#212121]">News Marketplace Admin</h1>
-                  <p className="text-sm text-[#757575]">Article Submissions Management</p>
-                </div>
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #1976D2, #0D47A1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#fff', fontSize: '18px', fontWeight: '800' }}>N</span>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="font-semibold text-[#212121]">{admin?.first_name ? `${admin.first_name} ${admin.last_name}` : 'Master Admin'}</div>
-              </div>
-
-              <button
-                onClick={logout}
-                className="bg-[#1976D2] hover:bg-[#0D47A1] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-              >
-                Logout
-              </button>
+            <div>
+              <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: theme.textPrimary }}>News MarketPlace</h1>
+              <p style={{ margin: 0, fontSize: '12px', color: theme.textSecondary }}>Admin Panel</p>
             </div>
           </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: theme.textPrimary }}>
+              {admin?.first_name} {admin?.last_name}
+            </div>
+            <div style={getRoleStyle(admin?.role)}>
+              {roleDisplayNames[admin?.role] || 'User'}
+            </div>
+          </div>
+
+          <button
+            onClick={logout}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#fee2e2'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            title="Logout"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.danger} strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16,17 21,12 16,7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
         </div>
       </header>
 
       {/* Sidebar */}
-      <Sidebar
-        admin={admin}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        sidebarStyles={sidebarStyles}
-        mobileSidebarOverlay={mobileSidebarOverlay}
-        isMobile={isMobile}
-        headerHeight={headerHeight}
-        sidebarWidth={sidebarWidth}
-        sidebarZ={sidebarZ}
-        mobileOverlayZ={mobileOverlayZ}
-      />
+      {sidebarOpen && (
+        <>
+          {isMobile && (
+            <div
+              style={mobileSidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          <aside style={{
+            position: isMobile ? 'fixed' : 'fixed',
+            top: headerHeight,
+            left: 0,
+            width: sidebarWidth,
+            height: `calc(100vh - ${headerHeight}px)`,
+            zIndex: sidebarZ,
+            ...sidebarStyles
+          }}>
+            <Sidebar
+              admin={admin}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarStyles={sidebarStyles}
+              mobileSidebarOverlay={mobileSidebarOverlay}
+              isMobile={isMobile}
+              headerHeight={headerHeight}
+              sidebarWidth={sidebarWidth}
+              sidebarZ={sidebarZ}
+              mobileOverlayZ={mobileOverlayZ}
+            />
+          </aside>
+        </>
+      )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-8" style={{
-        marginLeft: !isMobile && sidebarOpen ? (sidebarWidth + leftGap) : 0,
-        transition: 'margin-left 0.28s ease-in-out'
+      <main style={{
+        marginLeft: sidebarOpen && !isMobile ? sidebarWidth + leftGap : leftGap,
+        paddingTop: mainPaddingTop,
+        paddingRight: leftGap,
+        paddingBottom: leftGap,
+        minHeight: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
@@ -1853,7 +1922,7 @@ const ArticleSubmissionsManagement = () => {
             </div>
           </section>
         )}
-      </div>
+      </main>
 
       {/* View Modal */}
       <ArticleSubmissionViewModal

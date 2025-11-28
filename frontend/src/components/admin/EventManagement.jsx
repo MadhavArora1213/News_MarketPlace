@@ -1875,40 +1875,67 @@ const EventManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundSoft, color: theme.text, paddingBottom: '3rem' }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-          <div className="flex justify-between items-center py-4">
+      <header
+        className="shadow-sm"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: headerZ,
+          backgroundColor: theme.background,
+          boxShadow: '0 6px 20px rgba(2,6,23,0.06)',
+          borderBottom: `1px solid ${theme.borderLight}`
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10" style={{ minHeight: 64 }}>
+          <div className="flex justify-between items-center py-3">
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="mr-3 md:hidden p-2 rounded-lg hover:bg-[#F5F5F5] transition-colors"
+                className="mr-3 md:hidden"
                 aria-label="Toggle sidebar"
+                style={{ background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
               >
-                <Filter className="w-5 h-5 text-[#212121]" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
               </button>
 
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-[#1976D2]" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#212121]">News Marketplace Admin</h1>
-                  <p className="text-sm text-[#757575]">Event Management</p>
-                </div>
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="mr-3 hidden md:block"
+                aria-label="Toggle sidebar"
+                style={{ background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Icon name="shield-check" size="lg" style={{ color: '#1976D2' }} />
+                <span style={{ fontWeight: 700, fontSize: 18 }}>News Marketplace Admin</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="font-semibold text-[#212121]">{admin?.first_name ? `${admin.first_name} ${admin.last_name}` : 'Master Admin'}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontWeight: 700 }}>{admin?.first_name ? `${admin.first_name} ${admin.last_name}` : 'Master Admin'}</div>
+                <div style={{ marginTop: 6 }}>
+                  <span style={{
+                    backgroundColor: theme.secondaryLight,
+                    color: theme.secondaryDark,
+                    padding: '0.125rem 0.5rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    lineHeight: 1
+                  }}>{roleDisplayNames[admin?.role] || '—'}</span>
+                </div>
               </div>
 
-              <button
-                onClick={logout}
-                className="bg-[#1976D2] hover:bg-[#0D47A1] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-              >
+              <button onClick={logout} style={{ ...btnPrimary, padding: '0.45rem 0.75rem' }}>
+                <Icon name="arrow-right-on-rectangle" size="sm" style={{ color: '#fff', marginRight: 8 }} />
                 Logout
               </button>
             </div>
@@ -1917,21 +1944,44 @@ const EventManagement = () => {
       </header>
 
       {/* Sidebar */}
-      <Sidebar
-        admin={admin}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        sidebarStyles={sidebarStyles}
-        mobileSidebarOverlay={mobileSidebarOverlay}
-        isMobile={isMobile}
-        headerHeight={headerHeight}
-        sidebarWidth={sidebarWidth}
-        sidebarZ={sidebarZ}
-        mobileOverlayZ={mobileOverlayZ}
-      />
+      {sidebarOpen && (
+        <>
+          {isMobile && (
+            <div
+              style={mobileSidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          <aside style={{
+            position: isMobile ? 'fixed' : 'fixed',
+            top: headerHeight,
+            left: 0,
+            width: sidebarWidth,
+            height: `calc(100vh - ${headerHeight}px)`,
+            zIndex: sidebarZ,
+            ...sidebarStyles
+          }}>
+            <Sidebar
+              admin={admin}
+              roleDisplayNames={roleDisplayNames}
+              theme={theme}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarStyles={sidebarStyles}
+              mobileSidebarOverlay={mobileSidebarOverlay}
+              isMobile={isMobile}
+              headerHeight={headerHeight}
+              sidebarWidth={sidebarWidth}
+              sidebarZ={sidebarZ}
+              mobileOverlayZ={mobileOverlayZ}
+            />
+          </aside>
+        </>
+      )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-8" style={{
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10" style={{
+        paddingTop: mainPaddingTop,
         marginLeft: !isMobile && sidebarOpen ? (sidebarWidth + leftGap) : 0,
         transition: 'margin-left 0.28s ease-in-out'
       }}>

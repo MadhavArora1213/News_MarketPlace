@@ -944,23 +944,47 @@ const PublishedWorkManagement = () => {
       </header>
 
       {/* Sidebar */}
-      <Sidebar
-        admin={admin}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        sidebarStyles={sidebarStyles}
-        mobileSidebarOverlay={mobileSidebarOverlay}
-        isMobile={isMobile}
-        headerHeight={headerHeight}
-        sidebarWidth={sidebarWidth}
-        sidebarZ={sidebarZ}
-        mobileOverlayZ={mobileOverlayZ}
-      />
+      {sidebarOpen && (
+        <>
+          {isMobile && (
+            <div
+              style={mobileSidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          <aside style={{
+            position: isMobile ? 'fixed' : 'fixed',
+            top: headerHeight,
+            left: 0,
+            width: sidebarWidth,
+            height: `calc(100vh - ${headerHeight}px)`,
+            zIndex: sidebarZ,
+            ...sidebarStyles
+          }}>
+            <Sidebar
+              admin={admin}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarStyles={sidebarStyles}
+              mobileSidebarOverlay={mobileSidebarOverlay}
+              isMobile={isMobile}
+              headerHeight={headerHeight}
+              sidebarWidth={sidebarWidth}
+              sidebarZ={sidebarZ}
+              mobileOverlayZ={mobileOverlayZ}
+            />
+          </aside>
+        </>
+      )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-8" style={{
-        marginLeft: !isMobile && sidebarOpen ? (sidebarWidth + leftGap) : 0,
-        transition: 'margin-left 0.28s ease-in-out'
+      <main style={{
+        marginLeft: sidebarOpen && !isMobile ? sidebarWidth + leftGap : leftGap,
+        paddingTop: mainPaddingTop,
+        paddingRight: leftGap,
+        paddingBottom: leftGap,
+        minHeight: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
@@ -1177,7 +1201,7 @@ const PublishedWorkManagement = () => {
             </div>
           </section>
         )}
-      </div>
+      </main>
 
       {/* Published Work Form Modal */}
       <PublishedWorkFormModal

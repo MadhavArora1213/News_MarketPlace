@@ -346,29 +346,50 @@ const ContactManagement = () => {
       </header>
 
       {/* Sidebar */}
-      <Sidebar
-        admin={admin}
-        roleDisplayNames={roleDisplayNames}
-        theme={theme}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        sidebarStyles={sidebarStyles}
-        mobileSidebarOverlay={mobileSidebarOverlay}
-        isMobile={isMobile}
-        headerHeight={headerHeight}
-        sidebarWidth={sidebarWidth}
-        sidebarZ={sidebarZ}
-        mobileOverlayZ={mobileOverlayZ}
-      />
+      {sidebarOpen && (
+        <>
+          {isMobile && (
+            <div
+              style={mobileSidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          <aside style={{
+            position: isMobile ? 'fixed' : 'fixed',
+            top: headerHeight,
+            left: 0,
+            width: sidebarWidth,
+            height: `calc(100vh - ${headerHeight}px)`,
+            zIndex: sidebarZ,
+            ...sidebarStyles
+          }}>
+            <Sidebar
+              admin={admin}
+              roleDisplayNames={roleDisplayNames}
+              theme={theme}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarStyles={sidebarStyles}
+              mobileSidebarOverlay={mobileSidebarOverlay}
+              isMobile={isMobile}
+              headerHeight={headerHeight}
+              sidebarWidth={sidebarWidth}
+              sidebarZ={sidebarZ}
+              mobileOverlayZ={mobileOverlayZ}
+            />
+          </aside>
+        </>
+      )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10" style={{
+      <main style={{
+        marginLeft: sidebarOpen && !isMobile ? sidebarWidth + leftGap : leftGap,
         paddingTop: mainPaddingTop,
-        marginLeft: !isMobile && sidebarOpen ? (sidebarWidth + leftGap) : 0,
-        transition: 'margin-left 0.28s ease-in-out'
+        paddingRight: leftGap,
+        paddingBottom: leftGap,
+        minHeight: '100vh',
+        transition: 'margin-left 0.3s ease'
       }}>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-          <main style={{ flex: 1, minWidth: 0, paddingLeft: !isMobile ? leftGap : 0 }}>
             {/* Page Header */}
             <div style={{ background: '#fff', borderRadius: 12, padding: 28, border: `4px solid #000`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 24 }}>
               <div>
@@ -770,9 +791,7 @@ const ContactManagement = () => {
                 </div>
               </div>
             )}
-          </main>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };
