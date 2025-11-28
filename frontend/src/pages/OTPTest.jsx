@@ -77,10 +77,10 @@ const OTPTest = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          mobileNumber: phoneNumber,
           verificationId: verificationId,
           code: otp,
-          countryCode: '91'
+          flowType: flowType,
+          langid: 'en'
         })
       });
 

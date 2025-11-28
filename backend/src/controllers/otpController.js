@@ -6,7 +6,7 @@ class OTPController {
    */
   async sendOTP(req, res) {
     try {
-      const { mobileNumber, flowType = 'SMS', countryCode = '91' } = req.body;
+      const { mobileNumber, flowType = 'SMS', countryCode = '91', otpLength = 4 } = req.body;
 
       // Validate input
       if (!mobileNumber) {
@@ -32,10 +32,18 @@ class OTPController {
         });
       }
 
+      // Validate OTP length
+      if (otpLength < 4 || otpLength > 8) {
+        return res.status(400).json({
+          success: false,
+          message: 'OTP length must be between 4 and 8 digits'
+        });
+      }
+
       console.log(`Sending ${flowType} OTP to ${countryCode}${mobileNumber}`);
 
       // Send OTP via Message Central
-      const result = await messageCentralService.sendOTP(mobileNumber, flowType, countryCode);
+      const result = await messageCentralService.sendOTP(mobileNumber, flowType, countryCode, otpLength);
 
       if (result.success) {
         console.log('OTP sent successfully:', result.data);
@@ -88,21 +96,13 @@ class OTPController {
    */
   async validateOTP(req, res) {
     try {
-      const { mobileNumber, verificationId, code, countryCode = '91' } = req.body;
+      const { verificationId, code, flowType = 'SMS', langid = 'en' } = req.body;
 
       // Validate input
-      if (!mobileNumber || !verificationId || !code) {
+      if (!verificationId || !code) {
         return res.status(400).json({
           success: false,
-          message: 'Mobile number, verification ID, and OTP code are required'
-        });
-      }
-
-      // Validate phone number format
-      if (!messageCentralService.validatePhoneNumber(mobileNumber)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid mobile number format'
+          message: 'Verification ID and OTP code are required'
         });
       }
 
@@ -114,10 +114,18 @@ class OTPController {
         });
       }
 
-      console.log(`Validating OTP for ${countryCode}${mobileNumber}, verificationId: ${verificationId}`);
+      // Validate flow type
+      if (!['SMS', 'WHATSAPP'].includes(flowType.toUpperCase())) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid flow type. Must be SMS or WHATSAPP'
+        });
+      }
+
+      console.log(`Validating OTP for verificationId: ${verificationId}, flowType: ${flowType}`);
 
       // Validate OTP via Message Central
-      const result = await messageCentralService.validateOTP(mobileNumber, verificationId, code, countryCode);
+      const result = await messageCentralService.validateOTP(verificationId, code, flowType, langid);
 
       if (result.success) {
         console.log('OTP validation response:', result.data);
@@ -147,7 +155,14 @@ class OTPController {
             error: 'OTP_EXPIRED'
           });
         } else if (responseData.responseCode === 705) {
-          // 705 = MAX_ATTEMPTS_REACHED
+          // 705 = VERIFICATION_EXPIRED
+          res.status(400).json({
+            success: false,
+            message: 'OTP has expired. Please request a new OTP.',
+            error: 'VERIFICATION_EXPIRED'
+          });
+        } else if (responseData.responseCode === 800) {
+          // 800 = MAXIMUM_LIMIT_REACHED
           res.status(429).json({
             success: false,
             message: 'Maximum validation attempts reached. Please request a new OTP.',

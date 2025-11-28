@@ -5,6 +5,68 @@ class MessageCentralService {
     this.baseUrl = process.env.MESSAGECENTRAL_BASE_URL || 'https://cpaas.messagecentral.com';
     this.customerId = process.env.MESSAGECENTRAL_CUSTOMER_ID;
     this.authToken = process.env.MESSAGECENTRAL_AUTH_TOKEN;
+    this.encryptedPassword = process.env.MESSAGECENTRAL_ENCRYPTED_PASSWORD;
+  }
+
+  /**
+   * Generate authentication token
+   * @param {string} email - Email address (optional)
+   * @param {string} country - Country code (optional)
+   * @param {string} scope - Token scope, default 'NEW'
+   */
+  async generateToken(email = null, country = '91', scope = 'NEW') {
+    try {
+      if (!this.customerId || !this.encryptedPassword) {
+        console.error('❌ MessageCentral credentials not configured for token generation');
+        console.error('   Customer ID:', this.customerId ? '✅ SET' : '❌ MISSING');
+        console.error('   Encrypted Password:', this.encryptedPassword ? '✅ SET' : '❌ MISSING');
+        throw new Error('MessageCentral credentials not configured');
+      }
+
+      const url = `${this.baseUrl}/auth/v1/authentication/token`;
+
+      const params = {
+        customerId: this.customerId,
+        key: this.encryptedPassword,
+        scope,
+        country
+      };
+
+      if (email) {
+        params.email = email;
+      }
+
+      console.log('🔑 Generating MessageCentral auth token');
+      console.log('👤 Customer ID:', this.customerId);
+
+      const response = await axios.post(url, null, {
+        params,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      });
+
+      console.log('✅ Token generation success');
+      return {
+        success: true,
+        data: response.data,
+        status: response.status
+      };
+
+    } catch (error) {
+      console.error('❌ Token generation error details:');
+      console.error('   Status:', error.response?.status);
+      console.error('   Response Data:', error.response?.data);
+      console.error('   Error Message:', error.message);
+
+      return {
+        success: false,
+        error: error.response?.data || error.message,
+        status: error.response?.status || 500
+      };
+    }
   }
 
   /**
@@ -12,25 +74,25 @@ class MessageCentralService {
    * @param {string} mobileNumber - 10-digit mobile number
    * @param {string} flowType - 'SMS' or 'WHATSAPP'
    * @param {string} countryCode - Default '91' for India
+   * @param {number} otpLength - OTP length (4-8, default 4)
    */
-  async sendOTP(mobileNumber, flowType = 'SMS', countryCode = '91') {
+  async sendOTP(mobileNumber, flowType = 'SMS', countryCode = '91', otpLength = 4) {
     try {
       // Check if credentials are configured
-      if (!this.customerId || !this.authToken) {
-        console.error('❌ MessageCentral credentials not configured:');
-        console.error('   Customer ID:', this.customerId ? '✅ SET' : '❌ MISSING');
+      if (!this.authToken) {
+        console.error('❌ MessageCentral auth token not configured');
         console.error('   Auth Token:', this.authToken ? '✅ SET' : '❌ MISSING');
         console.error('   Base URL:', this.baseUrl);
-        throw new Error('MessageCentral credentials not configured');
+        throw new Error('MessageCentral auth token not configured');
       }
 
       const url = `${this.baseUrl}/verification/v3/send`;
 
       const params = {
         countryCode,
-        customerId: this.customerId,
         flowType: flowType.toUpperCase(),
-        mobileNumber
+        mobileNumber,
+        otpLength
       };
 
       console.log(`📱 Sending ${flowType} OTP to ${mobileNumber}`);
@@ -89,30 +151,29 @@ class MessageCentralService {
 
   /**
    * Validate OTP
-   * @param {string} mobileNumber - 10-digit mobile number
    * @param {string} verificationId - Verification ID from sendOTP response
    * @param {string} code - OTP code entered by user
-   * @param {string} countryCode - Default '91' for India
+   * @param {string} flowType - 'SMS' or 'WHATSAPP' (default 'SMS')
+   * @param {string} langid - Language ID (default 'en' for English)
    */
-  async validateOTP(mobileNumber, verificationId, code, countryCode = '91') {
+  async validateOTP(verificationId, code, flowType = 'SMS', langid = 'en') {
     try {
       // Check if credentials are configured
-      if (!this.customerId || !this.authToken) {
-        console.error('❌ MessageCentral credentials not configured for validation');
-        throw new Error('MessageCentral credentials not configured');
+      if (!this.authToken) {
+        console.error('❌ MessageCentral auth token not configured for validation');
+        throw new Error('MessageCentral auth token not configured');
       }
 
       const url = `${this.baseUrl}/verification/v3/validateOtp`;
 
       const params = {
-        countryCode,
-        mobileNumber,
         verificationId,
-        customerId: this.customerId,
-        code
+        code,
+        flowType: flowType.toUpperCase(),
+        langid
       };
 
-      console.log(`🔍 Validating OTP for ${mobileNumber}`);
+      console.log(`🔍 Validating OTP for verificationId: ${verificationId}`);
       console.log('🔗 Validation URL:', url);
       console.log('📊 Validation params:', { ...params, code: '***' }); // Hide OTP in logs
 
