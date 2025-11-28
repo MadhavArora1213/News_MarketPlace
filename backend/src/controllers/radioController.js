@@ -77,12 +77,32 @@ class RadioController {
       const offset = (page - 1) * limit;
       const radios = await Radio.findAll(filters, searchSql, searchValues, limit, offset);
 
+      // Get total count for pagination
+      let countSql = 'SELECT COUNT(*) as total FROM radios WHERE 1=1';
+      const countValues = [];
+      let countParamCount = 1;
+
+      if (filters.group_id) {
+        countSql += ` AND group_id = $${countParamCount}`;
+        countValues.push(filters.group_id);
+        countParamCount++;
+      }
+
+      if (radio_name) {
+        countSql += ` AND radio_name ILIKE $${countParamCount}`;
+        countValues.push(`%${radio_name}%`);
+        countParamCount++;
+      }
+
+      const countResult = await require('../config/database').query(countSql, countValues);
+      const total = parseInt(countResult.rows[0].total);
+
       res.json({
         radios: radios.map(radio => radio.toJSON()),
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          total: radios.length // This should be improved with a count query
+          total: total
         }
       });
     } catch (error) {

@@ -406,20 +406,17 @@ const RadioManagement = () => {
   }
 
   const [radios, setRadios] = useState([]);
+  const [totalRadios, setTotalRadios] = useState(0);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [groupFilter, setGroupFilter] = useState('');
-  const [languageFilter, setLanguageFilter] = useState('');
-  const [emirateFilter, setEmirateFilter] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingRadio, setEditingRadio] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState('created_at');
-  const [sortDirection, setSortDirection] = useState('desc');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Layout constants (same as AdminDashboard)
@@ -521,12 +518,22 @@ const RadioManagement = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage, pageSize, debouncedSearchTerm, groupFilter]);
 
   const fetchRadios = async () => {
     try {
-      const response = await api.get('/radios/admin');
+      const params = new URLSearchParams();
+      params.append('page', currentPage.toString());
+      params.append('limit', pageSize.toString());
+      if (debouncedSearchTerm) {
+        params.append('radio_name', debouncedSearchTerm);
+      }
+      if (groupFilter) {
+        params.append('group_id', groupFilter);
+      }
+      const response = await api.get(`/radios/admin?${params.toString()}`);
       setRadios(response.data.radios || []);
+      setTotalRadios(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching radios:', error);
       if (error.response?.status === 401) {
@@ -564,86 +571,19 @@ const RadioManagement = () => {
     }, {});
   }, [groups]);
 
-  // Filtered radios based on search and filters
-  const filteredRadios = useMemo(() => {
-    let filtered = radios;
-
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(radio =>
-        radio.radio_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        radio.frequency.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        radio.radio_language.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        radio.sn.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      );
-    }
-
-    if (groupFilter) {
-      filtered = filtered.filter(radio => radio.group_id === parseInt(groupFilter));
-    }
-
-    if (languageFilter) {
-      filtered = filtered.filter(radio => radio.radio_language.toLowerCase().includes(languageFilter.toLowerCase()));
-    }
-
-    if (emirateFilter) {
-      filtered = filtered.filter(radio => radio.emirate_state.toLowerCase().includes(emirateFilter.toLowerCase()));
-    }
-
-    return filtered;
-  }, [radios, debouncedSearchTerm, groupFilter, languageFilter, emirateFilter]);
-
-  // Update filtered radios when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm, groupFilter, languageFilter, emirateFilter]);
-
-  // Sorting logic
-  const sortedRadios = useMemo(() => {
-    return [...filteredRadios].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === 'created_at' || sortField === 'updated_at') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
-      }
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-  }, [filteredRadios, sortField, sortDirection]);
-
   // Pagination logic
   const paginatedRadios = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedRadios.slice(startIndex, startIndex + pageSize);
-  }, [sortedRadios, currentPage, pageSize]);
+    return radios; // Since pagination is now handled server-side
+  }, [radios]);
 
-  const totalPages = Math.ceil(sortedRadios.length / pageSize);
+  const totalPages = Math.ceil(totalRadios / pageSize);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
 
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  const getSortIcon = (field) => {
-    if (sortField !== field) return '';
-    return sortDirection === 'asc' ? '↑' : '↓';
-  };
+  // Sorting not implemented server-side yet
+  const getSortIcon = (field) => '';
 
   // CRUD operations
   const handleCreateRadio = () => {
@@ -683,8 +623,6 @@ const RadioManagement = () => {
   const clearFilters = () => {
     setSearchTerm('');
     setGroupFilter('');
-    setLanguageFilter('');
-    setEmirateFilter('');
   };
 
   if (loading) {
@@ -976,33 +914,6 @@ const RadioManagement = () => {
                   ))}
                 </select>
 
-                <input
-                  type="text"
-                  placeholder="Filter by language"
-                  value={languageFilter}
-                  onChange={(e) => setLanguageFilter(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    minWidth: '150px'
-                  }}
-                />
-
-                <input
-                  type="text"
-                  placeholder="Filter by emirate/state"
-                  value={emirateFilter}
-                  onChange={(e) => setEmirateFilter(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    minWidth: '150px'
-                  }}
-                />
 
                 <button
                   onClick={clearFilters}
@@ -1026,14 +937,11 @@ const RadioManagement = () => {
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
                   {debouncedSearchTerm ? (
                     <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{sortedRadios.length}</strong> radios
+                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{totalRadios}</strong> radios
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedRadios.length}</strong> of <strong>{sortedRadios.length}</strong> radios
-                      {sortedRadios.length !== radios.length && (
-                        <span> (filtered from {radios.length} total)</span>
-                      )}
+                      Showing <strong>{paginatedRadios.length}</strong> of <strong>{totalRadios}</strong> radios
                     </>
                   )}
                 </div>
@@ -1081,20 +989,14 @@ const RadioManagement = () => {
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         SN
                       </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'pointer' }}
-                        onClick={() => handleSort('radio_name')}
-                      >
-                        Radio Name {getSortIcon('radio_name')}
+                      <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Radio Name
                       </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Owners Group
                       </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'pointer' }}
-                        onClick={() => handleSort('frequency')}
-                      >
-                        Frequency {getSortIcon('frequency')}
+                      <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Frequency
                       </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Language
