@@ -9,7 +9,12 @@ const useLocalStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      if (item) {
+        const parsed = JSON.parse(item);
+        // Convert arrays back to Sets if initialValue is a Set
+        return initialValue instanceof Set ? new Set(parsed) : parsed;
+      }
+      return initialValue;
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
       return initialValue;
@@ -20,7 +25,9 @@ const useLocalStorage = (key, initialValue) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      // Convert Sets to arrays for JSON storage
+      const serializedValue = valueToStore instanceof Set ? Array.from(valueToStore) : valueToStore;
+      window.localStorage.setItem(key, JSON.stringify(serializedValue));
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
     }
