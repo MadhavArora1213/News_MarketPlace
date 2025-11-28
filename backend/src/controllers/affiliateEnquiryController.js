@@ -71,6 +71,8 @@ class AffiliateEnquiryController {
         limit = 10,
         status,
         search,
+        date_from,
+        date_to,
         sortBy = 'submitted_at',
         sortOrder = 'DESC'
       } = req.query;
@@ -92,6 +94,21 @@ class AffiliateEnquiryController {
         const searchCondition = whereClause ? ' AND' : ' WHERE';
         whereClause += `${searchCondition} (name ILIKE $${paramCount} OR email ILIKE $${paramCount})`;
         params.push(`%${search}%`);
+        paramCount++;
+      }
+
+      // Add date range filter
+      if (date_from) {
+        const dateCondition = whereClause ? ' AND' : ' WHERE';
+        whereClause += `${dateCondition} DATE(submitted_at) >= $${paramCount}`;
+        params.push(date_from);
+        paramCount++;
+      }
+
+      if (date_to) {
+        const dateCondition = whereClause ? ' AND' : ' WHERE';
+        whereClause += `${dateCondition} DATE(submitted_at) <= $${paramCount}`;
+        params.push(date_to);
         paramCount++;
       }
 

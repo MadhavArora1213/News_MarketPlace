@@ -619,17 +619,34 @@ class AiGeneratedArticleController {
         page = 1,
         limit = 10,
         status,
-        user_id,
-        publication_id,
+        story_type,
         search
       } = req.query;
 
       const filters = {};
       if (status) filters.status = status;
-      if (user_id) filters.user_id = parseInt(user_id);
-      if (publication_id) filters.publication_id = parseInt(publication_id);
+      if (story_type) filters.story_type = story_type;
 
       const offset = (page - 1) * limit;
+
+      // Build WHERE clause with filters and search
+      let whereClause = '';
+      const values = [];
+      let paramCount = 1;
+
+      // Add filters
+      if (Object.keys(filters).length > 0) {
+        whereClause += 'WHERE ' + Object.keys(filters).map(key => `aga.${key} = $${paramCount++}`).join(' AND ');
+        values.push(...Object.values(filters));
+      }
+
+      // Add search condition
+      if (search) {
+        const searchCondition = `(aga.name ILIKE $${paramCount} OR u.first_name ILIKE $${paramCount} OR u.last_name ILIKE $${paramCount} OR u.email ILIKE $${paramCount} OR p.publication_name ILIKE $${paramCount})`;
+        whereClause += (whereClause ? ' AND ' : 'WHERE ') + searchCondition;
+        values.push(`%${search}%`);
+        paramCount++;
+      }
 
       // Get articles with user and publication data
       const sql = `
@@ -637,17 +654,24 @@ class AiGeneratedArticleController {
         FROM ai_generated_articles aga
         LEFT JOIN users u ON aga.user_id = u.id
         LEFT JOIN publications p ON aga.publication_id = p.id
-        ${Object.keys(filters).length > 0 ? 'WHERE ' + Object.keys(filters).map((key, index) => `aga.${key} = $${index + 1}`).join(' AND ') : ''}
+        ${whereClause}
         ORDER BY aga.created_at DESC
-        LIMIT $${Object.keys(filters).length + 1} OFFSET $${Object.keys(filters).length + 2}
+        LIMIT $${paramCount} OFFSET $${paramCount + 1}
       `;
 
-      const values = [...Object.values(filters), parseInt(limit), offset];
+      values.push(parseInt(limit), offset);
       const result = await query(sql, values);
 
       // Get total count
-      const countSql = `SELECT COUNT(*) FROM ai_generated_articles${Object.keys(filters).length > 0 ? ' WHERE ' + Object.keys(filters).map((key, index) => `${key} = $${index + 1}`).join(' AND ') : ''}`;
-      const countResult = await query(countSql, Object.values(filters));
+      const countSql = `
+        SELECT COUNT(*) FROM ai_generated_articles aga
+        LEFT JOIN users u ON aga.user_id = u.id
+        LEFT JOIN publications p ON aga.publication_id = p.id
+        ${whereClause}
+      `;
+
+      const countValues = values.slice(0, -2); // Remove limit and offset
+      const countResult = await query(countSql, countValues);
       const totalCount = parseInt(countResult.rows[0].count);
       const totalPages = Math.ceil(totalCount / limit);
 

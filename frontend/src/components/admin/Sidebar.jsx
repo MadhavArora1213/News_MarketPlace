@@ -157,7 +157,7 @@ export default function Sidebar({
                 onMouseEnter={e => e.currentTarget.style.background = '#E3F2FD'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e3f2fd')}><Icon name="bolt" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span style={navIconCircle('#e3f2fd')}><Icon name="cpu" size="sm" style={{ color: '#1976D2' }} /></span>
                 <span>AI Articles</span>
               </a>
             </li>
