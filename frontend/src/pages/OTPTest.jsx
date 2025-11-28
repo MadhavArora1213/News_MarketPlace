@@ -296,9 +296,9 @@ const OTPTest = () => {
               <p><strong>Provider:</strong> Message Central</p>
               <p><strong>Country Code:</strong> 91 (India)</p>
               <p><strong>Flow Types:</strong> SMS, WhatsApp</p>
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                <p className="text-yellow-800 text-xs">
-                  <strong>Note:</strong> Replace <code>your_messagecentral_auth_token_here</code> in backend/.env with your actual Message Central auth token to enable OTP functionality.
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+                <p className="text-green-800 text-xs">
+                  <strong>Status:</strong> OTP service is configured and ready. If you're getting authentication errors, please verify your Message Central auth token is complete and valid.
                 </p>
               </div>
             </div>
