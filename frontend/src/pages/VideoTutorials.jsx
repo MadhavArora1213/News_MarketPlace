@@ -7,7 +7,9 @@ import { videos } from '../data/videos';
 
 // Custom hook for localStorage persistence
 const useLocalStorage = (key, initialValue) => {
-  const [storedValue, setStoredValue] = useState(() => {
+  const [storedValue, setStoredValue] = useState(initialValue);
+
+  useEffect(() => {
     try {
       const item = window.localStorage.getItem(key);
       if (item) {
@@ -15,26 +17,24 @@ const useLocalStorage = (key, initialValue) => {
         // Validate and convert data
         if (initialValue instanceof Set) {
           if (Array.isArray(parsed)) {
-            return new Set(parsed);
+            setStoredValue(new Set(parsed));
           }
         } else if (typeof initialValue === 'object' && initialValue !== null) {
           if (typeof parsed === 'object' && parsed !== null) {
-            return parsed;
+            setStoredValue(parsed);
           }
         } else {
-          return parsed;
+          setStoredValue(parsed);
         }
       }
-      return initialValue;
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
       // Clear corrupted data
       try {
         window.localStorage.removeItem(key);
       } catch (e) {}
-      return initialValue;
     }
-  });
+  }, [key, initialValue]);
 
   const setValue = (value) => {
     try {
