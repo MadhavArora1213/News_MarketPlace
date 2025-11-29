@@ -6,54 +6,77 @@ import useTranslatedText from '../../hooks/useTranslatedText';
 const FeatureSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Translated texts
+  const socialMediaRecoveryTitle = useTranslatedText("Social Media Recovery");
+  const socialMediaRecoverySubtitle = useTranslatedText("Restore Your Online Presence");
+  const socialMediaRecoveryDesc = useTranslatedText("Restore your online presence and reputation with our expert social media recovery services. We help you reclaim your digital identity.");
+
+  const classifiedAdsTitle = useTranslatedText("Classified Ads Space");
+  const classifiedAdsSubtitle = useTranslatedText("Monetize Your Platform");
+  const classifiedAdsDesc = useTranslatedText("Transform your platform into a revenue-generating powerhouse with our intelligent advertising solutions and monetization tools.");
+
+  const passiveIncomeTitle = useTranslatedText("Passive Income Opportunities");
+  const passiveIncomeSubtitle = useTranslatedText("Earn from Content Creation");
+  const passiveIncomeDesc = useTranslatedText("Unlock new income streams through our comprehensive content monetization and contributor reward system with automated payouts.");
+
+  const advancedToolsTitle = useTranslatedText("Advanced Publishing Tools");
+  const advancedToolsSubtitle = useTranslatedText("Professional Content Creation");
+  const advancedToolsDesc = useTranslatedText("Elevate your content creation with cutting-edge tools designed for modern digital publishing and professional workflows.");
+
+  const learnMoreText = useTranslatedText("Learn More");
+  const easySetupText = useTranslatedText("Easy Setup");
+  const supportText = useTranslatedText("24/7 Support");
+  const instantResultsText = useTranslatedText("Instant Results");
+  const goToSlideText = useTranslatedText("Go to slide");
+
   const features = [
     {
       id: 1,
-      title: useTranslatedText("Social Media Recovery"),
-      subtitle: useTranslatedText("Restore Your Online Presence"),
+      title: socialMediaRecoveryTitle,
+      subtitle: socialMediaRecoverySubtitle,
       icon: "user-group",
       placeholderIcon: "user-group",
       color: "teal",
       bgGradient: "from-[#00796B] to-[#004D40]",
       iconBg: "from-[#00796B] to-[#004D40]",
       image: "",
-      description: useTranslatedText("Restore your online presence and reputation with our expert social media recovery services. We help you reclaim your digital identity."),
+      description: socialMediaRecoveryDesc,
     },
     {
       id: 2,
-      title: useTranslatedText("Classified Ads Space"),
-      subtitle: useTranslatedText("Monetize Your Platform"),
+      title: classifiedAdsTitle,
+      subtitle: classifiedAdsSubtitle,
       icon: "megaphone",
       placeholderIcon: "megaphone",
       color: "blue",
       bgGradient: "from-[#1976D2] to-[#0D47A1]",
       iconBg: "from-[#1976D2] to-[#0D47A1]",
       image: "",
-      description: useTranslatedText("Transform your platform into a revenue-generating powerhouse with our intelligent advertising solutions and monetization tools."),
+      description: classifiedAdsDesc,
     },
     {
       id: 3,
-      title: useTranslatedText("Passive Income Opportunities"),
-      subtitle: useTranslatedText("Earn from Content Creation"),
+      title: passiveIncomeTitle,
+      subtitle: passiveIncomeSubtitle,
       icon: "currency-dollar",
       placeholderIcon: "currency-dollar",
       color: "purple",
       bgGradient: "from-[#9C27B0] to-[#7B1FA2]",
       iconBg: "from-[#9C27B0] to-[#7B1FA2]",
       image: "",
-      description: useTranslatedText("Unlock new income streams through our comprehensive content monetization and contributor reward system with automated payouts."),
+      description: passiveIncomeDesc,
     },
     {
       id: 4,
-      title: useTranslatedText("Advanced Publishing Tools"),
-      subtitle: useTranslatedText("Professional Content Creation"),
+      title: advancedToolsTitle,
+      subtitle: advancedToolsSubtitle,
       icon: "pencil-square",
       placeholderIcon: "pencil-square",
       color: "orange",
       bgGradient: "from-[#FF9800] to-[#F57C00]",
       iconBg: "from-[#FF9800] to-[#F57C00]",
       image: "",
-      description: useTranslatedText("Elevate your content creation with cutting-edge tools designed for modern digital publishing and professional workflows."),
+      description: advancedToolsDesc,
     }
   ];
 
@@ -127,22 +150,22 @@ const FeatureSlider = () => {
 
                         <div className="space-y-4">
                            <CosmicButton variant="small" textColor="#ffffff">
-                             {useTranslatedText("Learn More")}
+                             {learnMoreText}
                            </CosmicButton>
 
                           {/* Feature Highlights */}
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
                             <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
                               <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{useTranslatedText("Easy Setup")}</span>
+                              <span className="whitespace-nowrap font-medium">{easySetupText}</span>
                             </div>
                             <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
                               <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{useTranslatedText("24/7 Support")}</span>
+                              <span className="whitespace-nowrap font-medium">{supportText}</span>
                             </div>
                             <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
                               <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{useTranslatedText("Instant Results")}</span>
+                              <span className="whitespace-nowrap font-medium">{instantResultsText}</span>
                             </div>
                           </div>
                         </div>
@@ -165,7 +188,7 @@ const FeatureSlider = () => {
                     ? 'bg-gradient-to-r from-[#1976D2] to-[#0D47A1] shadow-lg scale-110'
                     : 'bg-white/60 backdrop-blur-sm hover:bg-[#1976D2] border border-[#E0E0E0]'
                 }`}
-                aria-label={`${useTranslatedText("Go to slide")} ${index + 1}`}
+                aria-label={`${goToSlideText} ${index + 1}`}
               />
             ))}
           </div>
