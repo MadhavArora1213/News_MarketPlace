@@ -177,64 +177,53 @@ const UserHeader = () => {
         {/* Bottom Row: Resources and Services */}
         <div className="hidden lg:flex justify-between items-center py-2">
           <div className="flex items-center space-x-2 xl:space-x-3 2xl:space-x-4">
-            {/* Resources and Services */}
-            {allItems.slice(0, 8).map((item, index) => (
-              <a
-                key={`item-${index}`}
-                href={item.href}
-                className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
-                onClick={(e) => {
-                  if (!isAuthenticated) {
-                    e.preventDefault();
-                    showAuthModal();
-                  }
-                }}
-              >
-                <Icon name={item.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                <span className="whitespace-nowrap">{item.name}</span>
-              </a>
-            ))}
-
-            {/* More Dropdown */}
-            {allItems.length > 8 && (
-              <div className="group relative">
-                <button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md">
-                  <Icon name="menu" size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                  <span className="whitespace-nowrap">More</span>
-                  <Icon name="chevron-down" size="xs" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                </button>
-                <div className="absolute top-full right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
-                  <div className="p-3">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">All Resources & Services</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {allItems.slice(8).map((item, index) => (
-                        <a
-                          key={index}
-                          href={item.href}
-                          className="flex items-center px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
-                          onClick={(e) => {
-                            if (!isAuthenticated) {
-                              e.preventDefault();
-                              showAuthModal();
-                            }
-                          }}
-                        >
-                          <span className="text-left">{item.name}</span>
-                        </a>
-                      ))}
-                    </div>
+            {/* More Dropdown with all Resources and Services */}
+            <div className="group relative">
+              <button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md">
+                <Icon name="menu" size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
+                <span className="whitespace-nowrap">Resources</span>
+                <Icon name="chevron-down" size="xs" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
+              </button>
+              <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
+                <div className="p-4">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">All Resources & Services</h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {allItems.map((item, index) => (
+                      <a
+                        key={index}
+                        href={item.href}
+                        className="flex items-center px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
+                        onClick={(e) => {
+                          if (!isAuthenticated) {
+                            e.preventDefault();
+                            showAuthModal();
+                          }
+                        }}
+                      >
+                        <span className="text-left">{item.name}</span>
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
-          <button onClick={showAuthModal} className="px-5 py-2 bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold text-sm rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
-            <span className="flex items-center space-x-1.5">
-              <Icon name="login" size="xs" />
-              <span>Sign In / Sign Up</span>
-            </span>
-          </button>
+          {!isAuthenticated ? (
+            <button onClick={showAuthModal} className="px-5 py-2 bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold text-sm rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
+              <span className="flex items-center space-x-1.5">
+                <Icon name="login" size="xs" />
+                <span>Sign In / Sign Up</span>
+              </span>
+            </button>
+          ) : (
+            <button onClick={logout} className="px-5 py-2 bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold text-sm rounded-lg hover:from-[#D32F2F] hover:to-[#D32F2F] transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
+              <span className="flex items-center space-x-1.5">
+                <Icon name="logout" size="xs" />
+                <span>Logout</span>
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -298,15 +287,24 @@ const UserHeader = () => {
               </div>
             </div>
 
-            {/* Action Buttons - only signin */}
+            {/* Action Buttons */}
             <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
               <div className="space-y-2">
-                <button onClick={showAuthModal} className="w-full bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold py-3 rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 shadow-md text-sm">
-                  <span className="flex items-center justify-center space-x-1.5">
-                    <Icon name="login" size="xs" />
-                    <span>Sign In / Sign Up</span>
-                  </span>
-                </button>
+                {!isAuthenticated ? (
+                  <button onClick={showAuthModal} className="w-full bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold py-3 rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 shadow-md text-sm">
+                    <span className="flex items-center justify-center space-x-1.5">
+                      <Icon name="login" size="xs" />
+                      <span>Sign In / Sign Up</span>
+                    </span>
+                  </button>
+                ) : (
+                  <button onClick={logout} className="w-full bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold py-3 rounded-lg hover:from-[#D32F2F] hover:to-[#D32F2F] transition-all duration-300 shadow-md text-sm">
+                    <span className="flex items-center justify-center space-x-1.5">
+                      <Icon name="logout" size="xs" />
+                      <span>Logout</span>
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
 
