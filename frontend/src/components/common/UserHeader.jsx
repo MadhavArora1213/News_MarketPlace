@@ -177,18 +177,36 @@ const UserHeader = () => {
         {/* Bottom Row: Resources and Services */}
         <div className="hidden lg:flex justify-between items-center py-2">
           <div className="flex items-center space-x-2 xl:space-x-3 2xl:space-x-4">
-            {/* More Dropdown with all Resources and Services */}
+            {/* Services shown directly */}
+            {services.slice(0, 6).map((service, index) => (
+              <a
+                key={`service-${index}`}
+                href={service.href}
+                className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
+                onClick={(e) => {
+                  if (!isAuthenticated) {
+                    e.preventDefault();
+                    showAuthModal();
+                  }
+                }}
+              >
+                <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
+                <span className="whitespace-nowrap">{service.name}</span>
+              </a>
+            ))}
+
+            {/* More Dropdown with Resources */}
             <div className="group relative">
               <button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md">
                 <Icon name="menu" size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                <span className="whitespace-nowrap">Resources</span>
+                <span className="whitespace-nowrap">More</span>
                 <Icon name="chevron-down" size="xs" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
+              <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
                 <div className="p-4">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">All Resources & Services</h4>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Resources</h4>
                   <div className="grid grid-cols-1 gap-2">
-                    {allItems.map((item, index) => (
+                    {menuItems.map((item, index) => (
                       <a
                         key={index}
                         href={item.href}
@@ -200,10 +218,33 @@ const UserHeader = () => {
                           }
                         }}
                       >
-                        <span className="text-left">{item.name}</span>
+                        <span className="text-left">{item.text}</span>
                       </a>
                     ))}
                   </div>
+                  {services.length > 6 && (
+                    <>
+                      <div className="border-t border-gray-200 my-3"></div>
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3">Additional Services</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {services.slice(6).map((service, index) => (
+                          <a
+                            key={index}
+                            href={service.href}
+                            className="flex items-center px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
+                            onClick={(e) => {
+                              if (!isAuthenticated) {
+                                e.preventDefault();
+                                showAuthModal();
+                              }
+                            }}
+                          >
+                            <span className="text-left">{service.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
