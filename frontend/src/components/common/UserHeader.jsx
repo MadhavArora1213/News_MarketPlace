@@ -33,7 +33,7 @@ const UserHeader = () => {
    const showLessText = useTranslatedText('Show Less');
    const resourcesText = useTranslatedText('Resources');
    const agencyRegistrationText = useTranslatedText('Agency Registration');
-   const submitPublicationText = useTranslatedText('Submit your Publication');
+   const submitPublicationText = useTranslatedText('Submit Articles');
    const reporterRegistrationText = useTranslatedText('Editor/Contributor Registration');
    const mediaPartnershipsEventsText = useTranslatedText('Media Partnerships for Events');
    const pressGuidelinesText = useTranslatedText('Press Release Distribution Guidelines');
