@@ -189,7 +189,7 @@ const UserHeader = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden text-[#212121] hover:text-[#1976D2] p-2 rounded-lg hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
+              className="xl:hidden text-[#212121] hover:text-[#1976D2] p-2 rounded-lg hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -242,6 +242,7 @@ const UserHeader = () => {
                           }
                         }}
                       >
+                        <Icon name={item.icon} size="xs" className="mr-2 text-gray-500" />
                         <span className="text-left">{item.text}</span>
                       </a>
                     ))}
@@ -270,7 +271,7 @@ const UserHeader = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-white/20 py-3 space-y-3">
+          <div className="xl:hidden border-t border-white/20 py-3 space-y-3">
             <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
               {/* TopHeader Mobile Content */}
               <div className="pb-2">
