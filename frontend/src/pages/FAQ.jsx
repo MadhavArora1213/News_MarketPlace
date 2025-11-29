@@ -3,6 +3,7 @@ import Icon from '../components/common/Icon';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import useTranslatedText from '../hooks/useTranslatedText';
 
 const FAQ = () => {
   const [openItems, setOpenItems] = useState(new Set());
@@ -99,8 +100,8 @@ const FAQ = () => {
   return (
     <div className="min-h-screen bg-[#E3F2FD]">
       <SEO
-        title="FAQ"
-        description="Find answers to frequently asked questions about News Marketplace services, guaranteed publications, pricing, and media placement. Get all your questions answered."
+        title={useTranslatedText('FAQ')}
+        description={useTranslatedText('Find answers to frequently asked questions about News Marketplace services, guaranteed publications, pricing, and media placement. Get all your questions answered.')}
         keywords="FAQ, frequently asked questions, news marketplace, guaranteed publication, pricing, media outlets, PR services"
       />
       {/* <UserHeader /> */}
@@ -110,7 +111,7 @@ const FAQ = () => {
 
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold" style={{ color: '#212121' }}>
-            Frequently Asked Questions
+            {useTranslatedText('Frequently Asked Questions')}
           </h1>
         </div>
       </section>
@@ -139,7 +140,7 @@ const FAQ = () => {
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" style={{ backgroundColor: '#1976D2' }}>
                         {index + 1}
                       </div>
-                      <h3 className="text-base font-semibold pr-4" style={{ color: '#212121' }}>{faq.question}</h3>
+                      <h3 className="text-base font-semibold pr-4" style={{ color: '#212121' }}>{useTranslatedText(faq.question)}</h3>
                     </div>
 
                     <div className={`transform transition-transform duration-300 flex-shrink-0 ${openItems.has(index) ? 'rotate-45' : ''}`}>
@@ -172,7 +173,7 @@ const FAQ = () => {
                   >
                     <div className="px-6 pb-6">
                       <div className="border-t pt-6" style={{ borderColor: '#E0E0E0' }}>
-                        <p className="leading-relaxed" style={{ color: '#757575' }}>{faq.answer}</p>
+                        <p className="leading-relaxed" style={{ color: '#757575' }}>{useTranslatedText(faq.answer)}</p>
                       </div>
                     </div>
                   </div>
@@ -200,7 +201,7 @@ const FAQ = () => {
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold text-sm flex-shrink-0" style={{ backgroundColor: '#00796B' }}>
                           {actualIndex + 1}
                         </div>
-                        <h3 className="text-base font-semibold pr-4" style={{ color: '#212121' }}>{faq.question}</h3>
+                        <h3 className="text-base font-semibold pr-4" style={{ color: '#212121' }}>{useTranslatedText(faq.question)}</h3>
                       </div>
 
                       <div className={`transform transition-transform duration-300 flex-shrink-0 ${openItems.has(actualIndex) ? 'rotate-45' : ''}`}>
@@ -233,7 +234,7 @@ const FAQ = () => {
                     >
                       <div className="px-6 pb-6">
                         <div className="border-t pt-6" style={{ borderColor: '#E0E0E0' }}>
-                          <p className="leading-relaxed" style={{ color: '#757575' }}>{faq.answer}</p>
+                          <p className="leading-relaxed" style={{ color: '#757575' }}>{useTranslatedText(faq.answer)}</p>
                         </div>
                       </div>
                     </div>

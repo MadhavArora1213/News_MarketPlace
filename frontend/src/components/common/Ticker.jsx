@@ -1,7 +1,8 @@
 import React from 'react';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 const Ticker = () => {
-  const message = "The current website is for representation purpose only, the detailed and actuals services will be listed soon";
+  const message = useTranslatedText("The current website is for representation purpose only, the detailed and actuals services will be listed soon");
 
   return (
     <div className="bg-blue-100 border-t border-b border-blue-300 py-2 overflow-hidden">

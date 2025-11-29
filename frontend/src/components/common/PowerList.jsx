@@ -3,12 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
+import { useTranslatedText } from '../../hooks/useTranslatedText';
 
 const PowerList = () => {
   const navigate = useNavigate();
   const [powerListItems, setPowerListItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Translated strings
+  const translatedServiceUnavailable = useTranslatedText('Service temporarily unavailable. Please try again later.');
+  const translatedFailedLoad = useTranslatedText('Failed to load power lists. Please try again later.');
+  const translatedGeneral = useTranslatedText('General');
+  const translatedInfluential = useTranslatedText('Influential Professional');
+  const translatedLinkedIn = useTranslatedText('LinkedIn Connected');
+  const translatedNA = useTranslatedText('N/A');
+  const translatedZeroGrowth = useTranslatedText('+0%');
 
   useEffect(() => {
     fetchPowerlists();
@@ -32,8 +42,8 @@ const PowerList = () => {
     } catch (error) {
       console.error('Error fetching powerlists:', error?.message || error);
       const errorMessage = error.response?.status === 404
-        ? 'Service temporarily unavailable. Please try again later.'
-        : 'Failed to load power lists. Please try again later.';
+        ? translatedServiceUnavailable
+        : translatedFailedLoad;
       setError(errorMessage);
       setPowerListItems([]);
     } finally {
@@ -46,10 +56,10 @@ const PowerList = () => {
       id: item.id,
       rank: index + 1,
       name: item.name,
-      category: item.company_industry || 'General',
-      description: item.position || 'Influential Professional',
-      followers: item.followers_count || (item.linkedin_url ? 'LinkedIn Connected' : 'N/A'),
-      growth: item.growth_percentage ? `+${item.growth_percentage}%` : '+0%',
+      category: item.company_industry || translatedGeneral,
+      description: item.position || translatedInfluential,
+      followers: item.followers_count || (item.linkedin_url ? translatedLinkedIn : translatedNA),
+      growth: item.growth_percentage ? `+${item.growth_percentage}%` : translatedZeroGrowth,
       avatar: item.avatar || item.profile_image || '/api/placeholder/60/60',
       linkedin_url: item.linkedin_url,
       instagram_url: item.instagram_url,
@@ -88,10 +98,10 @@ const PowerList = () => {
         <div className="text-center mb-20">
           
           <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
-            Power List <span className="text-[#1976D2]">2024</span>
+            {useTranslatedText('Power List 2024')}
           </h1>
           <p className="text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light">
-            Celebrating the most influential organizations and leaders shaping the media and publishing landscape.
+            {useTranslatedText('Celebrating the most influential organizations and leaders shaping the media and publishing landscape.')}
           </p>
           <div className="mt-8 flex justify-center space-x-6">
             <div className="w-20 h-1 bg-[#1976D2] rounded-full"></div>
@@ -104,7 +114,7 @@ const PowerList = () => {
         {loading ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-b-2 border-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading power list...</p>
+            <p className="text-lg text-[#757575]">{useTranslatedText('Loading power list...')}</p>
           </div>
         ) : error ? (
           <div className="text-center py-12">
@@ -132,7 +142,7 @@ const PowerList = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{item.followers}</div>
-                    <div className="text-sm text-[#757575] font-medium">followers</div>
+                    <div className="text-sm text-[#757575] font-medium">{useTranslatedText('followers')}</div>
                   </div>
                 </div>
               </div>
@@ -181,7 +191,7 @@ const PowerList = () => {
                     </div>
                     <div>
                       <span className="text-[#4CAF50] font-bold text-lg">{item.growth}</span>
-                      <span className="text-[#757575] text-sm ml-1">growth</span>
+                      <span className="text-[#757575] text-sm ml-1">{useTranslatedText('growth')}</span>
                     </div>
                   </div>
                   <CosmicButton
@@ -190,7 +200,7 @@ const PowerList = () => {
                     className="shadow-md hover:shadow-lg transition-shadow duration-300"
                     onClick={() => navigate(`/power-lists/${item.id}`)}
                   >
-                    View Profile
+                    {useTranslatedText('View Profile')}
                   </CosmicButton>
                 </div>
               </div>
@@ -204,10 +214,10 @@ const PowerList = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/30 to-transparent"></div>
           <div className="text-center mb-12 relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
-              Join the Elite
+              {useTranslatedText('Join the Elite')}
             </h2>
             <p className="text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed">
-              Want to be featured in our Power List? Join the ranks of industry leaders and innovators who are shaping the future of media and publishing.
+              {useTranslatedText('Want to be featured in our Power List? Join the ranks of industry leaders and innovators who are shaping the future of media and publishing.')}
             </p>
           </div>
 
@@ -218,8 +228,8 @@ const PowerList = () => {
                   <Icon name="star" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#1976D2] transition-colors duration-300">Recognition</h3>
-                  <p className="text-[#757575] text-lg leading-relaxed">Get recognized as a leader in your field</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#1976D2] transition-colors duration-300">{useTranslatedText('Recognition')}</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">{useTranslatedText('Get recognized as a leader in your field')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-6 group">
@@ -227,8 +237,8 @@ const PowerList = () => {
                   <Icon name="user-group" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#4CAF50] transition-colors duration-300">Networking</h3>
-                  <p className="text-[#757575] text-lg leading-relaxed">Connect with industry leaders and peers</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#4CAF50] transition-colors duration-300">{useTranslatedText('Networking')}</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">{useTranslatedText('Connect with industry leaders and peers')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-6 group">
@@ -236,22 +246,22 @@ const PowerList = () => {
                   <Icon name="megaphone" size="lg" className="text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#9C27B0] transition-colors duration-300">Visibility</h3>
-                  <p className="text-[#757575] text-lg leading-relaxed">Increase your brand visibility globally</p>
+                  <h3 className="text-xl font-bold text-[#212121] mb-3 group-hover:text-[#9C27B0] transition-colors duration-300">{useTranslatedText('Visibility')}</h3>
+                  <p className="text-[#757575] text-lg leading-relaxed">{useTranslatedText('Increase your brand visibility globally')}</p>
                 </div>
               </div>
             </div>
 
             <div className="text-center space-y-8">
               <div className="bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB] rounded-3xl p-8 shadow-xl border border-[#E0E0E0]">
-                <h3 className="text-2xl font-bold text-[#212121] mb-6">Apply Now</h3>
-                <p className="text-[#757575] mb-8 text-lg">Submit your application for consideration</p>
+                <h3 className="text-2xl font-bold text-[#212121] mb-6">{useTranslatedText('Apply Now')}</h3>
+                <p className="text-[#757575] mb-8 text-lg">{useTranslatedText('Submit your application for consideration')}</p>
                 <div className="flex flex-col gap-4">
                   <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    Apply for Power List
+                    {useTranslatedText('Apply for Power List')}
                   </CosmicButton>
                   <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    Nominate Someone
+                    {useTranslatedText('Nominate Someone')}
                   </CosmicButton>
                 </div>
               </div>

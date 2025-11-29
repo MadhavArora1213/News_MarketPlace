@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
+import { useTranslatedText } from '../../hooks/useTranslatedText';
 
 const Awards = () => {
   const navigate = useNavigate();
@@ -27,8 +28,8 @@ const Awards = () => {
     } catch (err) {
       console.error('Error fetching awards:', err?.message || err);
       const errorMessage = err.response?.status === 404
-        ? 'Service temporarily unavailable. Please try again later.'
-        : 'Failed to load awards. Please try again later.';
+        ? useTranslatedText('Service temporarily unavailable. Please try again later.')
+        : useTranslatedText('Failed to load awards. Please try again later.');
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -58,10 +59,10 @@ const Awards = () => {
     return data.map((award, index) => ({
       id: award.id,
       title: award.award_name,
-      year: award.award_month || award.created_at?.split('-')[0] || "2024",
-      category: award.award_focus || "General",
-      recipient: award.organiser || "News MarketPlace",
-      description: award.description || "Award description not available.",
+      year: award.award_month || award.created_at?.split('-')[0] || useTranslatedText("2024"),
+      category: award.award_focus || useTranslatedText("General"),
+      recipient: award.organiser || useTranslatedText("News MarketPlace"),
+      description: award.description || useTranslatedText("Award description not available."),
       icon: getAwardIcon(award.award_focus),
       color: colors[index % colors.length],
       website: award.website,
@@ -82,10 +83,10 @@ const Awards = () => {
         <div className="text-center mb-20">
        
           <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
-            Awards & <span className="text-[#1976D2]">Recognition</span>
+            {useTranslatedText('Awards & Recognition')}
           </h1>
           <p className="text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light">
-            Celebrating our achievements and the recognition we've received for excellence in digital publishing and media innovation.
+            {useTranslatedText('Celebrating our achievements and the recognition we\'ve received for excellence in digital publishing and media innovation.')}
           </p>
           <div className="mt-8 flex justify-center space-x-6">
             <div className="w-20 h-1 bg-[#1976D2] rounded-full"></div>
@@ -98,7 +99,7 @@ const Awards = () => {
         {loading ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-b-2 border-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading awards...</p>
+            <p className="text-lg text-[#757575]">{useTranslatedText('Loading awards...')}</p>
           </div>
         ) : error ? (
           <div className="text-center py-12">
@@ -123,7 +124,7 @@ const Awards = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{award.year}</div>
-                      <div className="text-sm text-[#757575] font-medium">Award Year</div>
+                      <div className="text-sm text-[#757575] font-medium">{useTranslatedText('Award Year')}</div>
                     </div>
                   </div>
                   <span className="bg-[#1976D2]/10 text-[#1976D2] text-sm font-semibold px-4 py-2 rounded-full border border-[#1976D2]/20">
@@ -171,7 +172,7 @@ const Awards = () => {
                       <div className="w-8 h-8 bg-[#4CAF50]/10 rounded-lg flex items-center justify-center">
                         <Icon name="badge-check" size="sm" className="text-[#4CAF50]" />
                       </div>
-                      <span className="text-[#4CAF50] font-medium text-sm">Verified Award</span>
+                      <span className="text-[#4CAF50] font-medium text-sm">{useTranslatedText('Verified Award')}</span>
                     </div>
                     <CosmicButton
                       variant="small"
@@ -179,7 +180,7 @@ const Awards = () => {
                       className="shadow-md hover:shadow-lg transition-shadow duration-300"
                       onClick={() => navigate(`/awards/${award.id}`)}
                     >
-                      Learn More
+                      {useTranslatedText('Learn More')}
                     </CosmicButton>
                   </div>
                 </div>
@@ -193,17 +194,17 @@ const Awards = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/30 to-transparent"></div>
           <div className="text-center relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6">
-              Nominate for Awards
+              {useTranslatedText('Nominate for Awards')}
             </h2>
             <p className="text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed mb-10">
-              Recognize excellence in digital publishing. Nominate outstanding work or submit your achievements for consideration.
+              {useTranslatedText('Recognize excellence in digital publishing. Nominate outstanding work or submit your achievements for consideration.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                Submit Nomination
+                {useTranslatedText('Submit Nomination')}
               </CosmicButton>
               <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                View Past Winners
+                {useTranslatedText('View Past Winners')}
               </CosmicButton>
             </div>
           </div>

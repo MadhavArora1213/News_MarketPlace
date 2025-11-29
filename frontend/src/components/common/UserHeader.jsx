@@ -5,12 +5,12 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useAuthModal } from '../../App';
 import Icon from './Icon';
 import PublicationSubmissionForm from '../user/PublicationSubmissionForm';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const UserHeader = () => {
   const { isAuthenticated, user, logout, hasRole, hasAnyRole, getRoleLevel } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const { showAuthModal } = useAuthModal();
-  const [language, setLanguage] = useState('en');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
   const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
@@ -161,17 +161,10 @@ const UserHeader = () => {
 
           {/* Right: Language & Contact Icons */}
           <div className="flex items-center space-x-3">
-            {/* Language Selector */}
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="hidden md:block bg-white/60 backdrop-blur-sm text-[#212121] text-xs py-1.5 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
-            >
-              <option value="en">🇺🇸 EN</option>
-              <option value="es">🇪🇸 ES</option>
-              <option value="fr">🇫🇷 FR</option>
-              <option value="de">🇩🇪 DE</option>
-            </select>
+            {/* Language Switcher */}
+            <div className="hidden md:flex">
+              <LanguageSwitcher />
+            </div>
 
             {/* Contact Icons */}
             <div className="hidden md:flex items-center space-x-1">
@@ -354,16 +347,7 @@ const UserHeader = () => {
             {/* Language and Contact Icons */}
             <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
               <div className="flex flex-wrap justify-center items-center gap-3 mb-3">
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="bg-white/60 backdrop-blur-sm text-[#212121] text-sm py-2 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
-                >
-                  <option value="en">🇺🇸 EN</option>
-                  <option value="es">🇪🇸 ES</option>
-                  <option value="fr">🇫🇷 FR</option>
-                  <option value="de">🇩🇪 DE</option>
-                </select>
+                <LanguageSwitcher />
                 
                 <div className="flex space-x-1">
                   {contactIcons.map((icon) => (

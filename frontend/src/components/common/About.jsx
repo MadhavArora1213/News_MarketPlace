@@ -1,30 +1,53 @@
 import React from 'react';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
+import { useTranslatedText } from '../../hooks/useTranslatedText';
 
 const About = () => {
+  // Translated texts
+  const aboutText = useTranslatedText('About');
+  const newsMarketPlaceText = useTranslatedText('News MarketPlace');
+  const heroDescription = useTranslatedText('We\'re revolutionizing digital publishing by connecting content creators with global audiences through innovative, transparent, and efficient platforms.');
+  const articlesPublishedLabel = useTranslatedText('Articles Published');
+  const contentCreatorsLabel = useTranslatedText('Content Creators');
+  const countriesReachedLabel = useTranslatedText('Countries Reached');
+  const successRateLabel = useTranslatedText('Success Rate');
+  const premiumContentTitle = useTranslatedText('Premium Content');
+  const premiumContentDesc = useTranslatedText('Access high-quality, verified news content from trusted sources worldwide.');
+  const globalCommunityTitle = useTranslatedText('Global Community');
+  const globalCommunityDesc = useTranslatedText('Connect with writers, editors, and readers from across the globe.');
+  const verifiedPublishingTitle = useTranslatedText('Verified Publishing');
+  const verifiedPublishingDesc = useTranslatedText('Guaranteed publication with transparent pricing and quality assurance.');
+  const whyChooseUsTitle = useTranslatedText('Why Choose Us');
+  const whyChooseUsDesc = useTranslatedText('Discover the features that make News MarketPlace the preferred platform for content creators worldwide.');
+  const ourMissionTitle = useTranslatedText('Our Mission');
+  const ourMissionDesc = useTranslatedText('To democratize publishing by providing creators with the tools, platform, and audience they need to share their stories with the world. We believe in transparent, fair, and accessible media for everyone.');
+  const learnMoreButton = useTranslatedText('Learn More About Us');
+  const joinCommunityButton = useTranslatedText('Join Our Community');
+  const altText = useTranslatedText('News Marketplace global publishing network connecting content creators and publishers worldwide');
+
   const stats = [
-    { number: "10M+", label: "Articles Published", icon: "document-text" },
-    { number: "500K+", label: "Content Creators", icon: "users" },
-    { number: "150+", label: "Countries Reached", icon: "globe-alt" },
-    { number: "99.9%", label: "Success Rate", icon: "check-circle" }
+    { number: "10M+", label: articlesPublishedLabel, icon: "document-text" },
+    { number: "500K+", label: contentCreatorsLabel, icon: "users" },
+    { number: "150+", label: countriesReachedLabel, icon: "globe-alt" },
+    { number: "99.9%", label: successRateLabel, icon: "check-circle" }
   ];
 
   const features = [
     {
       icon: "newspaper",
-      title: "Premium Content",
-      description: "Access high-quality, verified news content from trusted sources worldwide."
+      title: premiumContentTitle,
+      description: premiumContentDesc
     },
     {
       icon: "user-group",
-      title: "Global Community",
-      description: "Connect with writers, editors, and readers from across the globe."
+      title: globalCommunityTitle,
+      description: globalCommunityDesc
     },
     {
       icon: "shield-check",
-      title: "Verified Publishing",
-      description: "Guaranteed publication with transparent pricing and quality assurance."
+      title: verifiedPublishingTitle,
+      description: verifiedPublishingDesc
     }
   ];
 
@@ -40,10 +63,10 @@ const About = () => {
         <div className="text-center mb-12 md:mb-16 lg:mb-20">
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight">
-            About <span className="text-[#1976D2]">News MarketPlace</span>
+            {aboutText} <span className="text-[#1976D2]">{newsMarketPlaceText}</span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4">
-            We're revolutionizing digital publishing by connecting content creators with global audiences through innovative, transparent, and efficient platforms.
+            {heroDescription}
           </p>
           <div className="mt-6 md:mt-8 flex justify-center space-x-3 md:space-x-4">
             <div className="w-12 h-1 md:w-16 bg-[#1976D2] rounded-full"></div>
@@ -79,10 +102,10 @@ const About = () => {
         <div className="mb-16 md:mb-20 lg:mb-24">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#212121] mb-4 md:mb-6">
-              Why Choose Us
+              {whyChooseUsTitle}
             </h2>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed px-4">
-              Discover the features that make News MarketPlace the preferred platform for content creators worldwide.
+              {whyChooseUsDesc}
             </p>
           </div>
 
@@ -115,17 +138,17 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center relative z-10">
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#212121] mb-4 md:mb-6 lg:mb-8">
-                Our Mission
+                {ourMissionTitle}
               </h2>
               <p className="text-base md:text-lg lg:text-xl text-[#757575] leading-relaxed mb-6 md:mb-8 lg:mb-10">
-                To democratize publishing by providing creators with the tools, platform, and audience they need to share their stories with the world. We believe in transparent, fair, and accessible media for everyone.
+                {ourMissionDesc}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                 <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300 text-sm md:text-base">
-                  Learn More About Us
+                  {learnMoreButton}
                 </CosmicButton>
                 <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300 text-sm md:text-base">
-                  Join Our Community
+                  {joinCommunityButton}
                 </CosmicButton>
               </div>
             </div>
@@ -147,7 +170,7 @@ const About = () => {
                 }}>
                 <img
                   src="https://images.unsplash.com/photo-1433838552652-f9a46b332c40?q=80&w=2070&auto=format&fit=crop"
-                  alt="News Marketplace global publishing network connecting content creators and publishers worldwide"
+                  alt={altText}
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                 />
               </section>

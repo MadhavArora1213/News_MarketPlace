@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
+import { useTranslatedText } from '../../hooks/useTranslatedText';
 
 // --- Replace ImageWithFallback with a memoized, polished implementation ---
 const ImageWithFallback = memo(function ImageWithFallback({ src, alt, className }) {
@@ -98,6 +99,19 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
   const tiltRef = useTilt(false);
   const [bookmarked, setBookmarked] = useState(false);
 
+  // Translated texts
+  const readArticleText = useTranslatedText('Read Article');
+  const featuredText = useTranslatedText('Featured');
+  const removeBookmarkText = useTranslatedText('Remove bookmark');
+  const bookmarkText = useTranslatedText('Bookmark');
+  const shareArticleText = useTranslatedText('Share article');
+  const aiArticleAlt = useTranslatedText('AI-generated article on News Marketplace platform showcasing innovative content creation');
+  const contentPending = useTranslatedText('Content pending...');
+  const aiAuthor = useTranslatedText('AI Author');
+  const aiContent = useTranslatedText('AI Content');
+  const articleText = useTranslatedText('Article');
+  const aiText = useTranslatedText('AI');
+
   const onToggleBookmark = useCallback((e) => {
     e.stopPropagation();
     e.preventDefault && e.preventDefault();
@@ -156,9 +170,9 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
 
       // Clean title: remove # symbols and extra whitespace
       const cleanTitle = title.replace(/^#+\s*/, '').replace(/^##+\s*/, '').trim();
-      return cleanTitle || `${article.name || 'Article'}`;
+      return cleanTitle || `${article.name || articleText}`;
     }
-    return article.preferred_title || `${article.name || 'Article'}`;
+    return article.preferred_title || `${article.name || articleText}`;
   };
 
   // Extract excerpt
@@ -172,7 +186,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
       const firstParagraph = paragraphs.find(p => p.length > 20) || paragraphs[0] || '';
       return firstParagraph.substring(0, 100).trim() + (firstParagraph.length > 100 ? '...' : '');
     }
-    return 'Content pending...';
+    return contentPending;
   };
 
   return (
@@ -193,7 +207,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
           <div className="absolute inset-0 -skew-x-6 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" aria-hidden />
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=800&fit=crop&crop=center" // AI/robotics themed image
-            alt="AI-generated article on News Marketplace platform showcasing innovative content creation"
+            alt={aiArticleAlt}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
@@ -204,7 +218,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
               {article.name ? article.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : 'AI'}
             </div>
             <div className="text-xs">
-              <div className="font-medium text-slate-800 leading-none">{article.name || 'AI Author'}</div>
+              <div className="font-medium text-slate-800 leading-none">{article.name || aiAuthor}</div>
               <div className="text-slate-500 leading-none">{formatDate(article.created_at)}</div>
             </div>
           </div>
@@ -212,7 +226,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
           {/* vertical actions top-right */}
           <div className="absolute top-4 right-4 z-30 flex flex-col items-end gap-2">
             <button
-              aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark'}
+              aria-label={bookmarked ? removeBookmarkTextAC : bookmarkTextAC}
               aria-pressed={bookmarked}
               onClick={onToggleBookmark}
               className="p-2 bg-white/95 rounded-full shadow hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A9D4FF]"
@@ -220,7 +234,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
               <Icon name={bookmarked ? 'bookmark' : 'bookmark-outline'} size="sm" className="text-[#1976D2]" />
             </button>
             <button
-              aria-label="Share article"
+              aria-label={shareArticleTextAC}
               className="p-2 bg-white/95 rounded-full shadow hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A9D4FF]"
             >
               <Icon name="share" size="sm" className="text-[#1976D2]" />
@@ -244,11 +258,11 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1976D2] to-[#0D47A1] text-white flex items-center justify-center font-semibold shadow">
-                  {article.name ? article.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : 'AI'}
+                  {article.name ? article.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : aiText}
                 </div>
                 <div className="text-xs">
-                  <div className="font-medium text-slate-800">{article.name || 'AI Author'}</div>
-                  <div className="text-slate-500">{article.publication?.publication_name || 'AI Content'}</div>
+                  <div className="font-medium text-slate-800">{article.name || aiAuthor}</div>
+                  <div className="text-slate-500">{article.publication?.publication_name || aiContent}</div>
                 </div>
               </div>
             </div>
@@ -259,13 +273,13 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
                 aria-label={`Read article: ${getTitle()}`}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-semibold shadow-lg transform transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#A9D4FF] whitespace-nowrap w-full"
               >
-                Read Article
+                {readArticleText}
                 <Icon name="arrow-right" size="sm" />
               </button>
 
               {featured && (
                 <div className="text-center text-xs text-slate-500">
-                  <span className="inline-block px-3 py-1 bg-white/60 rounded-full">Featured</span>
+                  <span className="inline-block px-3 py-1 bg-white/60 rounded-full">{featuredText}</span>
                 </div>
               )}
             </div>
@@ -283,6 +297,13 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
 const ArticleCard = memo(function ArticleCard({ article, featured = false, navigate }) {
   const tiltRef = useTilt(true);
   const [bookmarked, setBookmarked] = useState(false);
+
+  // Translated texts
+  const readText = useTranslatedText('Read');
+  const editorsPick = useTranslatedText('Editor\'s pick');
+  const removeBookmarkTextAC = useTranslatedText('Remove bookmark');
+  const bookmarkTextAC = useTranslatedText('Bookmark');
+  const shareArticleTextAC = useTranslatedText('Share article');
 
   const onToggleBookmark = useCallback((e) => {
     e.stopPropagation();
@@ -328,7 +349,7 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
           {/* vertical actions top-right */}
           <div className="absolute top-4 right-4 z-30 flex flex-col items-end gap-2">
             <button
-              aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark'}
+              aria-label={bookmarked ? removeBookmarkText : bookmarkText}
               aria-pressed={bookmarked}
               onClick={onToggleBookmark}
               className="p-2 bg-white/95 rounded-full shadow hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A9D4FF]"
@@ -336,7 +357,7 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
               <Icon name={bookmarked ? 'bookmark' : 'bookmark-outline'} size="sm" className="text-[#1976D2]" />
             </button>
             <button
-              aria-label="Share article"
+              aria-label={shareArticleText}
               className="p-2 bg-white/95 rounded-full shadow hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A9D4FF]"
             >
               <Icon name="share" size="sm" className="text-[#1976D2]" />
@@ -375,13 +396,13 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
                 aria-label={`Read article: ${article.title}`}
                 className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-semibold shadow-lg transform transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#A9D4FF]"
               >
-                Read
+                {readText}
                 <Icon name="arrow-right" size="sm" />
               </button>
 
               {featured && (
                 <div className="mt-2 text-xs text-slate-500">
-                  <span className="inline-block px-3 py-1 bg-white/60 rounded-full">Editor's pick</span>
+                  <span className="inline-block px-3 py-1 bg-white/60 rounded-full">{editorsPick}</span>
                 </div>
               )}
             </div>
@@ -401,6 +422,18 @@ const Articles = () => {
   const [approvedAiArticles, setApprovedAiArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Translated texts
+  const latestArticlesTitle = useTranslatedText('Latest Articles — Curated & Trending');
+  const descriptionText = useTranslatedText('Fresh perspectives, practical guides, and industry analysis — crafted for creators and publishers.');
+  const serviceUnavailableText = useTranslatedText('Service temporarily unavailable. Please try again later.');
+  const failedLoadText = useTranslatedText('Failed to load articles. Please try again later.');
+  const noArticlesText = useTranslatedText('No articles found.');
+  const viewAllText = useTranslatedText('View All Articles');
+  const noDescription = useTranslatedText('No description available.');
+  const unknownAuthor = useTranslatedText('Unknown Author');
+  const minRead = useTranslatedText('5 min read');
+  const generalCategory = useTranslatedText('General');
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -430,11 +463,11 @@ const Articles = () => {
               type: 'manual',
               id: article.id,
               title: article.title,
-              excerpt: article.sub_title || 'No description available.',
-              author: article.by_line || 'Unknown Author',
+              excerpt: article.sub_title || noDescription,
+              author: article.by_line || unknownAuthor,
               date: article.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-              readTime: "5 min read",
-              category: article.publication?.publication_name || 'General',
+              readTime: minRead,
+              category: article.publication?.publication_name || generalCategory,
               image: article.image1 || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=800&fit=crop&crop=center"
             };
           }
@@ -445,8 +478,8 @@ const Articles = () => {
       } catch (err) {
         console.error('Error fetching articles:', err?.message || err);
         const errorMessage = err.response?.status === 404
-          ? 'Service temporarily unavailable. Please try again later.'
-          : 'Failed to load articles. Please try again later.';
+          ? serviceUnavailableText
+          : failedLoadText;
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -476,12 +509,12 @@ const Articles = () => {
 
           <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold leading-tight z-10 relative">
             <span className="bg-gradient-to-r from-[#4FC3F7] via-[#1976D2] to-[#0D47A1] bg-clip-text text-transparent">
-              Latest Articles — Curated & Trending
+              {latestArticlesTitle}
             </span>
           </h2>
 
           <p className="mt-3 text-lg text-slate-600 max-w-3xl mx-auto z-10 relative">
-            Fresh perspectives, practical guides, and industry analysis — crafted for creators and publishers.
+            {descriptionText}
           </p>
         </div>
 
@@ -523,7 +556,7 @@ const Articles = () => {
                 <div className="text-slate-400 mb-4">
                   <Icon name="document-outline" size="lg" />
                 </div>
-                <p className="text-slate-600">No articles found.</p>
+                <p className="text-slate-600">{noArticlesText}</p>
               </div>
             ) : (
               regularArticles.map((article, index) => {
@@ -538,11 +571,11 @@ const Articles = () => {
         </div>
 
         {/* View All */}
-        <div className="text-center mt-10">
-          <CosmicButton>
-            View All Articles
-          </CosmicButton>
-        </div>
+         <div className="text-center mt-10">
+           <CosmicButton>
+             {viewAllText}
+           </CosmicButton>
+         </div>
 
       </div>
 

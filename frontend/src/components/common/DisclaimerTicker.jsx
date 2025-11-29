@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import useTranslatedText from '../../hooks/useTranslatedText';
+
+const DisclaimerItem = ({ message }) => {
+  const translatedMessage = useTranslatedText(message);
+  return (
+    <span className="inline-block mx-8 text-sm text-yellow-800 font-medium">
+      ⚠️ {translatedMessage}
+    </span>
+  );
+};
 
 const DisclaimerTicker = () => {
   const [disclaimers, setDisclaimers] = useState([]);
@@ -30,15 +40,11 @@ const DisclaimerTicker = () => {
       <div className="relative flex">
         <div className="animate-marquee whitespace-nowrap flex">
           {disclaimers.map((disclaimer, index) => (
-            <span key={disclaimer.id} className="inline-block mx-8 text-sm text-yellow-800 font-medium">
-              ⚠️ {disclaimer.message}
-            </span>
+            <DisclaimerItem key={disclaimer.id} message={disclaimer.message} />
           ))}
           {/* Duplicate for seamless loop */}
           {disclaimers.map((disclaimer, index) => (
-            <span key={`duplicate-${disclaimer.id}`} className="inline-block mx-8 text-sm text-yellow-800 font-medium">
-              ⚠️ {disclaimer.message}
-            </span>
+            <DisclaimerItem key={`duplicate-${disclaimer.id}`} message={disclaimer.message} />
           ))}
         </div>
       </div>
