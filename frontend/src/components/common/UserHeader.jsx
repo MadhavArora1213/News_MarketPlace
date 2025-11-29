@@ -103,11 +103,7 @@ const UserHeader = () => {
     { name: 'Radio', href: '/radio', icon: 'microphone' },
     { name: 'Paparazzi', href: '/paparazzi', icon: 'camera' },
     { name: 'Power List', href: '/power-lists', icon: 'chart-bar' },
-    { name: 'Theme Pages', href: '/themes', icon: 'tag' },
     { name: 'Awards', href: '/awards', icon: 'award' },
-    { name: 'Events', href: '/events', icon: 'calendar' },
-    { name: 'Press Release', href: '/press-packs', icon: 'megaphone' },
-    { name: 'Podcasters', href: '/podcasters', icon: 'microphone' },
     { name: 'Real Estate', href: '/real-estates', icon: 'home' }
   ];
 
@@ -206,7 +202,7 @@ const UserHeader = () => {
         <div className="hidden lg:flex justify-between items-center py-2">
           <div className="flex items-center space-x-2 xl:space-x-3 2xl:space-x-4">
             {/* Services shown directly */}
-            {services.slice(0, 6).map((service, index) => (
+            {services.map((service, index) => (
               <a
                 key={`service-${index}`}
                 href={service.href}
@@ -250,29 +246,6 @@ const UserHeader = () => {
                       </a>
                     ))}
                   </div>
-                  {services.length > 6 && (
-                    <>
-                      <div className="border-t border-gray-200 my-3"></div>
-                      <h4 className="text-sm font-semibold text-gray-900 mb-3">Additional Services</h4>
-                      <div className="grid grid-cols-1 gap-2">
-                        {services.slice(6).map((service, index) => (
-                          <a
-                            key={index}
-                            href={service.href}
-                            className="flex items-center px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
-                            onClick={(e) => {
-                              if (!isAuthenticated) {
-                                e.preventDefault();
-                                showAuthModal();
-                              }
-                            }}
-                          >
-                            <span className="text-left">{service.name}</span>
-                          </a>
-                        ))}
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>

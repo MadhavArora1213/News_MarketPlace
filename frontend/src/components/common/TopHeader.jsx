@@ -17,7 +17,11 @@ const TopHeader = () => {
 		{ name: 'Agency Registration', href: '/agency-registration', icon: 'user-group', color: '#4CAF50', isLink: true, hasAuthCheck: false },
 		{ name: 'Editor Registration', href: '#', icon: 'user', color: '#1976D2', isLink: false, hasAuthCheck: true },
 		{ name: 'Reporter Registration', href: '/reporter-registration', icon: 'user-plus', color: '#FF5722', isLink: true, hasAuthCheck: false },
-		{ name: 'Submit Publication', href: '#', icon: 'document-plus', color: '#9C27B0', isLink: false, hasAuthCheck: true }
+		{ name: 'Submit Publication', href: '#', icon: 'document-plus', color: '#9C27B0', isLink: false, hasAuthCheck: true },
+		{ name: 'Theme Pages', href: '/themes', icon: 'tag', color: '#FF9800', isLink: true, hasAuthCheck: false },
+		{ name: 'Events', href: '/events', icon: 'calendar', color: '#2196F3', isLink: true, hasAuthCheck: false },
+		{ name: 'Press Release', href: '/press-packs', icon: 'megaphone', color: '#4CAF50', isLink: true, hasAuthCheck: false },
+		{ name: 'Podcasters', href: '/podcasters', icon: 'microphone', color: '#9C27B0', isLink: true, hasAuthCheck: false }
 	];
 
 
