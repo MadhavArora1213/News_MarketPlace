@@ -12,36 +12,6 @@ const TopHeader = () => {
 	const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
 	const { showAuthModal } = useAuthModal();
 
-	const navigationItems = [
-		{
-			href: "/services-overview",
-			text: "Services",
-			icon: "cog-6-tooth",
-			description: "Learn about our services",
-			hasAuthCheck: false
-		},
-		{
-			href: "/how-it-works",
-			text: "How It Works",
-			icon: "question-mark-circle",
-			description: "Step-by-step platform instructions",
-			hasAuthCheck: false
-		},
-		{
-			href: "/blogs",
-			text: "Blog",
-			icon: "document-text",
-			description: "Browse published articles and press releases",
-			hasAuthCheck: true
-		},
-		{
-			href: "/media-partnerships",
-			text: "Media Partnerships",
-			icon: "users",
-			description: "Media partnership information",
-			hasAuthCheck: false
-		}
-	];
 
 	const actionItems = [
 		{ name: 'Agency Registration', href: '/agency-registration', icon: 'user-group', color: '#4CAF50', isLink: true, hasAuthCheck: false },
@@ -50,10 +20,6 @@ const TopHeader = () => {
 		{ name: 'Submit Publication', href: '#', icon: 'document-plus', color: '#9C27B0', isLink: false, hasAuthCheck: true }
 	];
 
-	const allItems = [
-		...navigationItems.map(item => ({ name: item.text, href: item.href, icon: item.icon, hasAuthCheck: item.hasAuthCheck, isLink: false })),
-		...actionItems.map(item => ({ name: item.name, href: item.href, icon: item.icon, hasAuthCheck: item.hasAuthCheck, isLink: item.isLink }))
-	];
 
 
 	const getDisplayedAction = (breakpoint) => {
@@ -83,7 +49,7 @@ const TopHeader = () => {
 				<div className="sm:hidden pt-2">
 					<div className="pb-2">
 						<div className="grid grid-cols-3 gap-1">
-							{mobileShowAllItems ? allItems.map((item, index) => (
+							{mobileShowAllItems ? actionItems.map((item, index) => (
 								<a
 									key={index}
 									href={item.href}
@@ -105,7 +71,7 @@ const TopHeader = () => {
 									/>
 									<span className="text-xs leading-tight truncate w-full">{item.name}</span>
 								</a>
-							)) : allItems.slice(0, 5).map((item, index) => (
+							)) : actionItems.slice(0, 5).map((item, index) => (
 								<a
 									key={index}
 									href={item.href}
@@ -128,7 +94,7 @@ const TopHeader = () => {
 									<span className="text-xs leading-tight truncate w-full">{item.name}</span>
 								</a>
 							))}
-							{!mobileShowAllItems && allItems.length > 5 && (
+							{!mobileShowAllItems && actionItems.length > 5 && (
 								<button
 									onClick={() => setMobileShowAllItems(true)}
 									className="flex flex-col items-center text-center p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
@@ -159,47 +125,6 @@ const TopHeader = () => {
 				<div className="hidden sm:block md:hidden">
 					<div className="py-1.5">
 						<div className="flex items-center justify-center space-x-1 flex-wrap">
-							{/* Resources Dropdown First */}
-							<div className="group relative flex-shrink-0">
-								<button className="flex items-center space-x-1 px-2 py-1.5 text-xs font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 whitespace-nowrap">
-									<Icon
-										name="boxes"
-										size="sm"
-										className="text-gray-500 group-hover:text-blue-600 transition-colors"
-									/>
-									<span>Navigation</span>
-									<Icon
-										name="chevron-down"
-										size="xs"
-										className="text-gray-500 group-hover:text-blue-600 transition-colors"
-									/>
-								</button>
-
-								{/* Responsive dropdown positioning */}
-								<div className="absolute top-full right-0 mt-2 mr-4 w-52 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
-									<div className="p-2">
-										<h4 className="text-sm font-semibold text-gray-900 mb-2">Navigation</h4>
-										<div className="space-y-1">
-											{navigationItems.map((item, index) => (
-												<a
-													key={index}
-													href={item.href}
-													className="flex items-center space-x-2 px-2 py-1.5 text-xs text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 w-full"
-													onClick={item.hasAuthCheck && !isAuthenticated ? (e) => { e.preventDefault(); showAuthModal(); } : undefined}
-												>
-													<Icon
-														name={item.icon}
-														size="xs"
-														className="text-gray-500 flex-shrink-0"
-													/>
-													<span className="text-left flex-1">{item.text}</span>
-												</a>
-											))}
-										</div>
-									</div>
-								</div>
-							</div>
-							
 							{/* Display Actions - Now shows 2 actions */}
 							{getDisplayedAction('sm').map((action, index) => (
 								<a
@@ -262,52 +187,6 @@ const TopHeader = () => {
 				<div className="hidden md:block lg:hidden">
 					<div className="py-2">
 						<div className="flex items-center justify-center space-x-1.5 flex-wrap">
-							{/* Resources Dropdown First */}
-							<div className="group relative">
-								<button className="flex items-center space-x-1.5 px-2.5 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md">
-									<Icon
-										name="boxes"
-										size="sm"
-										className="text-gray-500 group-hover:text-blue-600 transition-colors"
-									/>
-									<span>Navigation</span>
-									<Icon
-										name="chevron-down"
-										size="xs"
-										className="text-gray-500 group-hover:text-blue-600 transition-colors"
-									/>
-								</button>
-
-								{/* Tablet responsive dropdown */}
-								<div className="absolute top-full right-0 mt-2 mr-6 w-52 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
-									<div className="p-2">
-										<h4 className="text-sm font-semibold text-gray-900 mb-2">Navigation</h4>
-										<div className="space-y-1">
-											{navigationItems.map((item, index) => (
-												<a
-													key={index}
-													href={item.href}
-													className="flex items-center space-x-2 px-2 py-1.5 text-xs text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 w-full"
-													onClick={(e) => {
-														if (!isAuthenticated) {
-															e.preventDefault();
-															showAuthModal();
-														}
-													}}
-												>
-													<Icon
-														name={item.icon}
-														size="xs"
-														className="text-gray-500 flex-shrink-0"
-													/>
-													<span className="text-left flex-1">{item.text}</span>
-												</a>
-											))}
-										</div>
-									</div>
-								</div>
-							</div>
-
 							{/* Display Actions - Now shows 2 actions */}
 							{getDisplayedAction('md').map((action, index) => (
 								<a
@@ -374,23 +253,6 @@ const TopHeader = () => {
 				{/* Desktop Layout (>= 1024px) */}
 				<div className="hidden lg:flex justify-center items-center py-1.5">
 					<div className="flex items-center space-x-2 xl:space-x-3 2xl:space-x-4">
-						{/* Navigation Links */}
-						{navigationItems.map((item, index) => (
-							<a
-								key={`nav-${index}`}
-								href={item.href}
-								className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 border border-transparent hover:border-blue-200 hover:shadow-md"
-								onClick={item.hasAuthCheck && !isAuthenticated ? (e) => { e.preventDefault(); showAuthModal(); } : undefined}
-							>
-								<Icon
-									name={item.icon}
-									size="sm"
-									className="text-gray-500 group-hover:text-blue-600 transition-colors"
-								/>
-								<span className="whitespace-nowrap">{item.text}</span>
-							</a>
-						))}
-
 						{/* Action Buttons */}
 						{actionItems.map((item, index) => (
 							item.isLink ? (

@@ -31,6 +31,34 @@ const UserHeader = () => {
 
   const menuItems = [
     {
+      href: "/services-overview",
+      text: "Services",
+      icon: "cog-6-tooth",
+      description: "Learn about our services",
+      hasAuthCheck: false
+    },
+    {
+      href: "/how-it-works",
+      text: "How It Works",
+      icon: "question-mark-circle",
+      description: "Step-by-step platform instructions",
+      hasAuthCheck: false
+    },
+    {
+      href: "/blogs",
+      text: "Blog",
+      icon: "document-text",
+      description: "Browse published articles and press releases",
+      hasAuthCheck: true
+    },
+    {
+      href: "/media-partnerships",
+      text: "Media Partnerships",
+      icon: "users",
+      description: "Media partnership information",
+      hasAuthCheck: false
+    },
+    {
       href: "/video-tutorials",
       text: "Video Tutorial",
       icon: "play-circle",
@@ -212,7 +240,7 @@ const UserHeader = () => {
                         href={item.href}
                         className="flex items-center px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
                         onClick={(e) => {
-                          if (!isAuthenticated) {
+                          if (item.hasAuthCheck && !isAuthenticated) {
                             e.preventDefault();
                             showAuthModal();
                           }
