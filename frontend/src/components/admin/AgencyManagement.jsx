@@ -455,14 +455,9 @@ const AgencyManagement = () => {
         >
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10" style={{ minHeight: 64 }}>
             <div className="flex justify-between items-center py-3">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #1976D2, #0D47A1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#fff', fontSize: '18px', fontWeight: '800' }}>N</span>
-                </div>
-                <div>
-                  <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: theme.textPrimary }}>News MarketPlace</h1>
-                  <p style={{ margin: 0, fontSize: '12px', color: theme.textSecondary }}>Admin Panel</p>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Icon name="shield-check" size="lg" style={{ color: '#1976D2' }} />
+                <span style={{ fontWeight: 700, fontSize: 18 }}>News Marketplace Admin</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{ textAlign: 'right' }}>
@@ -586,9 +581,14 @@ const AgencyManagement = () => {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <Icon name="shield-check" size="lg" style={{ color: '#1976D2' }} />
-                <span style={{ fontWeight: 700, fontSize: 18 }}>News Marketplace Admin</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #1976D2, #0D47A1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#fff', fontSize: '18px', fontWeight: '800' }}>N</span>
+                </div>
+                <div>
+                  <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: theme.textPrimary }}>News MarketPlace</h1>
+                  <p style={{ margin: 0, fontSize: '12px', color: theme.textSecondary }}>Admin Panel</p>
+                </div>
               </div>
             </div>
 
