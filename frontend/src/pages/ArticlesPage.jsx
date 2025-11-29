@@ -205,7 +205,7 @@ const ArticlesPage = () => {
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
               {activeTab === 'my'
                 ? `${totalArticles} Your Articles`
-                : `${totalArticles} Published Articles Available`
+                : `Upload the self-written article, or write a professional article as per the respective publication's guidelines with the help of Artificial Intelligence (AI) to expedite publishing.`
               }
             </p>
 

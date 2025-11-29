@@ -136,7 +136,7 @@ const UserHeader = () => {
     <header className="bg-white/70 backdrop-blur-md border-b border-white/20 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         {/* Top Row - Reduced Height */}
-        <div className="flex justify-between items-center py-2 border-b border-white/10">
+        <div className="flex justify-between items-center py-2">
           {/* Left: Social Media Icons */}
           <div className="hidden md:flex items-center space-x-2">
             {socialMediaIcons.map((icon) => (
@@ -153,9 +153,8 @@ const UserHeader = () => {
 
           {/* Center: Logo */}
           <div className="flex items-center group cursor-pointer">
-            <img src="/logo.png" alt="Visibility as a Service (VaaS) Solutions Logo" className="h-12 md:h-16 mr-3" />
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#212121] to-[#757575] bg-clip-text text-transparent">
-              Visibility as a Service (VaaS) Solutions
+              VaaS Solutions: Vision to Visibility, Instantly
             </h1>
           </div>
 

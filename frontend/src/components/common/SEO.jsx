@@ -8,7 +8,7 @@ const SEO = ({
   url,
   type = 'website'
 }) => {
-  const siteName = 'Visibility as a Service (VaaS) Solutions';
+  const siteName = 'VaaS Solutions: Vision to Visibility, Instantly';
   const defaultImage = '/logo.png'; // Replace with your default image path
   const defaultUrl = 'https://vaas.solutions';
 

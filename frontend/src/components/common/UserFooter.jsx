@@ -12,8 +12,8 @@ export default function UserFooter() {
   const whatsappLabel = useTranslatedText('WhatsApp');
   const telegramLabel = useTranslatedText('Telegram');
   const youtubeLabel = useTranslatedText('YouTube');
-  const logoAlt = useTranslatedText('Visibility as a Service (VaaS) Solutions Logo');
-  const companyName = useTranslatedText('Visibility as a Service (VaaS) Solutions');
+  const logoAlt = useTranslatedText('VaaS Solutions: Vision to Visibility, Instantly Logo');
+  const companyName = useTranslatedText('VaaS Solutions: Vision to Visibility, Instantly');
   const companyDesc = useTranslatedText('Your trusted platform for news distribution and media partnerships.');
   const legalPoliciesTitle = useTranslatedText('Legal & Policies');
   const privacyPolicy = useTranslatedText('Privacy Policy');
@@ -40,7 +40,7 @@ export default function UserFooter() {
   const pressGuidelines = useTranslatedText('Press Release Distribution Guidelines');
   const affiliateProgramme = useTranslatedText('Affiliate Programme');
   const brandsPeopleFeatured = useTranslatedText('Brands and People Featured');
-  const copyright = useTranslatedText('© 2024 Visibility as a Service (VaaS) Solutions. All rights reserved.');
+  const copyright = useTranslatedText('© 2024 VaaS Solutions: Vision to Visibility, Instantly. All rights reserved.');
   const privacy = useTranslatedText('Privacy');
   const terms = useTranslatedText('Terms');
   const cookies = useTranslatedText('Cookies');
@@ -64,8 +64,7 @@ export default function UserFooter() {
           {/* Company Info */}
           <div>
             <div className="flex items-center mb-4">
-              <img src="/logo.png" alt={logoAlt} className="h-12 mr-3" />
-              <h3 className="heading-4 text-primary">{companyName}</h3>
+              <h3 className="heading-4 text-primary">VaaS Solutions: Vision to Visibility, Instantly</h3>
             </div>
             <p className="body-regular text-gray-600 mb-4">
               {companyDesc}

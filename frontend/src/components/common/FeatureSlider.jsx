@@ -95,7 +95,7 @@ const FeatureSlider = () => {
   }, []);
 
   return (
-    <section className=" py-8 md:py-12 relative overflow-hidden">
+    <section className=" pb-8 md:pb-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{

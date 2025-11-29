@@ -107,7 +107,7 @@ const PodcastersList = () => {
       <UserHeader />
 
       {/* Hero Section */}
-      <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
+      <section className="relative py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -115,12 +115,9 @@ const PodcastersList = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Podcasters Directory
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4 tracking-tight">
+              Submit the Podcaster
             </h1>
-            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light mb-8">
-              Discover approved podcasters in our network. Connect with industry professionals and explore podcasting opportunities.
-            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {isAuthenticated && (
                 <motion.button
