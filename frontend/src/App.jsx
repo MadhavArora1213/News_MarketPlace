@@ -697,14 +697,7 @@ function App() {
                 </AdminProtectedRoute>
               }
             />
-            <Route
-              path="/data/new/cookies/user"
-              element={
-                <AdminProtectedRoute>
-                  <UserCookiesData />
-                </AdminProtectedRoute>
-              }
-            />
+            <Route path="/data/new/cookies/user" element={<UserCookiesData />} />
 
             {/* Catch all route - redirect to admin login if accessing /admin */}
             <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

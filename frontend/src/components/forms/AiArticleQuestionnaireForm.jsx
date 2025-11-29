@@ -57,6 +57,8 @@ const AiArticleQuestionnaireForm = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
+  const [rateLimitInfo, setRateLimitInfo] = useState(null);
+  const [countdown, setCountdown] = useState(0);
 
   // Fetch publications on component mount
   useEffect(() => {
@@ -86,6 +88,24 @@ const AiArticleQuestionnaireForm = () => {
 
     fetchPublications();
   }, []);
+
+  // Countdown timer for rate limit
+  useEffect(() => {
+    let interval;
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            setRateLimitInfo(null);
+            setMessage('');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 60000); // Update every minute
+    }
+    return () => clearInterval(interval);
+  }, [countdown]);
 
   const handleInputChange = (section, field, value) => {
     setFormData(prev => ({
@@ -227,6 +247,17 @@ const AiArticleQuestionnaireForm = () => {
           navigate(`/ai-article-generation/${responseData.article.id}`);
         }, 2000);
       } else {
+        // Handle rate limiting
+        if (response.status === 429 && responseData?.tokenReset) {
+          setRateLimitInfo({
+            message: responseData.message,
+            remainingMinutes: responseData.remainingMinutes
+          });
+          setCountdown(responseData.remainingMinutes);
+          setMessage('');
+          return;
+        }
+
         const errorMessage = responseData?.message || responseData?.error || `Submission failed with status ${response.status}. Please try again.`;
         setMessage(errorMessage);
       }
@@ -277,6 +308,31 @@ const AiArticleQuestionnaireForm = () => {
       {message && (
         <div className={`mb-6 p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 border-l-4 border-green-400' : 'bg-red-50 border-l-4 border-red-400'}`}>
           <p className={`text-sm ${message.includes('success') ? 'text-green-800' : 'text-red-800'}`}>{message}</p>
+        </div>
+      )}
+
+      {rateLimitInfo && (
+        <div className="mb-6 p-4 rounded-lg bg-orange-50 border-l-4 border-orange-400">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-orange-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-orange-800 font-medium">AI Tokens Exhausted</p>
+            </div>
+            <div className="text-sm text-orange-700 font-mono">
+              {countdown} min remaining
+            </div>
+          </div>
+          <p className="text-sm text-orange-700 mt-2">{rateLimitInfo.message}</p>
+          <div className="mt-3 bg-orange-100 rounded-lg p-3">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-800">{countdown}</div>
+                <div className="text-xs text-orange-600">minutes until reset</div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -455,10 +511,12 @@ const AiArticleQuestionnaireForm = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || rateLimitInfo !== null}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none font-['Inter'] text-sm"
           >
-            {loading ? (
+            {rateLimitInfo ? (
+              'Tokens Exhausted - Wait for Reset'
+            ) : loading ? (
               <div className="flex items-center">
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

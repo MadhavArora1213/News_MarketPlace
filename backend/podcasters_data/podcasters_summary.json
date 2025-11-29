@@ -1,0 +1,27 @@
+{
+  "totalPodcasters": 3,
+  "generatedAt": "2025-11-29T17:15:23.781Z",
+  "podcasters": [
+    {
+      "name": "Build Your Business: From Fear to Freedom",
+      "host": "Michael Brown",
+      "industry": "News",
+      "region": "Asia",
+      "website": "https://podcasts.apple.com/us/podcast/build-your-business-from-fear-to-freedom/id1774561203?uo=4"
+    },
+    {
+      "name": "TED Business",
+      "host": "John Brown",
+      "industry": "Education",
+      "region": "Global",
+      "website": "https://podcasts.apple.com/us/podcast/ted-business/id470622782?uo=4"
+    },
+    {
+      "name": "The Diary Of A CEO with Steven Bartlett",
+      "host": "Michael Garcia",
+      "industry": "Technology",
+      "region": "North America",
+      "website": "https://podcasts.apple.com/us/podcast/the-diary-of-a-ceo-with-steven-bartlett/id1291423644?uo=4"
+    }
+  ]
+}

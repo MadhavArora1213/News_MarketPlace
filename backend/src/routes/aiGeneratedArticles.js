@@ -40,9 +40,12 @@ const {
   requireAdminPermission
 } = require('../middleware/auth');
 
+const { aiArticleSubmitLimit } = require('../middleware/rateLimit');
+
 // User routes
 router.post('/',
   verifyToken,
+  aiArticleSubmitLimit,
   upload.single('uploaded_file'),
   aiGeneratedArticleController.createValidation,
   aiGeneratedArticleController.createQuestionnaire

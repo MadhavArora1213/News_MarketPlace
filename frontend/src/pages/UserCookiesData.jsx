@@ -13,18 +13,14 @@ const UserCookiesData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check if user is admin
+  // Load cookie data on component mount
   useEffect(() => {
-    if (!user || !hasRole('admin')) {
-      navigate('/');
-      return;
-    }
     loadAllUsersCookieData();
-  }, [user, hasRole, navigate]);
+  }, []);
 
   // Translated texts
-  const pageTitle = useTranslatedText('All Users Cookie Data - Admin Panel');
-  const pageDescription = useTranslatedText('Comprehensive view of all users\' cookie preferences, tracking data, IP addresses, and locations.');
+  const pageTitle = useTranslatedText('Cookie Data Overview');
+  const pageDescription = useTranslatedText('View cookie preferences, tracking data, and privacy information.');
   const totalUsersLabel = useTranslatedText('Total Users');
   const userDetailsLabel = useTranslatedText('User Details');
   const cookiePreferencesTitle = useTranslatedText('Cookie Preferences');
@@ -96,17 +92,6 @@ const UserCookiesData = () => {
     return `${location.city}, ${location.region}, ${location.country}`;
   };
 
-  if (!user || !hasRole('admin')) {
-    return (
-      <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
-        <div className="text-center">
-          <Icon name="shield-x" size="lg" className="text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[#212121] mb-2">{accessDeniedLabel}</h1>
-          <p className="text-[#757575]">{adminOnlyLabel}</p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (

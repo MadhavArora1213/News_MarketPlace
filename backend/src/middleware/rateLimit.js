@@ -22,6 +22,11 @@ class RateLimiter {
         windowMs: 60 * 1000, // 1 minute
         maxRequests: 1,
         message: 'You can only submit one podcaster profile per minute. Please try again later.'
+      },
+      ai_article_submit: {
+        windowMs: 60 * 60 * 1000, // 1 hour
+        maxRequests: 1,
+        message: 'Your AI tokens have been used up for this hour. You can submit another article in {remainingMinutes} minutes.'
       }
     };
   }
@@ -187,10 +192,35 @@ const podcasterSubmitLimit = async (req, res, next) => {
   next();
 };
 
+// Middleware function for AI article submission rate limiting
+const aiArticleSubmitLimit = async (req, res, next) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const result = await rateLimiter.checkLimit(userId, 'ai_article_submit');
+
+  if (!result.allowed) {
+    const message = 'Your AI tokens have been used up for this hour. You can submit another article in {remainingMinutes} minutes.'
+      .replace('{remainingMinutes}', result.remainingTime);
+
+    return res.status(429).json({
+      error: 'Rate limit exceeded',
+      message: message,
+      remainingMinutes: result.remainingTime,
+      tokenReset: true
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   publicationSubmitLimit,
   reporterSubmitLimit,
   careerSubmitLimit,
   podcasterSubmitLimit,
+  aiArticleSubmitLimit,
   rateLimiter
 };
