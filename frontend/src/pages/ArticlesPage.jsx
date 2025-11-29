@@ -93,16 +93,31 @@ const ArticlesPage = () => {
   // Clean HTML tags and markdown symbols from preview text
   const cleanPreviewText = (text) => {
     if (!text) return '';
-    return text
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/^#+\s*/gm, '') // Remove markdown headers (# ## ###)
-      .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold markdown (**text**)
-      .replace(/\*([^*]+)\*/g, '$1') // Remove italic markdown (*text*)
-      .replace(/`([^`]+)`/g, '$1') // Remove inline code markdown (`code`)
-      .replace(/^\s*[-*+]\s+/gm, '') // Remove list markers (- * +)
-      .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered list markers (1. 2. 3.)
-      .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
-      .trim();
+
+    let cleaned = text;
+
+    // Remove HTML tags (including incomplete ones)
+    cleaned = cleaned.replace(/<[^>]*>?/g, '');
+
+    // Remove markdown headers (any # at start of line or followed by space)
+    cleaned = cleaned.replace(/^#+\s*/gm, '');
+    cleaned = cleaned.replace(/#\s+/g, '');
+
+    // Remove markdown formatting
+    cleaned = cleaned.replace(/\*\*([^*]+)\*\*/g, '$1'); // Bold
+    cleaned = cleaned.replace(/\*([^*]+)\*/g, '$1'); // Italic
+    cleaned = cleaned.replace(/`([^`]+)`/g, '$1'); // Inline code
+    cleaned = cleaned.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1'); // Links
+    cleaned = cleaned.replace(/^\s*[-*+]\s+/gm, ''); // List markers
+    cleaned = cleaned.replace(/^\s*\d+\.\s+/gm, ''); // Numbered lists
+
+    // Remove any remaining # symbols at the beginning of words
+    cleaned = cleaned.replace(/\b#\w+/g, '');
+
+    // Clean up whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+    return cleaned;
   };
 
   const filteredArticles = articles.filter(article => {
