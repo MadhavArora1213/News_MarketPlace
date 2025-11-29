@@ -18,11 +18,5 @@ i18n.use(initReactI18next).init({
   }
 });
 
-// Add debugging for language changes
-i18n.on('languageChanged', (lng) => {
-  console.log('i18n: Language changed to:', lng);
-});
-
-console.log('i18n initialized with language:', i18n.language);
 
 export default i18n;

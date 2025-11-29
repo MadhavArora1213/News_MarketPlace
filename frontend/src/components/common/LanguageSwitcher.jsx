@@ -2,22 +2,19 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' }
+  { code: 'en', apertiumCode: 'eng', name: 'English', flag: '🇺🇸' },
+  { code: 'ar', apertiumCode: 'ara', name: 'العربية', flag: '🇸🇦' },
+  { code: 'hi', apertiumCode: 'hin', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ru', apertiumCode: 'rus', name: 'Русский', flag: '🇷🇺' },
+  { code: 'zh', apertiumCode: 'zho', name: '中文', flag: '🇨🇳' },
+  { code: 'fr', apertiumCode: 'fra', name: 'Français', flag: '🇫🇷' }
 ];
 
 function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (langCode) => {
-    console.log('Changing language to:', langCode);
-    i18n.changeLanguage(langCode).then(() => {
-      console.log('Language changed to:', i18n.language);
-    });
+    i18n.changeLanguage(langCode);
   };
 
   return (

@@ -9,6 +9,19 @@ function useTranslatedText(text, sourceLang = 'en') {
   const currentLang = i18n.language;
   const [translatedText, setTranslatedText] = useState(text);
 
+  // Map language codes to Apertium's 3-letter ISO-639-3 codes
+  const getApertiumCode = (langCode) => {
+    const codeMap = {
+      'en': 'eng',
+      'ar': 'ara',
+      'hi': 'hin',
+      'ru': 'rus',
+      'zh': 'zho',
+      'fr': 'fra'
+    };
+    return codeMap[langCode] || langCode;
+  };
+
   useEffect(() => {
     if (!text || sourceLang === currentLang) {
       setTranslatedText(text);
@@ -38,7 +51,11 @@ function useTranslatedText(text, sourceLang = 'en') {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ text, sourceLang, targetLang: currentLang }),
+          body: JSON.stringify({
+            text,
+            sourceLang: getApertiumCode(sourceLang),
+            targetLang: getApertiumCode(currentLang)
+          }),
         });
         const data = await response.json();
         if (data.translatedText) {
@@ -67,15 +84,12 @@ function useTranslatedText(text, sourceLang = 'en') {
   // Listen for language changes to ensure immediate re-translation
   useEffect(() => {
     const handleLanguageChange = (lng) => {
-      console.log('useTranslatedText: Language changed to:', lng, 'for text:', text);
       if (lng !== sourceLang) {
         const key = `translation:${lng}:${text}`;
         const cached = localStorage.getItem(key);
         if (cached) {
-          console.log('useTranslatedText: Using cached translation:', cached);
           setTranslatedText(cached);
         } else {
-          console.log('useTranslatedText: Fetching translation for:', text);
           // Trigger re-translation for new language
           const fetchTranslation = async () => {
             try {
@@ -84,25 +98,24 @@ function useTranslatedText(text, sourceLang = 'en') {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text, sourceLang, targetLang: lng }),
+                body: JSON.stringify({
+                  text,
+                  sourceLang: getApertiumCode(sourceLang),
+                  targetLang: getApertiumCode(lng)
+                }),
               });
               const data = await response.json();
               if (data.translatedText) {
-                console.log('useTranslatedText: Received translation:', data.translatedText);
                 localStorage.setItem(key, data.translatedText);
                 setTranslatedText(data.translatedText);
-              } else {
-                console.log('useTranslatedText: No translation received');
               }
             } catch (error) {
-              console.error('useTranslatedText: Translation fetch error:', error);
               // Keep current text if translation fails
             }
           };
           fetchTranslation();
         }
       } else {
-        console.log('useTranslatedText: Language is source language, using original text');
         setTranslatedText(text);
       }
     };
