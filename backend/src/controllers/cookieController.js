@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const User = require('../models/User');
 
 // Store user cookie preferences
 const storeCookiePreferences = async (req, res) => {

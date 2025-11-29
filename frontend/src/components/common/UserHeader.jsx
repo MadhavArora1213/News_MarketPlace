@@ -180,12 +180,12 @@ const UserHeader = () => {
           </div>
 
           {/* Center: Logo */}
-          <div className="flex items-center group cursor-pointer">
+          <Link to="/" className="flex items-center group cursor-pointer">
             <img src="/logo.png" alt={logoAltText} className="h-12 md:h-16 mr-3" />
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#212121] to-[#757575] bg-clip-text text-transparent">
               {companyNameText}
             </h1>
-          </div>
+          </Link>
 
           {/* Right: Language & Contact Icons */}
           <div className="flex items-center space-x-3">
