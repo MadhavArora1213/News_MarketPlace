@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
-import { useTranslatedText } from '../../hooks/useTranslatedText';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 // --- Replace ImageWithFallback with a memoized, polished implementation ---
 const ImageWithFallback = memo(function ImageWithFallback({ src, alt, className }) {

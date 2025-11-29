@@ -4,7 +4,7 @@ import Icon from './Icon';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useAuthModal } from '../../App';
-import { useTranslatedText } from '../../hooks/useTranslatedText';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 const TopHeader = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

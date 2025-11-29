@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
-import { useTranslatedText } from '../../hooks/useTranslatedText';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 const PowerList = () => {
   const navigate = useNavigate();

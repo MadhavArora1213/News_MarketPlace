@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
-import { useTranslatedText } from '../../hooks/useTranslatedText';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 const About = () => {
   // Translated texts

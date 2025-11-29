@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './Icon';
-import useTranslatedText from '../hooks/useTranslatedText';
+import useTranslatedText from '../../hooks/useTranslatedText';
 
 export default function UserFooter() {
   const socialMediaIcons = [
