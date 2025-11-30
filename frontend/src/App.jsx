@@ -108,7 +108,7 @@ import BrandsPeople from './pages/BrandsPeople';
 import MediaPartnerships from './pages/MediaPartnerships';
 import RolePermissionManagement from './components/admin/RolePermissionManagement';
 import OrderManagement from './components/admin/OrderManagement';
-import PowerlistOrderManagement from './components/admin/PowerlistOrderManagement';
+import PaparazziOrderManagement from './components/admin/PaparazziOrderManagement';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -700,11 +700,11 @@ function App() {
               }
             />
             <Route
-              path="/admin/powerlist-orders"
+              path="/admin/paparazzi-orders"
               element={
                 <AdminProtectedRoute>
                   <div className="min-h-screen bg-gray-50">
-                    <PowerlistOrderManagement />
+                    <PaparazziOrderManagement />
                   </div>
                 </AdminProtectedRoute>
               }

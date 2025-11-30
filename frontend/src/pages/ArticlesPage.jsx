@@ -397,15 +397,16 @@ const ArticlesPage = () => {
       </section>
 
       {/* Main Content with Enhanced Layout */}
-      <div className="flex">
+      <div className={`${isMobile ? 'flex flex-col' : 'flex'}`}>
         {/* Enhanced Filters Sidebar - 25% width */}
-        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{ 
-          minHeight: 'calc(100vh - 200px)',
-          position: 'sticky',
-          top: '80px',
+        <aside className={`${sidebarOpen ? (isMobile ? 'w-full' : 'w-80') : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
+          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
+          position: isMobile ? 'static' : 'sticky',
+          top: isMobile ? 'auto' : '80px',
           zIndex: 10,
-          borderRight: `1px solid ${theme.borderLight}`,
-          width: '25%'
+          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
+          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
+          width: isMobile ? '100%' : '25%'
         }}>
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
@@ -431,74 +432,77 @@ const ArticlesPage = () => {
                   Article Filters
                 </h4>
                 
-                {/* Article Type Filter */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Article Type
-                  </label>
-                  <select
-                    value={articleTypeFilter}
-                    onChange={(e) => setArticleTypeFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="profile">Profile</option>
-                    <option value="editorial">Editorial</option>
-                    <option value="advertorial">Advertorial</option>
-                    <option value="listicle">Listicle</option>
-                  </select>
-                </div>
-
-                {/* Status Filter (only for my articles) */}
-                {activeTab === 'my' && (
-                  <div className="mb-4">
+                {/* Filters in row-wise layout for mobile */}
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                  {/* Article Type Filter */}
+                  <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Status
+                      Article Type
                     </label>
                     <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
+                      value={articleTypeFilter}
+                      onChange={(e) => setArticleTypeFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="all">All Status</option>
-                      <option value="approved">Approved</option>
-                      <option value="pending">Pending</option>
-                      <option value="rejected">Rejected</option>
+                      <option value="all">All Types</option>
+                      <option value="profile">Profile</option>
+                      <option value="editorial">Editorial</option>
+                      <option value="advertorial">Advertorial</option>
+                      <option value="listicle">Listicle</option>
                     </select>
                   </div>
-                )}
 
-                {/* Publication Filter */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Publication
-                  </label>
-                  <select
-                    value={publicationFilter}
-                    onChange={(e) => setPublicationFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                  >
-                    <option value="all">All Publications</option>
-                    {getUniquePublications().map(pub => (
-                      <option key={pub} value={pub}>{pub}</option>
-                    ))}
-                  </select>
-                </div>
+                  {/* Status Filter (only for my articles) */}
+                  {activeTab === 'my' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                        Status
+                      </label>
+                      <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
+                  )}
 
-                {/* Date Range Filter */}
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Date Range
-                  </label>
-                  <select
-                    value={dateRangeFilter}
-                    onChange={(e) => setDateRangeFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                  >
-                    {getDateRangeOptions().map(option => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
+                  {/* Publication Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Publication
+                    </label>
+                    <select
+                      value={publicationFilter}
+                      onChange={(e) => setPublicationFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="all">All Publications</option>
+                      {getUniquePublications().map(pub => (
+                        <option key={pub} value={pub}>{pub}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Date Range Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Date Range
+                    </label>
+                    <select
+                      value={dateRangeFilter}
+                      onChange={(e) => setDateRangeFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      {getDateRangeOptions().map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -514,7 +518,7 @@ const ArticlesPage = () => {
         </aside>
 
         {/* Main Content - Enhanced */}
-        <main className="flex-1 p-6 min-w-0">
+        <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
           {/* Enhanced Search Bar */}
           <div className="max-w-2xl mx-auto mb-6">
             <div className="relative">
