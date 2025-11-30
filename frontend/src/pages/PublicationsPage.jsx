@@ -91,6 +91,15 @@ const PublicationsPage = () => {
     fetchGroups();
   }, []);
 
+  // Enhanced search with debouncing
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchPublications();
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, groupFilter, regionFilter]);
+
   const fetchPublications = async () => {
     try {
       setLoading(true);
@@ -100,7 +109,12 @@ const PublicationsPage = () => {
         limit: '100'
       });
 
-      if (searchTerm) params.append('publication_name', searchTerm);
+      // Enhanced search across multiple fields
+      if (searchTerm.trim()) {
+        params.append('search', searchTerm.trim());
+        params.append('publication_name', searchTerm.trim());
+      }
+      
       if (groupFilter) params.append('group_name', groupFilter);
       if (regionFilter) params.append('region', regionFilter);
 
@@ -113,6 +127,20 @@ const PublicationsPage = () => {
                pub.is_active === true &&
                pub.live_on_platform === true;
       });
+
+      // Client-side search for better results
+      if (searchTerm.trim()) {
+        const searchLower = searchTerm.toLowerCase().trim();
+        pubs = pubs.filter(pub => {
+          return (
+            pub.publication_name?.toLowerCase().includes(searchLower) ||
+            pub.publication_region?.toLowerCase().includes(searchLower) ||
+            pub.publication_language?.toLowerCase().includes(searchLower) ||
+            pub.publication_primary_industry?.toLowerCase().includes(searchLower) ||
+            pub.group_name?.toLowerCase().includes(searchLower)
+          );
+        });
+      }
 
       setPublications(pubs);
     } catch (error) {
@@ -418,9 +446,17 @@ const PublicationsPage = () => {
                   placeholder="Search publications by name, region, or industry..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
@@ -429,13 +465,14 @@ const PublicationsPage = () => {
 
       {/* Main Content with Enhanced Layout */}
       <div className="flex">
-        {/* Enhanced Filters Sidebar - More space */}
-        <aside className={`${sidebarOpen ? 'w-96' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{ 
+        {/* Enhanced Filters Sidebar - 25% width */}
+        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{ 
           minHeight: 'calc(100vh - 200px)',
           position: 'sticky',
           top: '80px',
           zIndex: 10,
-          borderRight: `1px solid ${theme.borderLight}`
+          borderRight: `1px solid ${theme.borderLight}`,
+          width: '25%'
         }}>
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
@@ -731,6 +768,11 @@ const PublicationsPage = () => {
 
                 <span className="text-sm font-medium text-[#212121]">
                   {sortedPublications.length} publications found
+                  {searchTerm && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchTerm}"
+                    </span>
+                  )}
                 </span>
               </div>
 
