@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Filter, Mic, Users, MapPin, Globe, Instagram, Youtube, ExternalLink, Plus, Clock, CheckCircle } from 'lucide-react';
@@ -8,10 +8,35 @@ import PodcasterSubmissionForm from '../components/user/PodcasterSubmissionForm'
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
+// Enhanced theme colors inspired by VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575'
+};
+
 const PodcastersList = () => {
   const { isAuthenticated } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [podcasters, setPodcasters] = useState([]);
   const [userSubmissions, setUserSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +44,13 @@ const PodcastersList = () => {
   const [error, setError] = useState(null);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [activeTab, setActiveTab] = useState('approved'); // 'approved' or 'my-submissions'
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetchPodcasters();
@@ -38,8 +70,10 @@ const PodcastersList = () => {
         limit: 50, // Get more for grid display
       };
 
-      if (searchQuery) {
-        params.podcast_name = searchQuery;
+      // Enhanced search across multiple fields
+      if (searchQuery.trim()) {
+        params.search = searchQuery.trim();
+        params.podcast_name = searchQuery.trim();
       }
 
       if (selectedCategory !== 'all') {
@@ -52,7 +86,22 @@ const PodcastersList = () => {
       }
 
       const response = await api.get('/podcasters/approved', { params });
-      setPodcasters(response.data.podcasters);
+      let podcastersData = response.data.podcasters || [];
+
+      // Client-side search for better results
+      if (searchQuery.trim()) {
+        const searchLower = searchQuery.toLowerCase().trim();
+        podcastersData = podcastersData.filter(podcaster => {
+          return (
+            podcaster.podcast_name?.toLowerCase().includes(searchLower) ||
+            podcaster.podcast_host?.toLowerCase().includes(searchLower) ||
+            podcaster.podcast_focus_industry?.toLowerCase().includes(searchLower) ||
+            podcaster.podcast_region?.toLowerCase().includes(searchLower)
+          );
+        });
+      }
+
+      setPodcasters(podcastersData);
       setError(null);
     } catch (err) {
       console.error('Error fetching podcasters:', err);
@@ -90,6 +139,10 @@ const PodcastersList = () => {
 
     return cats;
   }, [podcasters]);
+
+  const clearAllFilters = () => {
+    setSelectedCategory('all');
+  };
 
   const filteredPodcasters = podcasters.filter(podcaster => {
     const matchesCategory = selectedCategory === 'all' ||

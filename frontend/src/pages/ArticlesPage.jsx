@@ -12,6 +12,29 @@ import {
   ExternalLink, Eye, FileText, Calendar, User, Newspaper, Grid, List, Filter, ChevronDown, ChevronUp, Search as SearchIcon, Download, X, Mail
 } from 'lucide-react';
 
+// Enhanced theme colors inspired by VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575'
+};
+
 const ArticlesPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +47,8 @@ const ArticlesPage = () => {
   const [totalArticles, setTotalArticles] = useState(0);
   const [activeTab, setActiveTab] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
-  const [showFilters, setShowFilters] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [articleTypeFilter, setArticleTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [publicationFilter, setPublicationFilter] = useState('all');
@@ -33,9 +57,25 @@ const ArticlesPage = () => {
   const [showQuestionnairePopup, setShowQuestionnairePopup] = useState(false);
 
   useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
     fetchArticles();
     fetchPublications();
   }, [currentPage, isAuthenticated, activeTab]);
+
+  // Enhanced search with debouncing
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchArticles();
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, activeTab]);
 
   const fetchArticles = async () => {
     try {
@@ -55,7 +95,50 @@ const ArticlesPage = () => {
       }
 
       const response = await api.get(endpoint);
-      setArticles(response.data.articles || []);
+      let articlesData = response.data.articles || [];
+
+      // Client-side search for better results
+      if (searchTerm.trim()) {
+        const searchLower = searchTerm.toLowerCase().trim();
+        articlesData = articlesData.filter(article => {
+          if (activeTab === 'my') {
+            // For user's articles (manual + AI articles)
+            if (article.article_type === 'ai') {
+              return [
+                article.story_type,
+                article.publication?.publication_name,
+                article.status
+              ].some(field => field && field.toLowerCase().includes(searchLower));
+            } else {
+              return [
+                article.title,
+                article.sub_title,
+                article.by_line,
+                article.publication?.publication_name,
+                article.status
+              ].some(field => field && field.toLowerCase().includes(searchLower));
+            }
+          } else {
+            // For all articles (mixed manual and AI)
+            if (article.article_type === 'ai') {
+              return [
+                article.story_type,
+                article.publication?.publication_name,
+                article.status
+              ].some(field => field && field.toLowerCase().includes(searchLower));
+            } else {
+              return [
+                article.title,
+                article.sub_title,
+                article.by_line,
+                article.publication?.publication_name
+              ].some(field => field && field.toLowerCase().includes(searchLower));
+            }
+          }
+        });
+      }
+
+      setArticles(articlesData);
       setTotalPages(response.data.pagination?.totalPages || 1);
       setTotalArticles(response.data.pagination?.total || 0);
     } catch (error) {
@@ -167,44 +250,7 @@ const ArticlesPage = () => {
   };
 
   const filteredArticles = (() => {
-    let filtered = articles.filter(article => {
-      if (!searchTerm) return true;
-
-      if (activeTab === 'my') {
-        // For user's articles (manual + AI articles)
-        if (article.article_type === 'ai') {
-          return [
-            article.story_type,
-            article.publication?.publication_name,
-            article.status
-          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
-        } else {
-          return [
-            article.title,
-            article.sub_title,
-            article.by_line,
-            article.publication?.publication_name,
-            article.status
-          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
-        }
-      } else {
-        // For all articles (mixed manual and AI)
-        if (article.article_type === 'ai') {
-          return [
-            article.story_type,
-            article.publication?.publication_name,
-            article.status
-          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
-        } else {
-          return [
-            article.title,
-            article.sub_title,
-            article.by_line,
-            article.publication?.publication_name
-          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
-        }
-      }
-    });
+    let filtered = articles;
 
     // Apply additional filters
     filtered = filtered.filter(article => {
@@ -233,6 +279,13 @@ const ArticlesPage = () => {
 
     return filtered;
   })();
+
+  const clearAllFilters = () => {
+    setArticleTypeFilter('all');
+    setStatusFilter('all');
+    setPublicationFilter('all');
+    setDateRangeFilter('all');
+  };
 
   if (loading) {
     return (
@@ -265,7 +318,7 @@ const ArticlesPage = () => {
       />
       <UserHeader onShowAuth={handleShowAuth} />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -283,7 +336,6 @@ const ArticlesPage = () => {
                 : `Upload the self-written article, or write a professional article as per the respective publication's guidelines with the help of Artificial Intelligence (AI) to expedite publishing.`
               }
             </p>
-
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
@@ -307,7 +359,7 @@ const ArticlesPage = () => {
       </section>
 
       {/* Tabs */}
-      <section className="px-4 sm:px-6 lg:px-8 py-4 border-b border-[#E0E0E0]">
+      <section className="px-4 sm:px-6 lg:px-8 py-4 border-b border-[#E0E0E0] bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex space-x-8">
             <button
@@ -344,72 +396,50 @@ const ArticlesPage = () => {
         </div>
       </section>
 
-      {/* View Toggle and Filters Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-4 bg-white border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-[#212121]">Articles ({filteredArticles.length})</h2>
+      {/* Main Content with Enhanced Layout */}
+      <div className="flex">
+        {/* Enhanced Filters Sidebar - 25% width */}
+        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{ 
+          minHeight: 'calc(100vh - 200px)',
+          position: 'sticky',
+          top: '80px',
+          zIndex: 10,
+          borderRight: `1px solid ${theme.borderLight}`,
+          width: '25%'
+        }}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
+                <Filter size={20} className="text-[#1976D2]" />
+                Filters & Sort
+              </h3>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                >
+                  ×
+                </button>
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                  showFilters
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
-              >
-                <Filter size={16} />
-                Filters
-                {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                  viewMode === 'grid'
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
-              >
-                <Grid size={16} className="mr-2" />
-                Grid
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                  viewMode === 'list'
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
-              >
-                <List size={16} className="mr-2" />
-                List
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Collapsible Filters */}
-      {showFilters && (
-        <section className="px-4 sm:px-6 lg:px-8 py-6 bg-[#FAFAFA] border-b border-[#E0E0E0]">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+            <div className="space-y-6">
+              {/* Enhanced Filter Sections */}
+              <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <FileText size={16} className="text-[#1976D2]" />
+                  Article Filters
+                </h4>
+                
+                {/* Article Type Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                     Article Type
                   </label>
                   <select
                     value={articleTypeFilter}
                     onChange={(e) => setArticleTypeFilter(e.target.value)}
-                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
                     <option value="all">All Types</option>
                     <option value="profile">Profile</option>
@@ -418,15 +448,17 @@ const ArticlesPage = () => {
                     <option value="listicle">Listicle</option>
                   </select>
                 </div>
+
+                {/* Status Filter (only for my articles) */}
                 {activeTab === 'my' && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-[#212121]">
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                       Status
                     </label>
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
                       <option value="all">All Status</option>
                       <option value="approved">Approved</option>
@@ -435,14 +467,16 @@ const ArticlesPage = () => {
                     </select>
                   </div>
                 )}
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+
+                {/* Publication Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                     Publication
                   </label>
                   <select
                     value={publicationFilter}
                     onChange={(e) => setPublicationFilter(e.target.value)}
-                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
                     <option value="all">All Publications</option>
                     {getUniquePublications().map(pub => (
@@ -450,14 +484,16 @@ const ArticlesPage = () => {
                     ))}
                   </select>
                 </div>
+
+                {/* Date Range Filter */}
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                     Date Range
                   </label>
                   <select
                     value={dateRangeFilter}
                     onChange={(e) => setDateRangeFilter(e.target.value)}
-                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
                     {getDateRangeOptions().map(option => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -465,30 +501,23 @@ const ArticlesPage = () => {
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={() => {
-                    setArticleTypeFilter('all');
-                    setStatusFilter('all');
-                    setPublicationFilter('all');
-                    setDateRangeFilter('all');
-                  }}
-                  className="px-4 py-2 text-[#1976D2] hover:text-[#0D47A1] font-medium transition-colors"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
 
-      {/* Search and Filters */}
-      <section className="px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
+              {/* Clear Filters */}
+              <button
+                onClick={clearAllFilters}
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
+              >
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content - Enhanced */}
+        <main className="flex-1 p-6 min-w-0">
+          {/* Enhanced Search Bar */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="relative">
               <input
                 type="text"
                 placeholder={
@@ -498,198 +527,273 @@ const ArticlesPage = () => {
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white text-[#212121]"
+                className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
               />
+              <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                >
+                  ×
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Articles Grid */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto">
+          {/* Enhanced Controls Bar */}
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{ 
+            borderColor: theme.borderLight,
+            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+          }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Toggle */}
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                    style={{ borderColor: theme.borderLight }}
+                  >
+                    <Filter size={16} />
+                    <span className="text-[#212121]">Filters</span>
+                  </button>
+                )}
+
+                {/* View Toggle */}
+                <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'grid' 
+                        ? 'bg-white shadow-sm text-[#1976D2]' 
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <Grid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'list' 
+                        ? 'bg-white shadow-sm text-[#1976D2]' 
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+
+                <span className="text-sm font-medium text-[#212121]">
+                  {filteredArticles.length} articles found
+                  {searchTerm && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchTerm}"
+                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Articles Display */}
           {filteredArticles.length > 0 ? (
             <>
-              <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-                {filteredArticles.map((article, index) => (
-                  <motion.div
-                    key={article.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition-shadow p-6"
-                  >
-                    {article.article_type === 'ai' || activeTab === 'my' ? (
-                      // AI Article Card - Enhanced Design
-                      <>
-
-                        {/* Article Type Badges */}
-                        <div className="mb-4 flex flex-wrap items-center justify-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#E3F2FD] text-[#1976D2] capitalize border border-[#1976D2]/20">
-                            {article.story_type}
-                          </span>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#4CAF50] to-[#388E3C] text-white">
-                            ✨ AI Generated
-                          </span>
-                        </div>
-
-                        {/* Title for AI articles */}
-                        {article.name && (
-                          <h3 className="text-xl font-bold mb-3 text-[#212121] text-center line-clamp-2 leading-tight">
-                            {article.name}
-                          </h3>
-                        )}
-
-                        {/* Status (only show for user's articles) */}
-                        {activeTab === 'my' && (
-                          <div className="mb-4 flex justify-center">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                              article.status === 'approved' ? 'bg-green-100 text-green-800 border border-green-200' :
-                              article.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
-                              article.status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
-                              'bg-gray-100 text-gray-800 border border-gray-200'
-                            }`}>
-                              {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Publication */}
-                        <div className="flex items-center justify-center text-sm mb-3 p-2 bg-[#F8F9FA] rounded-lg">
-                          <Newspaper size={16} className="mr-2 text-[#1976D2]" />
-                          <span className="font-medium text-[#757575]">Publication: </span>
-                          <span className="text-[#212121] ml-1 font-semibold">{article.publication?.publication_name || 'Not Assigned'}</span>
-                        </div>
-
-                        {/* Date */}
-                        <div className="flex items-center justify-center text-sm mb-4 p-2 bg-[#F8F9FA] rounded-lg">
-                          <Calendar size={16} className="mr-2 text-[#1976D2]" />
-                          <span className="font-medium text-[#757575]">Created: </span>
-                          <span className="text-[#212121] ml-1 font-semibold">{formatDate(article.created_at)}</span>
-                        </div>
-
-                        {/* Generated Content Preview - Enhanced */}
-                        {article.generated_content && (
-                          <div className="mb-6 p-4 bg-gradient-to-br from-[#F8F9FA] to-[#E3F2FD] rounded-lg border border-[#E0E0E0]">
-                            <div className="flex items-center mb-2">
-                              <FileText size={14} className="mr-2 text-[#1976D2]" />
-                              <span className="text-xs font-medium text-[#757575] uppercase tracking-wide">Article Preview</span>
-                            </div>
-                            <p className="text-sm text-[#424242] leading-relaxed line-clamp-4">
-                              {cleanPreviewText(article.generated_content.substring(0, 200))}...
-                            </p>
-                          </div>
-                        )}
-
-                        {/* SEO Keywords Preview */}
-                        {article.seo_keywords && (
-                          <div className="mb-4">
-                            <div className="flex flex-wrap gap-1 justify-center">
-                              {article.seo_keywords.split(',').slice(0, 3).map((keyword, idx) => (
-                                <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#E8F5E8] text-[#2E7D32] border border-[#2E7D32]/20">
-                                  {keyword.trim()}
-                                </span>
-                              ))}
-                              {article.seo_keywords.split(',').length > 3 && (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#F5F5F5] text-[#757575]">
-                                  +{article.seo_keywords.split(',').length - 3} more
+              {/* Enhanced Grid View */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredArticles.map((article, index) => (
+                    <motion.div
+                      key={article.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
+                      style={{ 
+                        borderColor: theme.borderLight,
+                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                      }}
+                    >
+                      <div className="p-6">
+                        {/* AI vs Manual Article Card - Enhanced */}
+                        {article.article_type === 'ai' || activeTab === 'my' ? (
+                          <>
+                            {/* Article Type Badges */}
+                            <div className="mb-4 flex flex-wrap gap-2">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#E3F2FD] text-[#1976D2] capitalize border border-[#1976D2]/20">
+                                {article.story_type}
+                              </span>
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#4CAF50] to-[#388E3C] text-white">
+                                ✨ AI Generated
+                              </span>
+                              {activeTab === 'my' && (
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                  article.status === 'approved' ? 'bg-green-100 text-green-800 border border-green-200' :
+                                  article.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                                  article.status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
+                                  'bg-gray-100 text-gray-800 border border-gray-200'
+                                }`}>
+                                  {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
                                 </span>
                               )}
                             </div>
-                          </div>
-                        )}
 
-                        {/* Action Button - Enhanced */}
-                        {activeTab === 'my' ? (
-                          <button
-                            onClick={() => {
-                              navigate(`/ai-article-generation/${article.id}`);
-                              // Show questionnaire popup after AI article generation
-                              setTimeout(() => setShowQuestionnairePopup(true), 1000);
-                            }}
-                            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all text-sm bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white hover:from-[#0D47A1] hover:to-[#1976D2] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                          >
-                            <Eye size={16} />
-                            {article.generated_content ? 'Review Article' : 'Generate Article'}
-                          </button>
+                            {/* Title for AI articles */}
+                            {article.name && (
+                              <h3 className="text-xl font-bold mb-3 text-[#212121] text-center line-clamp-2 leading-tight">
+                                {article.name}
+                              </h3>
+                            )}
+
+                            {/* Publication */}
+                            <div className="flex items-center justify-center text-sm mb-3 p-2 bg-[#F8F9FA] rounded-lg">
+                              <Newspaper size={16} className="mr-2 text-[#1976D2]" />
+                              <span className="font-medium text-[#757575]">Publication: </span>
+                              <span className="text-[#212121] ml-1 font-semibold">{article.publication?.publication_name || 'Not Assigned'}</span>
+                            </div>
+
+                            {/* Date */}
+                            <div className="flex items-center justify-center text-sm mb-4 p-2 bg-[#F8F9FA] rounded-lg">
+                              <Calendar size={16} className="mr-2 text-[#1976D2]" />
+                              <span className="font-medium text-[#757575]">Created: </span>
+                              <span className="text-[#212121] ml-1 font-semibold">{formatDate(article.created_at)}</span>
+                            </div>
+
+                            {/* Generated Content Preview */}
+                            {article.generated_content && (
+                              <div className="mb-6 p-4 bg-gradient-to-br from-[#F8F9FA] to-[#E3F2FD] rounded-lg border border-[#E0E0E0]">
+                                <div className="flex items-center mb-2">
+                                  <FileText size={14} className="mr-2 text-[#1976D2]" />
+                                  <span className="text-xs font-medium text-[#757575] uppercase tracking-wide">Article Preview</span>
+                                </div>
+                                <p className="text-sm text-[#424242] leading-relaxed line-clamp-4">
+                                  {cleanPreviewText(article.generated_content.substring(0, 200))}...
+                                </p>
+                              </div>
+                            )}
+
+                            {/* SEO Keywords Preview */}
+                            {article.seo_keywords && (
+                              <div className="mb-4">
+                                <div className="flex flex-wrap gap-1 justify-center">
+                                  {article.seo_keywords.split(',').slice(0, 3).map((keyword, idx) => (
+                                    <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#E8F5E8] text-[#2E7D32] border border-[#2E7D32]/20">
+                                      {keyword.trim()}
+                                    </span>
+                                  ))}
+                                  {article.seo_keywords.split(',').length > 3 && (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#F5F5F5] text-[#757575]">
+                                      +{article.seo_keywords.split(',').length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Action Button */}
+                            {activeTab === 'my' ? (
+                              <button
+                                onClick={() => {
+                                  navigate(`/ai-article-generation/${article.id}`);
+                                  setTimeout(() => setShowQuestionnairePopup(true), 1000);
+                                }}
+                                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all text-sm bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white hover:from-[#0D47A1] hover:to-[#1976D2] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                              >
+                                <Eye size={16} />
+                                {article.generated_content ? 'Review Article' : 'Generate Article'}
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => navigate(`/articles/ai-${article.id}`)}
+                                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all text-sm bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white hover:from-[#0D47A1] hover:to-[#1976D2] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                              >
+                                <Eye size={16} />
+                                View Article
+                              </button>
+                            )}
+                          </>
                         ) : (
-                          <button
-                            onClick={() => navigate(`/articles/ai-${article.id}`)}
-                            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all text-sm bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white hover:from-[#0D47A1] hover:to-[#1976D2] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                          >
-                            <Eye size={16} />
-                            View Article
-                          </button>
-                        )}
-                      </>
-                    ) : (
-                      // Manual Article Card
-                      <>
-                        {/* Article Type Badge */}
-                        <div className="mb-3 flex items-center gap-2">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F3E5F5] text-[#9C27B0]">
-                            Manual Article
-                          </span>
-                          {activeTab === 'my' && (
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              article.status === 'approved' ? 'bg-green-100 text-green-800' :
-                              article.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              article.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
-                            </span>
-                          )}
-                        </div>
+                          /* Manual Article Card */
+                          <>
+                            {/* Article Type Badge */}
+                            <div className="mb-3 flex items-center gap-2">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F3E5F5] text-[#9C27B0]">
+                                Manual Article
+                              </span>
+                              {activeTab === 'my' && (
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  article.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                  article.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  article.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
+                                </span>
+                              )}
+                            </div>
 
-                        {/* Image */}
-                        {article.image1 && (
-                          <div className="mb-4">
-                            <img
-                              src={article.image1}
-                              alt={article.title}
-                              className="w-full h-48 object-cover rounded-lg"
-                            />
-                          </div>
-                        )}
+                            {/* Image */}
+                            {article.image1 && (
+                              <div className="mb-4">
+                                <img
+                                  src={article.image1}
+                                  alt={article.title}
+                                  className="w-full h-48 object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
 
-                        {/* Title */}
-                        <h3 className="text-xl font-semibold mb-2 text-[#212121] line-clamp-2">
-                          {article.title}
-                        </h3>
+                            {/* Title */}
+                            <h3 className="text-xl font-semibold mb-2 text-[#212121] line-clamp-2">
+                              {article.title}
+                            </h3>
 
-                        {/* Subtitle */}
-                        {article.sub_title && (
-                          <p className="text-sm text-[#757575] mb-3 line-clamp-2">
-                            {article.sub_title}
-                          </p>
-                        )}
+                            {/* Subtitle */}
+                            {article.sub_title && (
+                              <p className="text-sm text-[#757575] mb-3 line-clamp-2">
+                                {article.sub_title}
+                              </p>
+                            )}
 
-                        {/* Publication */}
-                        <div className="flex items-center text-sm mb-2">
-                          <Newspaper size={14} className="mr-2 text-[#1976D2]" />
-                          <span className="font-medium text-[#757575]">Publication: </span>
-                          <span className="text-[#212121] ml-1">{article.publication?.publication_name || 'Not Assigned'}</span>
-                        </div>
+                            {/* Publication */}
+                            <div className="flex items-center text-sm mb-2">
+                              <Newspaper size={14} className="mr-2 text-[#1976D2]" />
+                              <span className="font-medium text-[#757575]">Publication: </span>
+                              <span className="text-[#212121] ml-1">{article.publication?.publication_name || 'Not Assigned'}</span>
+                            </div>
 
-                        {/* Author */}
-                        <div className="flex items-center text-sm mb-2">
-                          <User size={14} className="mr-2 text-[#1976D2]" />
-                          <span className="font-medium text-[#757575]">Author: </span>
-                          <span className="text-[#212121] ml-1">{article.by_line || 'Anonymous'}</span>
-                        </div>
+                            {/* Author */}
+                            <div className="flex items-center text-sm mb-2">
+                              <User size={14} className="mr-2 text-[#1976D2]" />
+                              <span className="font-medium text-[#757575]">Author: </span>
+                              <span className="text-[#212121] ml-1">{article.by_line || 'Anonymous'}</span>
+                            </div>
 
-                        {/* Date */}
-                        <div className="flex items-center text-sm mb-4">
-                          <Calendar size={14} className="mr-2 text-[#1976D2]" />
-                          <span className="font-medium text-[#757575]">Date: </span>
-                          <span className="text-[#212121] ml-1">{formatDate(article.created_at)}</span>
-                        </div>
+                            {/* Date */}
+                            <div className="flex items-center text-sm mb-4">
+                              <Calendar size={14} className="mr-2 text-[#1976D2]" />
+                              <span className="font-medium text-[#757575]">Date: </span>
+                              <span className="text-[#212121] ml-1">{formatDate(article.created_at)}</span>
+                            </div>
 
-                        {/* Action Button */}
-                        {activeTab === 'my' ? (
-                          <div className="text-center text-sm text-[#757575]">
-                            {article.status === 'approved' ? (
+                            {/* Action Button */}
+                            {activeTab === 'my' ? (
+                              <div className="text-center text-sm text-[#757575]">
+                                {article.status === 'approved' ? (
+                                  <button
+                                    onClick={() => navigate(`/articles/${article.slug}`)}
+                                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm bg-[#1976D2] text-white hover:bg-[#0D47A1]"
+                                  >
+                                    <Eye size={14} />
+                                    View Article
+                                  </button>
+                                ) : (
+                                  <span className="block py-3">
+                                    {article.status === 'pending' ? 'Under Review' : 'Review Feedback'}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
                               <button
                                 onClick={() => navigate(`/articles/${article.slug}`)}
                                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm bg-[#1976D2] text-white hover:bg-[#0D47A1]"
@@ -697,26 +801,114 @@ const ArticlesPage = () => {
                                 <Eye size={14} />
                                 View Article
                               </button>
-                            ) : (
-                              <span className="block py-3">
-                                {article.status === 'pending' ? 'Under Review' : 'Review Feedback'}
-                              </span>
                             )}
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => navigate(`/articles/${article.slug}`)}
-                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm bg-[#1976D2] text-white hover:bg-[#0D47A1]"
-                          >
-                            <Eye size={14} />
-                            View Article
-                          </button>
+                          </>
                         )}
-                      </>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Enhanced List View - Table Format */}
+              {viewMode === 'list' && (
+                <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{ 
+                  borderColor: theme.borderLight,
+                  boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead style={{ backgroundColor: theme.backgroundSoft }}>
+                        <tr>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Article
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Type
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Publication
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Date
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Status
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredArticles.map((article, index) => (
+                          <tr 
+                            key={article.id}
+                            className="border-t hover:bg-gray-50 transition-colors"
+                            style={{ borderColor: theme.borderLight }}
+                          >
+                            <td className="px-6 py-4">
+                              <div>
+                                <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                  {article.article_type === 'ai' ? article.name : article.title}
+                                </div>
+                                {article.article_type === 'ai' && (
+                                  <div className="text-sm text-[#757575] line-clamp-1">
+                                    {article.sub_title}
+                                  </div>
+                                )}
+                                {article.article_type !== 'ai' && (
+                                  <div className="text-sm text-[#757575] line-clamp-1">
+                                    {article.sub_title}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#E3F2FD] text-[#1976D2] capitalize">
+                                {article.article_type === 'ai' ? 'AI Generated' : 'Manual'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {article.publication?.publication_name || 'Not Assigned'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {formatDate(article.created_at)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {activeTab === 'my' && (
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  article.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                  article.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  article.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              <button
+                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                style={{ backgroundColor: theme.primary }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                              >
+                                <Eye size={14} className="inline mr-1" />
+                                View
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {/* Pagination */}
               {totalPages > 1 && (
@@ -754,20 +946,35 @@ const ArticlesPage = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-[#F5F5F5]">
-                <FileText size={48} className="text-[#BDBDBD]" />
+            <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ backgroundColor: theme.backgroundSoft }}
+              >
+                <FileText size={48} style={{ color: theme.textDisabled }} />
               </div>
-              <h3 className="text-2xl font-semibold mb-3 text-[#212121]">
+              <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
                 No articles found
               </h3>
-              <p className="mb-6 max-w-md mx-auto text-[#757575]">
+              <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
                 We couldn't find any articles matching your search criteria.
               </p>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  clearAllFilters();
+                }}
+                className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: theme.primary }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+              >
+                Clear All Filters
+              </button>
             </div>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
 
       <UserFooter />
 

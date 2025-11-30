@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,21 +15,52 @@ import {
   FileText, Shield, User, Building, TrendingUp
 } from 'lucide-react';
 
+// Enhanced theme colors inspired by VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575'
+};
+
 const AwardsPage = () => {
   const { isAuthenticated, hasRole, hasAnyRole, getRoleLevel } = useAuth();
   const navigate = useNavigate();
   const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [monthFilter, setMonthFilter] = useState('');
   const [focusFilter, setFocusFilter] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [showAuth, setShowAuth] = useState(false);
   const [showAwardForm, setShowAwardForm] = useState(false);
   const [selectedAward, setSelectedAward] = useState(null);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetchAwards();
@@ -44,12 +75,29 @@ const AwardsPage = () => {
         limit: '20'
       });
 
-      if (searchTerm) params.append('award_name', searchTerm);
+      // Enhanced search across multiple fields
+      if (searchTerm.trim()) {
+        params.append('search', searchTerm.trim());
+        params.append('award_name', searchTerm.trim());
+      }
+
       if (monthFilter) params.append('award_month', monthFilter);
       if (focusFilter) params.append('award_focus', focusFilter);
 
       const response = await api.get(`/awards?${params.toString()}`);
       let awardsData = response.data.awards || [];
+
+      // Client-side search for better results
+      if (searchTerm.trim()) {
+        const searchLower = searchTerm.toLowerCase().trim();
+        awardsData = awardsData.filter(award => {
+          return (
+            award.award_name?.toLowerCase().includes(searchLower) ||
+            award.award_organiser?.toLowerCase().includes(searchLower) ||
+            award.award_focus?.toLowerCase().includes(searchLower)
+          );
+        });
+      }
 
       setAwards(awardsData);
       setTotalPages(response.data.pagination?.pages || 1);
@@ -122,14 +170,25 @@ const AwardsPage = () => {
     fetchAwards(page);
   };
 
+  const clearAllFilters = () => {
+    setMonthFilter('');
+    setFocusFilter('');
+  };
+
   if (loading && awards.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-4 border-[#E0E0E0] border-t-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading awards...</p>
+            <div
+              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
+              style={{
+                borderBottom: `2px solid ${theme.primary}`,
+                borderRight: `2px solid transparent`
+              }}
+            ></div>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading awards...</p>
           </div>
         </div>
         <UserFooter />
@@ -141,7 +200,7 @@ const AwardsPage = () => {
     <div className="min-h-screen bg-white">
       <UserHeader onShowAuth={handleShowAuth} />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -160,79 +219,146 @@ const AwardsPage = () => {
         </div>
       </section>
 
-      {/* Search and Filter Section */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
+      {/* Main Content with Enhanced Layout */}
+      <div className="flex">
+        {/* Enhanced Filters Sidebar - 25% width */}
+        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{
+          minHeight: 'calc(100vh - 200px)',
+          position: 'sticky',
+          top: '80px',
+          zIndex: 10,
+          borderRight: `1px solid ${theme.borderLight}`,
+          width: '25%'
+        }}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
+                <Filter size={20} className="text-[#1976D2]" />
+                Filters & Sort
+              </h3>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {/* Enhanced Filter Sections */}
+              <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <Award size={16} className="text-[#1976D2]" />
+                  Award Filters
+                </h4>
+
+                {/* Month Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Award Month
+                  </label>
+                  <select
+                    value={monthFilter}
+                    onChange={(e) => setMonthFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Months</option>
+                    {getUniqueMonths().map(month => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Focus Filter */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Award Focus
+                  </label>
+                  <select
+                    value={focusFilter}
+                    onChange={(e) => setFocusFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Focuses</option>
+                    {getUniqueFocuses().map(focus => (
+                      <option key={focus} value={focus}>{focus}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
+              <button
+                onClick={clearAllFilters}
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
+              >
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content - Enhanced */}
+        <main className="flex-1 p-6 min-w-0">
+          {/* Enhanced Search Bar */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search awards by name or organiser..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
+                className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
               />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                >
+                  ×
+                </button>
+              )}
             </div>
-            {/* Filter Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`inline-flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
-                showFilters
-                  ? 'bg-[#1976D2] text-white'
-                  : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-              }`}
-            >
-              <Filter className="w-5 h-5" />
-              Filters
-            </button>
           </div>
 
-          {/* Filter Options */}
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#212121] mb-2">
-                  Award Month
-                </label>
-                <select
-                  value={monthFilter}
-                  onChange={(e) => setMonthFilter(e.target.value)}
-                  className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                >
-                  <option value="">All Months</option>
-                  {getUniqueMonths().map(month => (
-                    <option key={month} value={month}>{month}</option>
-                  ))}
-                </select>
-              </div>
+          {/* Enhanced Controls Bar */}
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
+            borderColor: theme.borderLight,
+            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+          }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Toggle */}
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                    style={{ borderColor: theme.borderLight }}
+                  >
+                    <Filter size={16} />
+                    <span className="text-[#212121]">Filters</span>
+                  </button>
+                )}
 
-              <div>
-                <label className="block text-sm font-medium text-[#212121] mb-2">
-                  Award Focus
-                </label>
-                <select
-                  value={focusFilter}
-                  onChange={(e) => setFocusFilter(e.target.value)}
-                  className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                >
-                  <option value="">All Focuses</option>
-                  {getUniqueFocuses().map(focus => (
-                    <option key={focus} value={focus}>{focus}</option>
-                  ))}
-                </select>
+                <span className="text-sm font-medium text-[#212121]">
+                  {awards.length} awards found
+                  {searchTerm && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchTerm}"
+                    </span>
+                  )}
+                </span>
               </div>
             </div>
-          )}
-        </div>
-      </section>
+          </div>
 
-      {/* Awards Grid */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto">
+          {/* Awards Display */}
           {awards.length > 0 ? (
             <>
+              {/* Enhanced Grid View */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {awards.map((award, index) => (
                   <motion.div
@@ -289,7 +415,7 @@ const AwardsPage = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-20">
+            <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
               <div className="w-24 h-24 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-6">
                 <Award className="w-12 h-12 text-[#BDBDBD]" />
               </div>
@@ -302,8 +428,7 @@ const AwardsPage = () => {
               <button
                 onClick={() => {
                   setSearchTerm('');
-                  setMonthFilter('');
-                  setFocusFilter('');
+                  clearAllFilters();
                   fetchAwards(1);
                 }}
                 className="mt-6 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors"
@@ -312,8 +437,8 @@ const AwardsPage = () => {
               </button>
             </div>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
 
       <UserFooter />
 
