@@ -58,7 +58,13 @@ const PowerlistPage = () => {
   const fetchPowerlists = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/powerlist/public');
+      const params = new URLSearchParams();
+      if (searchTerm.trim()) {
+        params.append('name', searchTerm.trim());
+        params.append('current_company', searchTerm.trim());
+      }
+      const url = `/api/powerlist/public${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await api.get(url);
       setPowerlists(response.data.powerlists || []);
     } catch (error) {
       console.error('Error fetching powerlists:', error);
@@ -72,10 +78,14 @@ const PowerlistPage = () => {
     }
   };
 
-  // Simple search functionality
-  const handleSearch = () => {
-    fetchPowerlists();
-  };
+  // Search functionality with debouncing
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchPowerlists();
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
 
   const handleShowAuth = () => {
     setShowAuth(true);
