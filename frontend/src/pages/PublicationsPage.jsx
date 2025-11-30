@@ -49,6 +49,7 @@ const PublicationsPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [groups, setGroups] = useState([]);
   const [showAuth, setShowAuth] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => {
     fetchPublications();
@@ -167,11 +168,11 @@ const PublicationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+    <div className="min-h-screen bg-white">
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Hero Section - prnews.io inspired */}
-      <section className="relative py-12 px-4 sm:px-6 lg:px-8 border-b" style={{ backgroundColor: theme.background }}>
+      <section className="relative py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -216,7 +217,7 @@ const PublicationsPage = () => {
 
       {/* Filters Section */}
       {showFilters && (
-        <section className="px-4 sm:px-6 lg:px-8 border-b" style={{ backgroundColor: theme.backgroundAlt }}>
+        <section className="px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
           <div className="max-w-7xl mx-auto py-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -274,11 +275,46 @@ const PublicationsPage = () => {
         </section>
       )}
 
+      {/* View Toggle Section */}
+      <section className="px-4 sm:px-6 lg:px-8 py-4 bg-white border-b border-[#E0E0E0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-[#212121]">Publications ({publications.length})</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <Grid size={16} className="mr-2" />
+                Grid
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <List size={16} className="mr-2" />
+                List
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Publications Grid */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8">
+      <section className="px-4 sm:px-6 lg:px-8 py-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           {publications.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
               {publications.map((publication, index) => (
                 <motion.div
                   key={publication.id}
@@ -286,7 +322,7 @@ const PublicationsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                   onClick={() => handlePublicationClick(publication)}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer group overflow-hidden"
+                  className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition-shadow cursor-pointer group overflow-hidden"
                 >
                   {/* Publication Header */}
                   <div className="p-6">

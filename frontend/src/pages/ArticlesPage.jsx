@@ -9,7 +9,7 @@ import AuthModal from '../components/auth/AuthModal';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import {
-  ExternalLink, Eye, FileText, Calendar, User, Newspaper
+  ExternalLink, Eye, FileText, Calendar, User, Newspaper, Grid, List, Filter, ChevronDown, ChevronUp, Search as SearchIcon
 } from 'lucide-react';
 
 const ArticlesPage = () => {
@@ -23,9 +23,17 @@ const ArticlesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalArticles, setTotalArticles] = useState(0);
   const [activeTab, setActiveTab] = useState('all');
+  const [viewMode, setViewMode] = useState('grid');
+  const [showFilters, setShowFilters] = useState(false);
+  const [articleTypeFilter, setArticleTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [publicationFilter, setPublicationFilter] = useState('all');
+  const [dateRangeFilter, setDateRangeFilter] = useState('all');
+  const [publications, setPublications] = useState([]);
 
   useEffect(() => {
     fetchArticles();
+    fetchPublications();
   }, [currentPage, isAuthenticated, activeTab]);
 
   const fetchArticles = async () => {
@@ -54,6 +62,15 @@ const ArticlesPage = () => {
       setArticles([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPublications = async () => {
+    try {
+      const response = await api.get('/publications?limit=1000&live_on_platform=true');
+      setPublications(response.data.publications || []);
+    } catch (error) {
+      console.error('Error fetching publications:', error);
     }
   };
 
@@ -90,6 +107,34 @@ const ArticlesPage = () => {
     });
   };
 
+  const getUniquePublications = () => {
+    const pubs = articles.map(article => article.publication?.publication_name).filter(Boolean);
+    return [...new Set(pubs)].sort();
+  };
+
+  const getDateRangeOptions = () => [
+    { value: 'all', label: 'All Time' },
+    { value: '7days', label: 'Last 7 Days' },
+    { value: '30days', label: 'Last 30 Days' },
+    { value: '90days', label: 'Last 90 Days' },
+    { value: '1year', label: 'Last Year' }
+  ];
+
+  const isWithinDateRange = (dateString, range) => {
+    if (range === 'all') return true;
+    const date = new Date(dateString);
+    const now = new Date();
+    const days = {
+      '7days': 7,
+      '30days': 30,
+      '90days': 90,
+      '1year': 365
+    };
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= days[range];
+  };
+
   // Clean HTML tags and markdown symbols from preview text
   const cleanPreviewText = (text) => {
     if (!text) return '';
@@ -120,44 +165,73 @@ const ArticlesPage = () => {
     return cleaned;
   };
 
-  const filteredArticles = articles.filter(article => {
-    if (!searchTerm) return true;
+  const filteredArticles = (() => {
+    let filtered = articles.filter(article => {
+      if (!searchTerm) return true;
 
-    if (activeTab === 'my') {
-      // For user's articles (manual + AI articles)
-      if (article.article_type === 'ai') {
-        return [
-          article.story_type,
-          article.publication?.publication_name,
-          article.status
-        ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+      if (activeTab === 'my') {
+        // For user's articles (manual + AI articles)
+        if (article.article_type === 'ai') {
+          return [
+            article.story_type,
+            article.publication?.publication_name,
+            article.status
+          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+        } else {
+          return [
+            article.title,
+            article.sub_title,
+            article.by_line,
+            article.publication?.publication_name,
+            article.status
+          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
       } else {
-        return [
-          article.title,
-          article.sub_title,
-          article.by_line,
-          article.publication?.publication_name,
-          article.status
-        ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+        // For all articles (mixed manual and AI)
+        if (article.article_type === 'ai') {
+          return [
+            article.story_type,
+            article.publication?.publication_name,
+            article.status
+          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+        } else {
+          return [
+            article.title,
+            article.sub_title,
+            article.by_line,
+            article.publication?.publication_name
+          ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
       }
-    } else {
-      // For all articles (mixed manual and AI)
-      if (article.article_type === 'ai') {
-        return [
-          article.story_type,
-          article.publication?.publication_name,
-          article.status
-        ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
-      } else {
-        return [
-          article.title,
-          article.sub_title,
-          article.by_line,
-          article.publication?.publication_name
-        ].some(field => field && field.toLowerCase().includes(searchTerm.toLowerCase()));
+    });
+
+    // Apply additional filters
+    filtered = filtered.filter(article => {
+      if (articleTypeFilter !== 'all') {
+        if (articleTypeFilter === 'manual') {
+          if (article.article_type === 'ai') return false;
+        } else if (articleTypeFilter === 'ai') {
+          if (article.article_type !== 'ai') return false;
+        }
       }
-    }
-  });
+
+      if (statusFilter !== 'all' && activeTab === 'my') {
+        if (article.status !== statusFilter) return false;
+      }
+
+      if (publicationFilter !== 'all') {
+        if (article.publication?.publication_name !== publicationFilter) return false;
+      }
+
+      if (dateRangeFilter !== 'all') {
+        if (!isWithinDateRange(article.created_at, dateRangeFilter)) return false;
+      }
+
+      return true;
+    });
+
+    return filtered;
+  })();
 
   if (loading) {
     return (
@@ -208,6 +282,18 @@ const ArticlesPage = () => {
                 : `Upload the self-written article, or write a professional article as per the respective publication's guidelines with the help of Artificial Intelligence (AI) to expedite publishing.`
               }
             </p>
+
+            {/* Article Type Visual Cues */}
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
+                <FileText size={16} className="text-[#1976D2]" />
+                <span className="text-sm font-medium text-[#212121]">Manual Articles</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
+                <Newspaper size={16} className="text-[#4CAF50]" />
+                <span className="text-sm font-medium text-[#212121]">AI Generated</span>
+              </div>
+            </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
@@ -268,31 +354,171 @@ const ArticlesPage = () => {
         </div>
       </section>
 
+      {/* View Toggle and Filters Section */}
+      <section className="px-4 sm:px-6 lg:px-8 py-4 bg-white border-b border-[#E0E0E0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-[#212121]">Articles ({filteredArticles.length})</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                  showFilters
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <Filter size={16} />
+                Filters
+                {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <Grid size={16} className="mr-2" />
+                Grid
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <List size={16} className="mr-2" />
+                List
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Collapsible Filters */}
+      {showFilters && (
+        <section className="px-4 sm:px-6 lg:px-8 py-6 bg-[#FAFAFA] border-b border-[#E0E0E0]">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+                    Article Type
+                  </label>
+                  <select
+                    value={articleTypeFilter}
+                    onChange={(e) => setArticleTypeFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="manual">Manual Articles</option>
+                    <option value="ai">AI Generated</option>
+                  </select>
+                </div>
+                {activeTab === 'my' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-[#212121]">
+                      Status
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="approved">Approved</option>
+                      <option value="pending">Pending</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+                    Publication
+                  </label>
+                  <select
+                    value={publicationFilter}
+                    onChange={(e) => setPublicationFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                  >
+                    <option value="all">All Publications</option>
+                    {getUniquePublications().map(pub => (
+                      <option key={pub} value={pub}>{pub}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[#212121]">
+                    Date Range
+                  </label>
+                  <select
+                    value={dateRangeFilter}
+                    onChange={(e) => setDateRangeFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                  >
+                    {getDateRangeOptions().map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => {
+                    setArticleTypeFilter('all');
+                    setStatusFilter('all');
+                    setPublicationFilter('all');
+                    setDateRangeFilter('all');
+                  }}
+                  className="px-4 py-2 text-[#1976D2] hover:text-[#0D47A1] font-medium transition-colors"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       {/* Search and Filters */}
       <section className="px-4 sm:px-6 lg:px-8 py-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <input
-              type="text"
-              placeholder={
-                activeTab === 'my'
-                  ? "Search by story type, publication, or status..."
-                  : "Search by title, subtitle, author, or publication..."
-              }
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2]"
-            />
+            <div className="flex-1 relative">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
+              <input
+                type="text"
+                placeholder={
+                  activeTab === 'my'
+                    ? "Search by story type, publication, or status..."
+                    : "Search by title, subtitle, author, or publication..."
+                }
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white text-[#212121]"
+              />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Articles Grid */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8">
+      <section className="px-4 sm:px-6 lg:px-8 py-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           {filteredArticles.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                 {filteredArticles.map((article, index) => (
                   <motion.div
                     key={article.id}
