@@ -139,15 +139,16 @@ const RadioPage = () => {
       </section>
 
       {/* Main Content with Enhanced Layout */}
-      <div className="flex">
-        {/* Enhanced Filters Sidebar - 25% width */}
-        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{
-          minHeight: 'calc(100vh - 200px)',
-          position: 'sticky',
-          top: '80px',
+      <div className={`${isMobile ? 'flex flex-col' : 'flex'}`}>
+        {/* Enhanced Filters Sidebar */}
+        <aside className={`${sidebarOpen ? (isMobile ? 'w-full' : 'w-80') : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
+          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
+          position: isMobile ? 'static' : 'sticky',
+          top: isMobile ? 'auto' : '80px',
           zIndex: 10,
-          borderRight: `1px solid ${theme.borderLight}`,
-          width: '25%'
+          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
+          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
+          width: isMobile ? '100%' : '25%'
         }}>
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
@@ -173,40 +174,43 @@ const RadioPage = () => {
                   Radio Filters
                 </h4>
 
-                {/* Language Filter */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Language
-                  </label>
-                  <select
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                  >
-                    {languages.map(lang => (
-                      <option key={lang} value={lang}>
-                        {lang === 'all' ? 'All Languages' : lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* Filters in row-wise layout for mobile */}
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                  {/* Language Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Language
+                    </label>
+                    <select
+                      value={selectedLanguage}
+                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      {languages.map(lang => (
+                        <option key={lang} value={lang}>
+                          {lang === 'all' ? 'All Languages' : lang}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                {/* Emirate Filter */}
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Emirate
-                  </label>
-                  <select
-                    value={selectedEmirate}
-                    onChange={(e) => setSelectedEmirate(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                  >
-                    {emirates.map(emirate => (
-                      <option key={emirate} value={emirate}>
-                        {emirate === 'all' ? 'All Emirates' : emirate}
-                      </option>
-                    ))}
-                  </select>
+                  {/* Emirate Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Emirate
+                    </label>
+                    <select
+                      value={selectedEmirate}
+                      onChange={(e) => setSelectedEmirate(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      {emirates.map(emirate => (
+                        <option key={emirate} value={emirate}>
+                          {emirate === 'all' ? 'All Emirates' : emirate}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -222,7 +226,7 @@ const RadioPage = () => {
         </aside>
 
         {/* Main Content - Enhanced */}
-        <main className="flex-1 p-6 min-w-0">
+        <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
           {/* Enhanced Search Bar */}
           <div className="max-w-2xl mx-auto mb-6">
             <div className="relative">
