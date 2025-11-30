@@ -283,25 +283,6 @@ const ArticlesPage = () => {
               }
             </p>
 
-            {/* Article Type Visual Cues */}
-            <div className="flex flex-wrap justify-center gap-4 mt-6">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
-                <FileText size={16} className="text-[#1976D2]" />
-                <span className="text-sm font-medium text-[#212121]">Profile</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
-                <Newspaper size={16} className="text-[#4CAF50]" />
-                <span className="text-sm font-medium text-[#212121]">Editorial</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
-                <FileText size={16} className="text-[#FF9800]" />
-                <span className="text-sm font-medium text-[#212121]">Advertorial</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#E0E0E0] shadow-sm">
-                <Newspaper size={16} className="text-[#9C27B0]" />
-                <span className="text-sm font-medium text-[#212121]">Listicle</span>
-              </div>
-            </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">

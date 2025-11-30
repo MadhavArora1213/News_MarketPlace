@@ -181,10 +181,10 @@ const PublicationsPage = () => {
             className="text-center"
           >
             <h1 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: theme.textPrimary }}>
-              PR News Outlets Database
+              Publications
             </h1>
             <p className="text-lg mb-8" style={{ color: theme.textSecondary }}>
-              {publications.length} Media Outlets Available
+              All Publications ({publications.length} Available)
             </p>
             
             {/* Search Bar */}
@@ -322,88 +322,147 @@ const PublicationsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                   onClick={() => handlePublicationClick(publication)}
-                  className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition-shadow cursor-pointer group overflow-hidden"
+                  className={`bg-white rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition-shadow cursor-pointer group overflow-hidden ${
+                    viewMode === 'list' ? 'p-4' : ''
+                  }`}
                 >
-                  {/* Publication Header */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                          {publication.publication_name}
-                        </h3>
-                        <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                          <Globe size={14} className="mr-2" />
-                          <span>{publication.publication_region}</span>
-                        </div>
-                        <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                          <BookOpen size={14} className="mr-2" />
-                          <span>{publication.publication_language}</span>
-                        </div>
-                      </div>
-                      <div 
-                        className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                  {viewMode === 'list' ? (
+                    // Compact List View
+                    <div className="flex items-center gap-4">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: theme.primaryLight }}
                       >
-                        <Icon name="newspaper" size="lg" style={{ color: theme.primary }} />
+                        <Icon name="newspaper" size="sm" style={{ color: theme.primary }} />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold mb-1 line-clamp-1 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                          {publication.publication_name}
+                        </h3>
+                        <div className="flex items-center gap-4 text-xs" style={{ color: theme.textSecondary }}>
+                          <span className="flex items-center">
+                            <Globe size={12} className="mr-1" />
+                            {publication.publication_region}
+                          </span>
+                          <span className="flex items-center">
+                            <BookOpen size={12} className="mr-1" />
+                            {publication.publication_language}
+                          </span>
+                          <span className="font-semibold" style={{ color: theme.primary }}>DA: {publication.da || 0}</span>
+                          <span className="font-semibold" style={{ color: theme.success }}>DR: {publication.dr || 0}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="text-sm font-bold" style={{ color: theme.success }}>
+                          {formatPrice(publication.publication_price)}
+                        </div>
+                        <div className="flex gap-1">
+                          {publication.sponsored_or_not && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E8F5E8', color: theme.success }}>
+                              Sponsored
+                            </span>
+                          )}
+                          {publication.do_follow_link && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F3E5F5', color: theme.info }}>
+                              Do-follow
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          className="text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm"
+                          style={{ backgroundColor: theme.primary }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                        >
+                          <Eye size={14} />
+                          View
+                        </button>
                       </div>
                     </div>
+                  ) : (
+                    // Grid View (original layout)
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                            {publication.publication_name}
+                          </h3>
+                          <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                            <Globe size={14} className="mr-2" />
+                            <span>{publication.publication_region}</span>
+                          </div>
+                          <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
+                            <BookOpen size={14} className="mr-2" />
+                            <span>{publication.publication_language}</span>
+                          </div>
+                        </div>
+                        <div
+                          className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: theme.primaryLight }}
+                        >
+                          <Icon name="newspaper" size="lg" style={{ color: theme.primary }} />
+                        </div>
+                      </div>
 
-                    {/* SEO Metrics */}
-                    <div className="grid grid-cols-3 gap-2 text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                      <div>
-                        <div className="text-lg font-semibold" style={{ color: theme.primary }}>{publication.da || 0}</div>
-                        <div className="text-xs" style={{ color: theme.textSecondary }}>DA</div>
+                      {/* SEO Metrics */}
+                      <div className="grid grid-cols-3 gap-2 text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                        <div>
+                          <div className="text-lg font-semibold" style={{ color: theme.primary }}>{publication.da || 0}</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>DA</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-semibold" style={{ color: theme.success }}>{publication.dr || 0}</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>DR</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-semibold" style={{ color: theme.warning }}>{publication.da || 0}</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>Rating</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-lg font-semibold" style={{ color: theme.success }}>{publication.dr || 0}</div>
-                        <div className="text-xs" style={{ color: theme.textSecondary }}>DR</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-semibold" style={{ color: theme.warning }}>{publication.da || 0}</div>
-                        <div className="text-xs" style={{ color: theme.textSecondary }}>Rating</div>
-                      </div>
-                    </div>
 
-                    {/* Price and Features */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-xl font-bold" style={{ color: theme.success }}>
-                        {formatPrice(publication.publication_price)}
+                      {/* Price and Features */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-xl font-bold" style={{ color: theme.success }}>
+                          {formatPrice(publication.publication_price)}
+                        </div>
+                        <div className="flex items-center text-sm" style={{ color: theme.warning }}>
+                          <Star size={14} className="mr-1" />
+                          <span>4.{Math.floor(Math.random() * 9) + 1}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center text-sm" style={{ color: theme.warning }}>
-                        <Star size={14} className="mr-1" />
-                        <span>4.{Math.floor(Math.random() * 9) + 1}</span>
-                      </div>
-                    </div>
 
-                    {/* Features */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {publication.sponsored_or_not && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E8F5E8', color: theme.success }}>
-                          Sponsored
+                      {/* Features */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {publication.sponsored_or_not && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E8F5E8', color: theme.success }}>
+                            Sponsored
+                          </span>
+                        )}
+                        {publication.do_follow_link && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F3E5F5', color: theme.info }}>
+                            Do-follow
+                          </span>
+                        )}
+                        <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF8E1', color: theme.warning }}>
+                          {publication.agreement_tat || 0}d TAT
                         </span>
-                      )}
-                      {publication.do_follow_link && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#F3E5F5', color: theme.info }}>
-                          Do-follow
-                        </span>
-                      )}
-                      <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF8E1', color: theme.warning }}>
-                        {publication.agreement_tat || 0}d TAT
-                      </span>
-                    </div>
+                      </div>
 
-                    {/* CTA Button */}
-                    <button
-                      className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                      style={{ backgroundColor: theme.primary }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                    >
-                      <Eye size={16} />
-                      View Details
-                      <ExternalLink size={14} />
-                    </button>
-                  </div>
+                      {/* CTA Button */}
+                      <button
+                        className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                        style={{ backgroundColor: theme.primary }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                      >
+                        <Eye size={16} />
+                        View Details
+                        <ExternalLink size={14} />
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
