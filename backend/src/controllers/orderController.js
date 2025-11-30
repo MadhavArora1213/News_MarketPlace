@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const { sendEmail } = require('../services/emailService');
+const emailService = require('../services/emailService');
 
 // Create a new order
 const create = async (req, res) => {
@@ -37,10 +37,10 @@ const create = async (req, res) => {
 
     // Send confirmation email to user
     try {
-      await sendEmail({
-        to: order.customer_email,
-        subject: 'Call Booking Request Submitted - News Marketplace',
-        html: `
+      await emailService.sendCustomEmail(
+        order.customer_email,
+        'Call Booking Request Submitted - News Marketplace',
+        `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #1976D2;">Thank you for your call booking request!</h2>
             <p>Dear ${order.customer_name},</p>
@@ -57,7 +57,7 @@ const create = async (req, res) => {
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
         `
-      });
+      );
     } catch (emailError) {
       console.error('Error sending user confirmation email:', emailError);
       // Don't fail the order creation if email fails
@@ -65,10 +65,10 @@ const create = async (req, res) => {
 
     // Send notification email to admin
     try {
-      await sendEmail({
-        to: process.env.ADMIN_EMAIL || 'admin@newsmarketplace.com',
-        subject: 'New Call Booking Request - News Marketplace',
-        html: `
+      await emailService.sendCustomEmail(
+        process.env.ADMIN_EMAIL || 'admin@newsmarketplace.com',
+        'New Call Booking Request - News Marketplace',
+        `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #1976D2;">New Call Booking Request</h2>
             <p>A new call booking request has been submitted:</p>
@@ -87,7 +87,7 @@ const create = async (req, res) => {
             <p>Please review this request in the admin panel.</p>
           </div>
         `
-      });
+      );
     } catch (emailError) {
       console.error('Error sending admin notification email:', emailError);
       // Don't fail the order creation if email fails
@@ -176,10 +176,10 @@ const acceptOrder = async (req, res) => {
 
     // Send email to customer
     try {
-      await sendEmail({
-        to: order.customer_email,
-        subject: 'Call Booking Request Accepted - News Marketplace',
-        html: `
+      await emailService.sendCustomEmail(
+        order.customer_email,
+        'Call Booking Request Accepted - News Marketplace',
+        `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4CAF50;">Your call booking request has been accepted!</h2>
             <p>Dear ${order.customer_name},</p>
@@ -189,7 +189,7 @@ const acceptOrder = async (req, res) => {
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
         `
-      });
+      );
     } catch (emailError) {
       console.error('Error sending acceptance email:', emailError);
     }
@@ -224,10 +224,10 @@ const rejectOrder = async (req, res) => {
 
     // Send email to customer
     try {
-      await sendEmail({
-        to: order.customer_email,
-        subject: 'Call Booking Request Update - News Marketplace',
-        html: `
+      await emailService.sendCustomEmail(
+        order.customer_email,
+        'Call Booking Request Update - News Marketplace',
+        `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #FF9800;">Call Booking Request Update</h2>
             <p>Dear ${order.customer_name},</p>
@@ -237,7 +237,7 @@ const rejectOrder = async (req, res) => {
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
         `
-      });
+      );
     } catch (emailError) {
       console.error('Error sending rejection email:', emailError);
     }
@@ -270,10 +270,10 @@ const completeOrder = async (req, res) => {
 
     // Send email to customer
     try {
-      await sendEmail({
-        to: order.customer_email,
-        subject: 'Call Booking Completed - News Marketplace',
-        html: `
+      await emailService.sendCustomEmail(
+        order.customer_email,
+        'Call Booking Completed - News Marketplace',
+        `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #9C27B0;">Call Booking Completed!</h2>
             <p>Dear ${order.customer_name},</p>
@@ -283,7 +283,7 @@ const completeOrder = async (req, res) => {
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
         `
-      });
+      );
     } catch (emailError) {
       console.error('Error sending completion email:', emailError);
     }
