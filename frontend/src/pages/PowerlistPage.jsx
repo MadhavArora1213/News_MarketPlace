@@ -62,8 +62,6 @@ const PowerlistPage = () => {
   const [industryFilter, setIndustryFilter] = useState('');
   const [genderFilter, setGenderFilter] = useState('');
   const [regionFilter, setRegionFilter] = useState('');
-  const [experienceRange, setExperienceRange] = useState([0, 50]);
-  const [ageRange, setAgeRange] = useState([18, 80]);
 
   // Sorting state
   const [sortField, setSortField] = useState('name');
@@ -103,7 +101,7 @@ const PowerlistPage = () => {
         params.append('name', searchTerm.trim());
       }
 
-      const response = await api.get(`/powerlist/public?${params.toString()}`);
+      const response = await api.get(`/api/powerlist/public?${params.toString()}`);
       let powerlistsData = response.data.powerlists || [];
 
       // Client-side search for better results
@@ -193,7 +191,7 @@ const PowerlistPage = () => {
   const filteredPowerlists = useMemo(() => {
     let filtered = [...powerlists];
 
-    // Apply filters
+    // Apply filters only when they are set (not empty)
     if (industryFilter) {
       filtered = filtered.filter(powerlist =>
         powerlist.company_industry?.toLowerCase().includes(industryFilter.toLowerCase())
@@ -212,20 +210,8 @@ const PowerlistPage = () => {
       );
     }
 
-    // Experience range filter (assuming years_of_experience field)
-    filtered = filtered.filter(powerlist => {
-      const experience = parseInt(powerlist.years_of_experience) || 0;
-      return experience >= experienceRange[0] && experience <= experienceRange[1];
-    });
-
-    // Age range filter (assuming age field)
-    filtered = filtered.filter(powerlist => {
-      const age = parseInt(powerlist.age) || 0;
-      return age >= ageRange[0] && age <= ageRange[1];
-    });
-
     return filtered;
-  }, [powerlists, industryFilter, genderFilter, regionFilter, experienceRange, ageRange]);
+  }, [powerlists, industryFilter, genderFilter, regionFilter]);
 
   // Sorting logic
   const sortedPowerlists = useMemo(() => {
@@ -233,10 +219,7 @@ const PowerlistPage = () => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
-      if (sortField === 'age' || sortField === 'years_of_experience') {
-        aValue = parseInt(aValue) || 0;
-        bValue = parseInt(bValue) || 0;
-      } else if (sortField === 'created_at') {
+      if (sortField === 'created_at') {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       } else {
@@ -270,14 +253,10 @@ const PowerlistPage = () => {
     setIndustryFilter('');
     setGenderFilter('');
     setRegionFilter('');
-    setExperienceRange([0, 50]);
-    setAgeRange([18, 80]);
   };
 
   const hasActiveFilters = () => {
-    return industryFilter || genderFilter || regionFilter ||
-           experienceRange[0] > 0 || experienceRange[1] < 50 ||
-           ageRange[0] > 18 || ageRange[1] < 80;
+    return industryFilter || genderFilter || regionFilter;
   };
 
   if (loading && powerlists.length === 0) {
@@ -444,65 +423,44 @@ const PowerlistPage = () => {
                 </div>
               </div>
 
-              {/* Experience & Demographics */}
+              {/* Demographics */}
               <div className="bg-[#E3F2FD] rounded-lg p-4 border border-[#1976D2]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <BarChart3 size={16} className="text-[#1976D2]" />
-                  Experience & Demographics
+                  <Users size={16} className="text-[#1976D2]" />
+                  Demographics
                 </h4>
 
-                {/* Experience Range */}
+                {/* Gender Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Years of Experience: {experienceRange[0]} - {experienceRange[1]}
+                    Gender
                   </label>
-                  <div className="space-y-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="50"
-                      step="1"
-                      value={experienceRange[0]}
-                      onChange={(e) => setExperienceRange([parseInt(e.target.value), experienceRange[1]])}
-                      className="w-full accent-[#1976D2]"
-                    />
-                    <input
-                      type="range"
-                      min="0"
-                      max="50"
-                      step="1"
-                      value={experienceRange[1]}
-                      onChange={(e) => setExperienceRange([experienceRange[0], parseInt(e.target.value)])}
-                      className="w-full accent-[#1976D2]"
-                    />
-                  </div>
+                  <select
+                    value={genderFilter}
+                    onChange={(e) => setGenderFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
                 </div>
 
-                {/* Age Range */}
+                {/* Region Filter */}
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Age Range: {ageRange[0]} - {ageRange[1]}
+                    Region
                   </label>
-                  <div className="space-y-2">
-                    <input
-                      type="range"
-                      min="18"
-                      max="80"
-                      step="1"
-                      value={ageRange[0]}
-                      onChange={(e) => setAgeRange([parseInt(e.target.value), ageRange[1]])}
-                      className="w-full accent-[#1976D2]"
-                    />
-                    <input
-                      type="range"
-                      min="18"
-                      max="80"
-                      step="1"
-                      value={ageRange[1]}
-                      onChange={(e) => setAgeRange([ageRange[0], parseInt(e.target.value)])}
-                      className="w-full accent-[#1976D2]"
-                    />
-                  </div>
+                  <select
+                    value={regionFilter}
+                    onChange={(e) => setRegionFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Regions</option>
+                    {getUniqueRegions().map(region => (
+                      <option key={region} value={region}>{region}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -590,10 +548,10 @@ const PowerlistPage = () => {
                   <option value="current_company-desc">Company (Z-A)</option>
                   <option value="company_industry-asc">Industry (A-Z)</option>
                   <option value="company_industry-desc">Industry (Z-A)</option>
-                  <option value="age-asc">Age (Youngest)</option>
-                  <option value="age-desc">Age (Oldest)</option>
-                  <option value="years_of_experience-asc">Experience (Least)</option>
-                  <option value="years_of_experience-desc">Experience (Most)</option>
+                  <option value="gender-asc">Gender (A-Z)</option>
+                  <option value="gender-desc">Gender (Z-A)</option>
+                  <option value="passport_nationality_one-asc">Location (A-Z)</option>
+                  <option value="passport_nationality_one-desc">Location (Z-A)</option>
                 </select>
               </div>
             </div>
@@ -642,7 +600,7 @@ const PowerlistPage = () => {
                           </div>
                         </div>
 
-                        {/* Enhanced Industry and Location */}
+                        {/* Enhanced Industry and Demographics */}
                         <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                           <div>
                             <div className="text-sm font-medium" style={{ color: theme.primary }}>
@@ -652,22 +610,18 @@ const PowerlistPage = () => {
                           </div>
                           <div>
                             <div className="text-sm font-medium" style={{ color: theme.success }}>
-                              {powerlist.passport_nationality_one || 'Global'}
+                              {powerlist.gender || 'Not specified'}
                             </div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Location</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>Gender</div>
                           </div>
                         </div>
 
-                        {/* Enhanced Experience & Age */}
-                        <div className="grid grid-cols-2 gap-2 text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                          <div>
-                            <div className="text-lg font-bold" style={{ color: theme.primary }}>{powerlist.years_of_experience || 0}</div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Years Exp.</div>
+                        {/* Location Info */}
+                        <div className="text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                          <div className="text-sm font-medium" style={{ color: theme.info }}>
+                            {powerlist.passport_nationality_one || 'Global'}
                           </div>
-                          <div>
-                            <div className="text-lg font-bold" style={{ color: theme.success }}>{powerlist.age || 'N/A'}</div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Age</div>
-                          </div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>Location</div>
                         </div>
 
                         {/* Social Links */}
@@ -759,28 +713,19 @@ const PowerlistPage = () => {
                           <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('gender')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Gender {getSortIcon('gender')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
                             onClick={() => handleSort('passport_nationality_one')}
                           >
                             <div className="flex items-center gap-2">
                               Location {getSortIcon('passport_nationality_one')}
-                            </div>
-                          </th>
-                          <th
-                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                            style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('years_of_experience')}
-                          >
-                            <div className="flex items-center gap-2">
-                              Experience {getSortIcon('years_of_experience')}
-                            </div>
-                          </th>
-                          <th
-                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                            style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('age')}
-                          >
-                            <div className="flex items-center gap-2">
-                              Age {getSortIcon('age')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
@@ -826,17 +771,12 @@ const PowerlistPage = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {powerlist.gender || 'Not specified'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
                                 {powerlist.passport_nationality_one || 'Global'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {powerlist.years_of_experience || 0} years
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {powerlist.age || 'N/A'}
                               </span>
                             </td>
                             <td className="px-6 py-4">
