@@ -164,7 +164,7 @@ const UserHeader = () => {
           {/* Center: Logo */}
           <Link to="/" className="flex items-center group cursor-pointer">
             <h1 className="text-xl md:text-2xl font-bold transition-all duration-300" style={{ color: colors[colorIndex] }}>
-              VaaS Solutions: Vision to Visibility, Instantly
+              VaaS Solutions: Vision to Visibility, Instantly.
             </h1>
           </Link>
 
