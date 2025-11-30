@@ -9,7 +9,7 @@ import AuthModal from '../components/auth/AuthModal';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import {
-  ExternalLink, Eye, FileText, Calendar, User, Newspaper, Grid, List, Filter, ChevronDown, ChevronUp, Search as SearchIcon
+  ExternalLink, Eye, FileText, Calendar, User, Newspaper, Grid, List, Filter, ChevronDown, ChevronUp, Search as SearchIcon, Download, X, Mail
 } from 'lucide-react';
 
 const ArticlesPage = () => {
@@ -30,6 +30,7 @@ const ArticlesPage = () => {
   const [publicationFilter, setPublicationFilter] = useState('all');
   const [dateRangeFilter, setDateRangeFilter] = useState('all');
   const [publications, setPublications] = useState([]);
+  const [showQuestionnairePopup, setShowQuestionnairePopup] = useState(false);
 
   useEffect(() => {
     fetchArticles();
@@ -601,7 +602,11 @@ const ArticlesPage = () => {
                         {/* Action Button - Enhanced */}
                         {activeTab === 'my' ? (
                           <button
-                            onClick={() => navigate(`/ai-article-generation/${article.id}`)}
+                            onClick={() => {
+                              navigate(`/ai-article-generation/${article.id}`);
+                              // Show questionnaire popup after AI article generation
+                              setTimeout(() => setShowQuestionnairePopup(true), 1000);
+                            }}
                             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all text-sm bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white hover:from-[#0D47A1] hover:to-[#1976D2] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                           >
                             <Eye size={16} />
@@ -773,6 +778,99 @@ const ArticlesPage = () => {
           onClose={handleCloseAuth}
           onLoginSuccess={handleCloseAuth}
         />
+      )}
+
+      {/* Questionnaire Popup */}
+      {showQuestionnairePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-[#212121]">Want to Write More Articles?</h3>
+                <button
+                  onClick={() => setShowQuestionnairePopup(false)}
+                  className="text-[#757575] hover:text-[#212121] transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-sm text-[#757575]">
+                  Great job on your AI-generated article! If you'd like to create more high-quality articles, we recommend using our detailed questionnaire.
+                </p>
+
+                <div className="bg-[#E3F2FD] p-4 rounded-lg">
+                  <h4 className="font-medium text-[#1976D2] mb-2">Download the Questionnaire</h4>
+                  <p className="text-sm text-[#424242] mb-3">
+                    Fill out our comprehensive questionnaire for the best results. It includes detailed questions about your background, goals, and requirements.
+                  </p>
+                  <a
+                    href="/Website_Workflow/NEW Questionnaire_03.2023_v3.docx"
+                    download="Article_Questionnaire.docx"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#1976D2] text-white rounded-lg hover:bg-[#0D47A1] transition-colors text-sm font-medium"
+                  >
+                    <Download size={16} />
+                    Download Questionnaire
+                  </a>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-[#212121] mb-2">Next Steps:</h4>
+                  <div className="space-y-2 text-sm text-[#757575]">
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#4CAF50] mt-1">1.</span>
+                      <span>Fill out the downloaded questionnaire completely</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#4CAF50] mt-1">2.</span>
+                      <span>Send it to: <strong>article@vaas.solutions</strong></span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#4CAF50] mt-1">3.</span>
+                      <span>Or upload directly at: <a href="https://vaas.solutions/submit-article" target="_blank" rel="noopener noreferrer" className="text-[#1976D2] hover:underline">vaas.solutions/submit-article</a></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#FFF8E1] p-3 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Mail size={16} className="text-[#FF9800] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-[#E65100] mb-1">Email Support</p>
+                      <p className="text-xs text-[#BF360C]">
+                        Have questions? Email us at <strong>article@vaas.solutions</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowQuestionnairePopup(false)}
+                  className="px-4 py-2 text-[#757575] hover:text-[#212121] transition-colors text-sm font-medium"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => {
+                    setShowQuestionnairePopup(false);
+                    navigate('/ai-article-questionnaire');
+                  }}
+                  className="px-4 py-2 bg-[#4CAF50] text-white rounded-lg hover:bg-[#388E3C] transition-colors text-sm font-medium"
+                >
+                  Create Another Article
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       )}
     </div>
   );
