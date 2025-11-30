@@ -5,6 +5,9 @@ class Order {
     this.id = data.id;
     this.publication_id = data.publication_id;
     this.publication_name = data.publication_name;
+    this.paparazzi_id = data.paparazzi_id;
+    this.paparazzi_name = data.paparazzi_name;
+    this.order_type = data.order_type || 'publication';
     this.price = data.price;
     this.customer_name = data.customer_name;
     this.customer_email = data.customer_email;
@@ -22,6 +25,9 @@ class Order {
     const {
       publication_id,
       publication_name,
+      paparazzi_id,
+      paparazzi_name,
+      order_type,
       price,
       customer_name,
       customer_email,
@@ -32,15 +38,17 @@ class Order {
 
     const sql = `
       INSERT INTO orders (
-        publication_id, publication_name, price, customer_name,
-        customer_email, customer_phone, customer_message, status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        publication_id, publication_name, paparazzi_id, paparazzi_name,
+        order_type, price, customer_name, customer_email, customer_phone,
+        customer_message, status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *
     `;
 
     const values = [
-      publication_id, publication_name, price, customer_name,
-      customer_email, customer_phone, customer_message, status || 'pending'
+      publication_id, publication_name, paparazzi_id, paparazzi_name,
+      order_type || 'publication', price, customer_name, customer_email,
+      customer_phone, customer_message, status || 'pending'
     ];
 
     const result = await query(sql, values);
@@ -69,6 +77,18 @@ class Order {
     if (filters.publication_id) {
       sql += ` AND publication_id = $${paramCount}`;
       values.push(filters.publication_id);
+      paramCount++;
+    }
+
+    if (filters.paparazzi_id) {
+      sql += ` AND paparazzi_id = $${paramCount}`;
+      values.push(filters.paparazzi_id);
+      paramCount++;
+    }
+
+    if (filters.order_type) {
+      sql += ` AND order_type = $${paramCount}`;
+      values.push(filters.order_type);
       paramCount++;
     }
 
@@ -106,6 +126,18 @@ class Order {
     if (filters.publication_id) {
       sql += ` AND publication_id = $${paramCount}`;
       values.push(filters.publication_id);
+      paramCount++;
+    }
+
+    if (filters.paparazzi_id) {
+      sql += ` AND paparazzi_id = $${paramCount}`;
+      values.push(filters.paparazzi_id);
+      paramCount++;
+    }
+
+    if (filters.order_type) {
+      sql += ` AND order_type = $${paramCount}`;
+      values.push(filters.order_type);
       paramCount++;
     }
 
@@ -170,6 +202,9 @@ class Order {
       id: this.id,
       publication_id: this.publication_id,
       publication_name: this.publication_name,
+      paparazzi_id: this.paparazzi_id,
+      paparazzi_name: this.paparazzi_name,
+      order_type: this.order_type,
       price: this.price,
       customer_name: this.customer_name,
       customer_email: this.customer_email,

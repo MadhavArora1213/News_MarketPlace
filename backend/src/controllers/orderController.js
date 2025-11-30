@@ -7,24 +7,36 @@ const create = async (req, res) => {
     const {
       publicationId,
       publicationName,
+      paparazziId,
+      paparazziName,
       price,
       customerInfo,
       orderDate,
       status
     } = req.body;
 
-    // Validate required fields
-    if (!publicationId || !publicationName || !customerInfo?.email || !customerInfo?.fullName) {
+    // Validate required fields - either publication or paparazzi must be provided
+    if ((!publicationId || !publicationName) && (!paparazziId || !paparazziName)) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields'
+        message: 'Missing required fields: either publication or paparazzi information is required'
+      });
+    }
+
+    if (!customerInfo?.email || !customerInfo?.fullName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer email and full name are required'
       });
     }
 
     // Create order data
     const orderData = {
-      publication_id: publicationId,
-      publication_name: publicationName,
+      publication_id: publicationId || null,
+      publication_name: publicationName || null,
+      paparazzi_id: paparazziId || null,
+      paparazzi_name: paparazziName || null,
+      order_type: paparazziId ? 'paparazzi' : 'publication',
       price: price || 0,
       customer_name: customerInfo.fullName,
       customer_email: customerInfo.email,
@@ -37,6 +49,9 @@ const create = async (req, res) => {
 
     // Send confirmation email to user
     try {
+      const serviceName = order.order_type === 'paparazzi' ? order.paparazzi_name : order.publication_name;
+      const serviceType = order.order_type === 'paparazzi' ? 'paparazzi' : 'publication';
+
       await emailService.sendCustomEmail(
         order.customer_email,
         'Call Booking Request Submitted - News Marketplace',
@@ -44,10 +59,10 @@ const create = async (req, res) => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #1976D2;">Thank you for your call booking request!</h2>
             <p>Dear ${order.customer_name},</p>
-            <p>Your call booking request for <strong>${order.publication_name}</strong> has been successfully submitted.</p>
+            <p>Your call booking request for <strong>${serviceName}</strong> has been successfully submitted.</p>
             <p><strong>Order Details:</strong></p>
             <ul>
-              <li>Publication: ${order.publication_name}</li>
+              <li>${serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}: ${serviceName}</li>
               <li>Price: $${order.price}</li>
               <li>Status: ${order.status}</li>
               <li>Order Date: ${new Date(order.order_date).toLocaleDateString()}</li>
@@ -65,6 +80,9 @@ const create = async (req, res) => {
 
     // Send notification email to admin
     try {
+      const serviceName = order.order_type === 'paparazzi' ? order.paparazzi_name : order.publication_name;
+      const serviceType = order.order_type === 'paparazzi' ? 'Paparazzi' : 'Publication';
+
       await emailService.sendCustomEmail(
         process.env.ADMIN_EMAIL || 'admin@newsmarketplace.com',
         'New Call Booking Request - News Marketplace',
@@ -75,7 +93,8 @@ const create = async (req, res) => {
             <p><strong>Order Details:</strong></p>
             <ul>
               <li>Order ID: ${order.id}</li>
-              <li>Publication: ${order.publication_name}</li>
+              <li>Type: ${serviceType}</li>
+              <li>${serviceType}: ${serviceName}</li>
               <li>Price: $${order.price}</li>
               <li>Customer: ${order.customer_name}</li>
               <li>Email: ${order.customer_email}</li>
@@ -176,6 +195,9 @@ const acceptOrder = async (req, res) => {
 
     // Send email to customer
     try {
+      const serviceName = order.order_type === 'paparazzi' ? order.paparazzi_name : order.publication_name;
+      const serviceType = order.order_type === 'paparazzi' ? 'paparazzi' : 'publication';
+
       await emailService.sendCustomEmail(
         order.customer_email,
         'Call Booking Request Accepted - News Marketplace',
@@ -183,8 +205,8 @@ const acceptOrder = async (req, res) => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4CAF50;">Your call booking request has been accepted!</h2>
             <p>Dear ${order.customer_name},</p>
-            <p>Great news! Your call booking request for <strong>${order.publication_name}</strong> has been accepted.</p>
-            <p>Our team will contact you shortly to schedule a call and discuss the publication details.</p>
+            <p>Great news! Your call booking request for <strong>${serviceName}</strong> has been accepted.</p>
+            <p>Our team will contact you shortly to schedule a call and discuss the ${serviceType} details.</p>
             <p>If you have any questions, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
@@ -224,6 +246,8 @@ const rejectOrder = async (req, res) => {
 
     // Send email to customer
     try {
+      const serviceName = order.order_type === 'paparazzi' ? order.paparazzi_name : order.publication_name;
+
       await emailService.sendCustomEmail(
         order.customer_email,
         'Call Booking Request Update - News Marketplace',
@@ -231,7 +255,7 @@ const rejectOrder = async (req, res) => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #FF9800;">Call Booking Request Update</h2>
             <p>Dear ${order.customer_name},</p>
-            <p>We regret to inform you that your call booking request for <strong>${order.publication_name}</strong> could not be accepted at this time.</p>
+            <p>We regret to inform you that your call booking request for <strong>${serviceName}</strong> could not be accepted at this time.</p>
             ${admin_notes ? `<p><strong>Reason:</strong> ${admin_notes}</p>` : ''}
             <p>If you have any questions or would like to discuss alternative options, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
@@ -270,6 +294,8 @@ const completeOrder = async (req, res) => {
 
     // Send email to customer
     try {
+      const serviceName = order.order_type === 'paparazzi' ? order.paparazzi_name : order.publication_name;
+
       await emailService.sendCustomEmail(
         order.customer_email,
         'Call Booking Completed - News Marketplace',
@@ -277,7 +303,7 @@ const completeOrder = async (req, res) => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #9C27B0;">Call Booking Completed!</h2>
             <p>Dear ${order.customer_name},</p>
-            <p>Your call booking for <strong>${order.publication_name}</strong> has been completed successfully.</p>
+            <p>Your call booking for <strong>${serviceName}</strong> has been completed successfully.</p>
             <p>Thank you for choosing News Marketplace. We hope the call was productive and met your expectations.</p>
             <p>If you need any further assistance, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>

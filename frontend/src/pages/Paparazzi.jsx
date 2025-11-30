@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Search, Filter, Globe, MapPin, Users, DollarSign, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,10 +7,35 @@ import UserFooter from '../components/common/UserFooter';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
+// Enhanced theme colors inspired by VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575'
+};
+
 const PaparazziPage = () => {
   const [paparazzi, setPaparazzi] = useState([]);
   const [filteredPaparazzi, setFilteredPaparazzi] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
@@ -18,6 +43,13 @@ const PaparazziPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetchPaparazzi();
@@ -31,7 +63,23 @@ const PaparazziPage = () => {
     try {
       setLoading(true);
       const response = await api.get('/paparazzi');
-      setPaparazzi(response.data.paparazzi || []);
+      let paparazziData = response.data.paparazzi || [];
+
+      // Client-side search for better results
+      if (searchQuery.trim()) {
+        const searchLower = searchQuery.toLowerCase().trim();
+        paparazziData = paparazziData.filter(p => {
+          return (
+            p.page_name?.toLowerCase().includes(searchLower) ||
+            p.username?.toLowerCase().includes(searchLower) ||
+            p.category?.toLowerCase().includes(searchLower) ||
+            p.location?.toLowerCase().includes(searchLower) ||
+            p.platform?.toLowerCase().includes(searchLower)
+          );
+        });
+      }
+
+      setPaparazzi(paparazziData);
     } catch (err) {
       console.error('Error fetching paparazzi:', err);
       setError('Failed to load paparazzi. Please try again later.');
@@ -70,6 +118,12 @@ const PaparazziPage = () => {
     navigate('/paparazzi/submit');
   };
 
+  const clearAllFilters = () => {
+    setSelectedPlatform('all');
+    setSelectedCategory('all');
+    setSelectedLocation('all');
+  };
+
   const formatFollowers = (count) => {
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
@@ -84,7 +138,7 @@ const PaparazziPage = () => {
     <div className="min-h-screen bg-white">
       <UserHeader />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -117,144 +171,259 @@ const PaparazziPage = () => {
         </div>
       </section>
 
-      {/* Search and Filter Section */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
+      {/* Main Content with Enhanced Layout */}
+      <div className="flex">
+        {/* Enhanced Filters Sidebar - 25% width */}
+        <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden`} style={{
+          minHeight: 'calc(100vh - 200px)',
+          position: 'sticky',
+          top: '80px',
+          zIndex: 10,
+          borderRight: `1px solid ${theme.borderLight}`,
+          width: '25%'
+        }}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
+                <Filter size={20} className="text-[#1976D2]" />
+                Filters & Sort
+              </h3>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {/* Enhanced Filter Sections */}
+              <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <Camera size={16} className="text-[#1976D2]" />
+                  Paparazzi Filters
+                </h4>
+
+                {/* Platform Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Platform
+                  </label>
+                  <select
+                    value={selectedPlatform}
+                    onChange={(e) => setSelectedPlatform(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    {platforms.map(platform => (
+                      <option key={platform} value={platform}>
+                        {platform === 'all' ? 'All Platforms' : platform}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Category
+                  </label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>
+                        {category === 'all' ? 'All Categories' : category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Location Filter */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Location
+                  </label>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    {locations.map(location => (
+                      <option key={location} value={location}>
+                        {location === 'all' ? 'All Locations' : location}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
+              <button
+                onClick={clearAllFilters}
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
+              >
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content - Enhanced */}
+        <main className="flex-1 p-6 min-w-0">
+          {/* Enhanced Search Bar */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search by name, username, or category..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
+                className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
               />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                >
+                  ×
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-[#757575]" />
-              <select
-                value={selectedPlatform}
-                onChange={(e) => setSelectedPlatform(e.target.value)}
-                className="px-4 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-              >
-                {platforms.map(platform => (
-                  <option key={platform} value={platform}>
-                    {platform === 'all' ? 'All Platforms' : platform}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-[#757575]" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#757575]" />
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-4 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-              >
-                {locations.map(location => (
-                  <option key={location} value={location}>
-                    {location === 'all' ? 'All Locations' : location}
-                  </option>
-                ))}
-              </select>
+          {/* Enhanced Controls Bar */}
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
+            borderColor: theme.borderLight,
+            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+          }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Toggle */}
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                    style={{ borderColor: theme.borderLight }}
+                  >
+                    <Filter size={16} />
+                    <span className="text-[#212121]">Filters</span>
+                  </button>
+                )}
+
+                <span className="text-sm font-medium text-[#212121]">
+                  {filteredPaparazzi.length} paparazzi found
+                  {searchQuery && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchQuery}"
+                    </span>
+                  )}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Paparazzi Grid */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto">
+          {/* Paparazzi Display */}
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1976D2] mx-auto mb-4"></div>
-              <p className="text-[#757575]">Loading paparazzi...</p>
+              <div
+                className="animate-spin rounded-full h-12 w-12 mx-auto mb-4"
+                style={{
+                  borderBottom: `2px solid ${theme.primary}`,
+                  borderRight: `2px solid transparent`
+                }}
+              ></div>
+              <p className="text-lg" style={{ color: theme.textSecondary }}>Loading paparazzi...</p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
               <p className="text-red-600 text-lg">{error}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPaparazzi.map((p) => (
-                <motion.div
-                  key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => handleCardClick(p.id)}
-                >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="bg-[#1976D2] rounded-full p-3">
-                        <Camera className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
-                        {p.platform}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-[#212121] mb-2 line-clamp-2">
-                      {p.page_name}
-                    </h3>
-                    <p className="text-sm text-[#757575] mb-3">@{p.username}</p>
-                    <div className="space-y-2 text-sm text-[#757575]">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        <span>{formatFollowers(p.followers_count)} followers</span>
-                      </div>
-                      {p.category && (
-                        <div className="flex items-center gap-2">
-                          <Filter className="w-4 h-4" />
-                          <span>{p.category}</span>
+            <>
+              {/* Enhanced Grid View */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredPaparazzi.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleCardClick(p.id)}
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="bg-[#1976D2] rounded-full p-3">
+                          <Camera className="w-6 h-6 text-white" />
                         </div>
-                      )}
-                      {p.location && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
-                          <span>{p.location}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
-                        <DollarSign className="w-4 h-4" />
-                        <span className="text-[#1976D2] font-medium">
-                          {formatPrice(p.price_reel_with_tag)}
+                        <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
+                          {p.platform}
                         </span>
                       </div>
+                      <h3 className="text-xl font-semibold text-[#212121] mb-2 line-clamp-2">
+                        {p.page_name}
+                      </h3>
+                      <p className="text-sm text-[#757575] mb-3">@{p.username}</p>
+                      <div className="space-y-2 text-sm text-[#757575]">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          <span>{formatFollowers(p.followers_count)} followers</span>
+                        </div>
+                        {p.category && (
+                          <div className="flex items-center gap-2">
+                            <Filter className="w-4 h-4" />
+                            <span>{p.category}</span>
+                          </div>
+                        )}
+                        {p.location && (
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{p.location}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
+                          <DollarSign className="w-4 h-4" />
+                          <span className="text-[#1976D2] font-medium">
+                            {formatPrice(p.price_reel_with_tag)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                  </motion.div>
+                ))}
+              </div>
 
-          {!loading && !error && filteredPaparazzi.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-[#757575] text-lg">No paparazzi found matching your criteria.</p>
-            </div>
+              {!loading && !error && filteredPaparazzi.length === 0 && (
+                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                  <div className="w-24 h-24 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-6">
+                    <Camera className="w-12 h-12 text-[#BDBDBD]" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-[#212121] mb-3">
+                    No paparazzi found
+                  </h3>
+                  <p className="text-[#757575] text-lg max-w-md mx-auto">
+                    We couldn't find any paparazzi matching your search criteria. Try adjusting your filters.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      clearAllFilters();
+                    }}
+                    className="mt-6 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
+            </>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
 
       <UserFooter />
     </div>
