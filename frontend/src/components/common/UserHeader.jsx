@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -14,6 +14,16 @@ const UserHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
   const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
+  const [colorIndex, setColorIndex] = useState(0);
+
+  const colors = ['#1976D2', '#00796B', '#4CAF50', '#FF9800', '#F44336', '#9C27B0'];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prevIndex) => (prevIndex + 1) % colors.length);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [colors.length]);
 
   const socialMediaIcons = [
     { name: 'facebook', href: '#', label: 'Facebook', color: 'hover:text-blue-600' },
@@ -153,7 +163,7 @@ const UserHeader = () => {
 
           {/* Center: Logo */}
           <Link to="/" className="flex items-center group cursor-pointer">
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#212121] to-[#757575] bg-clip-text text-transparent hover:from-[#1976D2] hover:to-[#0D47A1] transition-all duration-300">
+            <h1 className="text-xl md:text-2xl font-bold transition-all duration-300" style={{ color: colors[colorIndex] }}>
               VaaS Solutions: Vision to Visibility, Instantly
             </h1>
           </Link>

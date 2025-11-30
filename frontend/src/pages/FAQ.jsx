@@ -11,7 +11,7 @@ const FAQ = () => {
 
   // Translated texts
   const faqTitle = useTranslatedText('Frequently Asked Questions');
-  const faqSeoTitle = useTranslatedText('FAQ');
+  const faqSeoTitle = useTranslatedText('Frequently Asked Questions');
   const faqSeoDescription = useTranslatedText('Find answers to frequently asked questions about News Marketplace services, guaranteed publications, pricing, and media placement. Get all your questions answered.');
   const faqSeoKeywords = useTranslatedText('FAQ, frequently asked questions, news marketplace, guaranteed publication, pricing, media outlets, PR services');
 
