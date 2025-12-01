@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,8 @@ import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import PowerlistSubmissionForm from '../components/user/PowerlistSubmissionForm';
 import {
-  Search, Eye, Grid, List, ExternalLink, Building, User, UserCheck
+  Search, Filter, Eye, Grid, List, ExternalLink, Building, User, UserCheck,
+  ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Users, MapPin, Globe
 } from 'lucide-react';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -48,11 +49,34 @@ const PowerlistPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAuth, setShowAuth] = useState(false);
+
+  // View mode and layout state
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [showPowerlistForm, setShowPowerlistForm] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Filter states
+  const [industryFilter, setIndustryFilter] = useState('');
+  const [genderFilter, setGenderFilter] = useState('');
+  const [regionFilter, setRegionFilter] = useState('');
+
+  // Sorting state
+  const [sortField, setSortField] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+
+  const [showPowerlistForm, setShowPowerlistForm] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetchPowerlists();
@@ -72,6 +96,11 @@ const PowerlistPage = () => {
         params.append('name', searchTerm.trim());
         params.append('current_company', searchTerm.trim());
       }
+
+      // Add filter parameters
+      if (industryFilter) params.append('company_industry', industryFilter);
+      if (genderFilter) params.append('gender', genderFilter);
+      if (regionFilter) params.append('passport_nationality_one', regionFilter);
 
       // Use the public endpoint for approved powerlists
       const response = await api.get(`/powerlist/public?${params.toString()}`);
@@ -94,20 +123,76 @@ const PowerlistPage = () => {
     }
   };
 
-  // Search functionality with debouncing - reset to page 1 when searching
+  // Enhanced search with debouncing
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      setCurrentPage(1);
-      fetchPowerlists(1);
+      fetchPowerlists();
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm]);
+  }, [searchTerm, industryFilter, genderFilter, regionFilter]);
 
   // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
     fetchPowerlists(page);
+  };
+
+  // Sorting logic
+  const sortedPowerlists = useMemo(() => {
+    return [...powerlists].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      if (sortField === 'created_at') {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      } else {
+        aValue = String(aValue || '').toLowerCase();
+        bValue = String(bValue || '').toLowerCase();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  }, [powerlists, sortField, sortDirection]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field) => {
+    if (sortField !== field) return <ArrowUpDown size={14} />;
+    return sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />;
+  };
+
+  const clearAllFilters = () => {
+    setIndustryFilter('');
+    setGenderFilter('');
+    setRegionFilter('');
+  };
+
+  const hasActiveFilters = () => {
+    return industryFilter || genderFilter || regionFilter;
+  };
+
+  // Get unique values for filter options
+  const getUniqueIndustries = () => {
+    const industries = powerlists.map(p => p.company_industry).filter(Boolean);
+    return [...new Set(industries)].sort();
+  };
+
+  const getUniqueRegions = () => {
+    const regions = powerlists.map(p => p.passport_nationality_one).filter(Boolean);
+    return [...new Set(regions)].sort();
   };
 
   const handleShowAuth = () => {
@@ -216,280 +301,469 @@ const PowerlistPage = () => {
         </div>
       </section>
 
-      {/* Main Content - Simple Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* View Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center bg-white rounded-lg p-1 shadow-sm border" style={{ borderColor: theme.borderLight }}>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-3 rounded-md transition-colors ${
-                viewMode === 'grid'
-                  ? 'bg-[#1976D2] text-white shadow-sm'
-                  : 'text-[#757575] hover:text-[#212121]'
-              }`}
-            >
-              <Grid size={20} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-3 rounded-md transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-[#1976D2] text-white shadow-sm'
-                  : 'text-[#757575] hover:text-[#212121]'
-              }`}
-            >
-              <List size={20} />
-            </button>
-          </div>
-        </div>
+      {/* Main Content with Enhanced Layout */}
+      <div className={`${isMobile ? 'flex flex-col' : 'flex'}`}>
+        {/* Enhanced Filters Sidebar */}
+        <aside className={`${sidebarOpen ? (isMobile ? 'w-full' : 'w-80') : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
+          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
+          position: isMobile ? 'static' : 'sticky',
+          top: isMobile ? 'auto' : '80px',
+          zIndex: 10,
+          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
+          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
+          width: isMobile ? '100%' : '25%'
+        }}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
+                <Filter size={20} className="text-[#1976D2]" />
+                Filters & Sort
+              </h3>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                >
+                  ×
+                </button>
+              )}
+            </div>
 
-        {/* Powerlists Display */}
-        {powerlists.length > 0 ? (
-          <>
-            {/* Grid View */}
-            {viewMode === 'grid' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {powerlists.map((powerlist, index) => (
-                  <motion.div
-                    key={powerlist.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    onClick={() => handlePowerlistClick(powerlist)}
-                    className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
-                    style={{
-                      borderColor: theme.borderLight,
-                      boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
-                    }}
-                  >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                            {powerlist.name}
-                          </h3>
-                          <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                            <Building size={14} className="mr-2" />
-                            <span>{powerlist.current_company || 'Independent'}</span>
-                          </div>
-                          <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                            <User size={14} className="mr-2" />
-                            <span>{powerlist.position || 'Professional'}</span>
-                          </div>
-                        </div>
-                        <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: theme.primaryLight }}
-                        >
-                          <UserCheck size={24} style={{ color: theme.primary }} />
-                        </div>
-                      </div>
+            <div className="space-y-6">
+              {/* Basic Filters */}
+              <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <Users size={16} className="text-[#1976D2]" />
+                  Basic Filters
+                </h4>
 
-                      <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                        <div>
-                          <div className="text-sm font-medium" style={{ color: theme.primary }}>
-                            {powerlist.company_industry || 'General'}
-                          </div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Industry</div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium" style={{ color: theme.success }}>
-                            {powerlist.gender || 'Not specified'}
-                          </div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Gender</div>
-                        </div>
-                      </div>
-
-                      <div className="text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                        <div className="text-sm font-medium" style={{ color: theme.info }}>
-                          {powerlist.passport_nationality_one || 'Global'}
-                        </div>
-                        <div className="text-xs" style={{ color: theme.textSecondary }}>Location</div>
-                      </div>
-
-                      <button
-                        className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                        style={{ backgroundColor: theme.primary }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                      >
-                        <Eye size={16} />
-                        View Profile
-                        <ExternalLink size={14} />
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* List View */}
-            {viewMode === 'list' && (
-              <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{
-                borderColor: theme.borderLight,
-                boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
-              }}>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr style={{ backgroundColor: theme.backgroundSoft, borderBottom: '2px solid #e2e8f0' }}>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Professional</th>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Company</th>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Industry</th>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Gender</th>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Location</th>
-                        <th className="px-6 py-4 text-left font-bold text-xs text-[#212121] uppercase tracking-wider">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {powerlists.map((powerlist, index) => (
-                        <tr key={powerlist.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#FAFBFC]'}>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                style={{ backgroundColor: theme.primaryLight }}
-                              >
-                                <UserCheck size={20} style={{ color: theme.primary }} />
-                              </div>
-                              <div>
-                                <div className="font-semibold" style={{ color: theme.textPrimary }}>
-                                  {powerlist.name}
-                                </div>
-                                <div className="text-sm" style={{ color: theme.textSecondary }}>
-                                  {powerlist.position}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm" style={{ color: theme.textPrimary }}>
-                              {powerlist.current_company || 'Independent'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm" style={{ color: theme.textPrimary }}>
-                              {powerlist.company_industry || 'General'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm" style={{ color: theme.textPrimary }}>
-                              {powerlist.gender || 'Not specified'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm" style={{ color: theme.textPrimary }}>
-                              {powerlist.passport_nationality_one || 'Global'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <button
-                              onClick={() => handlePowerlistClick(powerlist)}
-                              className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                              style={{ backgroundColor: theme.primary }}
-                              onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                              onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                            >
-                              <Eye size={14} className="inline mr-1" />
-                              View
-                            </button>
-                          </td>
-                        </tr>
+                {/* Filters in row-wise layout for mobile */}
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                  {/* Industry Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Industry
+                    </label>
+                    <select
+                      value={industryFilter}
+                      onChange={(e) => setIndustryFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Industries</option>
+                      {getUniqueIndustries().map(industry => (
+                        <option key={industry} value={industry}>{industry}</option>
                       ))}
-                    </tbody>
-                  </table>
+                    </select>
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Gender
+                    </label>
+                    <select
+                      value={genderFilter}
+                      onChange={(e) => setGenderFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Genders</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Region Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Region
+                    </label>
+                    <select
+                      value={regionFilter}
+                      onChange={(e) => setRegionFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Regions</option>
+                      {getUniqueRegions().map(region => (
+                        <option key={region} value={region}>{region}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
-            <div
-              className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
-              style={{ backgroundColor: theme.backgroundSoft }}
-            >
-              <User size={48} style={{ color: theme.textDisabled }} />
-            </div>
-            <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-              No professionals found
-            </h3>
-            <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-              {searchTerm ? 'No professionals match your search criteria.' : 'No powerlist entries are currently available.'}
-            </p>
-            {searchTerm && (
+
+              {/* Demographics */}
+              <div className="bg-[#E3F2FD] rounded-lg p-4 border border-[#1976D2]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <Users size={16} className="text-[#1976D2]" />
+                  Demographics
+                </h4>
+
+                {/* Gender Filter */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Gender
+                  </label>
+                  <select
+                    value={genderFilter}
+                    onChange={(e) => setGenderFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+
+                {/* Region Filter */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Region
+                  </label>
+                  <select
+                    value={regionFilter}
+                    onChange={(e) => setRegionFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                  >
+                    <option value="">All Regions</option>
+                    {getUniqueRegions().map(region => (
+                      <option key={region} value={region}>{region}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
               <button
-                onClick={() => setSearchTerm('')}
-                className="px-6 py-3 rounded-lg font-medium transition-colors"
-                style={{ backgroundColor: theme.primary, color: '#fff' }}
+                onClick={clearAllFilters}
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
+              >
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content - Enhanced */}
+        <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
+          {/* Enhanced Controls Bar */}
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
+            borderColor: theme.borderLight,
+            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+          }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Toggle */}
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                    style={{ borderColor: theme.borderLight }}
+                  >
+                    <Filter size={16} />
+                    <span className="text-[#212121]">Filters</span>
+                  </button>
+                )}
+
+                {/* View Toggle */}
+                <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'grid'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <Grid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+
+                <span className="text-sm font-medium text-[#212121]">
+                  {totalCount} professionals found
+                  {searchTerm && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchTerm}"
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              {/* Enhanced Sort Dropdown */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-[#757575]">Sort by:</span>
+                <select
+                  value={`${sortField}-${sortDirection}`}
+                  onChange={(e) => {
+                    const [field, direction] = e.target.value.split('-');
+                    setSortField(field);
+                    setSortDirection(direction);
+                  }}
+                  className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
+                >
+                  <option value="name-asc">Name (A-Z)</option>
+                  <option value="name-desc">Name (Z-A)</option>
+                  <option value="current_company-asc">Company (A-Z)</option>
+                  <option value="current_company-desc">Company (Z-A)</option>
+                  <option value="company_industry-asc">Industry (A-Z)</option>
+                  <option value="company_industry-desc">Industry (Z-A)</option>
+                  <option value="gender-asc">Gender (A-Z)</option>
+                  <option value="gender-desc">Gender (Z-A)</option>
+                  <option value="passport_nationality_one-asc">Location (A-Z)</option>
+                  <option value="passport_nationality_one-desc">Location (Z-A)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Powerlists Display */}
+          {sortedPowerlists.length > 0 ? (
+            <>
+              {/* Enhanced Grid View */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {sortedPowerlists.map((powerlist, index) => (
+                    <motion.div
+                      key={powerlist.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      onClick={() => handlePowerlistClick(powerlist)}
+                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
+                      style={{
+                        borderColor: theme.borderLight,
+                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                      }}
+                    >
+                      {/* Enhanced Powerlist Header */}
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                              {powerlist.name}
+                            </h3>
+                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                              <Building size={14} className="mr-2" />
+                              <span>{powerlist.current_company || 'Independent'}</span>
+                            </div>
+                            <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
+                              <User size={14} className="mr-2" />
+                              <span>{powerlist.position || 'Professional'}</span>
+                            </div>
+                          </div>
+                          <div
+                            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: theme.primaryLight }}
+                          >
+                            <UserCheck size={24} style={{ color: theme.primary }} />
+                          </div>
+                        </div>
+
+                        {/* Enhanced Industry and Demographics */}
+                        <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                          <div>
+                            <div className="text-sm font-medium" style={{ color: theme.primary }}>
+                              {powerlist.company_industry || 'General'}
+                            </div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>Industry</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium" style={{ color: theme.success }}>
+                              {powerlist.gender || 'Not specified'}
+                            </div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>Gender</div>
+                          </div>
+                        </div>
+
+                        {/* Location Info */}
+                        <div className="text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                          <div className="text-sm font-medium" style={{ color: theme.info }}>
+                            {powerlist.passport_nationality_one || 'Global'}
+                          </div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>Location</div>
+                        </div>
+
+                        {/* Enhanced CTA Button */}
+                        <button
+                          className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                          style={{ backgroundColor: theme.primary }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                        >
+                          <Eye size={16} />
+                          View Profile
+                          <ExternalLink size={14} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Enhanced List View - Table Format */}
+              {viewMode === 'list' && (
+                <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{
+                  borderColor: theme.borderLight,
+                  boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr style={{ backgroundColor: theme.backgroundSoft, borderBottom: '2px solid #e2e8f0' }}>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('name')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Professional {getSortIcon('name')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('current_company')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Company {getSortIcon('current_company')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('company_industry')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Industry {getSortIcon('company_industry')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('gender')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Gender {getSortIcon('gender')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('passport_nationality_one')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Location {getSortIcon('passport_nationality_one')}
+                            </div>
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedPowerlists.map((powerlist, index) => (
+                          <tr
+                            key={powerlist.id}
+                            className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                            style={{ borderColor: theme.borderLight }}
+                            onClick={() => handlePowerlistClick(powerlist)}
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                  style={{ backgroundColor: theme.primaryLight }}
+                                >
+                                  <UserCheck size={20} style={{ color: theme.primary }} />
+                                </div>
+                                <div>
+                                  <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                    {powerlist.name}
+                                  </div>
+                                  <div className="text-sm" style={{ color: theme.textSecondary }}>
+                                    {powerlist.position}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {powerlist.current_company || 'Independent'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {powerlist.company_industry || 'General'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {powerlist.gender || 'Not specified'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {powerlist.passport_nationality_one || 'Global'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <button
+                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                style={{ backgroundColor: theme.primary }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                              >
+                                <Eye size={14} className="inline mr-1" />
+                                View
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ backgroundColor: theme.backgroundSoft }}
+              >
+                <User size={48} style={{ color: theme.textDisabled }} />
+              </div>
+              <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                No professionals found
+              </h3>
+              <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
+                We couldn't find any professionals matching your search criteria.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  clearAllFilters();
+                }}
+                className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: theme.primary }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                Clear Search
+                Clear All Filters
               </button>
-            )}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-12 space-x-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: currentPage === 1 ? theme.backgroundSoft : theme.primary,
-                color: currentPage === 1 ? theme.textSecondary : '#fff'
-              }}
-            >
-              Previous
-            </button>
-
-            <div className="flex items-center space-x-2">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                if (pageNum > totalPages) return null;
-
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className="px-3 py-2 rounded-lg font-medium transition-colors"
-                    style={{
-                      backgroundColor: pageNum === currentPage ? theme.primary : theme.backgroundSoft,
-                      color: pageNum === currentPage ? '#fff' : theme.textPrimary
-                    }}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
             </div>
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: currentPage === totalPages ? theme.backgroundSoft : theme.primary,
-                color: currentPage === totalPages ? theme.textSecondary : '#fff'
-              }}
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/* Results Summary */}
-        {totalCount > 0 && (
-          <div className="text-center mt-6 text-sm" style={{ color: theme.textSecondary }}>
-            Showing {powerlists.length} of {totalCount} professionals
-            {searchTerm && (
-              <span> for "{searchTerm}"</span>
-            )}
-          </div>
-        )}
+          )}
+        </main>
       </div>
 
       <UserFooter />
