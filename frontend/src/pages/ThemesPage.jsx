@@ -507,9 +507,9 @@ const ThemesPage = () => {
           {/* Themes Display */}
           {sortedThemes.length > 0 ? (
             <>
-              {/* Enhanced Grid View */}
+              {/* Modern Grid View */}
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {sortedThemes.map((theme, index) => (
                     <motion.div
                       key={theme.id}
@@ -517,83 +517,101 @@ const ThemesPage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       onClick={() => handleThemeClick(theme.id)}
-                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
+                      className="bg-white rounded-2xl shadow-lg border hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group overflow-hidden relative"
                       style={{
                         borderColor: theme.borderLight,
-                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                        boxShadow: '0 10px 25px rgba(2,6,23,0.08)'
                       }}
                     >
-                      {/* Enhanced Theme Header */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div style={{ color: theme.primary }}>
-                                {getPlatformIcon(theme.platform)}
-                              </div>
-                              <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-2 py-1 rounded-full">
-                                {theme.platform}
-                              </span>
-                            </div>
-                            <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                              {theme.page_name}
-                            </h3>
-                            <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>@{theme.username}</p>
-                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                              <MapPin size={14} className="mr-2" />
-                              <span>{theme.location}</span>
-                            </div>
-                            <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                              <Users size={14} className="mr-2" />
-                              <span>{formatFollowers(theme.no_of_followers)} followers</span>
-                            </div>
+                      {/* Gradient Background Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+
+                      {/* Platform Badge - Top Left */}
+                      <div className="absolute top-4 left-4 z-10">
+                        <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                          <div style={{ color: theme.primary }}>
+                            {getPlatformIcon(theme.platform)}
                           </div>
-                          <div
-                            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: theme.primaryLight }}
-                          >
-                            <Star size={24} style={{ color: theme.primary }} />
+                          <span className="text-xs font-semibold text-[#1976D2]">
+                            {theme.platform}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Star Rating - Top Right */}
+                      <div className="absolute top-4 right-4 z-10">
+                        <div className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm">
+                          <Star size={16} style={{ color: '#FFD700' }} fill="#FFD700" />
+                        </div>
+                      </div>
+
+                      {/* Main Content */}
+                      <div className="p-6 pt-16">
+                        {/* Profile Section */}
+                        <div className="text-center mb-6">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB] flex items-center justify-center shadow-md">
+                            <span className="text-xl font-bold text-[#1976D2]">
+                              {theme.page_name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <h3 className="text-xl font-bold mb-1 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                            {theme.page_name}
+                          </h3>
+                          <p className="text-sm font-medium" style={{ color: theme.textSecondary }}>
+                            @{theme.username}
+                          </p>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="text-center p-3 bg-gradient-to-br from-[#FFF3E0] to-[#FFE0B2] rounded-xl">
+                            <Users size={18} className="mx-auto mb-1" style={{ color: '#FF9800' }} />
+                            <div className="text-sm font-bold" style={{ color: '#E65100' }}>
+                              {formatFollowers(theme.no_of_followers)}
+                            </div>
+                            <div className="text-xs" style={{ color: '#BF360C' }}>Followers</div>
+                          </div>
+                          <div className="text-center p-3 bg-gradient-to-br from-[#E8F5E8] to-[#C8E6C9] rounded-xl">
+                            <DollarSign size={18} className="mx-auto mb-1" style={{ color: '#4CAF50' }} />
+                            <div className="text-sm font-bold" style={{ color: '#2E7D32' }}>
+                              {formatPrice(theme.price_reel_without_tagging_collaboration).replace('$', '')}
+                            </div>
+                            <div className="text-xs" style={{ color: '#388E3C' }}>Starting</div>
                           </div>
                         </div>
 
-                        {/* Enhanced Category and Price */}
-                        <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                          <div>
-                            <div className="text-sm font-medium" style={{ color: theme.warning }}>
-                              {theme.category}
-                            </div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Category</div>
+                        {/* Location & Category */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-1 text-sm" style={{ color: theme.textSecondary }}>
+                            <MapPin size={14} />
+                            <span className="font-medium">{theme.location}</span>
                           </div>
-                          <div>
-                            <div className="text-sm font-medium" style={{ color: theme.success }}>
-                              {formatPrice(theme.price_reel_without_tagging_collaboration)}
-                            </div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>From</div>
-                          </div>
+                          <span className="px-3 py-1 bg-gradient-to-r from-[#FFF3E0] to-[#FFE0B2] text-xs font-semibold rounded-full" style={{ color: '#E65100' }}>
+                            {theme.category}
+                          </span>
                         </div>
 
                         {/* Collaboration Preview */}
                         {theme.collaboration && (
-                          <div className="text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                            <div className="text-sm font-medium" style={{ color: theme.info }}>
-                              {theme.collaboration.length > 100 ? `${theme.collaboration.substring(0, 100)}...` : theme.collaboration}
+                          <div className="mb-4 p-3 bg-gradient-to-r from-[#F3E5F5] to-[#E1BEE7] rounded-lg">
+                            <div className="text-sm font-medium line-clamp-2" style={{ color: '#7B1FA2' }}>
+                              {theme.collaboration.length > 80 ? `${theme.collaboration.substring(0, 80)}...` : theme.collaboration}
                             </div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Collaboration</div>
                           </div>
                         )}
 
-                        {/* Enhanced CTA Button */}
+                        {/* CTA Button */}
                         <button
-                          className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                          style={{ backgroundColor: theme.primary }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                          className="w-full bg-gradient-to-r from-[#1976D2] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                           <Eye size={16} />
-                          View Details
+                          View Profile
                           <ExternalLink size={14} />
                         </button>
                       </div>
+
+                      {/* Hover Effect Border */}
+                      <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-[#1976D2]/20 transition-all duration-300"></div>
                     </motion.div>
                   ))}
                 </div>

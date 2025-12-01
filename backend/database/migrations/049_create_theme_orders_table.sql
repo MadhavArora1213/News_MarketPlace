@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS theme_orders (
     price DECIMAL(10, 2),
     customer_info JSONB NOT NULL,
     order_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('pending', 'confirmed', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
     notes TEXT,
     submitted_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
