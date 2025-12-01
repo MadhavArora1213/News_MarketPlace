@@ -468,9 +468,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 Subtitle
-                <span title="Not guaranteed">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
               </label>
               <input
                 type="text"
@@ -487,9 +485,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 By Line
-                <span title="Not guaranteed">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
               </label>
               <input
                 type="text"
@@ -506,9 +502,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 Tentative Publish Date
-                <span title="Not guaranteed">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
               </label>
               <input
                 type="date"
@@ -551,9 +545,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 Image 1 <span style={{ color: theme.danger }}>*</span>
-                <span title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB" />
               </label>
               <input
                 type="file"
@@ -573,9 +565,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 Image 2
-                <span title="Not guaranteed">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
               </label>
               <input
                 type="file"
@@ -595,9 +585,7 @@ const ArticleSubmissionPage = () => {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
                 Website Link
-                <span title="Optional website link">
-                  <Icon name="information-circle" size="sm" className="ml-1 inline" />
-                </span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Optional website link" />
               </label>
               <input
                 type="url"

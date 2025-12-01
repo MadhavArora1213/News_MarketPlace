@@ -16,7 +16,7 @@ const SIZE_MAP = {
   '2xl': 32
 };
 
-export default function Icon({ name = '', size = 'md', className = '', style = {}, ...rest }) {
+export default function Icon({ name = '', size = 'md', className = '', style = {}, title, ...rest }) {
   const s = typeof size === 'number' ? size : (SIZE_MAP[size] || SIZE_MAP.md);
   const strokeWidth = size === 'sm' ? 1.5 : 2;
   const common = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', stroke: 'currentColor', strokeWidth, strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -26,6 +26,7 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
     case 'shield-check':
       return (
         <svg {...common} className={className} style={style} {...rest}>
+          {title && <title>{title}</title>}
           <path d="M12 2l7 3v5c0 5-3.5 9.5-7 11-3.5-1.5-7-6-7-11V5l7-3z" />
           <path d="M9 12l2 2 4-4" strokeWidth="2" />
         </svg>
@@ -517,9 +518,19 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
     case 'help-circle':
       return (
         <svg {...common} className={className} style={style} {...rest}>
+          {title && <title>{title}</title>}
           <circle cx="12" cy="12" r="10" />
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
           <path d="M12 17h.01" />
+        </svg>
+      );
+
+    case 'information-circle':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          {title && <title>{title}</title>}
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4M12 8h.01" />
         </svg>
       );
 
