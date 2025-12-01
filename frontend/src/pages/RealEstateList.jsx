@@ -1,11 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, Home, MapPin, DollarSign, Bed, Bath, Square, Plus, Clock, CheckCircle, ImageIcon } from 'lucide-react';
+import { Search, Filter, Home, MapPin, DollarSign, Bed, Bath, Square, Plus, Clock, CheckCircle, ImageIcon, Grid, List, ArrowUpDown, ArrowUp, ArrowDown, BarChart3 } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+
+// Enhanced theme colors inspired by VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575',
+  gradientFrom: '#E3F2FD',
+  gradientTo: '#FFFFFF',
+  cardBg: '#FFFFFF',
+  cardBorder: '#E0E0E0',
+  cardShadow: 'rgba(2,6,23,0.06)',
+  hoverBg: '#F5F5F5'
+};
 
 const RealEstateList = () => {
   const { isAuthenticated } = useAuth();
@@ -22,6 +51,20 @@ const RealEstateList = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [activeTab, setActiveTab] = useState('approved'); // 'approved' or 'my-submissions'
 
+  // View mode and layout state
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Sorting state
+  const [sortField, setSortField] = useState('created_at');
+  const [sortDirection, setSortDirection] = useState('desc');
+
+  // Additional filter states
+  const [bedroomsRange, setBedroomsRange] = useState([0, 10]);
+  const [bathroomsRange, setBathroomsRange] = useState([0, 10]);
+  const [areaRange, setAreaRange] = useState([0, 10000]);
+
   // Form state for real estate submission
   const [formData, setFormData] = useState({
     title: '',
@@ -37,6 +80,13 @@ const RealEstateList = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     fetchRealEstates();
@@ -213,16 +263,81 @@ const RealEstateList = () => {
     return [...new Set(realEstates.map(r => r.property_type).filter(Boolean))];
   }, [realEstates]);
 
-  const filteredRealEstates = realEstates.filter(realEstate => {
+  // Sorting logic
+  const sortedRealEstates = useMemo(() => {
+    return [...realEstates].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      if (sortField === 'price') {
+        aValue = parseFloat(aValue) || 0;
+        bValue = parseFloat(bValue) || 0;
+      } else if (sortField === 'created_at' || sortField === 'updated_at') {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      } else if (sortField === 'bedrooms' || sortField === 'bathrooms' || sortField === 'area_sqft') {
+        aValue = parseFloat(aValue) || 0;
+        bValue = parseFloat(bValue) || 0;
+      } else {
+        aValue = String(aValue || '').toLowerCase();
+        bValue = String(bValue || '').toLowerCase();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  }, [realEstates, sortField, sortDirection]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field) => {
+    if (sortField !== field) return <ArrowUpDown size={14} />;
+    return sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />;
+  };
+
+  const clearAllFilters = () => {
+    setMinPrice('');
+    setMaxPrice('');
+    setPropertyType('');
+    setSearchQuery('');
+    setSelectedCategory('all');
+    setBedroomsRange([0, 10]);
+    setBathroomsRange([0, 10]);
+    setAreaRange([0, 10000]);
+  };
+
+  const hasActiveFilters = () => {
+    return minPrice || maxPrice || propertyType || searchQuery || selectedCategory !== 'all' ||
+           bedroomsRange[0] > 0 || bedroomsRange[1] < 10 ||
+           bathroomsRange[0] > 0 || bathroomsRange[1] < 10 ||
+           areaRange[0] > 0 || areaRange[1] < 10000;
+  };
+
+  const filteredRealEstates = sortedRealEstates.filter(realEstate => {
     const matchesCategory = selectedCategory === 'all' || realEstate.location === selectedCategory;
     const matchesSearch = !searchQuery ||
       realEstate.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       realEstate.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       realEstate.property_type?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPrice = (!minPrice || realEstate.price >= parseInt(minPrice)) &&
-                         (!maxPrice || realEstate.price <= parseInt(maxPrice));
+                          (!maxPrice || realEstate.price <= parseInt(maxPrice));
     const matchesType = !propertyType || realEstate.property_type === propertyType;
-    return matchesCategory && matchesSearch && matchesPrice && matchesType;
+    const matchesBedrooms = realEstate.bedrooms >= bedroomsRange[0] && realEstate.bedrooms <= bedroomsRange[1];
+    const matchesBathrooms = realEstate.bathrooms >= bathroomsRange[0] && realEstate.bathrooms <= bathroomsRange[1];
+    const matchesArea = realEstate.area_sqft >= areaRange[0] && realEstate.area_sqft <= areaRange[1];
+
+    return matchesCategory && matchesSearch && matchesPrice && matchesType &&
+           matchesBedrooms && matchesBathrooms && matchesArea;
   });
 
   const formatPrice = (price) => {
@@ -281,253 +396,667 @@ const RealEstateList = () => {
         </div>
       </section>
 
-      {/* Search and Filter Section */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
-        <div className="max-w-7xl mx-auto">
-          {/* Tabs for authenticated users */}
-          {isAuthenticated && (
-            <div className="flex gap-1 mb-6 bg-[#F5F5F5] p-1 rounded-lg">
+      {/* Main Content with Enhanced Layout */}
+      <div className={`${isMobile ? 'flex flex-col' : 'flex'}`}>
+        {/* Enhanced Filters Sidebar */}
+        <aside className={`${sidebarOpen ? (isMobile ? 'w-full' : 'w-80') : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
+          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
+          position: isMobile ? 'static' : 'sticky',
+          top: isMobile ? 'auto' : '80px',
+          zIndex: 10,
+          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
+          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
+          width: isMobile ? '100%' : '25%'
+        }}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
+                <Filter size={20} className="text-[#1976D2]" />
+                Filters & Sort
+              </h3>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {/* Basic Filters */}
+              <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <Home size={16} className="text-[#1976D2]" />
+                  Basic Filters
+                </h4>
+
+                {/* Filters in row-wise layout for mobile */}
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                  {/* Property Type Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Property Type
+                    </label>
+                    <select
+                      value={propertyType}
+                      onChange={(e) => setPropertyType(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Types</option>
+                      {propertyTypes.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Location Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Location
+                    </label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      {categories.map(category => (
+                        <option key={category.id} value={category.id}>{category.name} ({category.count})</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div className="bg-[#FFF3E0] rounded-lg p-4 border border-[#FF9800]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <DollarSign size={16} className="text-[#FF9800]" />
+                  Price Range
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Min Price
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Min price"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#FF9800] bg-white text-[#212121]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Max Price
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Max price"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#FF9800] bg-white text-[#212121]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="bg-[#E0F2F1] rounded-lg p-4 border border-[#00796B]">
+                <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
+                  <BarChart3 size={16} className="text-[#00796B]" />
+                  Property Details
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Bedrooms: {bedroomsRange[0]} - {bedroomsRange[1]}
+                    </label>
+                    <div className="px-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value={bedroomsRange[0]}
+                        onChange={(e) => setBedroomsRange([parseInt(e.target.value), bedroomsRange[1]])}
+                        className="w-full accent-[#00796B]"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value={bedroomsRange[1]}
+                        onChange={(e) => setBedroomsRange([bedroomsRange[0], parseInt(e.target.value)])}
+                        className="w-full accent-[#00796B] mt-2"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Bathrooms: {bathroomsRange[0]} - {bathroomsRange[1]}
+                    </label>
+                    <div className="px-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={bathroomsRange[0]}
+                        onChange={(e) => setBathroomsRange([parseFloat(e.target.value), bathroomsRange[1]])}
+                        className="w-full accent-[#00796B]"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={bathroomsRange[1]}
+                        onChange={(e) => setBathroomsRange([bathroomsRange[0], parseFloat(e.target.value)])}
+                        className="w-full accent-[#00796B] mt-2"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Area (sqft): {areaRange[0]} - {areaRange[1]}
+                    </label>
+                    <div className="px-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10000"
+                        step="100"
+                        value={areaRange[0]}
+                        onChange={(e) => setAreaRange([parseInt(e.target.value), areaRange[1]])}
+                        className="w-full accent-[#00796B]"
+                      />
+                      <input
+                        type="range"
+                        min="0"
+                        max="10000"
+                        step="100"
+                        value={areaRange[1]}
+                        onChange={(e) => setAreaRange([areaRange[0], parseInt(e.target.value)])}
+                        className="w-full accent-[#00796B] mt-2"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
               <button
-                onClick={() => setActiveTab('approved')}
-                className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
-                  activeTab === 'approved'
-                    ? 'bg-white text-[#1976D2] shadow-sm'
-                    : 'text-[#757575] hover:text-[#212121]'
-                }`}
+                onClick={clearAllFilters}
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
               >
-                Approved Listings
-              </button>
-              <button
-                onClick={() => setActiveTab('my-submissions')}
-                className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
-                  activeTab === 'my-submissions'
-                    ? 'bg-white text-[#1976D2] shadow-sm'
-                    : 'text-[#757575] hover:text-[#212121]'
-                }`}
-              >
-                My Listings
+                Clear All Filters
               </button>
             </div>
-          )}
+          </div>
+        </aside>
 
-          {/* Search and Filters - only show for approved tab or when not authenticated */}
-          {(activeTab === 'approved' || !isAuthenticated) && (
-            <div className="space-y-4">
-              {/* Search Bar */}
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search properties..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
-                  />
-                </div>
-              </div>
-
-              {/* Advanced Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#212121] mb-1">Min Price</label>
-                  <input
-                    type="number"
-                    placeholder="Min price"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#212121] mb-1">Max Price</label>
-                  <input
-                    type="number"
-                    placeholder="Max price"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#212121] mb-1">Property Type</label>
-                  <select
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] text-[#212121]"
-                  >
-                    <option value="">All Types</option>
-                    {propertyTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-end">
+        {/* Main Content - Enhanced */}
+        <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
+          {/* Enhanced Controls Bar */}
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
+            borderColor: theme.borderLight,
+            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+          }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Toggle */}
+                {isMobile && (
                   <button
-                    onClick={() => {
-                      setMinPrice('');
-                      setMaxPrice('');
-                      setPropertyType('');
-                      setSearchQuery('');
-                      setSelectedCategory('all');
-                    }}
-                    className="w-full bg-[#F5F5F5] text-[#212121] px-4 py-2 rounded-lg hover:bg-[#E0E0E0] transition-colors font-medium"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                    style={{ borderColor: theme.borderLight }}
                   >
-                    Clear Filters
+                    <Filter size={16} />
+                    <span className="text-[#212121]">Filters</span>
                   </button>
-                </div>
-              </div>
+                )}
 
-              {/* Location Categories */}
-              <div className="flex flex-wrap gap-3">
-                {categories.map((category) => (
+                {/* View Toggle */}
+                <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      selectedCategory === category.id
-                        ? 'bg-[#1976D2] text-white'
-                        : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'grid'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
                     }`}
                   >
-                    {category.name} ({category.count})
+                    <Grid size={16} />
                   </button>
-                ))}
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+
+                {/* Tabs for authenticated users */}
+                {isAuthenticated && (
+                  <div className="flex gap-1 bg-[#F5F5F5] p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveTab('approved')}
+                      className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                        activeTab === 'approved'
+                          ? 'bg-white text-[#1976D2] shadow-sm'
+                          : 'text-[#757575] hover:text-[#212121]'
+                      }`}
+                    >
+                      Approved Listings
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('my-submissions')}
+                      className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                        activeTab === 'my-submissions'
+                          ? 'bg-white text-[#1976D2] shadow-sm'
+                          : 'text-[#757575] hover:text-[#212121]'
+                      }`}
+                    >
+                      My Listings
+                    </button>
+                  </div>
+                )}
+
+                <span className="text-sm font-medium text-[#212121]">
+                  {filteredRealEstates.length} properties found
+                  {searchQuery && (
+                    <span className="ml-2 text-[#757575]">
+                      for "{searchQuery}"
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              {/* Enhanced Sort Dropdown */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-[#757575]">Sort by:</span>
+                <select
+                  value={`${sortField}-${sortDirection}`}
+                  onChange={(e) => {
+                    const [field, direction] = e.target.value.split('-');
+                    setSortField(field);
+                    setSortDirection(direction);
+                  }}
+                  className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
+                >
+                  <option value="title-asc">Title (A-Z)</option>
+                  <option value="title-desc">Title (Z-A)</option>
+                  <option value="price-asc">Price (Low to High)</option>
+                  <option value="price-desc">Price (High to Low)</option>
+                  <option value="location-asc">Location (A-Z)</option>
+                  <option value="location-desc">Location (Z-A)</option>
+                  <option value="property_type-asc">Type (A-Z)</option>
+                  <option value="property_type-desc">Type (Z-A)</option>
+                  <option value="bedrooms-desc">Bedrooms (High to Low)</option>
+                  <option value="bedrooms-asc">Bedrooms (Low to High)</option>
+                  <option value="bathrooms-desc">Bathrooms (High to Low)</option>
+                  <option value="bathrooms-asc">Bathrooms (Low to High)</option>
+                  <option value="area_sqft-desc">Area (High to Low)</option>
+                  <option value="area_sqft-asc">Area (Low to High)</option>
+                  <option value="created_at-desc">Newest First</option>
+                  <option value="created_at-asc">Oldest First</option>
+                </select>
               </div>
             </div>
-          )}
-        </div>
-      </section>
 
-      {/* Real Estates Grid */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto">
-          {/* Approved Listings Tab */}
+            {/* Search Bar */}
+            <div className="mt-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+                <input
+                  type="text"
+                  placeholder="Search properties by title, location, or type..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-12 py-3 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Property Listings */}
           {(activeTab === 'approved' || !isAuthenticated) && (
             <>
               {loading ? (
-                <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1976D2]"></div>
-                  <p className="mt-4 text-[#757575]">Loading properties...</p>
+                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                  <div
+                    className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
+                    style={{
+                      borderBottom: `2px solid ${theme.primary}`,
+                      borderRight: `2px solid transparent`
+                    }}
+                  ></div>
+                  <p className="text-lg" style={{ color: theme.textSecondary }}>Loading properties...</p>
                 </div>
               ) : error ? (
-                <div className="text-center py-12">
-                  <p className="text-[#757575] text-lg">{error}</p>
+                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                  <p className="text-lg" style={{ color: theme.textSecondary }}>{error}</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredRealEstates.map((realEstate) => (
-                    <Link key={realEstate.id} to={`/real-estates/${realEstate.id}`}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                        className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                      >
-                        {/* Image */}
-                        <div className="relative aspect-video bg-[#E0E0E0]">
-                          {realEstate.images && realEstate.images.length > 0 ? (
-                            <img
-                              src={realEstate.images[0]}
-                              alt={realEstate.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
-                              <Home className="w-16 h-16 text-[#757575]" />
-                            </div>
-                          )}
-                          <div className="absolute top-3 right-3">
-                            <div className="bg-[#4CAF50] text-white px-2 py-1 rounded text-xs font-medium">
-                              Approved
-                            </div>
-                          </div>
-                          {realEstate.images && realEstate.images.length > 1 && (
-                            <div className="absolute top-3 left-3 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
-                              <ImageIcon className="w-3 h-3" />
-                              {realEstate.images.length}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-4">
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <h3 className="text-lg font-semibold text-[#212121] line-clamp-2 flex-1">
-                              {realEstate.title}
-                            </h3>
-                          </div>
-
-                          <div className="flex items-center gap-1 text-xl font-bold text-[#1976D2] mb-2">
-                            <DollarSign className="w-5 h-5" />
-                            {formatPrice(realEstate.price)}
-                          </div>
-
-                          {realEstate.location && (
-                            <div className="flex items-center gap-1 text-sm text-[#757575] mb-2">
-                              <MapPin className="w-4 h-4" />
-                              {realEstate.location}
-                            </div>
-                          )}
-
-                          {realEstate.property_type && (
-                            <p className="text-sm text-[#1976D2] font-medium mb-2">
-                              {realEstate.property_type}
-                            </p>
-                          )}
-
-                          {/* Property Details */}
-                          <div className="flex items-center gap-4 text-sm text-[#757575] mb-3">
-                            {realEstate.bedrooms && (
-                              <div className="flex items-center gap-1">
-                                <Bed className="w-4 h-4" />
-                                {realEstate.bedrooms} bed{realEstate.bedrooms !== 1 ? 's' : ''}
+                <>
+                  {/* Enhanced Grid View */}
+                  {viewMode === 'grid' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {filteredRealEstates.map((realEstate, index) => (
+                        <motion.div
+                          key={realEstate.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: index * 0.1 }}
+                          className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
+                          style={{
+                            borderColor: theme.borderLight,
+                            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                          }}
+                        >
+                          <Link to={`/real-estates/${realEstate.id}`}>
+                            {/* Enhanced Image Section */}
+                            <div className="relative aspect-video bg-[#E0E0E0]">
+                              {realEstate.images && realEstate.images.length > 0 ? (
+                                <img
+                                  src={realEstate.images[0]}
+                                  alt={realEstate.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
+                                  <Home className="w-16 h-16 text-[#757575]" />
+                                </div>
+                              )}
+                              <div className="absolute top-3 right-3">
+                                <div className="bg-[#4CAF50] text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                                  <CheckCircle className="w-3 h-3" />
+                                  Approved
+                                </div>
                               </div>
-                            )}
-                            {realEstate.bathrooms && (
-                              <div className="flex items-center gap-1">
-                                <Bath className="w-4 h-4" />
-                                {realEstate.bathrooms} bath{realEstate.bathrooms !== 1 ? 's' : ''}
-                              </div>
-                            )}
-                            {realEstate.area_sqft && (
-                              <div className="flex items-center gap-1">
-                                <Square className="w-4 h-4" />
-                                {realEstate.area_sqft} sqft
-                              </div>
-                            )}
-                          </div>
+                              {realEstate.images && realEstate.images.length > 1 && (
+                                <div className="absolute top-3 left-3 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                                  <ImageIcon className="w-3 h-3" />
+                                  {realEstate.images.length}
+                                </div>
+                              )}
+                            </div>
 
-                          {/* Description Preview */}
-                          {realEstate.description && (
-                            <p className="text-sm text-[#757575] line-clamp-2">
-                              {realEstate.description}
-                            </p>
-                          )}
-                        </div>
-                      </motion.div>
-                    </Link>
-                  ))}
-                </div>
-              )}
+                            {/* Enhanced Content */}
+                            <div className="p-6">
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="flex-1">
+                                  <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                                    {realEstate.title}
+                                  </h3>
+                                  <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                                    <MapPin size={14} className="mr-2" />
+                                    <span>{realEstate.location || 'Location not specified'}</span>
+                                  </div>
+                                </div>
+                              </div>
 
-              {!loading && !error && filteredRealEstates.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="mb-4">
-                    <Home className="w-16 h-16 text-[#BDBDBD] mx-auto" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-[#212121] mb-2">No Properties Found</h3>
-                  <p className="text-[#757575] text-lg mb-6">Try adjusting your filters or be the first to list a property!</p>
-                  {isAuthenticated && (
-                    <button
-                      onClick={() => setShowSubmissionForm(true)}
-                      className="bg-[#1976D2] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#0D47A1] transition-colors inline-flex items-center gap-2"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Add Your Property
-                    </button>
+                              {/* Enhanced Price and Type */}
+                              <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                                <div>
+                                  <div className="text-lg font-bold" style={{ color: theme.primary }}>
+                                    {formatPrice(realEstate.price)}
+                                  </div>
+                                  <div className="text-xs" style={{ color: theme.textSecondary }}>Price</div>
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium" style={{ color: theme.success }}>
+                                    {realEstate.property_type || 'Not specified'}
+                                  </div>
+                                  <div className="text-xs" style={{ color: theme.textSecondary }}>Type</div>
+                                </div>
+                              </div>
+
+                              {/* Enhanced Property Details */}
+                              <div className="grid grid-cols-3 gap-2 text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                                {realEstate.bedrooms && (
+                                  <div>
+                                    <div className="text-lg font-bold" style={{ color: theme.warning }}>
+                                      {realEstate.bedrooms}
+                                    </div>
+                                    <div className="text-xs" style={{ color: theme.textSecondary }}>Beds</div>
+                                  </div>
+                                )}
+                                {realEstate.bathrooms && (
+                                  <div>
+                                    <div className="text-lg font-bold" style={{ color: theme.info }}>
+                                      {realEstate.bathrooms}
+                                    </div>
+                                    <div className="text-xs" style={{ color: theme.textSecondary }}>Baths</div>
+                                  </div>
+                                )}
+                                {realEstate.area_sqft && (
+                                  <div>
+                                    <div className="text-lg font-bold" style={{ color: theme.secondary }}>
+                                      {realEstate.area_sqft}
+                                    </div>
+                                    <div className="text-xs" style={{ color: theme.textSecondary }}>Sqft</div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Enhanced CTA Button */}
+                              <button
+                                className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                                style={{ backgroundColor: theme.primary }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                              >
+                                <Eye size={16} />
+                                View Details
+                              </button>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      ))}
+                    </div>
                   )}
-                </div>
+
+                  {/* Enhanced List View - Table Format */}
+                  {viewMode === 'list' && (
+                    <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{
+                      borderColor: theme.borderLight,
+                      boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                    }}>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr style={{ backgroundColor: theme.backgroundSoft, borderBottom: '2px solid #e2e8f0' }}>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('title')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Property {getSortIcon('title')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('location')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Location {getSortIcon('location')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('property_type')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Type {getSortIcon('property_type')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('price')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Price {getSortIcon('price')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('bedrooms')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Beds {getSortIcon('bedrooms')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('bathrooms')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Baths {getSortIcon('bathrooms')}
+                                </div>
+                              </th>
+                              <th
+                                className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                                style={{ color: theme.textPrimary }}
+                                onClick={() => handleSort('area_sqft')}
+                              >
+                                <div className="flex items-center gap-2">
+                                  Area {getSortIcon('area_sqft')}
+                                </div>
+                              </th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                                Action
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredRealEstates.map((realEstate, index) => (
+                              <tr
+                                key={realEstate.id}
+                                className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                                style={{ borderColor: theme.borderLight }}
+                                onClick={() => window.location.href = `/real-estates/${realEstate.id}`}
+                              >
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                      style={{ backgroundColor: theme.primaryLight }}
+                                    >
+                                      <Home size={20} style={{ color: theme.primary }} />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                        {realEstate.title}
+                                      </div>
+                                      <div className="text-sm" style={{ color: theme.textSecondary }}>
+                                        Listed {new Date(realEstate.created_at).toLocaleDateString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {realEstate.location || 'Not specified'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {realEstate.property_type || 'Not specified'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-lg font-bold" style={{ color: theme.success }}>
+                                    {formatPrice(realEstate.price)}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {realEstate.bedrooms || '—'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {realEstate.bathrooms || '—'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {realEstate.area_sqft ? `${realEstate.area_sqft} sqft` : '—'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <button
+                                    className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                    style={{ backgroundColor: theme.primary }}
+                                    onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                    onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = `/real-estates/${realEstate.id}`;
+                                    }}
+                                  >
+                                    <Eye size={14} className="inline mr-1" />
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {!loading && !error && filteredRealEstates.length === 0 && (
+                    <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                      <div
+                        className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                        style={{ backgroundColor: theme.backgroundSoft }}
+                      >
+                        <Home size={48} style={{ color: theme.textDisabled }} />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                        No properties found
+                      </h3>
+                      <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
+                        We couldn't find any properties matching your search criteria.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          clearAllFilters();
+                        }}
+                        className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        style={{ backgroundColor: theme.primary }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                      >
+                        Clear All Filters
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -536,19 +1065,29 @@ const RealEstateList = () => {
           {isAuthenticated && activeTab === 'my-submissions' && (
             <>
               {userSubmissionsLoading ? (
-                <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1976D2]"></div>
-                  <p className="mt-4 text-[#757575]">Loading your listings...</p>
+                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                  <div
+                    className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
+                    style={{
+                      borderBottom: `2px solid ${theme.primary}`,
+                      borderRight: `2px solid transparent`
+                    }}
+                  ></div>
+                  <p className="text-lg" style={{ color: theme.textSecondary }}>Loading your listings...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {userSubmissions.map((realEstate) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {userSubmissions.map((realEstate, index) => (
                     <motion.div
                       key={realEstate.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden"
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      className="bg-white rounded-lg shadow-lg border overflow-hidden"
+                      style={{
+                        borderColor: theme.borderLight,
+                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                      }}
                     >
                       {/* Image */}
                       <div className="relative aspect-video bg-[#E0E0E0]">
@@ -578,35 +1117,34 @@ const RealEstateList = () => {
                       </div>
 
                       {/* Content */}
-                      <div className="p-4">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="text-lg font-semibold text-[#212121] line-clamp-2 flex-1">
-                            {realEstate.title}
-                          </h3>
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2 line-clamp-2" style={{ color: theme.textPrimary }}>
+                              {realEstate.title}
+                            </h3>
+                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                              <MapPin size={14} className="mr-2" />
+                              <span>{realEstate.location || 'Location not specified'}</span>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-1 text-lg font-bold text-[#1976D2] mb-2">
-                          <DollarSign className="w-4 h-4" />
+                        <div className="flex items-center gap-1 text-xl font-bold mb-4" style={{ color: theme.primary }}>
+                          <DollarSign className="w-5 h-5" />
                           {formatPrice(realEstate.price)}
                         </div>
 
-                        {realEstate.location && (
-                          <div className="flex items-center gap-1 text-sm text-[#757575] mb-2">
-                            <MapPin className="w-4 h-4" />
-                            {realEstate.location}
-                          </div>
-                        )}
-
                         {/* Status and Date */}
-                        <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
+                        <div className="flex items-center justify-between text-sm mb-4" style={{ color: theme.textSecondary }}>
                           <span>Listed: {new Date(realEstate.created_at).toLocaleDateString()}</span>
                         </div>
 
                         {/* Rejection Reason */}
                         {realEstate.status === 'rejected' && realEstate.rejection_reason && (
-                          <div className="bg-[#FFF3E0] border border-[#FF9800] rounded p-2 mb-3">
-                            <p className="text-sm text-[#E65100] font-medium">Rejection Reason:</p>
-                            <p className="text-sm text-[#BF360C]">{realEstate.rejection_reason}</p>
+                          <div className="bg-[#FFF3E0] border border-[#FF9800] rounded p-3 mb-4">
+                            <p className="text-sm font-medium" style={{ color: theme.danger }}>Rejection Reason:</p>
+                            <p className="text-sm" style={{ color: theme.danger }}>{realEstate.rejection_reason}</p>
                           </div>
                         )}
 
@@ -614,7 +1152,10 @@ const RealEstateList = () => {
                         {realEstate.status === 'pending' && (
                           <button
                             onClick={() => setShowSubmissionForm(true)}
-                            className="w-full bg-[#1976D2] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors text-sm"
+                            className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                            style={{ backgroundColor: theme.primary }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                           >
                             Edit Listing
                           </button>
@@ -626,15 +1167,25 @@ const RealEstateList = () => {
               )}
 
               {!userSubmissionsLoading && userSubmissions.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="mb-4">
-                    <Home className="w-16 h-16 text-[#BDBDBD] mx-auto" />
+                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+                  <div
+                    className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                    style={{ backgroundColor: theme.backgroundSoft }}
+                  >
+                    <Home size={48} style={{ color: theme.textDisabled }} />
                   </div>
-                  <h3 className="text-xl font-semibold text-[#212121] mb-2">No Listings Yet</h3>
-                  <p className="text-[#757575] text-lg mb-6">Add your first property listing to get started!</p>
+                  <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                    No listings yet
+                  </h3>
+                  <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
+                    Add your first property listing to get started.
+                  </p>
                   <button
                     onClick={() => setShowSubmissionForm(true)}
-                    className="bg-[#1976D2] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#0D47A1] transition-colors inline-flex items-center gap-2"
+                    className="text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+                    style={{ backgroundColor: theme.primary }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                   >
                     <Plus className="w-5 h-5" />
                     Add Your Property
@@ -643,8 +1194,8 @@ const RealEstateList = () => {
               )}
             </>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
 
       <UserFooter />
 
