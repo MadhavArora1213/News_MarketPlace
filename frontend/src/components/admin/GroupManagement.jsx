@@ -281,6 +281,7 @@ const GroupManagement = () => {
   }
 
   const [groups, setGroups] = useState([]);
+  const [totalGroups, setTotalGroups] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -290,7 +291,7 @@ const GroupManagement = () => {
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
   const [sortField, setSortField] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -407,6 +408,7 @@ const GroupManagement = () => {
       // Try admin endpoint first
       const response = await api.get('/groups/admin');
       setGroups(response.data.groups || []);
+      setTotalGroups(response.data.pagination?.total || response.data.groups?.length || 0);
     } catch (error) {
       console.error('Error fetching groups from admin endpoint:', error);
       if (error.response?.status === 401) {
@@ -421,6 +423,7 @@ const GroupManagement = () => {
         console.log('Trying fallback groups endpoint...');
         const fallbackResponse = await api.get('/groups');
         setGroups(fallbackResponse.data.groups || []);
+        setTotalGroups(fallbackResponse.data.groups?.length || 0);
       } catch (fallbackError) {
         console.error('Fallback groups fetch failed:', fallbackError);
         alert('Failed to load groups. Please try again.');
@@ -432,7 +435,7 @@ const GroupManagement = () => {
 
   // Simple search for groups
   const filteredGroups = useMemo(() => {
-    let filtered = groups.filter(group => group.is_active !== false); // Only show active groups
+    let filtered = groups;
 
     if (debouncedSearchTerm) {
       filtered = filtered.filter(group =>
@@ -478,7 +481,7 @@ const GroupManagement = () => {
     return sortedGroups.slice(startIndex, startIndex + pageSize);
   }, [sortedGroups, currentPage, pageSize]);
 
-  const totalPages = Math.ceil(sortedGroups.length / pageSize);
+  const totalPages = Math.ceil(totalGroups / pageSize);
 
   const getStatusStyle = (status) => {
     const statusOption = statusOptions.find(opt => opt.value === status);
@@ -560,10 +563,10 @@ const GroupManagement = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedGroups.length === filteredGroups.length) {
+    if (selectedGroups.length === paginatedGroups.length && paginatedGroups.length > 0) {
       setSelectedGroups([]);
     } else {
-      setSelectedGroups(filteredGroups.map(g => g.id));
+      setSelectedGroups(paginatedGroups.map(g => g.id));
     }
   };
 
@@ -913,13 +916,13 @@ const GroupManagement = () => {
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
                   {debouncedSearchTerm ? (
                     <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{sortedGroups.length}</strong> groups
+                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{filteredGroups.length}</strong> groups
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedGroups.length}</strong> of <strong>{sortedGroups.length}</strong> groups
-                      {sortedGroups.length !== groups.length && (
-                        <span> (filtered from {groups.length} total)</span>
+                      Showing <strong>{paginatedGroups.length}</strong> of <strong>{totalGroups}</strong> groups
+                      {filteredGroups.length !== totalGroups && (
+                        <span> (filtered from {totalGroups} total)</span>
                       )}
                     </>
                   )}
@@ -1217,7 +1220,7 @@ const GroupManagement = () => {
               {totalPages > 1 && (
                 <div style={{ padding: '16px 20px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                    Page {currentPage} of {totalPages} ({sortedGroups.length} total groups)
+                    Page {currentPage} of {totalPages} ({totalGroups} total groups)
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
