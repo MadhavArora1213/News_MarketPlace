@@ -776,27 +776,23 @@ const PressPackDetailPage = () => {
 
       {/* Purchase Modal */}
       {showPurchaseModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10000,
-          padding: '20px'
-        }} onClick={() => setShowPurchaseModal(false)}>
-          <div style={{
-            backgroundColor: themeColors.background,
-            borderRadius: '12px',
-            padding: '24px',
-            maxWidth: '500px',
-            width: '100%',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
-          }} onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10000 p-4 sm:p-6"
+          onClick={() => setShowPurchaseModal(false)}
+        >
+          <div
+            className="w-full max-w-md sm:max-w-lg mx-auto"
+            style={{
+              backgroundColor: themeColors.background,
+              borderRadius: '12px',
+              padding: '20px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: themeColors.textPrimary }}>
                 Purchase Press Pack
@@ -854,15 +850,7 @@ const PressPackDetailPage = () => {
                     value={purchaseFormData.fullName}
                     onChange={(e) => setPurchaseFormData({ ...purchaseFormData, fullName: e.target.value })}
                     required
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: `1px solid ${themeColors.borderLight}`,
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box',
-                      backgroundColor: themeColors.background
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -881,15 +869,7 @@ const PressPackDetailPage = () => {
                     value={purchaseFormData.email}
                     onChange={(e) => setPurchaseFormData({ ...purchaseFormData, email: e.target.value })}
                     required
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: `1px solid ${themeColors.borderLight}`,
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box',
-                      backgroundColor: themeColors.background
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -933,54 +913,25 @@ const PressPackDetailPage = () => {
                     value={purchaseFormData.message}
                     onChange={(e) => setPurchaseFormData({ ...purchaseFormData, message: e.target.value })}
                     rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: `1px solid ${themeColors.borderLight}`,
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box',
-                      backgroundColor: themeColors.background,
-                      resize: 'vertical'
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
                     placeholder="Any specific requirements or questions..."
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
                 <button
                   type="button"
                   onClick={() => setShowPurchaseModal(false)}
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: themeColors.backgroundSoft,
-                    color: themeColors.textPrimary,
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}
+                  className="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg font-semibold text-sm sm:text-base cursor-pointer hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isPurchasing}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: themeColors.primary,
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}
+                  className="px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white border border-blue-600 rounded-lg font-semibold text-sm sm:text-base cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isPurchasing}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = themeColors.primaryDark}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = themeColors.primary}
                 >
                   {isPurchasing ? 'Processing...' : 'Purchase Package'}
                 </button>
