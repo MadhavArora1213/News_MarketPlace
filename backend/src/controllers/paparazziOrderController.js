@@ -121,34 +121,124 @@ const getAll = async (req, res) => {
   try {
     const { page = 1, limit = 10, status, search } = req.query;
 
+    // Build filters
     const filters = {};
     if (status) filters.status = status;
 
-    // Add search filters
-    let searchSql = '';
-    const searchValues = [];
+    // Build search conditions
+    let whereClause = '';
+    const queryParams = [];
+    let paramIndex = 1;
 
-    if (search) {
-      searchSql = 'search';
-      searchValues.push(search, search, search); // For paparazzi_name, customer_name, customer_email
+    // Add status filter if provided
+    if (status) {
+      whereClause = `WHERE status = $${paramIndex}`;
+      queryParams.push(status);
+      paramIndex++;
     }
 
-    const offset = (page - 1) * limit;
-    const result = await PaparazziOrder.findAll(filters, searchSql, searchValues, limit, offset);
+    // Add search filter if provided
+    if (search && search.trim()) {
+      const searchPattern = `%${search.trim().toLowerCase()}%`;
+      const searchCondition = `(
+        LOWER(paparazzi_name) LIKE $${paramIndex} OR 
+        LOWER(customer_name) LIKE $${paramIndex + 1} OR 
+        LOWER(customer_email) LIKE $${paramIndex + 2}
+      )`;
+      
+      if (whereClause) {
+        whereClause += ` AND ${searchCondition}`;
+      } else {
+        whereClause = `WHERE ${searchCondition}`;
+      }
+      
+      queryParams.push(searchPattern, searchPattern, searchPattern);
+      paramIndex += 3;
+    }
+
+    // Calculate offset
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    // Build the main query
+    const mainQuery = `
+      SELECT * FROM paparazzi_orders 
+      ${whereClause}
+      ORDER BY created_at DESC
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+    `;
+
+    // Build the count query
+    const countQuery = `
+      SELECT COUNT(*) as total FROM paparazzi_orders 
+      ${whereClause}
+    `;
+
+    queryParams.push(parseInt(limit), offset);
+
+    // Execute both queries
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
+
+    const [ordersResult, countResult] = await Promise.all([
+      pool.query(mainQuery, queryParams),
+      pool.query(countQuery, queryParams.slice(0, -2)) // Remove limit and offset for count
+    ]);
+
+    const orders = ordersResult.rows;
+    const totalCount = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(totalCount / parseInt(limit));
+
+    // Format orders for response
+    const formattedOrders = orders.map(order => ({
+      id: order.id,
+      paparazzi_id: order.paparazzi_id,
+      paparazzi_name: order.paparazzi_name,
+      price: order.price,
+      customer_name: order.customer_name,
+      customer_email: order.customer_email,
+      customer_phone: order.customer_phone,
+      customer_message: order.customer_message,
+      status: order.status,
+      admin_notes: order.admin_notes,
+      created_at: order.created_at,
+      updated_at: order.updated_at,
+      order_date: order.created_at, // Alias for compatibility
+      toJSON: function() {
+        return {
+          id: this.id,
+          paparazzi_id: this.paparazzi_id,
+          paparazzi_name: this.paparazzi_name,
+          price: this.price,
+          customer_name: this.customer_name,
+          customer_email: this.customer_email,
+          customer_phone: this.customer_phone,
+          customer_message: this.customer_message,
+          status: this.status,
+          admin_notes: this.admin_notes,
+          created_at: this.created_at,
+          updated_at: this.updated_at,
+          order_date: this.created_at
+        };
+      }
+    }));
 
     res.json({
-      orders: result.rows.map(order => order.toJSON()),
+      success: true,
+      orders: formattedOrders,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total: result.count,
-        pages: Math.ceil(result.count / limit)
+        total: totalCount,
+        pages: totalPages
       }
     });
 
   } catch (error) {
     console.error('Error fetching paparazzi orders:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to fetch orders',
       error: error.message
     });

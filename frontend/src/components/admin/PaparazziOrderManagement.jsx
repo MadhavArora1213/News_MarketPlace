@@ -177,32 +177,75 @@ const PaparazziOrderManagement = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
+      setLoading(true);
       const params = new URLSearchParams({
-        page: currentPage,
-        limit: pageSize,
-        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(statusFilter && { status: statusFilter })
+        page: currentPage.toString(),
+        limit: pageSize.toString()
       });
 
+      if (debouncedSearchTerm && debouncedSearchTerm.trim()) {
+        params.append('search', debouncedSearchTerm.trim());
+      }
+
+      if (statusFilter) {
+        params.append('status', statusFilter);
+      }
+
+      console.log('Fetching orders with params:', params.toString());
+
       const response = await api.get(`/paparazzi-orders?${params}`);
+      console.log('Orders response:', response.data);
+
       const data = response.data;
+
+      if (data.success === false) {
+        throw new Error(data.message || 'Failed to fetch orders');
+      }
 
       setOrders(data.orders || []);
       setTotalCount(data.pagination?.total || 0);
       setTotalPages(data.pagination?.pages || 1);
     } catch (error) {
       console.error('Error fetching paparazzi orders:', error);
+      
       if (error.response?.status === 401) {
         // Token expired or invalid, redirect to login
         localStorage.removeItem('adminAccessToken');
         window.location.href = '/admin/login';
         return;
       }
-      alert('Failed to load paparazzi orders. Please try again.');
+      
+      // Set empty state on error
+      setOrders([]);
+      setTotalCount(0);
+      setTotalPages(1);
+      
+      // Show user-friendly error message
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load orders';
+      console.error('Fetch orders error:', errorMessage);
+      
+      // You might want to show a toast notification instead of alert
+      // For now, we'll just log the error and show empty state
     } finally {
       setLoading(false);
     }
   }, [currentPage, pageSize, debouncedSearchTerm, statusFilter]);
+
+  // Add formatDate helper function
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
+  };
 
   // Reset to first page when filters change
   useEffect(() => {
