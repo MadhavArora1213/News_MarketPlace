@@ -127,26 +127,22 @@ const getAll = async (req, res) => {
     // Add search filters
     let searchSql = '';
     const searchValues = [];
-    let searchParamCount = Object.keys(filters).length + 1;
 
     if (search) {
-      searchSql += ` AND (paparazzi_name ILIKE $${searchParamCount} OR customer_name ILIKE $${searchParamCount + 1} OR customer_email ILIKE $${searchParamCount + 2})`;
-      searchValues.push(`%${search}%`, `%${search}%`, `%${search}%`);
-      searchParamCount += 3;
+      searchSql = 'search';
+      searchValues.push(search, search, search); // For paparazzi_name, customer_name, customer_email
     }
 
     const offset = (page - 1) * limit;
-    const result = await PaparazziOrder.findAll(filters, limit, offset, searchSql, searchValues);
-    const total = await PaparazziOrder.getCount(filters, searchSql, searchValues);
-    const pages = Math.ceil(total / limit);
+    const result = await PaparazziOrder.findAll(filters, searchSql, searchValues, limit, offset);
 
     res.json({
       orders: result.rows.map(order => order.toJSON()),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total,
-        pages
+        total: result.count,
+        pages: Math.ceil(result.count / limit)
       }
     });
 

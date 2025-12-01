@@ -93,6 +93,43 @@ PaparazziOrder.findAll = async function(filters = {}, searchSql = '', searchValu
     whereClause.status = filters.status;
   }
 
+  // Handle search conditions
+  if (searchSql && searchValues.length > 0) {
+    // For search, we'll use a simpler approach with Sequelize operators
+    const searchConditions = [];
+    if (searchValues.length >= 1) {
+      searchConditions.push(
+        this.sequelize.where(
+          this.sequelize.fn('LOWER', this.sequelize.col('paparazzi_name')),
+          'ILIKE',
+          `%${searchValues[0].toLowerCase()}%`
+        )
+      );
+    }
+    if (searchValues.length >= 2) {
+      searchConditions.push(
+        this.sequelize.where(
+          this.sequelize.fn('LOWER', this.sequelize.col('customer_name')),
+          'ILIKE',
+          `%${searchValues[1].toLowerCase()}%`
+        )
+      );
+    }
+    if (searchValues.length >= 3) {
+      searchConditions.push(
+        this.sequelize.where(
+          this.sequelize.fn('LOWER', this.sequelize.col('customer_email')),
+          'ILIKE',
+          `%${searchValues[2].toLowerCase()}%`
+        )
+      );
+    }
+
+    if (searchConditions.length > 0) {
+      whereClause[this.sequelize.Op.or] = searchConditions;
+    }
+  }
+
   const options = {
     where: whereClause,
     order: [['created_at', 'DESC']]
@@ -103,55 +140,9 @@ PaparazziOrder.findAll = async function(filters = {}, searchSql = '', searchValu
     options.offset = offset;
   }
 
-  // If we have search SQL, we need to use raw query
-  if (searchSql) {
-    const baseSql = `
-      SELECT *, COUNT(*) OVER() as total_count
-      FROM paparazzi_orders p
-      WHERE 1=1 ${searchSql}
-      ${filters.status ? `AND status = '${filters.status}'` : ''}
-      ORDER BY created_at DESC
-    `;
-
-    const limitSql = limit ? ` LIMIT ${limit} OFFSET ${offset}` : '';
-    const finalSql = baseSql + limitSql;
-
-    const result = await this.sequelize.query(finalSql, {
-      bind: searchValues,
-      type: this.sequelize.QueryTypes.SELECT
-    });
-
-    const total = result.length > 0 ? parseInt(result[0].total_count) : 0;
-    return { rows: result, count: total };
-  }
-
   return await this.findAndCountAll(options);
 };
 
-PaparazziOrder.getCount = async function(filters = {}, searchSql = '', searchValues = []) {
-  if (searchSql) {
-    const baseSql = `
-      SELECT COUNT(*) as count
-      FROM paparazzi_orders p
-      WHERE 1=1 ${searchSql}
-      ${filters.status ? `AND status = '${filters.status}'` : ''}
-    `;
-
-    const result = await this.sequelize.query(baseSql, {
-      bind: searchValues,
-      type: this.sequelize.QueryTypes.SELECT
-    });
-
-    return parseInt(result[0].count);
-  }
-
-  const whereClause = {};
-  if (filters.status) {
-    whereClause.status = filters.status;
-  }
-
-  return await this.count({ where: whereClause });
-};
 
 PaparazziOrder.prototype.toJSON = function() {
     const values = { ...this.get() };
