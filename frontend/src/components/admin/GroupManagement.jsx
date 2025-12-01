@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from '../common/Icon';
@@ -401,14 +400,43 @@ const GroupManagement = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage, pageSize, debouncedSearchTerm, sortField, sortDirection]);
 
   const fetchGroups = async () => {
+    setLoading(true);
     try {
-      // Try admin endpoint first
-      const response = await api.get('/groups/admin');
-      setGroups(response.data.groups || []);
-      setTotalGroups(response.data.pagination?.total || response.data.groups?.length || 0);
+      // Try admin endpoint first with pagination
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: pageSize.toString(),
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+        ...(sortField && { sortBy: sortField }),
+        ...(sortDirection && { sortOrder: sortDirection })
+      });
+      
+      const response = await api.get(`/groups/admin?${params}`);
+      
+      // Handle different response formats
+      if (response.data.groups && response.data.pagination) {
+        // Server returns paginated data
+        setGroups(response.data.groups);
+        setTotalGroups(response.data.pagination.total);
+      } else if (response.data.data && response.data.pagination) {
+        // Alternative pagination format
+        setGroups(response.data.data);
+        setTotalGroups(response.data.pagination.total);
+      } else if (Array.isArray(response.data.groups)) {
+        // Server returns all data at once
+        setGroups(response.data.groups);
+        setTotalGroups(response.data.groups.length);
+      } else if (Array.isArray(response.data)) {
+        // Direct array response
+        setGroups(response.data);
+        setTotalGroups(response.data.length);
+      } else {
+        setGroups([]);
+        setTotalGroups(0);
+      }
     } catch (error) {
       console.error('Error fetching groups from admin endpoint:', error);
       if (error.response?.status === 401) {
@@ -421,65 +449,45 @@ const GroupManagement = () => {
       // For any other error, try regular groups endpoint as fallback
       try {
         console.log('Trying fallback groups endpoint...');
-        const fallbackResponse = await api.get('/groups');
-        setGroups(fallbackResponse.data.groups || []);
-        setTotalGroups(fallbackResponse.data.groups?.length || 0);
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: pageSize.toString(),
+          ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+        });
+        const fallbackResponse = await api.get(`/groups?${params}`);
+        
+        if (fallbackResponse.data.groups && fallbackResponse.data.pagination) {
+          setGroups(fallbackResponse.data.groups);
+          setTotalGroups(fallbackResponse.data.pagination.total);
+        } else if (Array.isArray(fallbackResponse.data.groups)) {
+          setGroups(fallbackResponse.data.groups);
+          setTotalGroups(fallbackResponse.data.groups.length);
+        } else if (Array.isArray(fallbackResponse.data)) {
+          setGroups(fallbackResponse.data);
+          setTotalGroups(fallbackResponse.data.length);
+        } else {
+          setGroups([]);
+          setTotalGroups(0);
+        }
       } catch (fallbackError) {
         console.error('Fallback groups fetch failed:', fallbackError);
         alert('Failed to load groups. Please try again.');
+        setGroups([]);
+        setTotalGroups(0);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Simple search for groups
-  const filteredGroups = useMemo(() => {
-    let filtered = groups;
+  // Remove client-side filtering since we're using server-side pagination
+  const filteredGroups = groups;
 
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(group =>
-        group.group_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        group.group_sn.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        group.group_location.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      );
-    }
+  // Remove client-side sorting since we're using server-side sorting
+  const sortedGroups = groups;
 
-    return filtered;
-  }, [groups, debouncedSearchTerm]);
-
-  // Update filtered groups when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm]);
-
-  // Sorting logic
-  const sortedGroups = useMemo(() => {
-    return [...filteredGroups].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === 'created_at' || sortField === 'updated_at') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
-      }
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-  }, [filteredGroups, sortField, sortDirection]);
-
-  // Pagination logic
-  const paginatedGroups = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedGroups.slice(startIndex, startIndex + pageSize);
-  }, [sortedGroups, currentPage, pageSize]);
+  // Use server data directly for pagination
+  const paginatedGroups = groups;
 
   const totalPages = Math.ceil(totalGroups / pageSize);
 
@@ -916,13 +924,13 @@ const GroupManagement = () => {
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
                   {debouncedSearchTerm ? (
                     <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{filteredGroups.length}</strong> groups
+                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{totalGroups}</strong> groups matching "{debouncedSearchTerm}"
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedGroups.length}</strong> of <strong>{totalGroups}</strong> groups
-                      {filteredGroups.length !== totalGroups && (
-                        <span> (filtered from {totalGroups} total)</span>
+                      Showing <strong>{groups.length}</strong> of <strong>{totalGroups}</strong> groups
+                      {currentPage > 1 && (
+                        <span> (Page {currentPage} of {totalPages})</span>
                       )}
                     </>
                   )}
@@ -1220,9 +1228,24 @@ const GroupManagement = () => {
               {totalPages > 1 && (
                 <div style={{ padding: '16px 20px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                    Page {currentPage} of {totalPages} ({totalGroups} total groups)
+                    Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, totalGroups)} of {totalGroups} groups
                   </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
+                      style={{
+                        padding: '6px 10px',
+                        backgroundColor: currentPage === 1 ? '#e5e7eb' : theme.primary,
+                        color: currentPage === 1 ? theme.textSecondary : '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      First
+                    </button>
                     <button
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
@@ -1238,6 +1261,40 @@ const GroupManagement = () => {
                     >
                       ← Previous
                     </button>
+                    
+                    {/* Page numbers */}
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          style={{
+                            padding: '8px 12px',
+                            backgroundColor: currentPage === pageNum ? theme.primaryDark : '#f8fafc',
+                            color: currentPage === pageNum ? '#fff' : theme.textPrimary,
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            fontWeight: currentPage === pageNum ? '600' : '500'
+                          }}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                    
                     <button
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
@@ -1253,11 +1310,26 @@ const GroupManagement = () => {
                     >
                       Next →
                     </button>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      style={{
+                        padding: '6px 10px',
+                        backgroundColor: currentPage === totalPages ? '#e5e7eb' : theme.primary,
+                        color: currentPage === totalPages ? theme.textSecondary : '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      Last
+                    </button>
                   </div>
                 </div>
               )}
 
-              {paginatedGroups.length === 0 && (
+              {paginatedGroups.length === 0 && !loading && (
                 <div style={{ padding: '80px', textAlign: 'center', color: theme.textSecondary }}>
                   <div style={{ fontSize: '64px', marginBottom: '16px' }}>
                     {debouncedSearchTerm ? '🔍' : '📭'}
@@ -1277,30 +1349,33 @@ const GroupManagement = () => {
                     )}
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setSearchTerm('');
-                    }}
-                    style={{
-                      padding: '12px 24px',
-                      backgroundColor: theme.primary,
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '16px',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      margin: '0 auto'
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    Clear Search
-                  </button>
+                  {debouncedSearchTerm && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm('');
+                        setDebouncedSearchTerm('');
+                      }}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: theme.primary,
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '16px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        margin: '0 auto'
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                      </svg>
+                      Clear Search
+                    </button>
+                  )}
                 </div>
               )}
             </div>
