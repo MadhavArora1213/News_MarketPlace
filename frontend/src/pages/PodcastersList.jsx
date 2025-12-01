@@ -8,6 +8,25 @@ import PodcasterSubmissionForm from '../components/user/PodcasterSubmissionForm'
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
+// Global error handler for ResizeObserver
+const resizeObserverErrHandler = (error) => {
+  if (error.message && error.message.includes('ResizeObserver')) {
+    // Ignore ResizeObserver errors as they are harmless
+    return;
+  }
+  console.error(error);
+};
+
+// Set up global error handler
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', resizeObserverErrHandler);
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason && event.reason.message && event.reason.message.includes('ResizeObserver')) {
+      event.preventDefault();
+    }
+  });
+}
+
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
   primary: '#1976D2',
@@ -46,7 +65,13 @@ const PodcastersList = () => {
   const [activeTab, setActiveTab] = useState('approved'); // 'approved' or 'my-submissions'
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 768);
+    const onResize = () => {
+      try {
+        setIsMobile(window.innerWidth < 768);
+      } catch (error) {
+        console.warn('ResizeObserver error:', error);
+      }
+    };
     window.addEventListener('resize', onResize);
     onResize();
     return () => window.removeEventListener('resize', onResize);
@@ -76,11 +101,11 @@ const PodcastersList = () => {
         params.podcast_name = searchQuery.trim();
       }
 
-      if (selectedCategory !== 'all') {
-        if (selectedCategory === 'regions') {
-          // For regions, we might need to handle differently, but for now use focus industry
-          params.podcast_focus_industry = selectedCategory;
-        } else {
+      // Only add category filter if it's a valid industry (not 'all')
+      if (selectedCategory !== 'all' && selectedCategory) {
+        // Check if the selected category is a valid industry from our categories list
+        const validCategory = categories.find(cat => cat.id === selectedCategory);
+        if (validCategory && validCategory.id !== 'all') {
           params.podcast_focus_industry = selectedCategory;
         }
       }
@@ -88,7 +113,7 @@ const PodcastersList = () => {
       const response = await api.get('/podcasters/approved', { params });
       let podcastersData = response.data.podcasters || [];
 
-      // Client-side search for better results
+      // Client-side search for better results (only if we have search query)
       if (searchQuery.trim()) {
         const searchLower = searchQuery.toLowerCase().trim();
         podcastersData = podcastersData.filter(podcaster => {
@@ -105,7 +130,8 @@ const PodcastersList = () => {
       setError(null);
     } catch (err) {
       console.error('Error fetching podcasters:', err);
-      setError('Failed to load podcasters');
+      setError(`Failed to load podcasters: ${err.response?.data?.message || err.message || 'Unknown error'}`);
+      setPodcasters([]); // Clear podcasters on error
     } finally {
       setLoading(false);
     }
@@ -298,12 +324,15 @@ const PodcastersList = () => {
                             src={podcaster.image}
                             alt={podcaster.podcast_name}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
-                            <Mic className="w-16 h-16 text-[#757575]" />
-                          </div>
-                        )}
+                        ) : null}
+                        <div className={`w-full h-full flex items-center justify-center bg-[#F5F5F5] ${podcaster.image ? 'hidden' : ''}`}>
+                          <Mic className="w-16 h-16 text-[#757575]" />
+                        </div>
                         <div className="absolute top-3 right-3">
                           <div className="bg-[#4CAF50] text-white px-2 py-1 rounded text-xs font-medium">
                             Approved
@@ -429,12 +458,15 @@ const PodcastersList = () => {
                           src={podcaster.image}
                           alt={podcaster.podcast_name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
                         />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
-                          <Mic className="w-16 h-16 text-[#757575]" />
-                        </div>
-                      )}
+                      ) : null}
+                      <div className={`w-full h-full flex items-center justify-center bg-[#F5F5F5] ${podcaster.image ? 'hidden' : ''}`}>
+                        <Mic className="w-16 h-16 text-[#757575]" />
+                      </div>
                       <div className="absolute top-3 right-3">
                         <div className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${
                           podcaster.status === 'approved' ? 'bg-[#4CAF50] text-white' :
