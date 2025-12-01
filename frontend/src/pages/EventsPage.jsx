@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
-import DisclaimerTicker from '../components/common/DisclaimerTicker';
+// import DisclaimerTicker from '../components/common/DisclaimerTicker';
 import EventRegistrationModal from '../components/user/EventRegistrationModal';
 import ApplicationModal from '../components/user/ApplicationModal';
 import CosmicButton from '../components/common/CosmicButton';
@@ -122,7 +122,7 @@ const EventsPage = () => {
       <UserHeader />
 
       {/* Disclaimer Ticker */}
-      <DisclaimerTicker />
+      {/* <DisclaimerTicker /> */}
 
       {/* Hero Section */}
       <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
