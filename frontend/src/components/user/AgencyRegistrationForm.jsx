@@ -18,15 +18,21 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     agency_ig: '',
     agency_linkedin: '',
     agency_facebook: '',
+    agency_country: '',
+    agency_city: '',
     agency_address: '',
     agency_owner_name: '',
     agency_owner_linkedin: '',
     agency_founded_year: '',
     agency_owner_passport_nationality: '',
     agency_email: '',
+    agency_alternate_email: '',
     agency_contact_number: '',
+    agency_alternate_contact_number: '',
     agency_owner_email: '',
+    agency_owner_alternate_email: '',
     agency_owner_contact_number: '',
+    agency_owner_country_code: '',
     agency_owner_whatsapp_number: '',
     telegram: '',
     terms_accepted: false,
@@ -224,7 +230,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     const newErrors = {};
 
     const requiredFields = [
-      'agency_name', 'agency_legal_entity_name', 'agency_website', 'agency_address',
+      'agency_name', 'agency_legal_entity_name', 'agency_website', 'agency_country', 'agency_city', 'agency_address',
       'agency_owner_name', 'agency_founded_year', 'agency_owner_passport_nationality',
       'agency_email', 'agency_contact_number', 'agency_owner_email', 'agency_owner_contact_number',
       'how_did_you_hear'
@@ -253,8 +259,8 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     });
 
     // Number validation
-    if (formData.agency_founded_year && (isNaN(formData.agency_founded_year) || parseInt(formData.agency_founded_year) < 1800 || parseInt(formData.agency_founded_year) > new Date().getFullYear())) {
-      newErrors.agency_founded_year = 'Please enter a valid year';
+    if (formData.agency_founded_year && (isNaN(formData.agency_founded_year) || parseInt(formData.agency_founded_year) < 1950 || parseInt(formData.agency_founded_year) > 2026)) {
+      newErrors.agency_founded_year = 'Please enter a valid year between 1950 and 2026';
     }
 
     // Terms accepted
@@ -263,7 +269,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
     }
 
     // File validations (required) - check for uploaded URLs
-    const requiredFiles = ['company_incorporation_trade_license', 'tax_registration_document', 'agency_bank_details', 'agency_owner_passport', 'agency_owner_photo'];
+    const requiredFiles = ['company_incorporation_trade_license', 'agency_bank_details', 'agency_owner_passport', 'agency_owner_photo'];
     requiredFiles.forEach(field => {
       if (!files[field].url) {
         newErrors[field] = 'This file is required and must be uploaded successfully';
@@ -551,8 +557,45 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
         <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
           <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-            We will not approach any of your clients, anytime, our growth is possible only when our agencies partner network grows.
+            We will not approach any of your clients, anytime, our growth is possible only when our agencies grow consistently.
           </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => {
+              const formDataString = JSON.stringify(formData, null, 2);
+              navigator.clipboard.writeText(formDataString).then(() => {
+                alert('Form data copied to clipboard!');
+              }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy form data');
+              });
+            }}
+            style={{
+              ...buttonStyle,
+              backgroundColor: '#2196F3',
+              color: '#fff',
+              padding: '8px 16px',
+              fontSize: '14px'
+            }}
+          >
+            Copy Fields
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            style={{
+              ...buttonStyle,
+              backgroundColor: '#4CAF50',
+              color: '#fff',
+              padding: '8px 16px',
+              fontSize: '14px'
+            }}
+          >
+            Print Page
+          </button>
         </div>
 
         {submitStatus === 'success' && (
@@ -686,6 +729,98 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
+                Agency Country <span style={requiredAsterisk}>*</span>
+              </label>
+              <select
+                name="agency_country"
+                value={formData.agency_country}
+                onChange={handleInputChange}
+                style={inputStyle}
+                required
+              >
+                <option value="">Select Country</option>
+                <option value="Afghanistan">Afghanistan</option>
+                <option value="Albania">Albania</option>
+                <option value="Algeria">Algeria</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option>
+                <option value="Austria">Austria</option>
+                <option value="Bangladesh">Bangladesh</option>
+                <option value="Belgium">Belgium</option>
+                <option value="Brazil">Brazil</option>
+                <option value="Canada">Canada</option>
+                <option value="Chile">Chile</option>
+                <option value="China">China</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Denmark">Denmark</option>
+                <option value="Egypt">Egypt</option>
+                <option value="Finland">Finland</option>
+                <option value="France">France</option>
+                <option value="Germany">Germany</option>
+                <option value="Greece">Greece</option>
+                <option value="Hong Kong">Hong Kong</option>
+                <option value="Iceland">Iceland</option>
+                <option value="India">India</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Ireland">Ireland</option>
+                <option value="Israel">Israel</option>
+                <option value="Italy">Italy</option>
+                <option value="Japan">Japan</option>
+                <option value="Jordan">Jordan</option>
+                <option value="Kenya">Kenya</option>
+                <option value="South Korea">South Korea</option>
+                <option value="Kuwait">Kuwait</option>
+                <option value="Lebanon">Lebanon</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Morocco">Morocco</option>
+                <option value="Netherlands">Netherlands</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Norway">Norway</option>
+                <option value="Oman">Oman</option>
+                <option value="Pakistan">Pakistan</option>
+                <option value="Peru">Peru</option>
+                <option value="Philippines">Philippines</option>
+                <option value="Poland">Poland</option>
+                <option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option>
+                <option value="Romania">Romania</option>
+                <option value="Russia">Russia</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+                <option value="Singapore">Singapore</option>
+                <option value="South Africa">South Africa</option>
+                <option value="Spain">Spain</option>
+                <option value="Sweden">Sweden</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Turkey">Turkey</option>
+                <option value="Ukraine">Ukraine</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="United States">United States</option>
+                <option value="Vietnam">Vietnam</option>
+              </select>
+              {errors.agency_country && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_country}</div>}
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>
+                Agency City <span style={requiredAsterisk}>*</span>
+              </label>
+              <input
+                type="text"
+                name="agency_city"
+                value={formData.agency_city}
+                onChange={handleInputChange}
+                style={inputStyle}
+                required
+                placeholder="Enter city"
+              />
+              {errors.agency_city && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_city}</div>}
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>
                 Agency Owner Name <span style={requiredAsterisk}>*</span>
               </label>
               <input
@@ -722,8 +857,8 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 value={formData.agency_founded_year}
                 onChange={handleInputChange}
                 style={inputStyle}
-                min="1800"
-                max={new Date().getFullYear()}
+                min="1950"
+                max="2026"
                 required
               />
               {errors.agency_founded_year && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_founded_year}</div>}
@@ -733,14 +868,75 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
               <label style={labelStyle}>
                 Agency Owner Passport Nationality <span style={requiredAsterisk}>*</span>
               </label>
-              <input
-                type="text"
+              <select
                 name="agency_owner_passport_nationality"
                 value={formData.agency_owner_passport_nationality}
                 onChange={handleInputChange}
                 style={inputStyle}
                 required
-              />
+              >
+                <option value="">Select Nationality</option>
+                <option value="Afghanistan">Afghanistan</option>
+                <option value="Albania">Albania</option>
+                <option value="Algeria">Algeria</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option>
+                <option value="Austria">Austria</option>
+                <option value="Bangladesh">Bangladesh</option>
+                <option value="Belgium">Belgium</option>
+                <option value="Brazil">Brazil</option>
+                <option value="Canada">Canada</option>
+                <option value="Chile">Chile</option>
+                <option value="China">China</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Denmark">Denmark</option>
+                <option value="Egypt">Egypt</option>
+                <option value="Finland">Finland</option>
+                <option value="France">France</option>
+                <option value="Germany">Germany</option>
+                <option value="Greece">Greece</option>
+                <option value="Hong Kong">Hong Kong</option>
+                <option value="Iceland">Iceland</option>
+                <option value="India">India</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Ireland">Ireland</option>
+                <option value="Israel">Israel</option>
+                <option value="Italy">Italy</option>
+                <option value="Japan">Japan</option>
+                <option value="Jordan">Jordan</option>
+                <option value="Kenya">Kenya</option>
+                <option value="South Korea">South Korea</option>
+                <option value="Kuwait">Kuwait</option>
+                <option value="Lebanon">Lebanon</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Morocco">Morocco</option>
+                <option value="Netherlands">Netherlands</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Norway">Norway</option>
+                <option value="Oman">Oman</option>
+                <option value="Pakistan">Pakistan</option>
+                <option value="Peru">Peru</option>
+                <option value="Philippines">Philippines</option>
+                <option value="Poland">Poland</option>
+                <option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option>
+                <option value="Romania">Romania</option>
+                <option value="Russia">Russia</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+                <option value="Singapore">Singapore</option>
+                <option value="South Africa">South Africa</option>
+                <option value="Spain">Spain</option>
+                <option value="Sweden">Sweden</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Turkey">Turkey</option>
+                <option value="Ukraine">Ukraine</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="United States">United States</option>
+                <option value="Vietnam">Vietnam</option>
+              </select>
               {errors.agency_owner_passport_nationality && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_owner_passport_nationality}</div>}
             </div>
 
@@ -823,6 +1019,19 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
+              <label style={labelStyle}>Agency Alternate Email</label>
+              <input
+                type="email"
+                name="agency_alternate_email"
+                value={formData.agency_alternate_email}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="Enter alternate email address"
+              />
+              {errors.agency_alternate_email && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_alternate_email}</div>}
+            </div>
+
+            <div style={formGroupStyle}>
               <label style={labelStyle}>
                 Agency Contact Number <span style={requiredAsterisk}>*</span>
               </label>
@@ -836,6 +1045,19 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 required
               />
               {errors.agency_contact_number && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_contact_number}</div>}
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Agency Alternate Contact Number</label>
+              <input
+                type="tel"
+                name="agency_alternate_contact_number"
+                value={formData.agency_alternate_contact_number}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="Enter alternate phone number"
+              />
+              {errors.agency_alternate_contact_number && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_alternate_contact_number}</div>}
             </div>
 
             <div style={formGroupStyle}>
@@ -854,18 +1076,253 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
+              <label style={labelStyle}>Agency Owner Alternate Email</label>
+              <input
+                type="email"
+                name="agency_owner_alternate_email"
+                value={formData.agency_owner_alternate_email}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="Enter alternate email address"
+              />
+              {errors.agency_owner_alternate_email && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_owner_alternate_email}</div>}
+            </div>
+
+            <div style={formGroupStyle}>
               <label style={labelStyle}>
                 Agency Owner Contact Number <span style={requiredAsterisk}>*</span>
               </label>
-              <input
-                type="tel"
-                name="agency_owner_contact_number"
-                value={formData.agency_owner_contact_number}
-                onChange={handleInputChange}
-                style={inputStyle}
-                placeholder="Enter phone number"
-                required
-              />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <select
+                  name="agency_owner_country_code"
+                  value={formData.agency_owner_country_code}
+                  onChange={handleInputChange}
+                  style={{ ...inputStyle, flex: '0 0 120px', padding: '10px 8px' }}
+                  required
+                >
+                  <option value="">Code</option>
+                  <option value="+1">+1 (US)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+91">+91 (IN)</option>
+                  <option value="+971">+971 (UAE)</option>
+                  <option value="+966">+966 (SA)</option>
+                  <option value="+65">+65 (SG)</option>
+                  <option value="+60">+60 (MY)</option>
+                  <option value="+852">+852 (HK)</option>
+                  <option value="+81">+81 (JP)</option>
+                  <option value="+82">+82 (KR)</option>
+                  <option value="+86">+86 (CN)</option>
+                  <option value="+49">+49 (DE)</option>
+                  <option value="+33">+33 (FR)</option>
+                  <option value="+39">+39 (IT)</option>
+                  <option value="+34">+34 (ES)</option>
+                  <option value="+31">+31 (NL)</option>
+                  <option value="+46">+46 (SE)</option>
+                  <option value="+47">+47 (NO)</option>
+                  <option value="+45">+45 (DK)</option>
+                  <option value="+41">+41 (CH)</option>
+                  <option value="+43">+43 (AT)</option>
+                  <option value="+32">+32 (BE)</option>
+                  <option value="+351">+351 (PT)</option>
+                  <option value="+30">+30 (GR)</option>
+                  <option value="+48">+48 (PL)</option>
+                  <option value="+420">+420 (CZ)</option>
+                  <option value="+36">+36 (HU)</option>
+                  <option value="+40">+40 (RO)</option>
+                  <option value="+7">+7 (RU)</option>
+                  <option value="+380">+380 (UA)</option>
+                  <option value="+20">+20 (EG)</option>
+                  <option value="+27">+27 (ZA)</option>
+                  <option value="+234">+234 (NG)</option>
+                  <option value="+254">+254 (KE)</option>
+                  <option value="+212">+212 (MA)</option>
+                  <option value="+216">+216 (TN)</option>
+                  <option value="+213">+213 (DZ)</option>
+                  <option value="+93">+93 (AF)</option>
+                  <option value="+355">+355 (AL)</option>
+                  <option value="+54">+54 (AR)</option>
+                  <option value="+61">+61 (AU)</option>
+                  <option value="+43">+43 (AT)</option>
+                  <option value="+994">+994 (AZ)</option>
+                  <option value="+973">+973 (BH)</option>
+                  <option value="+880">+880 (BD)</option>
+                  <option value="+32">+32 (BE)</option>
+                  <option value="+55">+55 (BR)</option>
+                  <option value="+359">+359 (BG)</option>
+                  <option value="+226">+226 (BF)</option>
+                  <option value="+257">+257 (BI)</option>
+                  <option value="+855">+855 (KH)</option>
+                  <option value="+237">+237 (CM)</option>
+                  <option value="+1">+1 (CA)</option>
+                  <option value="+56">+56 (CL)</option>
+                  <option value="+57">+57 (CO)</option>
+                  <option value="+506">+506 (CR)</option>
+                  <option value="+385">+385 (HR)</option>
+                  <option value="+53">+53 (CU)</option>
+                  <option value="+357">+357 (CY)</option>
+                  <option value="+420">+420 (CZ)</option>
+                  <option value="+45">+45 (DK)</option>
+                  <option value="+253">+253 (DJ)</option>
+                  <option value="+1">+1 (DM)</option>
+                  <option value="+1">+1 (DO)</option>
+                  <option value="+593">+593 (EC)</option>
+                  <option value="+20">+20 (EG)</option>
+                  <option value="+503">+503 (SV)</option>
+                  <option value="+372">+372 (EE)</option>
+                  <option value="+251">+251 (ET)</option>
+                  <option value="+679">+679 (FJ)</option>
+                  <option value="+358">+358 (FI)</option>
+                  <option value="+33">+33 (FR)</option>
+                  <option value="+241">+241 (GA)</option>
+                  <option value="+220">+220 (GM)</option>
+                  <option value="+995">+995 (GE)</option>
+                  <option value="+49">+49 (DE)</option>
+                  <option value="+233">+233 (GH)</option>
+                  <option value="+350">+350 (GI)</option>
+                  <option value="+30">+30 (GR)</option>
+                  <option value="+299">+299 (GL)</option>
+                  <option value="+1">+1 (GD)</option>
+                  <option value="+502">+502 (GT)</option>
+                  <option value="+224">+224 (GN)</option>
+                  <option value="+245">+245 (GW)</option>
+                  <option value="+592">+592 (GY)</option>
+                  <option value="+509">+509 (HT)</option>
+                  <option value="+504">+504 (HN)</option>
+                  <option value="+36">+36 (HU)</option>
+                  <option value="+354">+354 (IS)</option>
+                  <option value="+91">+91 (IN)</option>
+                  <option value="+62">+62 (ID)</option>
+                  <option value="+98">+98 (IR)</option>
+                  <option value="+964">+964 (IQ)</option>
+                  <option value="+353">+353 (IE)</option>
+                  <option value="+972">+972 (IL)</option>
+                  <option value="+39">+39 (IT)</option>
+                  <option value="+225">+225 (CI)</option>
+                  <option value="+1">+1 (JM)</option>
+                  <option value="+962">+962 (JO)</option>
+                  <option value="+7">+7 (KZ)</option>
+                  <option value="+254">+254 (KE)</option>
+                  <option value="+686">+686 (KI)</option>
+                  <option value="+965">+965 (KW)</option>
+                  <option value="+996">+996 (KG)</option>
+                  <option value="+856">+856 (LA)</option>
+                  <option value="+371">+371 (LV)</option>
+                  <option value="+961">+961 (LB)</option>
+                  <option value="+266">+266 (LS)</option>
+                  <option value="+231">+231 (LR)</option>
+                  <option value="+218">+218 (LY)</option>
+                  <option value="+423">+423 (LI)</option>
+                  <option value="+370">+370 (LT)</option>
+                  <option value="+352">+352 (LU)</option>
+                  <option value="+261">+261 (MG)</option>
+                  <option value="+265">+265 (MW)</option>
+                  <option value="+60">+60 (MY)</option>
+                  <option value="+960">+960 (MV)</option>
+                  <option value="+223">+223 (ML)</option>
+                  <option value="+356">+356 (MT)</option>
+                  <option value="+692">+692 (MH)</option>
+                  <option value="+222">+222 (MR)</option>
+                  <option value="+230">+230 (MU)</option>
+                  <option value="+52">+52 (MX)</option>
+                  <option value="+691">+691 (FM)</option>
+                  <option value="+373">+373 (MD)</option>
+                  <option value="+377">+377 (MC)</option>
+                  <option value="+976">+976 (MN)</option>
+                  <option value="+382">+382 (ME)</option>
+                  <option value="+212">+212 (MA)</option>
+                  <option value="+258">+258 (MZ)</option>
+                  <option value="+95">+95 (MM)</option>
+                  <option value="+264">+264 (NA)</option>
+                  <option value="+674">+674 (NR)</option>
+                  <option value="+977">+977 (NP)</option>
+                  <option value="+31">+31 (NL)</option>
+                  <option value="+687">+687 (NC)</option>
+                  <option value="+64">+64 (NZ)</option>
+                  <option value="+505">+505 (NI)</option>
+                  <option value="+227">+227 (NE)</option>
+                  <option value="+234">+234 (NG)</option>
+                  <option value="+683">+683 (NU)</option>
+                  <option value="+850">+850 (KP)</option>
+                  <option value="+47">+47 (NO)</option>
+                  <option value="+968">+968 (OM)</option>
+                  <option value="+92">+92 (PK)</option>
+                  <option value="+680">+680 (PW)</option>
+                  <option value="+507">+507 (PA)</option>
+                  <option value="+675">+675 (PG)</option>
+                  <option value="+595">+595 (PY)</option>
+                  <option value="+51">+51 (PE)</option>
+                  <option value="+63">+63 (PH)</option>
+                  <option value="+48">+48 (PL)</option>
+                  <option value="+351">+351 (PT)</option>
+                  <option value="+974">+974 (QA)</option>
+                  <option value="+40">+40 (RO)</option>
+                  <option value="+7">+7 (RU)</option>
+                  <option value="+250">+250 (RW)</option>
+                  <option value="+1">+1 (KN)</option>
+                  <option value="+1">+1 (LC)</option>
+                  <option value="+1">+1 (VC)</option>
+                  <option value="+685">+685 (WS)</option>
+                  <option value="+378">+378 (SM)</option>
+                  <option value="+239">+239 (ST)</option>
+                  <option value="+966">+966 (SA)</option>
+                  <option value="+221">+221 (SN)</option>
+                  <option value="+381">+381 (RS)</option>
+                  <option value="+248">+248 (SC)</option>
+                  <option value="+232">+232 (SL)</option>
+                  <option value="+65">+65 (SG)</option>
+                  <option value="+421">+421 (SK)</option>
+                  <option value="+386">+386 (SI)</option>
+                  <option value="+677">+677 (SB)</option>
+                  <option value="+27">+27 (ZA)</option>
+                  <option value="+211">+211 (SS)</option>
+                  <option value="+34">+34 (ES)</option>
+                  <option value="+94">+94 (LK)</option>
+                  <option value="+249">+249 (SD)</option>
+                  <option value="+597">+597 (SR)</option>
+                  <option value="+268">+268 (SZ)</option>
+                  <option value="+46">+46 (SE)</option>
+                  <option value="+41">+41 (CH)</option>
+                  <option value="+963">+963 (SY)</option>
+                  <option value="+886">+886 (TW)</option>
+                  <option value="+992">+992 (TJ)</option>
+                  <option value="+255">+255 (TZ)</option>
+                  <option value="+66">+66 (TH)</option>
+                  <option value="+670">+670 (TL)</option>
+                  <option value="+228">+228 (TG)</option>
+                  <option value="+690">+690 (TK)</option>
+                  <option value="+676">+676 (TO)</option>
+                  <option value="+1">+1 (TT)</option>
+                  <option value="+216">+216 (TN)</option>
+                  <option value="+90">+90 (TR)</option>
+                  <option value="+993">+993 (TM)</option>
+                  <option value="+1">+1 (TC)</option>
+                  <option value="+688">+688 (TV)</option>
+                  <option value="+256">+256 (UG)</option>
+                  <option value="+380">+380 (UA)</option>
+                  <option value="+971">+971 (AE)</option>
+                  <option value="+44">+44 (GB)</option>
+                  <option value="+1">+1 (US)</option>
+                  <option value="+598">+598 (UY)</option>
+                  <option value="+998">+998 (UZ)</option>
+                  <option value="+678">+678 (VU)</option>
+                  <option value="+39">+39 (VA)</option>
+                  <option value="+58">+58 (VE)</option>
+                  <option value="+84">+84 (VN)</option>
+                  <option value="+681">+681 (WF)</option>
+                  <option value="+967">+967 (YE)</option>
+                  <option value="+260">+260 (ZM)</option>
+                  <option value="+263">+263 (ZW)</option>
+                </select>
+                <input
+                  type="tel"
+                  name="agency_owner_contact_number"
+                  value={formData.agency_owner_contact_number}
+                  onChange={handleInputChange}
+                  style={{ ...inputStyle, flex: 1 }}
+                  placeholder="Enter phone number"
+                  required
+                />
+              </div>
               {errors.agency_owner_contact_number && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.agency_owner_contact_number}</div>}
             </div>
 
@@ -960,7 +1417,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 name="company_incorporation_trade_license"
                 onChange={handleFileChange}
                 style={fileInputStyle}
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".pdf"
                 required
                 disabled={files.company_incorporation_trade_license.uploading}
               />
@@ -975,15 +1432,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Tax Registration Document <span style={requiredAsterisk}>*</span>
+                Tax Registration Document
               </label>
               <input
                 type="file"
                 name="tax_registration_document"
                 onChange={handleFileChange}
                 style={fileInputStyle}
-                accept=".pdf,.jpg,.jpeg,.png"
-                required
+                accept=".pdf"
                 disabled={files.tax_registration_document.uploading}
               />
               {files.tax_registration_document.uploading && (
@@ -1004,7 +1460,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 name="agency_bank_details"
                 onChange={handleFileChange}
                 style={fileInputStyle}
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".pdf"
                 required
                 disabled={files.agency_bank_details.uploading}
               />
@@ -1026,7 +1482,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 name="agency_owner_passport"
                 onChange={handleFileChange}
                 style={fileInputStyle}
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".pdf"
                 required
                 disabled={files.agency_owner_passport.uploading}
               />
@@ -1048,7 +1504,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 name="agency_owner_photo"
                 onChange={handleFileChange}
                 style={fileInputStyle}
-                accept=".jpg,.jpeg,.png"
+                accept=".jpg,.jpeg"
                 required
                 disabled={files.agency_owner_photo.uploading}
               />

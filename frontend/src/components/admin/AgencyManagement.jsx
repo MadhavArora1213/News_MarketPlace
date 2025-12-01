@@ -56,9 +56,13 @@ const AgencyDetailsModal = ({ isOpen, onClose, agency }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div><strong>Agency Name:</strong> {agency.agency_name}</div>
               <div><strong>Legal Entity:</strong> {agency.agency_legal_entity_name || 'N/A'}</div>
+              <div><strong>Country:</strong> {agency.agency_country || 'N/A'}</div>
+              <div><strong>City:</strong> {agency.agency_city || 'N/A'}</div>
               <div><strong>Owner Name:</strong> {agency.agency_owner_name}</div>
               <div><strong>Agency Email:</strong> {agency.agency_email}</div>
+              <div><strong>Agency Alternate Email:</strong> {agency.agency_alternate_email || 'N/A'}</div>
               <div><strong>Owner Email:</strong> {agency.agency_owner_email || 'N/A'}</div>
+              <div><strong>Owner Alternate Email:</strong> {agency.agency_owner_alternate_email || 'N/A'}</div>
               <div><strong>Founded Year:</strong> {agency.agency_founded_year || 'N/A'}</div>
               <div><strong>Status:</strong> <span style={{
                 backgroundColor: agency.status === 'approved' ? '#4CAF5020' : agency.status === 'rejected' ? '#F4433620' : '#FF980020',
@@ -75,7 +79,8 @@ const AgencyDetailsModal = ({ isOpen, onClose, agency }) => {
             <h3 style={{ marginBottom: '12px', color: '#1976D2', fontSize: '18px' }}>Contact & Social</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div><strong>Contact Number:</strong> {agency.agency_contact_number || 'N/A'}</div>
-              <div><strong>Owner Contact:</strong> {agency.agency_owner_contact_number || 'N/A'}</div>
+              <div><strong>Alternate Contact:</strong> {agency.agency_alternate_contact_number || 'N/A'}</div>
+              <div><strong>Owner Contact:</strong> {agency.agency_owner_contact_number ? `${agency.agency_owner_country_code || ''} ${agency.agency_owner_contact_number}` : 'N/A'}</div>
               <div><strong>WhatsApp:</strong> {agency.agency_owner_whatsapp_number || 'N/A'}</div>
               <div><strong>Telegram:</strong> {agency.telegram || 'N/A'}</div>
               <div><strong>Website:</strong> {agency.agency_website ? <a href={agency.agency_website} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>{agency.agency_website}</a> : 'N/A'}</div>

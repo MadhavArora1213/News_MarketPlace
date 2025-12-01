@@ -9,6 +9,8 @@ class Agency {
     this.agency_ig = data.agency_ig;
     this.agency_linkedin = data.agency_linkedin;
     this.agency_facebook = data.agency_facebook;
+    this.agency_country = data.agency_country;
+    this.agency_city = data.agency_city;
     this.agency_address = data.agency_address;
     this.agency_owner_name = data.agency_owner_name;
     this.agency_owner_linkedin = data.agency_owner_linkedin;
@@ -20,9 +22,13 @@ class Agency {
     this.agency_owner_passport = data.agency_owner_passport;
     this.agency_owner_photo = data.agency_owner_photo;
     this.agency_email = data.agency_email;
+    this.agency_alternate_email = data.agency_alternate_email;
     this.agency_contact_number = data.agency_contact_number;
+    this.agency_alternate_contact_number = data.agency_alternate_contact_number;
     this.agency_owner_email = data.agency_owner_email;
+    this.agency_owner_alternate_email = data.agency_owner_alternate_email;
     this.agency_owner_contact_number = data.agency_owner_contact_number;
+    this.agency_owner_country_code = data.agency_owner_country_code;
     this.agency_owner_whatsapp_number = data.agency_owner_whatsapp_number;
     this.telegram = data.telegram;
     this.how_did_you_hear_about_us = data.how_did_you_hear_about_us;
@@ -44,12 +50,24 @@ class Agency {
       errors.push('Agency email must be a valid email address');
     }
 
+    if (agencyData.agency_email && !this.isCorporateEmail(agencyData.agency_email)) {
+      errors.push('Agency email must be a corporate email (not from gmail, hotmail, rediffmail, outlook, yahoo, ymail, proton)');
+    }
+
     if (agencyData.agency_owner_email && !this.isValidEmail(agencyData.agency_owner_email)) {
       errors.push('Agency owner email must be a valid email address');
     }
 
-    if (agencyData.agency_founded_year && (!Number.isInteger(agencyData.agency_founded_year) || agencyData.agency_founded_year < 1800 || agencyData.agency_founded_year > new Date().getFullYear())) {
-      errors.push('Agency founded year must be a valid integer between 1800 and current year');
+    if (agencyData.agency_owner_email && !this.isCorporateEmail(agencyData.agency_owner_email)) {
+      errors.push('Agency owner email must be a corporate email (not from gmail, hotmail, rediffmail, outlook, yahoo, ymail, proton)');
+    }
+
+    if (agencyData.agency_email && agencyData.agency_owner_email && agencyData.agency_email === agencyData.agency_owner_email) {
+      errors.push('Agency email and agency owner email cannot be the same');
+    }
+
+    if (agencyData.agency_founded_year && (!Number.isInteger(agencyData.agency_founded_year) || agencyData.agency_founded_year < 1950 || agencyData.agency_founded_year > 2026)) {
+      errors.push('Agency founded year must be a valid integer between 1950 and 2026');
     }
 
     const validStatuses = ['pending', 'approved', 'rejected'];
@@ -66,6 +84,13 @@ class Agency {
     return emailRegex.test(email);
   }
 
+  // Check if email is corporate (not from personal email providers)
+  static isCorporateEmail(email) {
+    const personalDomains = ['gmail.com', 'hotmail.com', 'rediffmail.com', 'outlook.com', 'yahoo.com', 'ymail.com', 'proton.me', 'protonmail.com'];
+    const domain = email.split('@')[1]?.toLowerCase();
+    return domain && !personalDomains.includes(domain);
+  }
+
   // Create a new agency
   static async create(agencyData) {
     const validationErrors = this.validate(agencyData);
@@ -75,7 +100,7 @@ class Agency {
 
     // Only include fields that exist in the database table
     const allowedFields = [
-      'id', 'agency_name', 'agency_legal_entity_name', 'agency_website', 'agency_ig', 'agency_linkedin', 'agency_facebook', 'agency_address', 'agency_owner_name', 'agency_owner_linkedin', 'agency_founded_year', 'agency_owner_passport_nationality', 'agency_document_incorporation_trade_license', 'agency_document_tax_registration', 'agency_bank_details', 'agency_owner_passport', 'agency_owner_photo', 'agency_email', 'agency_contact_number', 'agency_owner_email', 'agency_owner_contact_number', 'agency_owner_whatsapp_number', 'telegram', 'how_did_you_hear_about_us', 'any_to_say', 'status', 'created_at', 'updated_at'
+      'id', 'agency_name', 'agency_legal_entity_name', 'agency_website', 'agency_ig', 'agency_linkedin', 'agency_facebook', 'agency_country', 'agency_city', 'agency_address', 'agency_owner_name', 'agency_owner_linkedin', 'agency_founded_year', 'agency_owner_passport_nationality', 'agency_document_incorporation_trade_license', 'agency_document_tax_registration', 'agency_bank_details', 'agency_owner_passport', 'agency_owner_photo', 'agency_email', 'agency_alternate_email', 'agency_contact_number', 'agency_alternate_contact_number', 'agency_owner_email', 'agency_owner_alternate_email', 'agency_owner_contact_number', 'agency_owner_country_code', 'agency_owner_whatsapp_number', 'telegram', 'how_did_you_hear_about_us', 'any_to_say', 'status', 'created_at', 'updated_at'
     ];
 
     const filteredData = {};
@@ -196,6 +221,8 @@ class Agency {
       agency_ig: this.agency_ig,
       agency_linkedin: this.agency_linkedin,
       agency_facebook: this.agency_facebook,
+      agency_country: this.agency_country,
+      agency_city: this.agency_city,
       agency_address: this.agency_address,
       agency_owner_name: this.agency_owner_name,
       agency_owner_linkedin: this.agency_owner_linkedin,
@@ -207,9 +234,13 @@ class Agency {
       agency_owner_passport: this.agency_owner_passport,
       agency_owner_photo: this.agency_owner_photo,
       agency_email: this.agency_email,
+      agency_alternate_email: this.agency_alternate_email,
       agency_contact_number: this.agency_contact_number,
+      agency_alternate_contact_number: this.agency_alternate_contact_number,
       agency_owner_email: this.agency_owner_email,
+      agency_owner_alternate_email: this.agency_owner_alternate_email,
       agency_owner_contact_number: this.agency_owner_contact_number,
+      agency_owner_country_code: this.agency_owner_country_code,
       agency_owner_whatsapp_number: this.agency_owner_whatsapp_number,
       telegram: this.telegram,
       how_did_you_hear_about_us: this.how_did_you_hear_about_us,

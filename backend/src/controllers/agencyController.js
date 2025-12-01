@@ -40,10 +40,12 @@ class AgencyController {
   // Validation rules for agency registration
   registerValidation = [
     body('agency_name').trim().isLength({ min: 1 }).withMessage('Agency name is required'),
+    body('agency_country').trim().isLength({ min: 1 }).withMessage('Agency country is required'),
+    body('agency_city').trim().isLength({ min: 1 }).withMessage('Agency city is required'),
     body('agency_email').isEmail().normalizeEmail().withMessage('Valid agency email is required'),
     body('agency_owner_name').trim().isLength({ min: 1 }).withMessage('Agency owner name is required'),
-    body('agency_owner_email').optional().isEmail().normalizeEmail().withMessage('Valid owner email is required'),
-    body('agency_founded_year').optional().isInt({ min: 1800, max: new Date().getFullYear() }).withMessage('Valid founded year is required'),
+    body('agency_owner_email').isEmail().normalizeEmail().withMessage('Valid owner email is required'),
+    body('agency_founded_year').isInt({ min: 1950, max: 2026 }).withMessage('Valid founded year between 1950-2026 is required'),
     body('agency_website').optional().isURL().withMessage('Valid website URL is required'),
     body('agency_ig').optional().isURL().withMessage('Valid Instagram URL is required'),
     body('agency_linkedin').optional().isURL().withMessage('Valid LinkedIn URL is required'),
