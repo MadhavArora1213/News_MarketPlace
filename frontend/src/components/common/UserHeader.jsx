@@ -92,18 +92,7 @@ const UserHeader = () => {
       icon: "shield-check",
       description: "Legal information and platform policies"
     },
-    {
-      href: "/articles",
-      text: "Published Articles and Press Releases",
-      icon: "newspaper",
-      description: "Browse published articles and press releases"
-    },
-    {
-      href: "/published-works",
-      text: "Published Work/Testimony",
-      icon: "document-text",
-      description: "View published work and testimonies"
-    }
+   
   ];
 
   const services = [
