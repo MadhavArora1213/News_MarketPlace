@@ -356,30 +356,6 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/paparazzi-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Order Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/paparazzi-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Order Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
                 href="/admin/published-works"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
