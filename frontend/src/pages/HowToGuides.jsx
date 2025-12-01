@@ -5,6 +5,35 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
 
+// Color palette from VideoTutorials
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#1565C0',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575',
+  gradientFrom: '#E3F2FD',
+  gradientTo: '#FFFFFF',
+  cardBg: '#FFFFFF',
+  cardBorder: '#E0E0E0',
+  cardShadow: 'rgba(2,6,23,0.06)',
+  hoverBg: '#F5F5F5'
+};
+
 const HowToGuides = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -305,31 +334,31 @@ const HowToGuides = () => {
         </section>
 
         {/* Guide Header */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0">
                 <div
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg"
-                  style={{ backgroundColor: `${guide.color}20`, border: `2px solid ${guide.color}` }}
+                  className="w-16 h-16 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: theme.primaryLight }}
                 >
-                  <IconComponent className="w-10 h-10" style={{ color: guide.color }} />
+                  <IconComponent className="w-8 h-8" style={{ color: guide.color }} />
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                   <span
-                    className="px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/30"
-                    style={{ backgroundColor: `${guide.color}30` }}
+                    className="px-3 py-1 rounded text-white text-xs font-medium"
+                    style={{ backgroundColor: getDifficultyColor(guide.difficulty) }}
                   >
                     {guide.difficulty}
                   </span>
-                  <span className="text-blue-100 text-sm">{guide.readTime}</span>
-                  <span className="text-blue-100 text-sm">{guide.steps} steps</span>
+                  <span className="text-[#757575] text-sm">{guide.readTime}</span>
+                  <span className="text-[#757575] text-sm">{guide.steps} steps</span>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{guide.title}</h1>
-                <p className="text-xl text-blue-100 mb-6 leading-relaxed">{guide.description}</p>
-                <div className="flex items-center gap-6 text-sm text-blue-100">
+                <h1 className="text-3xl md:text-4xl font-semibold text-[#212121] mb-4">{guide.title}</h1>
+                <p className="text-lg text-[#757575] mb-6">{guide.description}</p>
+                <div className="flex items-center gap-6 text-sm text-[#757575]">
                   <span className="flex items-center gap-2">
                     <User className="w-4 h-4" />
                     {guide.author}
@@ -339,7 +368,7 @@ const HowToGuides = () => {
                     Updated {guide.lastUpdated}
                   </span>
                   <span className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                    <Star className="w-4 h-4 text-[#FF9800] fill-current" />
                     {guide.rating} ({guide.reviews} reviews)
                   </span>
                 </div>
@@ -364,8 +393,8 @@ const HowToGuides = () => {
                     transition={{ delay: index * 0.1 }}
                     className={`relative p-8 rounded-2xl border-2 transition-all duration-300 ${
                       isCompleted
-                        ? 'bg-green-50 border-green-200 shadow-lg'
-                        : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md'
+                        ? 'bg-[#E8F5E8] border-[#4CAF50] shadow-lg'
+                        : 'bg-white border-[#E0E0E0] hover:border-[#1976D2] hover:shadow-md'
                     }`}
                   >
                     {/* Step Number */}
@@ -375,8 +404,8 @@ const HowToGuides = () => {
                           onClick={() => toggleStepCompletion(guide.id, item.step)}
                           className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-200 ${
                             isCompleted
-                              ? 'bg-green-500 text-white shadow-lg'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              ? 'bg-[#4CAF50] text-white'
+                              : 'bg-[#F5F5F5] text-[#757575] hover:bg-[#E0E0E0]'
                           }`}
                         >
                           {isCompleted ? <CheckCircle className="w-6 h-6" /> : item.step}
@@ -385,33 +414,33 @@ const HowToGuides = () => {
 
                       <div className="flex-1">
                         <h3 className={`text-2xl font-bold mb-3 ${
-                          isCompleted ? 'text-green-800' : 'text-slate-800'
+                          isCompleted ? 'text-[#4CAF50]' : 'text-[#212121]'
                         }`}>
                           {item.title}
                         </h3>
 
                         <p className={`text-lg leading-relaxed mb-4 ${
-                          isCompleted ? 'text-green-700' : 'text-slate-600'
+                          isCompleted ? 'text-[#4CAF50]' : 'text-[#757575]'
                         }`}>
                           {item.description}
                         </p>
 
                         {item.details && (
-                          <div className="bg-slate-50 rounded-lg p-4 mb-4 border-l-4 border-blue-500">
-                            <p className="text-slate-700 leading-relaxed">{item.details}</p>
+                          <div className="bg-[#E3F2FD] rounded-lg p-4 mb-4 border-l-4 border-[#1976D2]">
+                            <p className="text-[#212121] leading-relaxed">{item.details}</p>
                           </div>
                         )}
 
                         {item.tips && item.tips.length > 0 && (
-                          <div className="bg-amber-50 rounded-lg p-4 border-l-4 border-amber-500">
-                            <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                          <div className="bg-[#FFF3E0] rounded-lg p-4 border-l-4 border-[#FF9800]">
+                            <h4 className="font-semibold text-[#E65100] mb-2 flex items-center gap-2">
                               <Zap className="w-4 h-4" />
                               Pro Tips
                             </h4>
                             <ul className="space-y-1">
                               {item.tips.map((tip, tipIndex) => (
-                                <li key={tipIndex} className="text-amber-700 flex items-start gap-2">
-                                  <span className="text-amber-500 mt-1">•</span>
+                                <li key={tipIndex} className="text-[#BF360C] flex items-start gap-2">
+                                  <span className="text-[#FF9800] mt-1">•</span>
                                   {tip}
                                 </li>
                               ))}
@@ -424,7 +453,7 @@ const HowToGuides = () => {
                     {/* Completion Indicator */}
                     {isCompleted && (
                       <div className="absolute top-4 right-4">
-                        <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                        <div className="bg-[#4CAF50] text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1">
                           <CheckCircle className="w-4 h-4" />
                           Completed
                         </div>
@@ -436,21 +465,22 @@ const HowToGuides = () => {
             </div>
 
             {/* Progress Summary */}
-            <div className="mt-12 bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Your Progress</h3>
+            <div className="mt-12 bg-white rounded-lg border border-[#E0E0E0] p-8">
+              <h3 className="text-2xl font-semibold text-[#212121] mb-6">Your Progress</h3>
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-3xl font-bold text-slate-700">
+                <div className="text-3xl font-bold text-[#1976D2]">
                   {guide.content.filter(item => completedSteps.has(`${guide.id}-${item.step}`)).length}
                 </div>
-                <div className="text-slate-600">
+                <div className="text-[#757575]">
                   of {guide.steps} steps completed
                 </div>
               </div>
-              <div className="w-full bg-slate-300 rounded-full h-3">
+              <div className="w-full bg-[#E0E0E0] rounded-full h-3">
                 <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                  className="h-3 rounded-full transition-all duration-500"
                   style={{
-                    width: `${(guide.content.filter(item => completedSteps.has(`${guide.id}-${item.step}`)).length / guide.steps) * 100}%`
+                    width: `${(guide.content.filter(item => completedSteps.has(`${guide.id}-${item.step}`)).length / guide.steps) * 100}%`,
+                    backgroundColor: theme.primary
                   }}
                 ></div>
               </div>
@@ -474,64 +504,54 @@ const HowToGuides = () => {
       <UserHeader />
 
       {/* Hero Section */}
-      <section className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto">
+      <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
+        <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <BookOpen className="w-5 h-5" />
-              <span className="text-sm font-medium">Interactive Learning</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
               How-To Guides
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed font-light">
-              Master the News Marketplace platform with our comprehensive, step-by-step guides designed for professionals at every level.
+            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
+              Access our comprehensive library of educational guides to enhance your journalism and media skills.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Search and Filter Section */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-sm border-b border-slate-200">
+      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Search Bar */}
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search guides by topic, skill level, or author..."
+                placeholder="Search guides..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 text-lg shadow-sm"
+                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
               />
             </div>
           </div>
 
+          {/* Categories */}
           <div className="flex flex-wrap gap-3">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${
                   selectedCategory === category.id
-                    ? 'bg-blue-600 text-white shadow-lg transform scale-105'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-md'
+                    ? 'bg-[#1976D2] text-white'
+                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
                 }`}
               >
-                {category.name}
-                <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                  selectedCategory === category.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-200 text-slate-600'
-                }`}>
-                  {category.count}
-                </span>
+                {category.name} ({category.count})
               </button>
             ))}
           </div>
@@ -539,10 +559,10 @@ const HowToGuides = () => {
       </section>
 
       {/* Guides Grid */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredGuides.map((guide, index) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {filteredGuides.map((guide) => {
               const IconComponent = guide.icon;
 
               return (
@@ -550,75 +570,53 @@ const HowToGuides = () => {
                   key={guide.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.4 }}
                   onClick={() => setSelectedGuide(guide.id)}
-                  className="group bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                  className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                 >
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300"
-                      style={{ backgroundColor: `${guide.color}15`, border: `2px solid ${guide.color}30` }}
-                    >
-                      <IconComponent className="w-8 h-8" style={{ color: guide.color }} />
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: theme.primaryLight }}
+                      >
+                        <IconComponent className="w-6 h-6" style={{ color: guide.color }} />
+                      </div>
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
+                        className="px-2 py-1 rounded text-white text-xs font-medium"
                         style={{ backgroundColor: getDifficultyColor(guide.difficulty) }}
                       >
                         {guide.difficulty}
                       </span>
-                      <div className="flex items-center gap-1 text-sm text-slate-500">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="font-medium">{guide.rating}</span>
-                      </div>
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                    <h3 className="text-lg font-semibold text-[#212121] line-clamp-2 mb-2">
                       {guide.title}
                     </h3>
-                    <p className="text-slate-600 leading-relaxed mb-4">
+                    <p className="text-sm text-[#757575] mb-3 line-clamp-2">
                       {guide.description}
                     </p>
-                  </div>
 
-                  {/* Meta Info */}
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-slate-500">
+                    <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
+                      <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        <span>{guide.readTime}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-500">
-                        <Target className="w-4 h-4" />
-                        <span>{guide.steps} steps</span>
-                      </div>
+                        {guide.readTime}
+                      </span>
+                      <span>{guide.steps} steps</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-slate-500">
-                        <User className="w-4 h-4" />
-                        <span>{guide.author}</span>
-                      </div>
-                      <div className="text-slate-400 text-xs">
-                        Updated {guide.lastUpdated}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Footer */}
-                  <div className="pt-4 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
+                      <span className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-[#FF9800] fill-current" />
+                        <span className="font-medium text-[#212121]">{guide.rating}</span>
+                        <span>({guide.reviews})</span>
+                      </span>
+                    </div>
+
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm">{guide.reviews} reviews</span>
-                      </div>
-                      <div className="text-blue-600 font-semibold group-hover:text-blue-700 transition-colors">
-                        Start Guide →
-                      </div>
+                      <span className="text-sm text-[#757575]">By {guide.author}</span>
+                      <span className="text-sm text-[#757575]">{guide.lastUpdated}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -627,23 +625,8 @@ const HowToGuides = () => {
           </div>
 
           {filteredGuides.length === 0 && (
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-12 h-12 text-slate-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">No guides found</h3>
-              <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                We couldn't find any guides matching your search criteria. Try adjusting your filters or search terms.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                }}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Clear Filters
-              </button>
+            <div className="text-center py-12">
+              <p className="text-[#757575] text-lg">No guides found matching your criteria.</p>
             </div>
           )}
         </div>
