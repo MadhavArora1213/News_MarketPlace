@@ -270,24 +270,43 @@ const getById = async (req, res) => {
 const acceptOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await PaparazziOrder.findById(id);
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    // Get database connection
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
+
+    // First, find the order
+    const findResult = await pool.query('SELECT * FROM paparazzi_orders WHERE id = $1', [id]);
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Order not found' 
+      });
     }
 
-    await order.accept();
+    const order = findResult.rows[0];
+
+    // Update order status to accepted
+    const updateResult = await pool.query(
+      'UPDATE paparazzi_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
+      ['accepted', id]
+    );
+
+    const updatedOrder = updateResult.rows[0];
 
     // Send email to customer
     try {
       await emailService.sendCustomEmail(
-        order.customer_email,
+        updatedOrder.customer_email,
         'Call Booking Request Accepted - News Marketplace',
         `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4CAF50;">Your paparazzi call booking request has been accepted!</h2>
-            <p>Dear ${order.customer_name},</p>
-            <p>Great news! Your call booking request for <strong>${order.paparazzi_name}</strong> has been accepted.</p>
+            <p>Dear ${updatedOrder.customer_name},</p>
+            <p>Great news! Your call booking request for <strong>${updatedOrder.paparazzi_name}</strong> has been accepted.</p>
             <p>Our team will contact you shortly to schedule a call and discuss the paparazzi details.</p>
             <p>If you have any questions, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
@@ -299,13 +318,15 @@ const acceptOrder = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: 'Order accepted successfully',
-      order: order.toJSON()
+      order: updatedOrder
     });
 
   } catch (error) {
     console.error('Error accepting paparazzi order:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to accept order',
       error: error.message
     });
@@ -318,24 +339,42 @@ const rejectOrder = async (req, res) => {
     const { id } = req.params;
     const { admin_notes } = req.body;
 
-    const order = await PaparazziOrder.findById(id);
+    // Get database connection
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    // First, find the order
+    const findResult = await pool.query('SELECT * FROM paparazzi_orders WHERE id = $1', [id]);
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Order not found' 
+      });
     }
 
-    await order.reject(admin_notes);
+    const order = findResult.rows[0];
+
+    // Update order status to rejected with admin notes
+    const updateResult = await pool.query(
+      'UPDATE paparazzi_orders SET status = $1, admin_notes = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
+      ['rejected', admin_notes, id]
+    );
+
+    const updatedOrder = updateResult.rows[0];
 
     // Send email to customer
     try {
       await emailService.sendCustomEmail(
-        order.customer_email,
+        updatedOrder.customer_email,
         'Call Booking Request Update - News Marketplace',
         `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #FF9800;">Call Booking Request Update</h2>
-            <p>Dear ${order.customer_name},</p>
-            <p>We regret to inform you that your call booking request for <strong>${order.paparazzi_name}</strong> could not be accepted at this time.</p>
+            <p>Dear ${updatedOrder.customer_name},</p>
+            <p>We regret to inform you that your call booking request for <strong>${updatedOrder.paparazzi_name}</strong> could not be accepted at this time.</p>
             ${admin_notes ? `<p><strong>Reason:</strong> ${admin_notes}</p>` : ''}
             <p>If you have any questions or would like to discuss alternative options, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
@@ -347,13 +386,15 @@ const rejectOrder = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: 'Order rejected successfully',
-      order: order.toJSON()
+      order: updatedOrder
     });
 
   } catch (error) {
     console.error('Error rejecting paparazzi order:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to reject order',
       error: error.message
     });
@@ -364,24 +405,43 @@ const rejectOrder = async (req, res) => {
 const completeOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await PaparazziOrder.findById(id);
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    // Get database connection
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
+
+    // First, find the order
+    const findResult = await pool.query('SELECT * FROM paparazzi_orders WHERE id = $1', [id]);
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Order not found' 
+      });
     }
 
-    await order.complete();
+    const order = findResult.rows[0];
+
+    // Update order status to completed
+    const updateResult = await pool.query(
+      'UPDATE paparazzi_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
+      ['completed', id]
+    );
+
+    const updatedOrder = updateResult.rows[0];
 
     // Send email to customer
     try {
       await emailService.sendCustomEmail(
-        order.customer_email,
+        updatedOrder.customer_email,
         'Call Booking Completed - News Marketplace',
         `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #9C27B0;">Call Booking Completed!</h2>
-            <p>Dear ${order.customer_name},</p>
-            <p>Your call booking for <strong>${order.paparazzi_name}</strong> has been completed successfully.</p>
+            <p>Dear ${updatedOrder.customer_name},</p>
+            <p>Your call booking for <strong>${updatedOrder.paparazzi_name}</strong> has been completed successfully.</p>
             <p>Thank you for choosing News Marketplace. We hope the call was productive and met your expectations.</p>
             <p>If you need any further assistance, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
@@ -393,13 +453,15 @@ const completeOrder = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: 'Order completed successfully',
-      order: order.toJSON()
+      order: updatedOrder
     });
 
   } catch (error) {
     console.error('Error completing paparazzi order:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to complete order',
       error: error.message
     });
@@ -412,22 +474,69 @@ const update = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const order = await PaparazziOrder.findById(id);
+    // Get database connection
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    // First, find the order
+    const findResult = await pool.query('SELECT * FROM paparazzi_orders WHERE id = $1', [id]);
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Order not found' 
+      });
     }
 
-    await order.update(updateData);
+    // Build dynamic update query
+    const allowedFields = ['status', 'admin_notes', 'price'];
+    const updateFields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    Object.keys(updateData).forEach(key => {
+      if (allowedFields.includes(key) && updateData[key] !== undefined) {
+        updateFields.push(`${key} = $${paramIndex}`);
+        values.push(updateData[key]);
+        paramIndex++;
+      }
+    });
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid fields to update'
+      });
+    }
+
+    // Add updated_at field
+    updateFields.push(`updated_at = CURRENT_TIMESTAMP`);
+
+    // Add id for WHERE clause
+    values.push(id);
+
+    const updateQuery = `
+      UPDATE paparazzi_orders 
+      SET ${updateFields.join(', ')} 
+      WHERE id = $${paramIndex} 
+      RETURNING *
+    `;
+
+    const updateResult = await pool.query(updateQuery, values);
+    const updatedOrder = updateResult.rows[0];
 
     res.json({
+      success: true,
       message: 'Order updated successfully',
-      order: order.toJSON()
+      order: updatedOrder
     });
 
   } catch (error) {
     console.error('Error updating paparazzi order:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to update order',
       error: error.message
     });

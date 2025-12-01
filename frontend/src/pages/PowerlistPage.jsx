@@ -50,48 +50,65 @@ const PowerlistPage = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [showPowerlistForm, setShowPowerlistForm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     fetchPowerlists();
   }, []);
 
-  const fetchPowerlists = async () => {
+  const fetchPowerlists = async (page = currentPage) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      
-      // Add status filter for public access - only show approved entries
-      params.append('status', 'approved');
-      
+
+      // Add pagination
+      params.append('page', page.toString());
+      params.append('limit', '20'); // Show 20 per page for better UX
+
+      // Add search parameters
       if (searchTerm.trim()) {
         params.append('name', searchTerm.trim());
         params.append('current_company', searchTerm.trim());
       }
-      
-      // Use the same endpoint as PowerlistManagement but with status filter
-      const url = `/powerlist${params.toString() ? `?${params.toString()}` : '?status=approved'}`;
-      const response = await api.get(url);
+
+      // Use the public endpoint for approved powerlists
+      const response = await api.get(`/powerlist/public?${params.toString()}`);
+
       setPowerlists(response.data.powerlists || []);
+      setTotalCount(response.data.pagination?.total || 0);
+      setTotalPages(response.data.pagination?.pages || 1);
+      setCurrentPage(response.data.pagination?.page || 1);
     } catch (error) {
       console.error('Error fetching powerlists:', error);
       if (error.response?.status === 401) {
         setShowAuth(true);
       } else {
         setPowerlists([]);
+        setTotalCount(0);
+        setTotalPages(1);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Search functionality with debouncing
+  // Search functionality with debouncing - reset to page 1 when searching
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchPowerlists();
+      setCurrentPage(1);
+      fetchPowerlists(1);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
+
+  // Handle page changes
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchPowerlists(page);
+  };
 
   const handleShowAuth = () => {
     setShowAuth(true);
@@ -115,7 +132,7 @@ const PowerlistPage = () => {
 
   const handlePowerlistSuccess = () => {
     setShowPowerlistForm(false);
-    fetchPowerlists();
+    fetchPowerlists(currentPage);
   };
 
   const handlePowerlistClick = (powerlist) => {
@@ -398,8 +415,79 @@ const PowerlistPage = () => {
               No professionals found
             </h3>
             <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-              No powerlist entries are currently available.
+              {searchTerm ? 'No professionals match your search criteria.' : 'No powerlist entries are currently available.'}
             </p>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="px-6 py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: theme.primary, color: '#fff' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-12 space-x-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: currentPage === 1 ? theme.backgroundSoft : theme.primary,
+                color: currentPage === 1 ? theme.textSecondary : '#fff'
+              }}
+            >
+              Previous
+            </button>
+
+            <div className="flex items-center space-x-2">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                if (pageNum > totalPages) return null;
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className="px-3 py-2 rounded-lg font-medium transition-colors"
+                    style={{
+                      backgroundColor: pageNum === currentPage ? theme.primary : theme.backgroundSoft,
+                      color: pageNum === currentPage ? '#fff' : theme.textPrimary
+                    }}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: currentPage === totalPages ? theme.backgroundSoft : theme.primary,
+                color: currentPage === totalPages ? theme.textSecondary : '#fff'
+              }}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {/* Results Summary */}
+        {totalCount > 0 && (
+          <div className="text-center mt-6 text-sm" style={{ color: theme.textSecondary }}>
+            Showing {powerlists.length} of {totalCount} professionals
+            {searchTerm && (
+              <span> for "{searchTerm}"</span>
+            )}
           </div>
         )}
       </div>
