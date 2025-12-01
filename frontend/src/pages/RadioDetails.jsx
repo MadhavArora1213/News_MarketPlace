@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, ArrowLeft, Globe, MapPin, User, ExternalLink, MessageSquare, Link as LinkIcon } from 'lucide-react';
+import { Radio, ArrowLeft, Globe, MapPin, User, ExternalLink, MessageSquare, Link as LinkIcon, Share2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
@@ -120,33 +120,61 @@ const RadioDetails = () => {
 
       {/* Details Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Frequency Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="text-center">
+                <div className="bg-[#1976D2] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Radio className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-[#212121] mb-2">Frequency</h3>
+                <p className="text-2xl font-bold text-[#1976D2]">{radio.frequency}</p>
+                <button
+                  onClick={() => radio.radio_website && openLink(radio.radio_website)}
+                  className="mt-4 w-full bg-[#1976D2] text-white py-2 rounded-lg hover:bg-[#1565C0] transition-colors font-medium"
+                  disabled={!radio.radio_website}
+                >
+                  {radio.radio_website ? 'Listen Live' : 'No Stream Available'}
+                </button>
+              </div>
+            </motion.div>
+
             {/* Basic Information */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-[#FAFAFA] rounded-lg p-6 border border-[#E0E0E0]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-lg transition-all duration-300"
             >
-              <h2 className="text-2xl font-semibold text-[#212121] mb-6">Station Information</h2>
+              <h2 className="text-xl font-semibold text-[#212121] mb-6 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-[#1976D2]" />
+                Station Information
+              </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Globe className="w-5 h-5 text-[#1976D2]" />
+                  <Globe className="w-4 h-4 text-[#1976D2]" />
                   <div>
                     <p className="text-sm text-[#757575]">Language</p>
                     <p className="font-medium text-[#212121]">{radio.radio_language}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-[#1976D2]" />
+                  <MapPin className="w-4 h-4 text-[#1976D2]" />
                   <div>
                     <p className="text-sm text-[#757575]">Emirate/State</p>
                     <p className="font-medium text-[#212121]">{radio.emirate_state}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-[#1976D2]" />
+                  <User className="w-4 h-4 text-[#1976D2]" />
                   <div>
                     <p className="text-sm text-[#757575]">Popular RJ</p>
                     <p className="font-medium text-[#212121]">{radio.radio_popular_rj}</p>
@@ -157,17 +185,21 @@ const RadioDetails = () => {
 
             {/* Social Links */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-[#FAFAFA] rounded-lg p-6 border border-[#E0E0E0]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 hover:shadow-lg transition-all duration-300"
             >
-              <h2 className="text-2xl font-semibold text-[#212121] mb-6">Connect</h2>
-              <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-[#212121] mb-6 flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-[#1976D2]" />
+                Connect & Share
+              </h2>
+              <div className="space-y-3">
                 {radio.radio_website && (
                   <button
                     onClick={() => openLink(radio.radio_website)}
-                    className="w-full flex items-center justify-between p-3 bg-white rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] transition-colors group"
+                    className="w-full flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] hover:bg-white transition-all duration-300 group"
                   >
                     <div className="flex items-center gap-3">
                       <LinkIcon className="w-5 h-5 text-[#1976D2]" />
@@ -179,7 +211,7 @@ const RadioDetails = () => {
                 {radio.radio_linkedin && (
                   <button
                     onClick={() => openLink(radio.radio_linkedin)}
-                    className="w-full flex items-center justify-between p-3 bg-white rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] transition-colors group"
+                    className="w-full flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] hover:bg-white transition-all duration-300 group"
                   >
                     <div className="flex items-center gap-3">
                       <svg className="w-5 h-5 text-[#1976D2]" fill="currentColor" viewBox="0 0 24 24">
@@ -193,7 +225,7 @@ const RadioDetails = () => {
                 {radio.radio_instagram && (
                   <button
                     onClick={() => openLink(radio.radio_instagram)}
-                    className="w-full flex items-center justify-between p-3 bg-white rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] transition-colors group"
+                    className="w-full flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg border border-[#E0E0E0] hover:border-[#1976D2] hover:bg-white transition-all duration-300 group"
                   >
                     <div className="flex items-center gap-3">
                       <svg className="w-5 h-5 text-[#1976D2]" fill="currentColor" viewBox="0 0 24 24">
@@ -206,6 +238,24 @@ const RadioDetails = () => {
                     <ExternalLink className="w-4 h-4 text-[#757575] group-hover:text-[#1976D2]" />
                   </button>
                 )}
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: radio.radio_name,
+                        text: `Check out ${radio.radio_name} on ${radio.frequency}`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Link copied to clipboard!');
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 p-3 bg-[#1976D2] text-white rounded-lg hover:bg-[#1565C0] transition-colors font-medium"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share Station
+                </button>
                 {!radio.radio_website && !radio.radio_linkedin && !radio.radio_instagram && (
                   <p className="text-[#757575] text-center py-4">No social links available</p>
                 )}
