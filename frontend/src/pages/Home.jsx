@@ -100,7 +100,7 @@ const Home = () => {
         </div>
 
         {/* Articles Section */}
-        <Articles />
+        {/* <Articles /> */}
 
         {/* About Section */}
         <About />
