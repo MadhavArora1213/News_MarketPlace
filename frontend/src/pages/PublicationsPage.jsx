@@ -435,7 +435,8 @@ const PublicationsPage = () => {
               Publications
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Discover premium media outlets and publication opportunities to amplify your stories and reach your target audience effectively.
+              Global, Regional, National and Local Newspapers and Magazines.<br />
+              Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently.
             </p>
             
             {/* Search Bar */}
