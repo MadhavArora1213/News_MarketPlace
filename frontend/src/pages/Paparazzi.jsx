@@ -148,11 +148,7 @@ const PaparazziPage = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <div className="flex justify-center mb-6">
-              <div className="bg-[#1976D2] rounded-full p-4">
-                <Camera className="w-12 h-12 text-white" />
-              </div>
-            </div>
+            
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
               Paparazzi Network
             </h1>
