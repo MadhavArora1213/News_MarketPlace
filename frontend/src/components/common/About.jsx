@@ -52,45 +52,45 @@ const About = () => {
   ];
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-[#E3F2FD] relative overflow-hidden">
+    <section className="py-16 md:py-20 lg:py-24 bg-[#E3F2FD] relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-20 left-4 md:left-10 w-24 h-24 md:w-32 md:h-32 bg-[#1976D2]/10 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-20 right-4 md:right-10 w-32 h-32 md:w-40 md:h-40 bg-[#1976D2]/10 rounded-full blur-2xl"></div>
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 md:w-24 md:h-24 bg-[#FFFFFF]/20 rounded-full blur-xl"></div>
+      <div className="absolute top-10 left-10 w-32 h-32 md:w-40 md:h-40 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
+      <div className="absolute bottom-10 right-10 w-40 h-40 md:w-48 md:h-48 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
+      <div className="absolute top-1/3 right-1/4 w-20 h-20 md:w-28 md:h-28 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-12 md:mb-16 lg:mb-20">
+        <div className="text-center mb-16 md:mb-20 lg:mb-24">
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight tracking-tight">
             {aboutText} <span className="text-[#1976D2]">{newsMarketPlaceText}</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4">
+          <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
             {heroDescription}
           </p>
-          <div className="mt-6 md:mt-8 flex justify-center space-x-3 md:space-x-4">
-            <div className="w-12 h-1 md:w-16 bg-[#1976D2] rounded-full"></div>
-            <div className="w-6 h-1 md:w-8 bg-[#42A5F5] rounded-full"></div>
-            <div className="w-3 h-1 md:w-4 bg-[#90CAF9] rounded-full"></div>
+          <div className="mt-8 md:mt-10 flex justify-center space-x-4 md:space-x-6">
+            <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
+            <div className="w-8 h-1.5 md:w-10 bg-gradient-to-r from-[#42A5F5] to-[#90CAF9] rounded-full"></div>
+            <div className="w-4 h-1.5 md:w-6 bg-gradient-to-r from-[#90CAF9] to-[#E3F2FD] rounded-full"></div>
           </div>
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-16 md:mb-20 lg:mb-24">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10 mb-20 md:mb-24 lg:mb-32">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-[#FFFFFF] rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 text-center shadow-lg border border-[#E0E0E0] hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:hover:-translate-y-3 group relative overflow-hidden"
+              className="bg-[#FFFFFF] rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 text-center shadow-xl border border-[#E0E0E0]/50 hover:shadow-2xl hover:border-[#1976D2]/20 transition-all duration-500 hover:-translate-y-3 group relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#1976D2]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
-                <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-[#1976D2] to-[#42A5F5] rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 lg:mb-6 shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                <div className="w-14 h-14 md:w-18 md:h-18 lg:w-22 lg:h-22 bg-gradient-to-br from-[#1976D2] to-[#42A5F5] rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-5 lg:mb-7 shadow-xl transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
                   <Icon name={stat.icon} size="lg" className="text-[#FFFFFF]" />
                 </div>
-                <div className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#212121] mb-2 md:mb-3 group-hover:text-[#1976D2] transition-colors duration-300">
+                <div className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#212121] mb-3 md:mb-4 group-hover:text-[#1976D2] transition-colors duration-500">
                   {stat.number}
                 </div>
-                <div className="text-xs md:text-sm font-semibold text-[#757575] uppercase tracking-wider leading-tight">
+                <div className="text-sm md:text-base font-semibold text-[#757575] uppercase tracking-wider leading-relaxed">
                   {stat.label}
                 </div>
               </div>
@@ -99,31 +99,31 @@ const About = () => {
         </div>
 
         {/* Features Section */}
-        <div className="mb-16 md:mb-20 lg:mb-24">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#212121] mb-4 md:mb-6">
+        <div className="mb-20 md:mb-28 lg:mb-36">
+          <div className="text-center mb-16 md:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-5 md:mb-7">
               {whyChooseUsTitle}
             </h2>
-            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="text-lg md:text-xl text-[#757575] max-w-4xl mx-auto leading-relaxed px-4 md:px-0">
               {whyChooseUsDesc}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-[#FFFFFF] rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 text-center shadow-xl border border-[#E0E0E0] hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:hover:-translate-y-4 group relative overflow-hidden"
+                className="bg-[#FFFFFF] rounded-3xl p-8 md:p-10 lg:p-12 text-center shadow-2xl border border-transparent hover:shadow-2xl hover:border-[#1976D2]/10 transition-all duration-500 hover:-translate-y-4 group relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-[#1976D2]/5 rounded-full -mr-12 md:-mr-16 -mt-12 md:-mt-16"></div>
+                <div className="absolute top-0 right-0 w-28 h-28 md:w-36 md:h-36 bg-gradient-to-br from-[#1976D2]/5 to-transparent rounded-full -mr-14 md:-mr-18 -mt-14 md:-mt-18"></div>
                 <div className="relative z-10">
-                  <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB] rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 lg:mb-8 group-hover:bg-gradient-to-br group-hover:from-[#1976D2] group-hover:to-[#42A5F5] transition-all duration-500 shadow-lg transform group-hover:scale-110">
-                    <Icon name={feature.icon} size="xl" className="text-[#1976D2] group-hover:text-[#FFFFFF] transition-colors duration-300" />
+                  <div className="w-18 h-18 md:w-22 md:h-22 lg:w-26 lg:h-26 bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB] rounded-3xl flex items-center justify-center mx-auto mb-5 md:mb-7 lg:mb-9 group-hover:bg-gradient-to-br group-hover:from-[#1976D2] group-hover:to-[#42A5F5] transition-all duration-500 shadow-xl transform group-hover:scale-110 group-hover:rotate-6">
+                    <Icon name={feature.icon} size="xl" className="text-[#1976D2] group-hover:text-[#FFFFFF] transition-colors duration-500" />
                   </div>
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#212121] mb-3 md:mb-4 lg:mb-6 group-hover:text-[#1976D2] transition-colors duration-300">
+                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#212121] mb-4 md:mb-5 lg:mb-7 group-hover:text-[#1976D2] transition-colors duration-500">
                     {feature.title}
                   </h3>
-                  <p className="text-[#757575] leading-relaxed text-base md:text-lg px-2">
+                  <p className="text-[#757575] leading-relaxed text-base md:text-lg lg:text-xl px-2 md:px-4">
                     {feature.description}
                   </p>
                 </div>
@@ -133,31 +133,31 @@ const About = () => {
         </div>
 
         {/* Mission Section */}
-        <div className="bg-[#FFFFFF] rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 xl:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/30 to-transparent"></div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center relative z-10">
+        <div className="bg-[#FFFFFF] rounded-3xl p-8 md:p-12 lg:p-16 xl:p-20 shadow-2xl border border-transparent relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/40 to-transparent"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 lg:gap-18 items-center relative z-10">
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#212121] mb-4 md:mb-6 lg:mb-8">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-5 md:mb-7 lg:mb-9">
                 {ourMissionTitle}
               </h2>
-              <p className="text-base md:text-lg lg:text-xl text-[#757575] leading-relaxed mb-6 md:mb-8 lg:mb-10">
+              <p className="text-base md:text-lg lg:text-xl text-[#757575] leading-relaxed mb-7 md:mb-9 lg:mb-11">
                 {ourMissionDesc}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
-                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300 text-sm md:text-base">
+              <div className="flex flex-col sm:flex-row gap-5 md:gap-7">
+                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base">
                   {learnMoreButton}
                 </CosmicButton>
-                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl transition-shadow duration-300 text-sm md:text-base">
+                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base">
                   {joinCommunityButton}
                 </CosmicButton>
               </div>
             </div>
             <div className="text-center relative order-first lg:order-last">
-              <div className="absolute inset-0 bg-[#1976D2]/10 rounded-2xl blur-2xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1976D2]/10 to-[#42A5F5]/5 rounded-3xl blur-3xl"></div>
               <section
-                className="relative rounded-2xl overflow-hidden shadow-2xl max-w-md mx-auto"
+                className="relative rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto transform hover:scale-105 transition-transform duration-700"
                 style={{
-                  aspectRatio: '4/3',
+                  aspectRatio: '16/10',
                   backgroundColor: '#E3F2FD',
                   maskImage:
                     "url(\"data:image/svg+xml,%3Csvg width='221' height='122' viewBox='0 0 221 122' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fillRule='evenodd' clipRule='evenodd' d='M183 4C183 1.79086 184.791 0 187 0H217C219.209 0 221 1.79086 221 4V14V28V99C221 101.209 219.209 103 217 103H182C179.791 103 178 104.791 178 107V118C178 120.209 176.209 122 174 122H28C25.7909 122 24 120.209 24 118V103V94V46C24 43.7909 22.2091 42 20 42H4C1.79086 42 0 40.2091 0 38V18C0 15.7909 1.79086 14 4 14H24H43H179C181.209 14 183 12.2091 183 10V4Z' fill='%23D9D9D9'/%3E%3C/svg%3E%0A\")",

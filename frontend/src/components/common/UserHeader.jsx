@@ -454,51 +454,54 @@ const UserHeader = () => {
 
         {/* Article Submission Popup */}
         {showArticleSubmissionPopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div 
+            className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setShowArticleSubmissionPopup(false)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto relative border border-gray-200"
+              className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto relative border border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={() => setShowArticleSubmissionPopup(false)}
-                className="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+                className="absolute top-3 right-3 z-10 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
               >
-                <Icon name="x" size="lg" />
+                <Icon name="x" size="md" />
               </button>
 
-              <div className="p-6 sm:p-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                    Choose Article Submission Type
+              <div className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    Choose Submission Type
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600">
-                    Select how you'd like to submit your article
+                  <p className="text-sm text-gray-600">
+                    How would you like to submit your article?
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* Manual Article Submission */}
                   <button
                     onClick={() => {
                       setShowArticleSubmissionPopup(false);
                       window.location.href = '/submit-article';
                     }}
-                    className="w-full p-4 sm:p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 text-left group transform hover:scale-[1.02]"
+                    className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left group"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-600 group-hover:bg-blue-700 flex items-center justify-center flex-shrink-0 transition-colors">
-                        <Icon name="document-text" size="md" className="text-white" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-600 group-hover:bg-blue-700 flex items-center justify-center flex-shrink-0 transition-colors">
+                        <Icon name="document-text" size="sm" className="text-white" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 text-base sm:text-lg mb-1 group-hover:text-blue-700 transition-colors">
-                          Manual Article Submission
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 text-sm group-hover:text-blue-700 transition-colors">
+                          Manual Submission
                         </h4>
-                        <p className="text-sm sm:text-base text-gray-600 group-hover:text-gray-700 transition-colors">
-                          Write and submit your article directly with full control over content
+                        <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
+                          Write your article directly
                         </p>
                       </div>
                     </div>
@@ -510,29 +513,22 @@ const UserHeader = () => {
                       setShowArticleSubmissionPopup(false);
                       window.location.href = '/ai-article-questionnaire';
                     }}
-                    className="w-full p-4 sm:p-6 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 text-left group transform hover:scale-[1.02]"
+                    className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200 text-left group"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-green-600 group-hover:bg-green-700 flex items-center justify-center flex-shrink-0 transition-colors">
-                        <Icon name="sparkles" size="md" className="text-white" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-green-600 group-hover:bg-green-700 flex items-center justify-center flex-shrink-0 transition-colors">
+                        <Icon name="sparkles" size="sm" className="text-white" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 text-base sm:text-lg mb-1 group-hover:text-green-700 transition-colors">
-                          AI Article Generation
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 text-sm group-hover:text-green-700 transition-colors">
+                          AI Generation
                         </h4>
-                        <p className="text-sm sm:text-base text-gray-600 group-hover:text-gray-700 transition-colors">
-                          Let AI help create your article based on your requirements
+                        <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
+                          Let AI help create your article
                         </p>
                       </div>
                     </div>
                   </button>
-                </div>
-
-                {/* Footer */}
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <p className="text-xs sm:text-sm text-gray-500 text-center">
-                    Need help? Contact our support team for assistance.
-                  </p>
                 </div>
               </div>
             </motion.div>
