@@ -146,10 +146,10 @@ const About = () => {
                 {ourMissionDesc}
               </p>
               <div className="flex flex-col sm:flex-row gap-5 md:gap-7">
-                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base" onClick={() => navigate('/about')}>
+                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base" onClick={() => navigate('/about-us')}>
                   {learnMoreButton}
                 </CosmicButton>
-                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base" onClick={() => navigate('/contact')}>
+                <CosmicButton variant="small" textColor="#000000" className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base" onClick={() => navigate('/contact-us')}>
                   {joinCommunityButton}
                 </CosmicButton>
               </div>
