@@ -95,7 +95,7 @@ const FeatureSlider = () => {
   }, []);
 
   return (
-    <section className=" pb-8 md:pb-12 relative overflow-hidden">
+    <section className="relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -178,20 +178,7 @@ const FeatureSlider = () => {
           </div>
 
           {/* Slide Indicators */}
-          <div className="flex justify-center mt-6 space-x-3">
-            {features.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide
-                    ? 'bg-gradient-to-r from-[#1976D2] to-[#0D47A1] shadow-lg scale-110'
-                    : 'bg-white/60 backdrop-blur-sm hover:bg-[#1976D2] border border-[#E0E0E0]'
-                }`}
-                aria-label={`${goToSlideText} ${index + 1}`}
-              />
-            ))}
-          </div>
+         
         </div>
       </div>
 
