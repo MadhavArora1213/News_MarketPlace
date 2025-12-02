@@ -21,29 +21,33 @@ const RealEstateSimplified = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-20">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight tracking-tight">
             {realEstateTitle}
           </h1>
-          <p className="text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light">
-            {realEstateDesc}
+          <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
+            Explore our real estate listings and property management.<br />
+            Services find your perfect property solution.<br />
+            Access exclusive listings and investment opportunities.<br />
+            Connect with professional agents and property experts.<br />
+            Discover residential and commercial properties worldwide.
           </p>
-          <div className="mt-8 flex justify-center space-x-6">
-            <div className="w-20 h-1 bg-[#1976D2] rounded-full"></div>
-            <div className="w-12 h-1 bg-[#42A5F5] rounded-full"></div>
-            <div className="w-6 h-1 bg-[#90CAF9] rounded-full"></div>
+          <div className="mt-8 md:mt-10 flex justify-center space-x-4 md:space-x-6">
+            <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
+            <div className="w-8 h-1.5 md:w-10 bg-gradient-to-r from-[#42A5F5] to-[#90CAF9] rounded-full"></div>
+            <div className="w-4 h-1.5 md:w-6 bg-gradient-to-r from-[#90CAF9] to-[#E3F2FD] rounded-full"></div>
           </div>
         </div>
 
-        {/* Enhanced Action Button with Card */}
+        {/* Different Card with Button */}
         <div className="text-center mb-24">
           <div className="bg-[#FFFFFF] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden max-w-2xl mx-auto">
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/40 to-transparent"></div>
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-bold text-[#212121] mb-4 group-hover:text-[#1976D2] transition-colors duration-500">
-                {viewRealEstateText}
+                Find Your Perfect Property
               </h3>
               <p className="text-[#757575] leading-relaxed text-base md:text-lg mb-8">
-                Explore our real estate listings and property management services. Find your perfect property solution.
+                Explore our exclusive real estate listings and investment opportunities.
               </p>
               <CosmicButton
                 variant="small"
