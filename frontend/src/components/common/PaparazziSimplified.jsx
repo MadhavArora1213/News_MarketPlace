@@ -34,16 +34,27 @@ const PaparazziSimplified = () => {
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Enhanced Action Button with Card */}
         <div className="text-center mb-24">
-          <CosmicButton
-            variant="small"
-            textColor="#000000"
-            className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
-            onClick={() => navigate('/paparazzi')}
-          >
-            {viewPaparazziText}
-          </CosmicButton>
+          <div className="bg-[#FFFFFF] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden max-w-2xl mx-auto">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/40 to-transparent"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-bold text-[#212121] mb-4 group-hover:text-[#1976D2] transition-colors duration-500">
+                {viewPaparazziText}
+              </h3>
+              <p className="text-[#757575] leading-relaxed text-base md:text-lg mb-8">
+                Connect with professional photographers across social media platforms for your content needs.
+              </p>
+              <CosmicButton
+                variant="small"
+                textColor="#000000"
+                className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
+                onClick={() => navigate('/paparazzi')}
+              >
+                {viewPaparazziText}
+              </CosmicButton>
+            </div>
+          </div>
         </div>
       </div>
     </section>
