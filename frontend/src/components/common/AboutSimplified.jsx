@@ -37,18 +37,18 @@ const AboutSimplified = () => {
 
         {/* Enhanced Action Button with Card */}
         <div className="text-center mb-12">
-          <div className="bg-[#FFFFFF] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-[#E0E0E0] relative overflow-hidden max-w-2xl mx-auto">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#E3F2FD]/40 to-transparent"></div>
+          <div className="bg-gradient-to-br from-[#1976D2] to-[#0D47A1] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-white/30 relative overflow-hidden w-full">
+            <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-bold text-[#212121] mb-4 group-hover:text-[#1976D2] transition-colors duration-500">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 transition-colors duration-500">
                 {learnMoreButton}
               </h3>
-              <p className="text-[#757575] leading-relaxed text-base md:text-lg mb-8">
+              <p className="text-white/90 leading-relaxed text-base md:text-lg mb-8">
                 Discover more about our platform, mission, and how we're revolutionizing digital publishing.
               </p>
               <CosmicButton
                 variant="small"
-                textColor="#000000"
+                textColor="#ffffff"
                 className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
                 onClick={() => navigate('/about-us')}
               >
