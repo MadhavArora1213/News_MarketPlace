@@ -92,8 +92,6 @@ import BlogDetailPage from './pages/BlogDetailPage';
 import PublishedWorksPage from './pages/PublishedWorksPage';
 import PublishedWorkDetailPage from './pages/PublishedWorkDetailPage';
 import PublishedWorkManagement from './components/admin/PublishedWorkManagement';
-import ArticlesPage from './pages/ArticlesPage';
-import ArticleDetailPage from './pages/ArticleDetailPage';
 import ArticleSubmissionPage from './pages/ArticleSubmissionPage';
 import OrdersDeliveredPage from './pages/OrdersDeliveredPage';
 import AiArticleQuestionnairePage from './pages/AiArticleQuestionnairePage';
@@ -333,8 +331,6 @@ function App() {
             <Route path="/publications/:id" element={<PublicationDetailPage />} />
             <Route path="/published-works" element={<PublishedWorksPage />} />
             <Route path="/published-works/:id" element={<PublishedWorkDetailPage />} />
-            <Route path="/articles" element={<ArticlesPage />} />
-            <Route path="/articles/:slug" element={<ArticleDetailPage />} />
             <Route path="/orders-delivered" element={<OrdersDeliveredPage />} />
             <Route path="/careers" element={<CareersPage />} />
             <Route path="/careers/:id" element={<CareerDetailPage />} />

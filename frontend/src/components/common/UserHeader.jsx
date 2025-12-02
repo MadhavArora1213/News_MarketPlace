@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useAuthModal } from '../../App';
@@ -13,6 +14,7 @@ const UserHeader = () => {
   const [language, setLanguage] = useState('en');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
+  const [showArticleSubmissionPopup, setShowArticleSubmissionPopup] = useState(false);
   const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -102,7 +104,7 @@ const UserHeader = () => {
   ];
 
   const services = [
-    { name: 'Submit Article', href: '/articles', icon: 'document-text' },
+    { name: 'Submit Article', href: '#', icon: 'document-text', onClick: () => setShowArticleSubmissionPopup(true) },
     { name: 'Publications', href: '/publications', icon: 'newspaper' },
     { name: 'Websites', href: '/website-submission', icon: 'globe-alt' },
     { name: 'Radio', href: '/radio', icon: 'microphone' },
@@ -209,20 +211,37 @@ const UserHeader = () => {
           <div className="flex items-center space-x-2 xl:space-x-3 2xl:space-x-4">
             {/* Services shown directly */}
             {services.map((service, index) => (
-              <a
-                key={`service-${index}`}
-                href={service.href}
-                className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
-                onClick={(e) => {
-                  if (!isAuthenticated) {
-                    e.preventDefault();
-                    showAuthModal();
-                  }
-                }}
-              >
-                <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                <span className="whitespace-nowrap">{service.name}</span>
-              </a>
+              service.onClick ? (
+                <button
+                  key={`service-${index}`}
+                  onClick={(e) => {
+                    if (!isAuthenticated) {
+                      showAuthModal();
+                    } else {
+                      service.onClick();
+                    }
+                  }}
+                  className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
+                >
+                  <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
+                  <span className="whitespace-nowrap">{service.name}</span>
+                </button>
+              ) : (
+                <a
+                  key={`service-${index}`}
+                  href={service.href}
+                  className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
+                  onClick={(e) => {
+                    if (!isAuthenticated) {
+                      e.preventDefault();
+                      showAuthModal();
+                    }
+                  }}
+                >
+                  <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
+                  <span className="whitespace-nowrap">{service.name}</span>
+                </a>
+              )
             ))}
 
             {/* More Dropdown with Resources */}
@@ -297,22 +316,43 @@ const UserHeader = () => {
                       <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
                       <span className="text-xs leading-tight truncate w-full">{item.name}</span>
                     </a>
-                  )) : allItems.slice(0, 5).map((item, index) => (
-                    <a
-                      key={index}
-                      href={item.href}
-                      className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
-                      onClick={(e) => {
-                        if (!isAuthenticated) {
-                          e.preventDefault();
-                          showAuthModal();
-                        }
-                      }}
-                    >
-                      <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
-                      <span className="text-xs leading-tight truncate w-full">{item.name}</span>
-                    </a>
-                  ))}
+                  )) : allItems.slice(0, 5).map((item, index) => {
+                    const serviceItem = services.find(s => s.name === item.name);
+                    if (serviceItem && serviceItem.onClick) {
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (!isAuthenticated) {
+                              showAuthModal();
+                            } else {
+                              serviceItem.onClick();
+                            }
+                          }}
+                          className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
+                        >
+                          <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
+                          <span className="text-xs leading-tight truncate w-full">{item.name}</span>
+                        </button>
+                      );
+                    }
+                    return (
+                      <a
+                        key={index}
+                        href={item.href}
+                        className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
+                        onClick={(e) => {
+                          if (!isAuthenticated) {
+                            e.preventDefault();
+                            showAuthModal();
+                          }
+                        }}
+                      >
+                        <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
+                        <span className="text-xs leading-tight truncate w-full">{item.name}</span>
+                      </a>
+                    );
+                  })}
                   {!mobileShowAllItems && allItems.length > 5 && (
                     <button
                       onClick={() => setMobileShowAllItems(true)}
@@ -410,6 +450,76 @@ const UserHeader = () => {
             onClose={() => setShowPublicationForm(false)}
             onSuccess={() => setShowPublicationForm(false)}
           />
+        )}
+
+        {/* Article Submission Popup */}
+        {showArticleSubmissionPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-[#212121]">Choose Article Submission Type</h3>
+                  <button
+                    onClick={() => setShowArticleSubmissionPopup(false)}
+                    className="text-[#757575] hover:text-[#212121] transition-colors"
+                  >
+                    <Icon name="x" size="md" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-sm text-[#757575]">
+                    Select how you'd like to submit your article:
+                  </p>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setShowArticleSubmissionPopup(false);
+                        // Navigate to manual article submission
+                        window.location.href = '/submit-article';
+                      }}
+                      className="w-full p-4 border border-[#E0E0E0] rounded-lg hover:border-[#1976D2] hover:bg-[#E3F2FD] transition-all duration-200 text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#1976D2] flex items-center justify-center">
+                          <Icon name="document-text" size="sm" className="text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-[#212121]">Manual Article Submission</h4>
+                          <p className="text-sm text-[#757575]">Write and submit your article directly</p>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowArticleSubmissionPopup(false);
+                        // Navigate to AI article questionnaire
+                        window.location.href = '/ai-article-questionnaire';
+                      }}
+                      className="w-full p-4 border border-[#E0E0E0] rounded-lg hover:border-[#4CAF50] hover:bg-[#E8F5E8] transition-all duration-200 text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#4CAF50] flex items-center justify-center">
+                          <Icon name="sparkles" size="sm" className="text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-[#212121]">AI Article Generation</h4>
+                          <p className="text-sm text-[#757575]">Let AI help create your article</p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </div>
     </header>
