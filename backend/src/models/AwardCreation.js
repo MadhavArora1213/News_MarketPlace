@@ -98,4 +98,9 @@ AwardCreation.findAllFiltered = async (filters = {}, sortBy = 'createdAt', sortO
   return await AwardCreation.findAll(options);
 };
 
+// Custom findById method
+AwardCreation.findById = async (id) => {
+  return await AwardCreation.findByPk(id);
+};
+
 module.exports = AwardCreation;
