@@ -4,6 +4,29 @@ import Icon from '../../components/common/Icon';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
+// Brand colors from Color palette
+const theme = {
+  primary: '#1976D2',
+  primaryDark: '#0D47A1',
+  primaryLight: '#E3F2FD',
+  secondary: '#00796B',
+  secondaryDark: '#004D40',
+  secondaryLight: '#E0F2F1',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  danger: '#F44336',
+  info: '#9C27B0',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
+  textDisabled: '#BDBDBD',
+  background: '#FFFFFF',
+  backgroundAlt: '#FAFAFA',
+  backgroundSoft: '#F5F5F5',
+  borderLight: '#E0E0E0',
+  borderMedium: '#BDBDBD',
+  borderDark: '#757575'
+};
+
 // Paparazzi Creations Form Modal Component
 const PaparazziCreationsFormModal = ({ isOpen, onClose, record, onSave }) => {
   const [formData, setFormData] = useState({
@@ -229,143 +252,154 @@ const PaparazziCreationsFormModal = ({ isOpen, onClose, record, onSave }) => {
 
 // Main Paparazzi Creations Page Component
 const PaparazziCreationsPage = () => {
-  const { admin, logout } = useAdminAuth();
+  const { admin, logout, hasRole } = useAdminAuth();
+
+  // Check if user has permission to manage paparazzi creation records
+  if (!hasRole('super_admin')) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: theme.backgroundSoft }}>
+        <div style={{ textAlign: 'center' }}>
+          <Icon name="shield-exclamation" size="lg" style={{ color: theme.danger, marginBottom: '16px' }} />
+          <h2 style={{ color: theme.textPrimary, marginBottom: '8px' }}>Access Denied</h2>
+          <p style={{ color: theme.textSecondary }}>You don't have permission to access paparazzi creation management.</p>
+          <p style={{ color: theme.textSecondary, fontSize: '14px', marginTop: '8px' }}>
+            Required role: Super Admin
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [message, setMessage] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Theme and responsive styles
-  const theme = {
-    primary: '#1976D2',
-    success: '#10b981',
-    background: '#ffffff',
-    backgroundSoft: '#f8fafc',
-    text: '#1f2937',
-    textPrimary: '#111827',
-    textSecondary: '#6b7280',
-    borderLight: '#e5e7eb'
-  };
-
+  // Layout constants
+  const headerZ = 1000;
+  const mobileOverlayZ = 500;
+  const sidebarZ = 200;
   const headerHeight = 64;
-  const sidebarWidth = 280;
+  const mainPaddingTop = headerHeight + 18;
+  const sidebarWidth = 240;
   const leftGap = 24;
-  const sidebarZ = 40;
-  const mobileOverlayZ = 35;
-  const headerZ = 50;
 
-  const isMobile = window.innerWidth < 768;
+  const sidebarStyles = {
+    width: sidebarWidth,
+    backgroundColor: theme.background,
+    borderRight: `1px solid ${theme.borderLight}`,
+    padding: 16,
+    boxSizing: 'border-box',
+    borderRadius: 8
+  };
 
   const mobileSidebarOverlay = {
     position: 'fixed',
-    top: 0,
+    top: headerHeight,
     left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: mobileOverlayZ
-  };
-
-  const sidebarStyles = {
-    backgroundColor: theme.background,
-    borderRight: `1px solid ${theme.borderLight}`,
-    padding: '20px 0'
+    height: `calc(100vh - ${headerHeight}px)`,
+    zIndex: mobileOverlayZ,
+    backgroundColor: '#fff',
+    padding: 16,
+    boxSizing: 'border-box',
+    width: sidebarWidth,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
   };
 
   const btnPrimary = {
     backgroundColor: theme.primary,
     color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '10px 16px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
+    padding: '0.625rem 1rem',
+    borderRadius: '0.5rem',
+    fontWeight: 600,
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '8px'
+    justifyContent: 'center',
+    gap: '0.5rem',
+    cursor: 'pointer',
+    border: 'none',
+    boxShadow: `0 6px 18px rgba(25,118,210,0.14)`
   };
 
-  const mainPaddingTop = 40;
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
-  // Fetch records
+  useEffect(() => {
+    if (sidebarOpen && isMobile) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+    return undefined;
+  }, [sidebarOpen, isMobile]);
+
   const fetchRecords = async () => {
     try {
-      setLoading(true);
-      const response = await api.get('/admin/paparazzi-creations', {
-        params: {
-          page: currentPage,
-          limit: pageSize
-        }
-      });
-
+      const params = new URLSearchParams();
+      params.append('page', currentPage.toString());
+      params.append('limit', pageSize.toString());
+      const response = await api.get(`/admin/paparazzi-creations?${params.toString()}`);
       setRecords(response.data.paparazziCreations || []);
-      setTotalPages(response.data.pagination.pages);
-      setTotalRecords(response.data.pagination.total);
+      setTotalRecords(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching records:', error);
-      setMessage({ type: 'error', text: 'Failed to load records' });
+      if (error.response?.status === 401) {
+        localStorage.removeItem('adminAccessToken');
+        window.location.href = '/admin/login';
+      } else {
+        alert('Failed to load records. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (admin) {
-      fetchRecords();
-    }
-  }, [admin, currentPage, pageSize]);
+  const handleFormSave = () => {
+    fetchRecords();
+    setMessage({ type: 'success', text: 'Record saved successfully!' });
+  };
 
-  // Handle create record
   const handleCreateRecord = () => {
     setEditingRecord(null);
     setShowFormModal(true);
   };
 
-  // Handle edit record
   const handleEditRecord = (record) => {
     setEditingRecord(record);
     setShowFormModal(true);
   };
 
-  // Handle delete record
-  const handleDeleteRecord = async (id) => {
+  const handleDeleteRecord = async (recordId) => {
     if (!window.confirm('Are you sure you want to delete this record?')) return;
 
     try {
-      await api.delete(`/admin/paparazzi-creations/${id}`);
-      setMessage({ type: 'success', text: 'Record deleted successfully' });
+      setLoading(true);
+      await api.delete(`/admin/paparazzi-creations/${recordId}`);
       fetchRecords();
+      setMessage({ type: 'success', text: 'Record deleted successfully!' });
     } catch (error) {
       console.error('Error deleting record:', error);
-      setMessage({ type: 'error', text: 'Failed to delete record' });
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.message || 'Error deleting record. Please try again.'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Handle form save
-  const handleFormSave = () => {
-    setMessage({ type: 'success', text: `Record ${editingRecord ? 'updated' : 'created'} successfully` });
-    fetchRecords();
-  };
+  const totalPages = Math.ceil(totalRecords / pageSize);
 
-  // Redirect if not admin
-  if (!admin) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: theme.backgroundSoft }}>
-        <div style={{ textAlign: 'center' }}>
-          <Icon name="shield-exclamation" size="lg" style={{ color: '#ef4444', marginBottom: '16px' }} />
-          <h2 style={{ color: theme.textPrimary }}>Access Denied</h2>
-          <p style={{ color: theme.textSecondary }}>Admin access required to view this page.</p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading && records.length === 0) {
     return (
