@@ -71,10 +71,10 @@ const PaparazziDetailPage = () => {
       setLoading(true);
       console.log('Fetching paparazzi details for ID:', id);
 
-      const response = await api.get(`/paparazzi/${id}`);
+      const response = await api.get(`/admin/paparazzi-creations/public/${id}`);
       console.log('Paparazzi details response:', response.data);
 
-      setPaparazzi(response.data.paparazzi || response.data);
+      setPaparazzi(response.data.paparazziCreation || response.data);
     } catch (error) {
       console.error('Error fetching paparazzi details:', error);
       if (error.response?.status === 401) {
@@ -197,8 +197,9 @@ const PaparazziDetailPage = () => {
       // Create order data for API
       const orderData = {
         paparazziId: paparazzi.id,
-        paparazziName: paparazzi.page_name,
-        price: paparazzi.price_reel_with_tag,
+        paparazziName: paparazzi.instagram_page_name,
+        category: paparazzi.category,
+        followers: paparazzi.no_of_followers,
         customerInfo: orderFormData,
         orderDate: new Date().toISOString()
       };
@@ -337,21 +338,21 @@ const PaparazziDetailPage = () => {
                   </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
-                      {paparazzi.page_name}
+                      {paparazzi.instagram_page_name}
                     </h1>
                     <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
                       <div className="flex items-center gap-2">
                         <Globe size={16} />
-                        <span>{paparazzi.platform}</span>
+                        <span>Instagram</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users size={16} />
-                        <span>@{paparazzi.username}</span>
+                        <span>{formatFollowers(paparazzi.no_of_followers)} followers</span>
                       </div>
-                      {paparazzi.location && (
+                      {paparazzi.region_focused && (
                         <div className="flex items-center gap-2">
                           <MapPin size={16} />
-                          <span>{paparazzi.location}</span>
+                          <span>{paparazzi.region_focused}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
@@ -362,21 +363,21 @@ const PaparazziDetailPage = () => {
                   </div>
                 </div>
 
-                {/* Website Link */}
-                {paparazzi.page_website && (
+                {/* Instagram Link */}
+                {paparazzi.instagram_url && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Website
+                      Instagram Profile
                     </h3>
                     <a
-                      href={paparazzi.page_website}
+                      href={paparazzi.instagram_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
                       style={{ backgroundColor: theme.primary }}
                     >
-                      <ExternalLink size={16} />
-                      {paparazzi.page_website}
+                      <Instagram size={16} />
+                      View Instagram Profile
                     </a>
                   </div>
                 )}
@@ -388,110 +389,52 @@ const PaparazziDetailPage = () => {
                   </h3>
                   <div className="prose max-w-none" style={{ color: theme.textSecondary }}>
                     <p>
-                      {paparazzi.collaboration || 'This is a professional paparazzi offering high-quality content creation and social media marketing services. With expertise in visual storytelling and audience engagement, we provide comprehensive social media solutions for businesses and influencers.'}
+                      This is a professional Instagram influencer specializing in content creation and social media marketing. With expertise in visual storytelling and audience engagement, they provide comprehensive social media solutions for businesses and brands.
                     </p>
                     {paparazzi.category && (
                       <p className="mt-4">
-                        <strong>Specialization:</strong> {paparazzi.category}
+                        <strong>Category:</strong> {paparazzi.category}
+                      </p>
+                    )}
+                    {paparazzi.region_focused && (
+                      <p className="mt-2">
+                        <strong>Region Focused:</strong> {paparazzi.region_focused}
                       </p>
                     )}
                   </div>
                 </div>
 
-                {/* Features & Specifications */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Services & Pricing
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Content Types</h4>
-                      <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle size={14} style={{ color: theme.success }} />
-                          <span>Reels & Stories</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle size={14} style={{ color: theme.success }} />
-                          <span>Photo Shoots</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle size={14} style={{ color: theme.success }} />
-                          <span>Brand Collaborations</span>
-                        </li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Video Specifications</h4>
-                      <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
-                        <li className="flex items-center gap-2">
-                          <Clock size={14} />
-                          <span>Video Length: {paparazzi.video_minutes_allowed || 0} minutes</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Target size={14} />
-                          <span>Pin Posts: Available</span>
-                        </li>
-                      </ul>
+                {/* Profile Image */}
+                {paparazzi.profile_dp_logo && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                      Profile Image
+                    </h3>
+                    <div className="flex justify-center">
+                      <img
+                        src={paparazzi.profile_dp_logo}
+                        alt="Profile"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                      />
                     </div>
                   </div>
-                </div>
-
-                {/* Pricing Table */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Pricing Information
-                  </h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr style={{ backgroundColor: theme.backgroundSoft }}>
-                          <th className="px-4 py-3 text-left font-medium" style={{ color: theme.textPrimary }}>Service</th>
-                          <th className="px-4 py-3 text-left font-medium" style={{ color: theme.textPrimary }}>Price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr style={{ borderBottom: `1px solid ${theme.borderLight}` }}>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Reel (No Tag, No Collab)</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.price_reel_no_tag_no_collab)}</td>
-                        </tr>
-                        <tr style={{ borderBottom: `1px solid ${theme.borderLight}` }}>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Reel (With Tag, No Collab)</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.price_reel_with_tag_no_collab)}</td>
-                        </tr>
-                        <tr style={{ borderBottom: `1px solid ${theme.borderLight}` }}>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Reel (With Tag & Collab)</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.price_reel_with_tag)}</td>
-                        </tr>
-                        <tr style={{ borderBottom: `1px solid ${theme.borderLight}` }}>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Story Charge</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.story_charge)}</td>
-                        </tr>
-                        <tr style={{ borderBottom: `1px solid ${theme.borderLight}` }}>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Story with Reel</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.story_with_reel_charge)}</td>
-                        </tr>
-                        <tr>
-                          <td className="px-4 py-3" style={{ color: theme.textSecondary }}>Pin Post Weekly</td>
-                          <td className="px-4 py-3 font-medium" style={{ color: theme.success }}>{formatPrice(paparazzi.pin_post_weekly_charge)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              {/* Price Card */}
+              {/* Stats Card */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center mb-6">
-                  <div className="text-3xl font-bold mb-2" style={{ color: theme.success }}>
-                    {formatPrice(paparazzi.price_reel_with_tag)}
+                  <div className="text-3xl font-bold mb-2" style={{ color: theme.primary }}>
+                    {formatFollowers(paparazzi.no_of_followers)}
                   </div>
                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                    Starting Price
+                    Followers
+                  </div>
+                  <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>
+                    As of 01st Dec 2025
                   </div>
                 </div>
 
@@ -499,13 +442,7 @@ const PaparazziDetailPage = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm" style={{ color: theme.textSecondary }}>Platform</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {paparazzi.platform}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Followers</span>
-                    <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {formatFollowers(paparazzi.followers_count)}
+                      Instagram
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -515,11 +452,19 @@ const PaparazziDetailPage = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Location</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>Region</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {paparazzi.location || 'Global'}
+                      {paparazzi.region_focused || 'Global'}
                     </span>
                   </div>
+                  {paparazzi.instagram_url && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm" style={{ color: theme.textSecondary }}>Profile</span>
+                      <a href={paparazzi.instagram_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: theme.primary }}>
+                        View →
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -530,39 +475,25 @@ const PaparazziDetailPage = () => {
                   onClick={handlePlaceOrder}
                   disabled={isOrdering}
                 >
-                  {isOrdering ? 'Processing...' : (isAuthenticated ? 'Place Order' : 'Sign In to Order')}
+                  {isOrdering ? 'Processing...' : (isAuthenticated ? 'Contact Creator' : 'Sign In to Contact')}
                 </button>
               </div>
 
-              {/* Stats Card */}
-              <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Performance Stats
-                </h3>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold mb-1" style={{ color: theme.primary }}>
-                      {formatFollowers(paparazzi.followers_count)}
-                    </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Followers</div>
-                  </div>
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold mb-1" style={{ color: theme.success }}>
-                      {getRatingStars(paparazzi.followers_count)}
-                    </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Rating</div>
+              {/* Profile Image Card */}
+              {paparazzi.profile_dp_logo && (
+                <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+                  <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
+                    Profile Picture
+                  </h3>
+                  <div className="flex justify-center">
+                    <img
+                      src={paparazzi.profile_dp_logo}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                    />
                   </div>
                 </div>
-                <div className="mt-4 text-center">
-                  <button
-                    onClick={handleViewStats}
-                    className="text-sm text-white px-4 py-2 rounded-lg transition-colors"
-                    style={{ backgroundColor: theme.secondary }}
-                  >
-                    View Detailed Stats
-                  </button>
-                </div>
-              </div>
+              )}
 
               {/* Quick Info */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -571,23 +502,31 @@ const PaparazziDetailPage = () => {
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2">
-                    <Award size={16} style={{ color: theme.info }} />
+                    <Instagram size={16} style={{ color: theme.primary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Platform: {paparazzi.platform}
+                      Instagram Profile
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} style={{ color: theme.secondary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Username: @{paparazzi.username}
+                      {formatFollowers(paparazzi.no_of_followers)} followers
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Target size={16} style={{ color: theme.warning }} />
+                    <Filter size={16} style={{ color: theme.warning }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Video Minutes: {paparazzi.video_minutes_allowed || 0}
+                      Category: {paparazzi.category || 'General'}
                     </span>
                   </div>
+                  {paparazzi.region_focused && (
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} style={{ color: theme.info }} />
+                      <span style={{ color: theme.textSecondary }}>
+                        Region: {paparazzi.region_focused}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -900,12 +839,18 @@ const PaparazziDetailPage = () => {
                   fontWeight: '600',
                   color: theme.textPrimary
                 }}>
-                  {paparazzi.page_name}
+                  {paparazzi.instagram_page_name}
                 </h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: theme.textSecondary }}>Total Amount:</span>
-                  <span style={{ fontSize: '20px', fontWeight: '700', color: theme.success }}>
-                    {formatPrice(paparazzi.price_reel_with_tag)}
+                  <span style={{ color: theme.textSecondary }}>Category:</span>
+                  <span style={{ fontSize: '16px', fontWeight: '600', color: theme.primary }}>
+                    {paparazzi.category || 'General'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                  <span style={{ color: theme.textSecondary }}>Followers:</span>
+                  <span style={{ fontSize: '16px', fontWeight: '600', color: theme.secondary }}>
+                    {formatFollowers(paparazzi.no_of_followers)}
                   </span>
                 </div>
               </div>

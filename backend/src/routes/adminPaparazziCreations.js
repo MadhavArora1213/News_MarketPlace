@@ -21,6 +21,10 @@ router.get('/:id',
   adminPaparazziCreationsController.getById
 );
 
+// Public routes for paparazzi creations
+router.get('/public/list', adminPaparazziCreationsController.getPublic);
+router.get('/public/:id', adminPaparazziCreationsController.getPublicById);
+
 // Create a new paparazzi creation (admin only)
 router.post('/',
   verifyAdminToken,

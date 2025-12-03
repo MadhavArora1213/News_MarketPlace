@@ -36,7 +36,6 @@ const PaparazziPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -63,22 +62,21 @@ const PaparazziPage = () => {
   const fetchPaparazzi = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/paparazzi');
-      let paparazziData = response.data.paparazzi || [];
+      const params = new URLSearchParams();
 
-      // Client-side search for better results
+      // Add search and filter parameters
       if (searchQuery.trim()) {
-        const searchLower = searchQuery.toLowerCase().trim();
-        paparazziData = paparazziData.filter(p => {
-          return (
-            p.page_name?.toLowerCase().includes(searchLower) ||
-            p.username?.toLowerCase().includes(searchLower) ||
-            p.category?.toLowerCase().includes(searchLower) ||
-            p.location?.toLowerCase().includes(searchLower) ||
-            p.platform?.toLowerCase().includes(searchLower)
-          );
-        });
+        params.append('instagram_page_name', searchQuery.trim());
       }
+      if (selectedCategory && selectedCategory !== 'all') {
+        params.append('category', selectedCategory);
+      }
+      if (selectedLocation && selectedLocation !== 'all') {
+        params.append('region_focused', selectedLocation);
+      }
+
+      const response = await api.get(`/admin/paparazzi-creations/public/list?${params.toString()}`);
+      const paparazziData = response.data.paparazziCreations || [];
 
       setPaparazzi(paparazziData);
     } catch (err) {
@@ -91,20 +89,18 @@ const PaparazziPage = () => {
 
   const filterPaparazzi = useCallback(() => {
     let filtered = paparazzi.filter(p => {
-      const matchesSearch = p.page_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesPlatform = selectedPlatform === 'all' || p.platform === selectedPlatform;
+      const matchesSearch = p.instagram_page_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            (p.region_focused && p.region_focused.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
-      const matchesLocation = selectedLocation === 'all' || (p.location && p.location.toLowerCase().includes(selectedLocation.toLowerCase()));
-      return matchesSearch && matchesPlatform && matchesCategory && matchesLocation;
+      const matchesLocation = selectedLocation === 'all' || (p.region_focused && p.region_focused.toLowerCase().includes(selectedLocation.toLowerCase()));
+      return matchesSearch && matchesCategory && matchesLocation;
     });
     setFilteredPaparazzi(filtered);
-  }, [paparazzi, searchQuery, selectedPlatform, selectedCategory, selectedLocation]);
+  }, [paparazzi, searchQuery, selectedCategory, selectedLocation]);
 
-  const platforms = ['all', ...new Set(paparazzi.map(p => p.platform).filter(Boolean))];
   const categories = ['all', ...new Set(paparazzi.map(p => p.category).filter(Boolean))];
-  const locations = ['all', ...new Set(paparazzi.map(p => p.location).filter(Boolean))];
+  const locations = ['all', ...new Set(paparazzi.map(p => p.region_focused).filter(Boolean))];
 
   const handleCardClick = (paparazziId) => {
     navigate(`/paparazzi/${paparazziId}`);
@@ -120,7 +116,6 @@ const PaparazziPage = () => {
   };
 
   const clearAllFilters = () => {
-    setSelectedPlatform('all');
     setSelectedCategory('all');
     setSelectedLocation('all');
   };
@@ -206,24 +201,6 @@ const PaparazziPage = () => {
 
                 {/* Filters in row-wise layout for mobile */}
                 <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
-                  {/* Platform Filter */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Platform
-                    </label>
-                    <select
-                      value={selectedPlatform}
-                      onChange={(e) => setSelectedPlatform(e.target.value)}
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                    >
-                      {platforms.map(platform => (
-                        <option key={platform} value={platform}>
-                          {platform === 'all' ? 'All Platforms' : platform}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
                   {/* Category Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
@@ -388,17 +365,19 @@ const PaparazziPage = () => {
                             <Camera className="w-6 h-6 text-white" />
                           </div>
                           <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
-                            {p.platform}
+                            Instagram
                           </span>
                         </div>
                         <h3 className="text-xl font-semibold text-[#212121] mb-2 line-clamp-2">
-                          {p.page_name}
+                          {p.instagram_page_name}
                         </h3>
-                        <p className="text-sm text-[#757575] mb-3">@{p.username}</p>
                         <div className="space-y-2 text-sm text-[#757575]">
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4" />
-                            <span>{formatFollowers(p.followers_count)} followers</span>
+                            <span>{formatFollowers(p.no_of_followers)} followers</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <small>As of 01st Dec 2025</small>
                           </div>
                           {p.category && (
                             <div className="flex items-center gap-2">
@@ -406,19 +385,30 @@ const PaparazziPage = () => {
                               <span>{p.category}</span>
                             </div>
                           )}
-                          {p.location && (
+                          {p.region_focused && (
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4" />
-                              <span>{p.location}</span>
+                              <span>{p.region_focused}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
-                            <DollarSign className="w-4 h-4" />
-                            <span className="text-[#1976D2] font-medium">
-                              {formatPrice(p.price_reel_with_tag)}
-                            </span>
-                          </div>
+                          {p.instagram_url && (
+                            <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
+                              <Globe className="w-4 h-4" />
+                              <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-[#1976D2] hover:underline">
+                                Instagram Profile
+                              </a>
+                            </div>
+                          )}
                         </div>
+                        {p.profile_dp_logo && (
+                          <div className="mt-4 flex justify-center">
+                            <img
+                              src={p.profile_dp_logo}
+                              alt="Profile"
+                              className="w-16 h-16 rounded-full object-cover border-2 border-[#E0E0E0]"
+                            />
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   ))}
@@ -436,10 +426,7 @@ const PaparazziPage = () => {
                       <thead style={{ backgroundColor: theme.backgroundSoft }}>
                         <tr>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Paparazzi
-                          </th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Platform
+                            Instagram Page
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
                             Followers
@@ -448,10 +435,13 @@ const PaparazziPage = () => {
                             Category
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Location
+                            Region Focused
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Price
+                            Instagram URL
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Profile Image
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
                             Action
@@ -476,23 +466,20 @@ const PaparazziPage = () => {
                                 </div>
                                 <div>
                                   <div className="font-semibold" style={{ color: theme.textPrimary }}>
-                                    {p.page_name}
-                                  </div>
-                                  <div className="text-sm" style={{ color: theme.textSecondary }}>
-                                    @{p.username}
+                                    {p.instagram_page_name}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <span className="text-sm font-medium" style={{ color: theme.primary }}>
-                                {p.platform}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {formatFollowers(p.followers_count)}
-                              </span>
+                              <div>
+                                <span className="text-sm font-medium" style={{ color: theme.primary }}>
+                                  {formatFollowers(p.no_of_followers)}
+                                </span>
+                                <div className="text-xs" style={{ color: theme.textSecondary }}>
+                                  As of 01st Dec 2025
+                                </div>
+                              </div>
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
@@ -501,13 +488,28 @@ const PaparazziPage = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {p.location || 'Global'}
+                                {p.region_focused || 'Global'}
                               </span>
                             </td>
                             <td className="px-6 py-4">
-                              <span className="text-sm font-medium" style={{ color: theme.success }}>
-                                {formatPrice(p.price_reel_with_tag)}
-                              </span>
+                              {p.instagram_url ? (
+                                <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-sm" style={{ color: theme.primary }}>
+                                  View Profile
+                                </a>
+                              ) : (
+                                <span className="text-sm" style={{ color: theme.textSecondary }}>N/A</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              {p.profile_dp_logo ? (
+                                <img
+                                  src={p.profile_dp_logo}
+                                  alt="Profile"
+                                  className="w-10 h-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-sm" style={{ color: theme.textSecondary }}>No image</span>
+                              )}
                             </td>
                             <td className="px-6 py-4">
                               <button

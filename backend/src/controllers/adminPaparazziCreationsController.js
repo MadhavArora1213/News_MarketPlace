@@ -169,6 +169,78 @@ class AdminPaparazziCreationsController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
+  // Get public paparazzi creations
+  async getPublic(req, res) {
+    try {
+      const {
+        page = 1,
+        limit = 20,
+        instagram_page_name,
+        category,
+        region_focused
+      } = req.query;
+
+      // Add search filters
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = 1;
+
+      if (instagram_page_name) {
+        searchSql += ` AND instagram_page_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${instagram_page_name}%`);
+        searchParamCount++;
+      }
+
+      if (category) {
+        searchSql += ` AND category = $${searchParamCount}`;
+        searchValues.push(category);
+        searchParamCount++;
+      }
+
+      if (region_focused) {
+        searchSql += ` AND region_focused ILIKE $${searchParamCount}`;
+        searchValues.push(`%${region_focused}%`);
+        searchParamCount++;
+      }
+
+      const offset = (page - 1) * limit;
+      const paparazziCreations = await PaparazziCreation.findAll(limit, offset, searchSql, searchValues);
+
+      // Get total count for pagination
+      const totalCount = await PaparazziCreation.getTotalCount(searchSql, searchValues);
+
+      res.json({
+        paparazziCreations: paparazziCreations.map(creation => creation.toJSON()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: totalCount,
+          pages: Math.ceil(totalCount / limit)
+        }
+      });
+    } catch (error) {
+      console.error('Get public paparazzi creations error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get public paparazzi creation by ID
+  async getPublicById(req, res) {
+    try {
+      const { id } = req.params;
+      const paparazziCreation = await PaparazziCreation.findById(id);
+
+      if (!paparazziCreation) {
+        return res.status(404).json({ error: 'Paparazzi creation not found' });
+      }
+
+      res.json({ paparazziCreation: paparazziCreation.toJSON() });
+    } catch (error) {
+      console.error('Get public paparazzi creation by ID error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new AdminPaparazziCreationsController();

@@ -98,6 +98,37 @@ class PaparazziCreation {
     await query(sql, [this.id]);
   }
 
+  // Get total count with optional filters
+  static async getTotalCount(searchSql = '', searchValues = []) {
+    let sql = 'SELECT COUNT(*) as total FROM paparazzi_creations WHERE 1=1';
+    sql += searchSql;
+
+    const result = await query(sql, searchValues);
+    return parseInt(result.rows[0].total);
+  }
+
+  // Find all with search filters
+  static async findAll(limit = null, offset = null, searchSql = '', searchValues = []) {
+    let sql = 'SELECT * FROM paparazzi_creations WHERE 1=1';
+    sql += searchSql;
+    sql += ' ORDER BY created_at DESC';
+
+    const values = [...searchValues];
+
+    if (limit) {
+      sql += ' LIMIT $' + (values.length + 1);
+      values.push(limit);
+    }
+
+    if (offset) {
+      sql += ' OFFSET $' + (values.length + 1);
+      values.push(offset);
+    }
+
+    const result = await query(sql, values);
+    return result.rows.map(row => new PaparazziCreation(row));
+  }
+
   // Convert to JSON
   toJSON() {
     return {
