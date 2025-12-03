@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const { rateLimiter } = require('../middleware/rateLimit');
-const s3Service = require('../services/s3Service');
+const { s3Service } = require('../services/s3Service');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -60,10 +60,6 @@ class PowerlistNominationController {
   // Create a new powerlist nomination (admin only)
   async create(req, res) {
     try {
-      console.log('Create powerlist nomination - Start');
-      console.log('Request body:', req.body);
-      console.log('Request file:', req.file ? 'present' : 'not present');
-
       if (!req.admin) {
         return res.status(403).json({ error: 'Admin access required' });
       }
@@ -81,8 +77,6 @@ class PowerlistNominationController {
         status: req.body.status || 'pending'
       };
 
-      console.log('Nomination data before image processing:', nominationData);
-
       // Handle image upload
       if (req.file) {
         try {
@@ -90,14 +84,16 @@ class PowerlistNominationController {
 
           // Try S3 first if configured
           if (process.env.AWS_S3_BUCKET_NAME && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+            console.log('Using S3 for image upload');
             const s3Key = s3Service.generateKey('powerlist-nominations', 'image', req.file.originalname);
             const contentType = s3Service.getContentType(req.file.originalname);
 
+            // S3 service handles its own image optimization, so pass raw buffer
             imageUrl = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
             console.log('Successfully uploaded to S3:', imageUrl);
           } else {
-            // Fallback to local storage
-            console.log('S3 not configured, using local storage');
+            // Fallback to local storage with local optimization
+            console.log('S3 not configured, using local storage with optimization');
             imageUrl = await this.uploadImageLocally(req.file);
           }
 
@@ -109,11 +105,7 @@ class PowerlistNominationController {
         }
       }
 
-      console.log('Nomination data after image processing:', nominationData);
-
-      console.log('About to create nomination in database...');
       const nomination = await PowerlistNomination.create(nominationData);
-      console.log('Nomination created successfully:', nomination.id);
 
       res.status(201).json({
         message: 'Powerlist nomination created successfully',
@@ -360,9 +352,11 @@ class PowerlistNominationController {
 
           // Try S3 first if configured
           if (process.env.AWS_S3_BUCKET_NAME && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+            console.log('Using S3 for image upload (update)');
             const s3Key = s3Service.generateKey('powerlist-nominations', 'image', req.file.originalname);
             const contentType = s3Service.getContentType(req.file.originalname);
 
+            // S3 service handles its own image optimization
             imageUrl = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
             console.log('Successfully uploaded to S3:', imageUrl);
 
@@ -379,8 +373,8 @@ class PowerlistNominationController {
               }
             }
           } else {
-            // Fallback to local storage
-            console.log('S3 not configured, using local storage');
+            // Fallback to local storage with local optimization
+            console.log('S3 not configured, using local storage (update)');
             imageUrl = await this.uploadImageLocally(req.file);
           }
 
