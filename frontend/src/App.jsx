@@ -111,6 +111,7 @@ import OrderManagement from './components/admin/OrderManagement';
 import PaparazziOrderManagement from './components/admin/PaparazziOrderManagement';
 import ThemeOrderManagement from './components/admin/ThemeOrderManagement';
 import PressPackOrderManagement from './components/admin/PressPackOrderManagement';
+import PublicationManagementPage from './pages/admin/PublicationManagement';
 import Icon from './components/common/Icon';
 
 // Protected Route Component
@@ -488,6 +489,14 @@ function App() {
                   <div className="min-h-screen bg-gray-50">
                     <PublicationManagement />
                   </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/publication-management"
+              element={
+                <AdminProtectedRoute>
+                  <PublicationManagementPage />
                 </AdminProtectedRoute>
               }
             />

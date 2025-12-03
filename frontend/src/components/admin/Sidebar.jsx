@@ -4,27 +4,6 @@ import Icon from '../common/Icon';
 export default function Sidebar({
   admin,
   roleDisplayNames = {},
-  theme = {
-    primary: '#1976D2',
-    primaryDark: '#0D47A1',
-    primaryLight: '#E3F2FD',
-    secondary: '#00796B',
-    secondaryDark: '#004D40',
-    secondaryLight: '#E0F2F1',
-    success: '#4CAF50',
-    warning: '#FF9800',
-    danger: '#F44336',
-    info: '#9C27B0',
-    textPrimary: '#212121',
-    textSecondary: '#757575',
-    textDisabled: '#BDBDBD',
-    background: '#FFFFFF',
-    backgroundAlt: '#FAFAFA',
-    backgroundSoft: '#F5F5F5',
-    borderLight: '#E0E0E0',
-    borderMedium: '#BDBDBD',
-    borderDark: '#757575',
-  },
   sidebarOpen,
   setSidebarOpen,
   sidebarStyles,
@@ -44,6 +23,7 @@ export default function Sidebar({
   const navIconCircle = (bg) => ({ width: 36, height: 36, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' });
 
   const [powerlistDropdownOpen, setPowerlistDropdownOpen] = useState(false);
+  const [publicationDropdownOpen, setPublicationDropdownOpen] = useState(false);
 
   // compute desktop fixed styles so sidebar sticks to viewport left (matches screenshot)
   const desktopFixedStyles = {
@@ -338,6 +318,47 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
+              <div
+                style={navItemBase}
+                onClick={() => setPublicationDropdownOpen(!publicationDropdownOpen)}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Publications</span>
+                <span style={{ marginLeft: 'auto', transform: publicationDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                  <Icon name="chevron-down" size="sm" style={{ color: '#4CAF50' }} />
+                </span>
+              </div>
+              {publicationDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/publications"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-cart" size="sm" style={{ color: '#4CAF50' }} /></span>
+                      <span>Add to cart</span>
+                    </a>
+                  </li>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/publication-management"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#e8f5e8')}><Icon name="cog" size="sm" style={{ color: '#4CAF50' }} /></span>
+                      <span>publication management</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
               <a
                 href="/admin/press-packs"
                 style={navItemBase}
@@ -349,17 +370,6 @@ export default function Sidebar({
               </a>
             </li>
 
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/publications"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Publications</span>
-              </a>
-            </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
@@ -532,7 +542,15 @@ export default function Sidebar({
               )}
             </li>
             <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Publications</a></li>
+            <li style={{ marginBottom: 12 }}>
+              <div onClick={() => setPublicationDropdownOpen(!publicationDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Publications</div>
+              {publicationDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Add to cart</a></li>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/publication-management" style={{ color: '#212121', textDecoration: 'none' }}>publication management</a></li>
+                </ul>
+              )}
+            </li>
             <li style={{ marginBottom: 12 }}><a href="/admin/orders" style={{ color: '#212121', textDecoration: 'none' }}>Order Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi-orders" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Order Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/theme-orders" style={{ color: '#212121', textDecoration: 'none' }}>Theme Order Management</a></li>
