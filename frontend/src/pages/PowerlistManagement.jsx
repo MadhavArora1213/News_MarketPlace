@@ -8,11 +8,20 @@ import api from '../services/api';
 const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) => {
   const [formData, setFormData] = useState({
     publication_name: '',
+    website_url: '',
     power_list_name: '',
-    industry: ''
+    industry: '',
+    company_or_individual: '',
+    tentative_month: '',
+    location_region: '',
+    last_power_list_url: '',
+    image: null,
+    status: 'pending',
+    is_active: true
   });
 
   const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Industry options
   const industryOptions = [
@@ -22,23 +31,75 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
     'Fashion', 'Sports', 'Travel & Tourism', 'Agriculture', 'Other'
   ];
 
+  // Company or Individual options
+  const companyOrIndividualOptions = [
+    'Company',
+    'Individual',
+    'Organization',
+    'Institution',
+    'Other'
+  ];
+
+  // Tentative Month options
+  const monthOptions = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Status options
+  const statusOptions = [
+    { value: 'pending', label: 'Pending', color: '#FF9800' },
+    { value: 'approved', label: 'Approved', color: '#4CAF50' },
+    { value: 'rejected', label: 'Rejected', color: '#F44336' }
+  ];
 
   useEffect(() => {
     if (nomination) {
       setFormData({
         publication_name: nomination.publication_name || '',
+        website_url: nomination.website_url || '',
         power_list_name: nomination.power_list_name || '',
-        industry: nomination.industry || ''
+        industry: nomination.industry || '',
+        company_or_individual: nomination.company_or_individual || '',
+        tentative_month: nomination.tentative_month || '',
+        location_region: nomination.location_region || '',
+        last_power_list_url: nomination.last_power_list_url || '',
+        image: nomination.image || null,
+        status: nomination.status || 'pending',
+        is_active: nomination.is_active !== undefined ? nomination.is_active : true
       });
+      setImagePreview(nomination.image || null);
     } else {
       setFormData({
         publication_name: '',
+        website_url: '',
         power_list_name: '',
-        industry: ''
+        industry: '',
+        company_or_individual: '',
+        tentative_month: '',
+        location_region: '',
+        last_power_list_url: '',
+        image: null,
+        status: 'pending',
+        is_active: true
       });
+      setImagePreview(null);
     }
   }, [nomination, isOpen]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, image: file });
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,10 +108,14 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
     try {
       const submissionData = new FormData();
 
-      // Add the three form fields to FormData
-      if (formData.publication_name) submissionData.append('publication_name', formData.publication_name);
-      if (formData.power_list_name) submissionData.append('power_list_name', formData.power_list_name);
-      if (formData.industry) submissionData.append('industry', formData.industry);
+      // Add all form fields to FormData
+      Object.keys(formData).forEach(key => {
+        if (key === 'image' && formData[key] instanceof File) {
+          submissionData.append('image', formData[key]);
+        } else if (formData[key] !== null && formData[key] !== '') {
+          submissionData.append(key, formData[key]);
+        }
+      });
 
       if (nomination) {
         await api.put(`/powerlist-nominations/${nomination.id}`, submissionData, {
@@ -97,7 +162,7 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
     background: '#fff',
     borderRadius: '12px',
     padding: '24px',
-    maxWidth: '700px',
+    maxWidth: '900px',
     width: '100%',
     maxHeight: '90vh',
     overflowY: 'auto',
@@ -130,6 +195,12 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
     backgroundColor: '#fff'
   };
 
+  const textareaStyle = {
+    ...inputStyle,
+    minHeight: '80px',
+    resize: 'vertical'
+  };
+
   const buttonStyle = {
     padding: '10px 20px',
     borderRadius: '8px',
@@ -153,6 +224,7 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
 
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+            {/* Required Fields */}
             <div style={formGroupStyle}>
               <label style={labelStyle}>Publication Name *</label>
               <input
@@ -161,6 +233,7 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
                 onChange={(e) => setFormData({ ...formData, publication_name: e.target.value })}
                 style={inputStyle}
                 required
+                placeholder="Enter publication name"
               />
             </div>
 
@@ -172,6 +245,7 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
                 onChange={(e) => setFormData({ ...formData, power_list_name: e.target.value })}
                 style={inputStyle}
                 required
+                placeholder="Enter power list name"
               />
             </div>
 
@@ -189,6 +263,120 @@ const PowerlistNominationFormModal = ({ isOpen, onClose, nomination, onSave }) =
                 ))}
               </select>
             </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Company or Individual *</label>
+              <select
+                value={formData.company_or_individual}
+                onChange={(e) => setFormData({ ...formData, company_or_individual: e.target.value })}
+                style={selectStyle}
+                required
+              >
+                <option value="">Select Type</option>
+                {companyOrIndividualOptions.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Optional Fields */}
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Website URL</label>
+              <input
+                type="url"
+                value={formData.website_url}
+                onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                style={inputStyle}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Tentative Month</label>
+              <select
+                value={formData.tentative_month}
+                onChange={(e) => setFormData({ ...formData, tentative_month: e.target.value })}
+                style={selectStyle}
+              >
+                <option value="">Select Month</option>
+                {monthOptions.map(month => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Location Region</label>
+              <input
+                type="text"
+                value={formData.location_region}
+                onChange={(e) => setFormData({ ...formData, location_region: e.target.value })}
+                style={inputStyle}
+                placeholder="Enter location or region"
+              />
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Last Power List URL</label>
+              <input
+                type="url"
+                value={formData.last_power_list_url}
+                onChange={(e) => setFormData({ ...formData, last_power_list_url: e.target.value })}
+                style={inputStyle}
+                placeholder="https://example.com/powerlist"
+              />
+            </div>
+
+            {/* Status Field */}
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                style={selectStyle}
+              >
+                {statusOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Active Status */}
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Is Active</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="checkbox"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                <span style={{ fontSize: '14px', color: '#212121' }}>
+                  Active (visible in listings)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Image Upload */}
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ ...inputStyle, padding: '8px' }}
+            />
+            {imagePreview && (
+              <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e0e0e0' }}
+                />
+                <span style={{ fontSize: '12px', color: '#666' }}>Image preview</span>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px', gap: '12px' }}>
@@ -271,6 +459,13 @@ const PowerlistManagement = () => {
   const [sortField, setSortField] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: '',
+    industry: '',
+    company_or_individual: '',
+    location_region: '',
+    is_active: ''
+  });
 
   // Layout constants (same as AdminDashboard)
   const headerZ = 1000;
@@ -376,7 +571,7 @@ const PowerlistManagement = () => {
     };
 
     fetchData();
-  }, [currentPage, pageSize, debouncedSearchTerm, sortField, sortDirection]);
+  }, [currentPage, pageSize, debouncedSearchTerm, sortField, sortDirection, filters]);
 
   const fetchNominations = async () => {
     setLoading(true);
@@ -384,9 +579,12 @@ const PowerlistManagement = () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: pageSize.toString(),
-        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(sortField && { sortBy: sortField }),
-        ...(sortDirection && { sortOrder: sortDirection })
+        ...(debouncedSearchTerm && { publication_name: debouncedSearchTerm, power_list_name: debouncedSearchTerm }),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.industry && { industry: filters.industry }),
+        ...(filters.company_or_individual && { company_or_individual: filters.company_or_individual }),
+        ...(filters.location_region && { location_region: filters.location_region }),
+        ...(filters.is_active !== '' && { is_active: filters.is_active })
       });
 
       const response = await api.get(`/powerlist-nominations?${params}`);
@@ -981,6 +1179,12 @@ const PowerlistManagement = () => {
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Industry
                       </th>
+                      <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Company/Individual
+                      </th>
+                      <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Location
+                      </th>
                       <th
                         style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px', cursor: 'pointer' }}
                         onClick={() => handleSort('status')}
@@ -1072,6 +1276,21 @@ const PowerlistManagement = () => {
                           </div>
                         </td>
                         <td style={{ padding: '16px' }}>
+                          <div style={{ fontSize: '13px', color: theme.textPrimary, fontWeight: '500' }}>
+                            {nomination.company_or_individual}
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px' }}>
+                          <div style={{ fontSize: '13px', color: theme.textPrimary, fontWeight: '500' }}>
+                            {nomination.location_region || '-'}
+                          </div>
+                          {nomination.tentative_month && (
+                            <div style={{ fontSize: '11px', color: theme.textSecondary }}>
+                              {nomination.tentative_month}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '16px' }}>
                           <span style={getStatusStyle(nomination.status)}>
                             {statusOptions.find(opt => opt.value === nomination.status)?.label || nomination.status}
                           </span>
@@ -1129,7 +1348,7 @@ const PowerlistManagement = () => {
                                 fontWeight: '600',
                                 transition: 'background-color 0.2s'
                               }}
-                              disabled={!hasRole('super_admin')}
+                              disabled={!hasAnyRole(['super_admin'])}
                               onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
                               onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
                             >
