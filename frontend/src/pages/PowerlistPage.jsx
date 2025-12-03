@@ -233,6 +233,39 @@ const PowerlistPage = () => {
     navigate(`/power-lists/${powerlist.id}`);
   };
 
+  // Image URL helper function
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // If it's a local path, construct full URL
+    if (imagePath.startsWith('/uploads/')) {
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${imagePath}`;
+    }
+    
+    return imagePath;
+  };
+
+  // Generate fallback image
+  const generateFallbackImage = (publicationName) => {
+    const colors = [
+      'from-blue-400 to-blue-600',
+      'from-purple-400 to-purple-600', 
+      'from-green-400 to-green-600',
+      'from-red-400 to-red-600',
+      'from-yellow-400 to-yellow-600',
+      'from-pink-400 to-pink-600',
+      'from-indigo-400 to-indigo-600'
+    ];
+    
+    const colorIndex = publicationName.length % colors.length;
+    return colors[colorIndex];
+  };
+
   // Status badge component
   const StatusBadge = ({ status }) => {
     const getStatusStyle = (status) => {
@@ -553,60 +586,85 @@ const PowerlistPage = () => {
               {/* Enhanced Grid View with Image Backgrounds */}
               {viewMode === 'grid' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {sortedPowerlists.map((nomination, index) => (
-                    <motion.div
-                      key={nomination.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      onClick={() => handlePowerlistClick(nomination)}
-                      className="bg-white rounded-2xl shadow-lg border hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden relative"
-                      style={{
-                        borderColor: theme.borderLight,
-                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
-                      }}
-                    >
-                      {/* Heart Icon */}
-                      <div className="absolute top-4 right-4 z-10">
-                        <div className="w-10 h-10 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-black/30 transition-colors">
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.682l-1.318-1.364a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="absolute top-4 left-4 z-10">
-                        <div className="flex gap-2">
-                          <span className="px-3 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
-                            Top Creator
-                          </span>
-                          <span className="px-3 py-1 bg-blue-500 text-white text-xs font-medium rounded-full">
-                            Responds Fast
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Profile Image */}
-                      <div className="relative h-64 overflow-hidden">
-                        {nomination.image ? (
-                          <img
-                            src={nomination.image}
-                            alt={nomination.publication_name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
+                  {sortedPowerlists.map((nomination, index) => {
+                    const imageUrl = getImageUrl(nomination.image);
+                    const fallbackGradient = generateFallbackImage(nomination.publication_name);
+                    
+                    return (
+                      <motion.div
+                        key={nomination.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        onClick={() => handlePowerlistClick(nomination)}
+                        className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden h-80"
+                        style={{
+                          boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                        }}
+                      >
+                        {/* Enhanced Background Image with Error Handling */}
+                        <div className="absolute inset-0">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={nomination.publication_name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                // Fallback to gradient if image fails to load
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'block';
+                              }}
+                              onLoad={(e) => {
+                                // Hide fallback if image loads successfully
+                                if (e.target.nextElementSibling) {
+                                  e.target.nextElementSibling.style.display = 'none';
+                                }
+                              }}
+                            />
+                          ) : null}
+                          
+                          {/* Fallback gradient background */}
                           <div 
-                            className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500"
+                            className={`w-full h-full bg-gradient-to-br ${fallbackGradient} ${imageUrl ? 'hidden' : 'block'}`}
+                            style={{ display: imageUrl ? 'none' : 'block' }}
                           >
-                            <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                              <User size={48} className="text-white" />
+                            {/* Publication name overlay for non-image cards */}
+                            <div className="absolute inset-0 flex items-center justify-center p-6">
+                              <h3 className="text-white text-xl font-bold text-center leading-tight">
+                                {nomination.publication_name}
+                              </h3>
                             </div>
                           </div>
-                        )}
+                          
+                          {/* Dark overlay for better text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        </div>
 
-                        {/* Engagement Stats */}
-                        <div className="absolute bottom-4 left-4 flex gap-2">
+                        {/* Heart Icon */}
+                        <div className="absolute top-4 right-4 z-20">
+                          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.682l-1.318-1.364a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Enhanced Status Badges */}
+                        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                          {nomination.status === 'approved' && (
+                            <span className="px-3 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
+                              ✓ Verified
+                            </span>
+                          )}
+                          {nomination.industry && (
+                            <span className="px-3 py-1 bg-blue-500 text-white text-xs font-medium rounded-full">
+                              {nomination.industry}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Enhanced Engagement Stats */}
+                        <div className="absolute top-16 right-4 z-20 flex flex-col gap-2">
                           <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
                             <Eye size={12} className="text-white" />
                             <span className="text-white text-xs font-medium">
@@ -614,58 +672,69 @@ const PowerlistPage = () => {
                             </span>
                           </div>
                           <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                            <Users size={12} className="text-white" />
-                            <span className="text-white text-xs font-medium">UGC</span>
+                            <Award size={12} className="text-white" />
+                            <span className="text-white text-xs font-medium">
+                              {nomination.company_or_individual === 'Individual' ? 'IND' : 'CORP'}
+                            </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Card Content */}
-                      <div className="p-5">
-                        {/* Name and Rating */}
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {/* Bottom Content Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white">
+                          {/* Name and Rating */}
+                          <div className="mb-3">
+                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors line-clamp-1">
                               {nomination.publication_name}
                             </h3>
-                            <div className="flex items-center gap-1 mt-1">
+                            <div className="flex items-center gap-2 mb-2">
                               <div className="flex items-center">
                                 {[...Array(5)].map((_, i) => (
                                   <Star 
                                     key={i} 
-                                    size={14} 
-                                    className={`${i < 5 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                                    size={16} 
+                                    className="text-yellow-400 fill-current" 
                                   />
                                 ))}
                               </div>
-                              <span className="text-sm font-medium text-gray-900 ml-1">5.0</span>
+                              <span className="text-sm font-medium text-white">5.0</span>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <p className="text-white/90 text-sm mb-3 line-clamp-2">
+                            {nomination.power_list_name}
+                            {nomination.description && (
+                              <span className="block text-white/70 text-xs mt-1 line-clamp-1">
+                                {nomination.description}
+                              </span>
+                            )}
+                          </p>
+
+                          {/* Location and Type Row */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center text-sm text-white/80">
+                              <MapPin size={14} className="mr-1" />
+                              <span>{nomination.location_region || 'Global'}</span>
+                            </div>
+                            
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-white">
+                                {nomination.tentative_month && (
+                                  <div className="flex items-center gap-1">
+                                    <Calendar size={12} />
+                                    {nomination.tentative_month}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-xs text-white/70">
+                                {nomination.company_or_individual}
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                        {/* Description */}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {nomination.power_list_name} • {nomination.company_or_individual}
-                        </p>
-
-                        {/* Location */}
-                        <div className="flex items-center text-sm text-gray-500 mb-4">
-                          <MapPin size={14} className="mr-2" />
-                          <span>{nomination.location_region || 'Global'}</span>
-                        </div>
-
-                        {/* Pricing */}
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-gray-900">
-                            ${Math.floor(Math.random() * 400) + 100}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {nomination.industry || 'General'}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -739,69 +808,89 @@ const PowerlistPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {sortedPowerlists.map((nomination, index) => (
-                          <tr
-                            key={nomination.id}
-                            className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
-                            style={{ borderColor: theme.borderLight }}
-                            onClick={() => handlePowerlistClick(nomination)}
-                          >
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                  style={{ backgroundColor: theme.primaryLight }}
-                                >
-                                  <Building size={20} style={{ color: theme.primary }} />
-                                </div>
-                                <div>
-                                  <div className="font-semibold" style={{ color: theme.textPrimary }}>
-                                    {nomination.publication_name}
-                                  </div>
-                                  {nomination.tentative_month && (
-                                    <div className="text-xs" style={{ color: theme.textSecondary }}>
-                                      Expected: {nomination.tentative_month}
+                        {sortedPowerlists.map((nomination, index) => {
+                          const imageUrl = getImageUrl(nomination.image);
+                          const fallbackGradient = generateFallbackImage(nomination.publication_name);
+                          
+                          return (
+                            <tr
+                              key={nomination.id}
+                              className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                              style={{ borderColor: theme.borderLight }}
+                              onClick={() => handlePowerlistClick(nomination)}
+                            >
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  {/* Enhanced image/logo display */}
+                                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                    {imageUrl ? (
+                                      <img
+                                        src={imageUrl}
+                                        alt={nomination.publication_name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextElementSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div 
+                                      className={`w-full h-full bg-gradient-to-br ${fallbackGradient} flex items-center justify-center ${imageUrl ? 'hidden' : 'flex'}`}
+                                      style={{ display: imageUrl ? 'none' : 'flex' }}
+                                    >
+                                      <Building size={20} className="text-white" />
                                     </div>
-                                  )}
+                                  </div>
+                                  <div>
+                                    <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                      {nomination.publication_name}
+                                    </div>
+                                    {nomination.tentative_month && (
+                                      <div className="text-xs flex items-center gap-1" style={{ color: theme.textSecondary }}>
+                                        <Calendar size={10} />
+                                        Expected: {nomination.tentative_month}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {nomination.power_list_name}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {nomination.industry || 'General'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {nomination.company_or_individual}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {nomination.location_region || 'Global'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <StatusBadge status={nomination.status} />
-                            </td>
-                            <td className="px-6 py-4">
-                              <button
-                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                style={{ backgroundColor: theme.primary }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                              >
-                                <Eye size={14} className="inline mr-1" />
-                                View
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {nomination.power_list_name}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {nomination.industry || 'General'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {nomination.company_or_individual}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {nomination.location_region || 'Global'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <StatusBadge status={nomination.status} />
+                              </td>
+                              <td className="px-6 py-4">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                >
+                                  <Eye size={14} className="inline mr-1" />
+                                  View
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
