@@ -114,6 +114,8 @@ import PressPackOrderManagement from './components/admin/PressPackOrderManagemen
 import PublicationManagementPage from './pages/admin/PublicationManagement';
 import Icon from './components/common/Icon';
 import PaparazziCreations from './pages/admin/PaparazziCreations';
+import EventCreationPage from './pages/admin/EventCreation';
+import AwardCreationPage from './pages/admin/AwardCreation';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -771,7 +773,27 @@ function App() {
                 </AdminProtectedRoute>
               }
             />
-            
+            <Route
+              path="/admin/event-creation"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <EventCreationPage />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/award-creation"
+              element={
+                <AdminProtectedRoute>
+                  <div className="min-h-screen bg-gray-50">
+                    <AwardCreationPage />
+                  </div>
+                </AdminProtectedRoute>
+              }
+            />
+
             <Route path="/data/new/cookies/user" element={<UserCookiesData />} />
 
             {/* Catch all route - redirect to admin login if accessing /admin */}
