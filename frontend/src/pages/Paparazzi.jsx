@@ -57,7 +57,7 @@ const PaparazziPage = () => {
 
   useEffect(() => {
     filterPaparazzi();
-  }, [paparazzi, searchQuery, selectedPlatform, selectedCategory, selectedLocation]);
+  }, [paparazzi, searchQuery, selectedCategory, selectedLocation]);
 
   const fetchPaparazzi = async () => {
     try {
