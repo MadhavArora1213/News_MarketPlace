@@ -265,14 +265,11 @@ const PowerlistDetailPage = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div 
-                        className="w-full h-full flex items-center justify-center"
-                        style={{
-                          background: `linear-gradient(135deg, ${theme.primaryLight}, ${theme.secondaryLight})`
-                        }}
-                      >
-                        <Building size={64} style={{ color: theme.primary }} />
-                      </div>
+                      <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="w-full h-full object-contain"
+                      />
                     )}
                     
                     {/* Status Badge */}

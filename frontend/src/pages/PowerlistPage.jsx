@@ -610,7 +610,7 @@ const PowerlistPage = () => {
                               alt={nomination.publication_name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
-                                // Fallback to gradient if image fails to load
+                                // Fallback to logo if image fails to load
                                 e.target.style.display = 'none';
                                 e.target.nextElementSibling.style.display = 'block';
                               }}
@@ -622,20 +622,19 @@ const PowerlistPage = () => {
                               }}
                             />
                           ) : null}
-                          
-                          {/* Fallback gradient background */}
-                          <div 
-                            className={`w-full h-full bg-gradient-to-br ${fallbackGradient} ${imageUrl ? 'hidden' : 'block'}`}
+
+                          {/* Fallback logo */}
+                          <div
+                            className={`w-full h-full ${imageUrl ? 'hidden' : 'block'}`}
                             style={{ display: imageUrl ? 'none' : 'block' }}
                           >
-                            {/* Publication name overlay for non-image cards */}
-                            <div className="absolute inset-0 flex items-center justify-center p-6">
-                              <h3 className="text-white text-xl font-bold text-center leading-tight">
-                                {nomination.publication_name}
-                              </h3>
-                            </div>
+                            <img
+                              src="/logo.png"
+                              alt="Logo"
+                              className="w-full h-full object-contain"
+                            />
                           </div>
-                          
+
                           {/* Dark overlay for better text readability */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         </div>
@@ -834,11 +833,15 @@ const PowerlistPage = () => {
                                         }}
                                       />
                                     ) : null}
-                                    <div 
-                                      className={`w-full h-full bg-gradient-to-br ${fallbackGradient} flex items-center justify-center ${imageUrl ? 'hidden' : 'flex'}`}
+                                    <div
+                                      className={`w-full h-full flex items-center justify-center ${imageUrl ? 'hidden' : 'flex'}`}
                                       style={{ display: imageUrl ? 'none' : 'flex' }}
                                     >
-                                      <Building size={20} className="text-white" />
+                                      <img
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        className="w-full h-full object-contain"
+                                      />
                                     </div>
                                   </div>
                                   <div>
