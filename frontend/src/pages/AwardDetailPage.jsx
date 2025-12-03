@@ -181,8 +181,23 @@ const AwardDetailPage = () => {
               <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-8">
                 {/* Award Header */}
                 <div className="flex items-start gap-6 mb-8">
-                  <div className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#E3F2FD]">
-                    <Award size={32} color="#1976D2" />
+                  <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                    {award.image ? (
+                      <img
+                        src={award.image}
+                        alt={award.award_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = "/logo.png";
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-3 text-[#212121]">
