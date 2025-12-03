@@ -37,7 +37,7 @@ const upload = multer({
 router.post('/submit', verifyToken, powerlistNominationController.submitValidation, powerlistNominationController.submit);
 
 // User route for viewing approved powerlist nominations
-router.get('/public', verifyToken, powerlistNominationController.getPublic);
+router.get('/public', powerlistNominationController.getPublic);
 
 // Create a new powerlist nomination (admin only)
 router.post('/', verifyAdminToken, requireAdminPanelAccess, upload.single('image'), powerlistNominationController.createValidation, powerlistNominationController.create);
