@@ -551,7 +551,3 @@ const PaparazziPage = () => {
 };
 
 export default PaparazziPage;
-  );
-};
-
-export default PaparazziPage;
