@@ -32,17 +32,21 @@ class PowerlistNomination {
       tentative_month, location_region, last_power_list_url, image, submitted_by, status
     } = nominationData;
 
+    // Convert is_active to boolean
+    const is_active = nominationData.is_active === 'true' || nominationData.is_active === true || nominationData.is_active === undefined ? true : false;
+
     const sql = `
       INSERT INTO powerlist_nominations (
         publication_name, website_url, power_list_name, industry, company_or_individual,
-        tentative_month, location_region, last_power_list_url, image, submitted_by, status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        tentative_month, location_region, last_power_list_url, image, submitted_by, status, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `;
 
     const values = [
       publication_name, website_url, power_list_name, industry, company_or_individual,
-      tentative_month, location_region, last_power_list_url, image, submitted_by, status || 'pending'
+      tentative_month, location_region, last_power_list_url, image, submitted_by, status || 'pending',
+      is_active
     ];
 
     const result = await query(sql, values);

@@ -60,6 +60,10 @@ class PowerlistNominationController {
   // Create a new powerlist nomination (admin only)
   async create(req, res) {
     try {
+      console.log('Create powerlist nomination - Start');
+      console.log('Request body:', req.body);
+      console.log('Request file:', req.file ? 'present' : 'not present');
+
       if (!req.admin) {
         return res.status(403).json({ error: 'Admin access required' });
       }
@@ -76,6 +80,8 @@ class PowerlistNominationController {
         ...req.body,
         status: req.body.status || 'pending'
       };
+
+      console.log('Nomination data before image processing:', nominationData);
 
       // Handle image upload
       if (req.file) {
@@ -103,7 +109,11 @@ class PowerlistNominationController {
         }
       }
 
+      console.log('Nomination data after image processing:', nominationData);
+
+      console.log('About to create nomination in database...');
       const nomination = await PowerlistNomination.create(nominationData);
+      console.log('Nomination created successfully:', nomination.id);
 
       res.status(201).json({
         message: 'Powerlist nomination created successfully',
@@ -111,6 +121,7 @@ class PowerlistNominationController {
       });
     } catch (error) {
       console.error('Create powerlist nomination error:', error);
+      console.error('Error stack:', error.stack);
       res.status(500).json({ error: error.message || 'Internal server error' });
     }
   }
