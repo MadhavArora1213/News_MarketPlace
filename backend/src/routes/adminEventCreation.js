@@ -5,6 +5,32 @@ const {
   verifyAdminToken,
   requireAdminPanelAccess
 } = require('../middleware/auth');
+const multer = require('multer');
+
+// Configure multer for image uploads (using memory storage for S3)
+const storage = multer.memoryStorage();
+
+// File filter for images
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const extname = allowedTypes.test(require('path').extname(file.originalname).toLowerCase());
+  const mimetype = allowedTypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, WebP images are allowed.'));
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 500 * 1024, // 500KB limit (matches frontend)
+    files: 1 // Maximum 1 image file
+  }
+});
 
 // Test route
 router.get('/test', (req, res) => {
@@ -29,6 +55,7 @@ router.get('/:id',
 router.post('/',
   verifyAdminToken,
   requireAdminPanelAccess,
+  upload.single('image'),
   adminEventCreationController.createValidation,
   adminEventCreationController.createEventCreation
 );
@@ -37,6 +64,7 @@ router.post('/',
 router.put('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,
+  upload.single('image'),
   adminEventCreationController.updateValidation,
   adminEventCreationController.updateEventCreation
 );
