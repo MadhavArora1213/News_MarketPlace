@@ -405,20 +405,18 @@ const PaparazziDetailPage = () => {
                 </div>
 
                 {/* Profile Image */}
-                {paparazzi.profile_dp_logo && (
-                  <div className="mb-8">
-                    <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Profile Image
-                    </h3>
-                    <div className="flex justify-center">
-                      <img
-                        src={paparazzi.profile_dp_logo}
-                        alt="Profile"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
-                      />
-                    </div>
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                    Profile Image
+                  </h3>
+                  <div className="flex justify-center">
+                    <img
+                      src={paparazzi.profile_dp_logo || "/logo.png"}
+                      alt="Profile"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                    />
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
@@ -480,20 +478,18 @@ const PaparazziDetailPage = () => {
               </div>
 
               {/* Profile Image Card */}
-              {paparazzi.profile_dp_logo && (
-                <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-                  <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Profile Picture
-                  </h3>
-                  <div className="flex justify-center">
-                    <img
-                      src={paparazzi.profile_dp_logo}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
-                    />
-                  </div>
+              <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+                <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
+                  Profile Picture
+                </h3>
+                <div className="flex justify-center">
+                  <img
+                    src={paparazzi.profile_dp_logo || "/logo.png"}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                  />
                 </div>
-              )}
+              </div>
 
               {/* Quick Info */}
               <div className="bg-white rounded-lg shadow-sm border p-6">

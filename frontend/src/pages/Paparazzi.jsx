@@ -361,17 +361,11 @@ const PaparazziPage = () => {
                     >
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-4">
-                          {p.profile_dp_logo ? (
-                            <img
-                              src={p.profile_dp_logo}
-                              alt="Profile"
-                              className="w-12 h-12 rounded-full object-cover border-2 border-[#E0E0E0]"
-                            />
-                          ) : (
-                            <div className="bg-[#1976D2] rounded-full p-3">
-                              <Camera className="w-6 h-6 text-white" />
-                            </div>
-                          )}
+                          <img
+                            src={p.profile_dp_logo || "/logo.png"}
+                            alt="Profile"
+                            className="w-12 h-12 rounded-full object-cover border-2 border-[#E0E0E0]"
+                          />
                           <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
                             Instagram
                           </span>
@@ -500,15 +494,11 @@ const PaparazziPage = () => {
                               )}
                             </td>
                             <td className="px-6 py-4">
-                              {p.profile_dp_logo ? (
-                                <img
-                                  src={p.profile_dp_logo}
-                                  alt="Profile"
-                                  className="w-10 h-10 rounded-full object-cover"
-                                />
-                              ) : (
-                                <span className="text-sm" style={{ color: theme.textSecondary }}>No image</span>
-                              )}
+                              <img
+                                src={p.profile_dp_logo || "/logo.png"}
+                                alt="Profile"
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
                             </td>
                             <td className="px-6 py-4">
                               <button
@@ -557,6 +547,10 @@ const PaparazziPage = () => {
 
       <UserFooter />
     </div>
+  );
+};
+
+export default PaparazziPage;
   );
 };
 
