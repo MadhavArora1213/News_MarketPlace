@@ -418,6 +418,66 @@ class PowerlistNominationController {
     }
   }
 
+  // Get public approved powerlist nominations
+  async getPublic(req, res) {
+    try {
+      const {
+        page = 1,
+        limit = 20,
+        industry,
+        company_or_individual,
+        location_region,
+        publication_name,
+        power_list_name
+      } = req.query;
+
+      const filters = {
+        status: 'approved',
+        is_active: true
+      };
+
+      if (industry) filters.industry = industry;
+      if (company_or_individual) filters.company_or_individual = company_or_individual;
+      if (location_region) filters.location_region = location_region;
+
+      // Add search filters
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (publication_name) {
+        searchSql += ` AND publication_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${publication_name}%`);
+        searchParamCount++;
+      }
+
+      if (power_list_name) {
+        searchSql += ` AND power_list_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${power_list_name}%`);
+        searchParamCount++;
+      }
+
+      const offset = (page - 1) * limit;
+      const nominations = await PowerlistNomination.findAll(filters, searchSql, searchValues, limit, offset);
+
+      // Get total count for pagination
+      const totalCount = await PowerlistNomination.getTotalCount(filters, searchSql, searchValues);
+
+      res.json({
+        nominations: nominations.map(nomination => nomination.toJSON()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: totalCount,
+          pages: Math.ceil(totalCount / limit)
+        }
+      });
+    } catch (error) {
+      console.error('Get public powerlist nominations error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Update powerlist nomination status (admin only)
   async updateStatus(req, res) {
     try {

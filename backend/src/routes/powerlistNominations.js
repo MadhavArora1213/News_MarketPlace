@@ -36,6 +36,9 @@ const upload = multer({
 // User submission route with authentication and rate limiting handled in controller
 router.post('/submit', verifyToken, powerlistNominationController.submitValidation, powerlistNominationController.submit);
 
+// User route for viewing approved powerlist nominations
+router.get('/public', verifyToken, powerlistNominationController.getPublic);
+
 // Create a new powerlist nomination (admin only)
 router.post('/', verifyAdminToken, requireAdminPanelAccess, upload.single('image'), powerlistNominationController.createValidation, powerlistNominationController.create);
 
