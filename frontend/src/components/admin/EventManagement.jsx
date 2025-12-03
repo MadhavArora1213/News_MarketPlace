@@ -1930,7 +1930,7 @@ const EventManagement = () => {
                     alignItems: 'center',
                     gap: '0.25rem',
                     lineHeight: 1
-                  }}>{roleDisplayNames[admin?.role] || '—'}</span>
+                  }}>{admin?.role === 'super_admin' ? 'Super Admin' : 'Admin'}</span>
                 </div>
               </div>
 
@@ -1963,7 +1963,6 @@ const EventManagement = () => {
           }}>
             <Sidebar
               admin={admin}
-              roleDisplayNames={roleDisplayNames}
               theme={theme}
               sidebarOpen={sidebarOpen}
               setSidebarOpen={setSidebarOpen}
