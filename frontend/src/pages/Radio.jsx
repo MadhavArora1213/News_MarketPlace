@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, Search, Filter, Globe, MapPin, User, Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Radio, Search, Filter, Globe, MapPin, User, Grid, List, ExternalLink, Building, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
@@ -31,16 +31,28 @@ const theme = {
 
 const RadioPage = () => {
   const [radios, setRadios] = useState([]);
-  const [filteredRadios, setFilteredRadios] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAuth, setShowAuth] = useState(false);
+
+  // View mode and layout state
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('all');
-  const [selectedEmirate, setSelectedEmirate] = useState('all');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  // Filter states
+  const [languageFilter, setLanguageFilter] = useState('');
+  const [emirateFilter, setEmirateFilter] = useState('');
+
+  // Sorting state
+  const [sortField, setSortField] = useState('radio_name');
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,91 +66,114 @@ const RadioPage = () => {
     fetchRadios();
   }, []);
 
-  useEffect(() => {
-    filterRadios();
-  }, [radios, searchQuery, selectedLanguage, selectedEmirate]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredRadios.length]);
-
-  const fetchRadios = async () => {
+  const fetchRadios = async (page = currentPage) => {
     try {
       setLoading(true);
-      const response = await api.get('/radios');
-      let radiosData = response.data.radios || [];
+      const params = new URLSearchParams();
 
-      // Sort by created_at descending to show newest first
-      radiosData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      // Add pagination
+      params.append('page', page.toString());
+      params.append('limit', '20'); // Show 20 per page for better UX
 
-      // Client-side search for better results
-      if (searchQuery.trim()) {
-        const searchLower = searchQuery.toLowerCase().trim();
-        radiosData = radiosData.filter(radio => {
-          return (
-            radio.radio_name?.toLowerCase().includes(searchLower) ||
-            radio.frequency?.toLowerCase().includes(searchLower) ||
-            radio.radio_popular_rj?.toLowerCase().includes(searchLower) ||
-            radio.radio_language?.toLowerCase().includes(searchLower) ||
-            radio.emirate_state?.toLowerCase().includes(searchLower)
-          );
-        });
+      // Add search parameters
+      if (searchTerm.trim()) {
+        params.append('radio_name', searchTerm.trim());
+        params.append('frequency', searchTerm.trim());
       }
 
-      setRadios(radiosData);
-    } catch (err) {
-      console.error('Error fetching radios:', err);
-      setError('Failed to load radios. Please try again later.');
+      // Add filter parameters
+      if (languageFilter) params.append('radio_language', languageFilter);
+      if (emirateFilter) params.append('emirate_state', emirateFilter);
+
+      const response = await api.get(`/radios?${params.toString()}`);
+
+      setRadios(response.data.radios || []);
+      setTotalCount(response.data.pagination?.total || 0);
+      setTotalPages(response.data.pagination?.pages || 1);
+      setCurrentPage(response.data.pagination?.page || 1);
+    } catch (error) {
+      console.error('Error fetching radios:', error);
+      setRadios([]);
+      setTotalCount(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterRadios = useCallback(() => {
-    let filtered = radios.filter(radio => {
-      const matchesSearch = radio.radio_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           radio.frequency.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           radio.radio_popular_rj.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesLanguage = selectedLanguage === 'all' || radio.radio_language === selectedLanguage;
-      const matchesEmirate = selectedEmirate === 'all' || radio.emirate_state === selectedEmirate;
-      return matchesSearch && matchesLanguage && matchesEmirate;
-    });
-    
-    // Sort filtered results by created_at descending to maintain newest-first order
-    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
-    setFilteredRadios(filtered);
-  }, [radios, searchQuery, selectedLanguage, selectedEmirate]);
+  // Enhanced search with debouncing
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchRadios();
+    }, 300);
 
-  const languages = ['all', ...new Set(radios.map(radio => radio.radio_language).filter(Boolean))];
-  const emirates = ['all', ...new Set(radios.map(radio => radio.emirate_state).filter(Boolean))];
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, languageFilter, emirateFilter]);
 
-  // Pagination logic
-  const paginatedRadios = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredRadios.slice(startIndex, endIndex);
-  }, [filteredRadios, currentPage, itemsPerPage]);
-
-  const totalPages = Math.ceil(filteredRadios.length / itemsPerPage);
-
+  // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchRadios(page);
   };
 
-  const resetPagination = () => {
-    setCurrentPage(1);
+  // Sorting logic
+  const sortedRadios = useMemo(() => {
+    return [...radios].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      if (sortField === 'created_at') {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      } else {
+        aValue = String(aValue || '').toLowerCase();
+        bValue = String(bValue || '').toLowerCase();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  }, [radios, sortField, sortDirection]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
   };
 
-  const handleCardClick = (radioId) => {
-    navigate(`/radio/${radioId}`);
+  const getSortIcon = (field) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? '↑' : '↓';
   };
 
   const clearAllFilters = () => {
-    setSelectedLanguage('all');
-    setSelectedEmirate('all');
-    resetPagination();
+    setLanguageFilter('');
+    setEmirateFilter('');
+  };
+
+  const hasActiveFilters = () => {
+    return languageFilter || emirateFilter;
+  };
+
+  // Get unique values for filter options
+  const getUniqueLanguages = () => {
+    const languages = radios.map(r => r.radio_language).filter(Boolean);
+    return [...new Set(languages)].sort();
+  };
+
+  const getUniqueEmirates = () => {
+    const emirates = radios.map(r => r.emirate_state).filter(Boolean);
+    return [...new Set(emirates)].sort();
+  };
+
+  const handleRadioClick = (radio) => {
+    navigate(`/radio/${radio.id}`);
   };
 
   return (
@@ -154,17 +189,34 @@ const RadioPage = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <div className="flex justify-center mb-6">
-              <div className="bg-[#1976D2] rounded-full p-4">
-                <Radio className="w-12 h-12 text-white" />
-              </div>
-            </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
               Radio Stations
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
               Discover radio stations across the UAE. Find your favorite frequencies, languages, and popular RJ hosts.
             </p>
+
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto mt-8">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search radio stations, frequencies, or RJ names..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -198,11 +250,11 @@ const RadioPage = () => {
             </div>
 
             <div className="space-y-6">
-              {/* Enhanced Filter Sections */}
+              {/* Basic Filters */}
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <Radio size={16} className="text-[#1976D2]" />
-                  Radio Filters
+                  Basic Filters
                 </h4>
 
                 {/* Filters in row-wise layout for mobile */}
@@ -213,14 +265,13 @@ const RadioPage = () => {
                       Language
                     </label>
                     <select
-                      value={selectedLanguage}
-                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                      value={languageFilter}
+                      onChange={(e) => setLanguageFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      {languages.map(lang => (
-                        <option key={lang} value={lang}>
-                          {lang === 'all' ? 'All Languages' : lang}
-                        </option>
+                      <option value="">All Languages</option>
+                      {getUniqueLanguages().map(language => (
+                        <option key={language} value={language}>{language}</option>
                       ))}
                     </select>
                   </div>
@@ -231,14 +282,13 @@ const RadioPage = () => {
                       Emirate
                     </label>
                     <select
-                      value={selectedEmirate}
-                      onChange={(e) => setSelectedEmirate(e.target.value)}
+                      value={emirateFilter}
+                      onChange={(e) => setEmirateFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      {emirates.map(emirate => (
-                        <option key={emirate} value={emirate}>
-                          {emirate === 'all' ? 'All Emirates' : emirate}
-                        </option>
+                      <option value="">All Emirates</option>
+                      {getUniqueEmirates().map(emirate => (
+                        <option key={emirate} value={emirate}>{emirate}</option>
                       ))}
                     </select>
                   </div>
@@ -258,28 +308,6 @@ const RadioPage = () => {
 
         {/* Main Content - Enhanced */}
         <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
-          {/* Enhanced Search Bar */}
-          <div className="max-w-2xl mx-auto mb-6">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by name, frequency, or RJ..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
-              />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </div>
-
           {/* Enhanced Controls Bar */}
           <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
             borderColor: theme.borderLight,
@@ -299,174 +327,346 @@ const RadioPage = () => {
                   </button>
                 )}
 
+                {/* View Toggle */}
+                <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'grid'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <Grid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-md transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-white shadow-sm text-[#1976D2]'
+                        : 'text-[#757575] hover:text-[#212121]'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {filteredRadios.length} radio stations found
-                  {totalPages > 1 && (
+                  {totalCount} radio stations found
+                  {searchTerm && (
                     <span className="ml-2 text-[#757575]">
-                      (Page {currentPage} of {totalPages})
-                    </span>
-                  )}
-                  {searchQuery && (
-                    <span className="ml-2 text-[#757575]">
-                      for "{searchQuery}"
+                      for "{searchTerm}"
                     </span>
                   )}
                 </span>
+              </div>
+
+              {/* Enhanced Sort Dropdown */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-[#757575]">Sort by:</span>
+                <select
+                  value={`${sortField}-${sortDirection}`}
+                  onChange={(e) => {
+                    const [field, direction] = e.target.value.split('-');
+                    setSortField(field);
+                    setSortDirection(direction);
+                  }}
+                  className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
+                >
+                  <option value="radio_name-asc">Radio Name (A-Z)</option>
+                  <option value="radio_name-desc">Radio Name (Z-A)</option>
+                  <option value="frequency-asc">Frequency (A-Z)</option>
+                  <option value="frequency-desc">Frequency (Z-A)</option>
+                  <option value="radio_language-asc">Language (A-Z)</option>
+                  <option value="radio_language-desc">Language (Z-A)</option>
+                  <option value="emirate_state-asc">Emirate (A-Z)</option>
+                  <option value="emirate_state-desc">Emirate (Z-A)</option>
+                </select>
               </div>
             </div>
           </div>
 
           {/* Radios Display */}
-          {loading ? (
-            <div className="text-center py-12">
-              <div
-                className="animate-spin rounded-full h-12 w-12 mx-auto mb-4"
-                style={{
-                  borderBottom: `2px solid ${theme.primary}`,
-                  borderRight: `2px solid transparent`
-                }}
-              ></div>
-              <p className="text-lg" style={{ color: theme.textSecondary }}>Loading radio stations...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600 text-lg">{error}</p>
-            </div>
-          ) : (
+          {sortedRadios.length > 0 ? (
             <>
-              {/* Enhanced Card View */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedRadios.map((radio) => (
-                  <motion.div
-                    key={radio.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
-                    onClick={() => handleCardClick(radio.id)}
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <img
-                          src={radio.image_url || "/logo.png"}
-                          alt={radio.radio_name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
-                          {radio.frequency}
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-semibold text-[#212121] mb-3">
-                        {radio.radio_name}
-                      </h3>
-                      <div className="space-y-3 text-sm text-[#757575]">
-                        <div className="flex items-center gap-2">
-                          <Globe className="w-4 h-4 text-[#1976D2]" />
-                          <span className="font-medium">Language:</span> {radio.radio_language}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-[#1976D2]" />
-                          <span className="font-medium">Emirate:</span> {radio.emirate_state}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-[#1976D2]" />
-                          <span className="font-medium">Popular RJ:</span> {radio.radio_popular_rj}
-                        </div>
-                        {radio.description && (
-                          <div className="mt-3 p-2 bg-[#FAFAFA] rounded text-xs">
-                            <span className="font-medium">Description:</span> {radio.description.substring(0, 100)}{radio.description.length > 100 ? '...' : ''}
+              {/* Enhanced Grid View with Image Backgrounds */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {sortedRadios.map((radio, index) => {
+                    return (
+                      <motion.div
+                        key={radio.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        onClick={() => handleRadioClick(radio)}
+                        className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden h-80"
+                        style={{
+                          boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                        }}
+                      >
+                        {/* Enhanced Background Image with Error Handling */}
+                        <div className="absolute inset-0">
+                          {radio.image_url ? (
+                            <img
+                              src={radio.image_url}
+                              alt={radio.radio_name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                // Fallback to logo if image fails to load
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'block';
+                              }}
+                              onLoad={(e) => {
+                                // Hide fallback if image loads successfully
+                                if (e.target.nextElementSibling) {
+                                  e.target.nextElementSibling.style.display = 'none';
+                                }
+                              }}
+                            />
+                          ) : null}
+
+                          {/* Fallback logo */}
+                          <div
+                            className={`w-full h-full ${radio.image_url ? 'hidden' : 'block'}`}
+                            style={{ display: radio.image_url ? 'none' : 'block' }}
+                          >
+                            <img
+                              src="/logo.png"
+                              alt="Logo"
+                              className="w-full h-full object-contain"
+                            />
                           </div>
-                        )}
-                      </div>
-                      <div className="mt-4">
-                        <button className="w-full bg-[#1976D2] text-white py-2 rounded-lg hover:bg-[#1565C0] transition-colors font-medium">
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="mt-8 flex justify-center">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="px-4 py-2 rounded-lg border border-[#E0E0E0] bg-white text-[#212121] hover:bg-[#F5F5F5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                    >
-                      <ChevronLeft size={16} />
-                      Previous
-                    </button>
+                          {/* Dark overlay for better text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        </div>
 
-                    {/* Page Numbers */}
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
-                      }
+                        {/* Heart Icon */}
+                        <div className="absolute top-4 right-4 z-20">
+                          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                            <Radio className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
 
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => handlePageChange(pageNum)}
-                          className={`px-4 py-2 rounded-lg border transition-colors ${
-                            currentPage === pageNum
-                              ? 'bg-[#1976D2] text-white border-[#1976D2]'
-                              : 'border-[#E0E0E0] bg-white text-[#212121] hover:bg-[#F5F5F5]'
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                        {/* Enhanced Status Badges */}
+                        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                          <span className="px-3 py-1 bg-blue-500 text-white text-xs font-medium rounded-full">
+                            {radio.frequency}
+                          </span>
+                          {radio.radio_language && (
+                            <span className="px-3 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
+                              {radio.radio_language}
+                            </span>
+                          )}
+                        </div>
 
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2 rounded-lg border border-[#E0E0E0] bg-white text-[#212121] hover:bg-[#F5F5F5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                    >
-                      Next
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
+                        {/* Enhanced Engagement Stats */}
+                        <div className="absolute top-16 right-4 z-20 flex flex-col gap-2">
+                          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                            <User className="w-4 h-4 text-white" />
+                            <span className="text-white text-xs font-medium">
+                              {radio.radio_popular_rj || 'N/A'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Bottom Content Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white">
+                          {/* Name and Rating */}
+                          <div className="mb-3">
+                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors line-clamp-1">
+                              {radio.radio_name}
+                            </h3>
+                          </div>
+
+                          {/* Description */}
+                          <p className="text-white/90 text-sm mb-3 line-clamp-2">
+                            {radio.description || `${radio.radio_name} broadcasting at ${radio.frequency}`}
+                          </p>
+
+                          {/* Location and Type Row */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center text-sm text-white/80">
+                              <MapPin size={14} className="mr-1" />
+                              <span>{radio.emirate_state || 'UAE'}</span>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-white">
+                                {radio.radio_language}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
 
-              {!loading && !error && filteredRadios.length === 0 && (
-                <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
-                  <div className="w-24 h-24 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-6">
-                    <Radio className="w-12 h-12 text-[#BDBDBD]" />
+              {/* Enhanced List View */}
+              {viewMode === 'list' && (
+                <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{
+                  borderColor: theme.borderLight,
+                  boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr style={{ backgroundColor: theme.backgroundSoft, borderBottom: '2px solid #e2e8f0' }}>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('radio_name')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Radio Name {getSortIcon('radio_name')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('frequency')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Frequency {getSortIcon('frequency')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('radio_language')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Language {getSortIcon('radio_language')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('emirate_state')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Emirate {getSortIcon('emirate_state')}
+                            </div>
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Popular RJ
+                          </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedRadios.map((radio, index) => {
+                          return (
+                            <tr
+                              key={radio.id}
+                              className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                              style={{ borderColor: theme.borderLight }}
+                              onClick={() => handleRadioClick(radio)}
+                            >
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  {/* Enhanced image/logo display */}
+                                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                    {radio.image_url ? (
+                                      <img
+                                        src={radio.image_url}
+                                        alt={radio.radio_name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextElementSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div
+                                      className={`w-full h-full flex items-center justify-center ${radio.image_url ? 'hidden' : 'flex'}`}
+                                      style={{ display: radio.image_url ? 'none' : 'flex' }}
+                                    >
+                                      <img
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        className="w-full h-full object-contain"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                      {radio.radio_name}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {radio.frequency}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {radio.radio_language || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {radio.emirate_state || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                  {radio.radio_popular_rj || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                >
+                                  View Details
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                  <h3 className="text-2xl font-semibold text-[#212121] mb-3">
-                    No radio stations found
-                  </h3>
-                  <p className="text-[#757575] text-lg max-w-md mx-auto">
-                    We couldn't find any radio stations matching your search criteria. Try adjusting your filters.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      clearAllFilters();
-                      resetPagination();
-                    }}
-                    className="mt-6 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors"
-                  >
-                    Clear All Filters
-                  </button>
                 </div>
               )}
             </>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-lg shadow-lg border" style={{ borderColor: theme.borderLight }}>
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ backgroundColor: theme.backgroundSoft }}
+              >
+                <Radio size={48} style={{ color: theme.textDisabled }} />
+              </div>
+              <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                No radio stations found
+              </h3>
+              <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
+                We couldn't find any radio stations matching your search criteria.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  clearAllFilters();
+                }}
+                className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: theme.primary }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+              >
+                Clear All Filters
+              </button>
+            </div>
           )}
         </main>
       </div>
