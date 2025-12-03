@@ -78,7 +78,7 @@ const EventViewModal = ({ isOpen, onClose, event }) => {
               backgroundColor: event.status === 'active' ? '#E8F5E8' :
                               event.status === 'cancelled' ? '#FFEBEE' : '#FFF3E0'
             }}>
-              {event.status.toUpperCase()}
+              {event.status ? event.status.toUpperCase() : 'N/A'}
             </span>
           </div>
           <div>
@@ -2151,7 +2151,7 @@ const EventManagement = () => {
                                 fontWeight: 'bold',
                                 ...getStatusColor(event.status)
                               }}>
-                                {event.status.toUpperCase()}
+                                {event.status ? event.status.toUpperCase() : 'N/A'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-[#212121]">{formatDate(event.start_date)}</td>
