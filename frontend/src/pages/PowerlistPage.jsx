@@ -639,64 +639,16 @@ const PowerlistPage = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         </div>
 
-                        {/* Heart Icon */}
-                        <div className="absolute top-4 right-4 z-20">
-                          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.682l-1.318-1.364a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                          </div>
-                        </div>
 
-                        {/* Enhanced Status Badges */}
-                        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                          {nomination.status === 'approved' && (
-                            <span className="px-3 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
-                              ✓ Verified
-                            </span>
-                          )}
-                          {nomination.industry && (
-                            <span className="px-3 py-1 bg-blue-500 text-white text-xs font-medium rounded-full">
-                              {nomination.industry}
-                            </span>
-                          )}
-                        </div>
 
-                        {/* Enhanced Engagement Stats */}
-                        <div className="absolute top-16 right-4 z-20 flex flex-col gap-2">
-                          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                            <Eye size={12} className="text-white" />
-                            <span className="text-white text-xs font-medium">
-                              {Math.floor(Math.random() * 100) + 10}k
-                            </span>
-                          </div>
-                          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                            <Award size={12} className="text-white" />
-                            <span className="text-white text-xs font-medium">
-                              {nomination.company_or_individual === 'Individual' ? 'IND' : 'CORP'}
-                            </span>
-                          </div>
-                        </div>
 
                         {/* Bottom Content Overlay */}
                         <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white">
-                          {/* Name and Rating */}
+                          {/* Name */}
                           <div className="mb-3">
                             <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors line-clamp-1">
                               {nomination.publication_name}
                             </h3>
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star 
-                                    key={i} 
-                                    size={16} 
-                                    className="text-yellow-400 fill-current" 
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-sm font-medium text-white">5.0</span>
-                            </div>
                           </div>
 
                           {/* Description */}
