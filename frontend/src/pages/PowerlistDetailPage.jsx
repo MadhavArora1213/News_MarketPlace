@@ -135,39 +135,6 @@ const PowerlistDetailPage = () => {
     }
   };
 
-  // Status badge component
-  const StatusBadge = ({ status }) => {
-    const getStatusStyle = (status) => {
-      switch (status) {
-        case 'approved':
-          return { backgroundColor: theme.success + '20', color: theme.success };
-        case 'pending':
-          return { backgroundColor: theme.warning + '20', color: theme.warning };
-        case 'rejected':
-          return { backgroundColor: theme.danger + '20', color: theme.danger };
-        default:
-          return { backgroundColor: theme.backgroundSoft, color: theme.textSecondary };
-      }
-    };
-
-    const getStatusText = (status) => {
-      switch (status) {
-        case 'approved': return 'Approved';
-        case 'pending': return 'Pending';
-        case 'rejected': return 'Rejected';
-        default: return status;
-      }
-    };
-
-    return (
-      <span 
-        className="px-3 py-1 rounded-full text-sm font-medium"
-        style={getStatusStyle(status)}
-      >
-        {getStatusText(status)}
-      </span>
-    );
-  };
 
   if (loading) {
     return (
@@ -271,11 +238,6 @@ const PowerlistDetailPage = () => {
                         className="w-full h-full object-contain"
                       />
                     )}
-                    
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
-                      <StatusBadge status={powerlistNomination.status} />
-                    </div>
                   </div>
 
                   {/* Publication and Power List Info */}
@@ -383,15 +345,6 @@ const PowerlistDetailPage = () => {
                   </div>
                 )}
 
-                {/* Terms Agreement */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: theme.success + '10' }}>
-                    <CheckCircle size={20} style={{ color: theme.success }} />
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>
-                      This nomination has been reviewed and approved by our team.
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -403,10 +356,6 @@ const PowerlistDetailPage = () => {
                   Nomination Summary
                 </h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span style={{ color: theme.textSecondary }}>Status</span>
-                    <StatusBadge status={powerlistNomination.status} />
-                  </div>
                   <div className="flex items-center justify-between">
                     <span style={{ color: theme.textSecondary }}>Industry</span>
                     <span style={{ color: theme.textPrimary }}>{powerlistNomination.industry || 'General'}</span>
