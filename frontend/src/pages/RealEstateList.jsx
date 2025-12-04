@@ -771,19 +771,14 @@ const RealEstateList = () => {
                           <Link to={`/real-estates/${realEstate.id}`}>
                             {/* Enhanced Image Section */}
                             <div className="relative aspect-video bg-[#E0E0E0]">
-                              {realEstate.images && realEstate.images.length > 0 ? (
-                                <img
-                                  src={realEstate.images[0]}
-                                  alt={realEstate.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <img
-                                  src="/logo.png"
-                                  alt="Logo"
-                                  className="w-full h-full object-cover"
-                                />
-                              )}
+                              <img
+                                src={realEstate.images && realEstate.images.length > 0 ? realEstate.images[0] : "/logo.png"}
+                                alt={realEstate.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = "/logo.png";
+                                }}
+                              />
                               <div className="absolute top-3 right-3">
                                 <div className="bg-[#4CAF50] text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
                                   <CheckCircle className="w-3 h-3" />
@@ -1093,19 +1088,14 @@ const RealEstateList = () => {
                     >
                       {/* Image */}
                       <div className="relative aspect-video bg-[#E0E0E0]">
-                        {realEstate.images && realEstate.images.length > 0 ? (
-                          <img
-                            src={realEstate.images[0]}
-                            alt={realEstate.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/logo.png"
-                            alt="Logo"
-                            className="w-full h-full object-cover"
-                          />
-                        )}
+                        <img
+                          src={realEstate.images && realEstate.images.length > 0 ? realEstate.images[0] : "/logo.png"}
+                          alt={realEstate.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "/logo.png";
+                          }}
+                        />
                         <div className="absolute top-3 right-3">
                           <div className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${
                             realEstate.status === 'approved' ? 'bg-[#4CAF50] text-white' :
