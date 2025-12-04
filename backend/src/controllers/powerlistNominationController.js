@@ -252,7 +252,8 @@ class PowerlistNominationController {
         location_region,
         company_or_individual,
         publication_name,
-        power_list_name
+        power_list_name,
+        tentative_month
       } = req.query;
 
       const filters = {};
@@ -261,6 +262,7 @@ class PowerlistNominationController {
       if (industry) filters.industry = industry;
       if (location_region) filters.location_region = location_region;
       if (company_or_individual) filters.company_or_individual = company_or_individual;
+      if (tentative_month) filters.tentative_month = tentative_month;
 
       // Add search filters
       let searchSql = '';
@@ -460,7 +462,8 @@ class PowerlistNominationController {
         company_or_individual,
         location_region,
         publication_name,
-        power_list_name
+        power_list_name,
+        tentative_month
       } = req.query;
 
       const filters = {
@@ -471,6 +474,7 @@ class PowerlistNominationController {
       if (industry) filters.industry = industry;
       if (company_or_individual) filters.company_or_individual = company_or_individual;
       if (location_region) filters.location_region = location_region;
+      if (tentative_month) filters.tentative_month = tentative_month;
 
       // Add search filters
       let searchSql = '';
