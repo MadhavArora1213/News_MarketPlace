@@ -473,6 +473,11 @@ const PowerlistDetailPage = () => {
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
                   Submit Nomination
                 </h3>
+                <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#FFEBEE', border: `1px solid ${theme.danger}` }}>
+                  <p className="text-sm font-medium" style={{ color: theme.danger }}>
+                    Disclaimer: We do not ensure or authorize to add this in publication.
+                  </p>
+                </div>
                 <form onSubmit={handleNominationSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-1" style={{ color: theme.textPrimary }}>
@@ -537,9 +542,6 @@ const PowerlistDetailPage = () => {
                     {submittingNomination ? 'Submitting...' : 'Submit Nomination'}
                   </button>
                 </form>
-                <p className="text-xs mt-3" style={{ color: theme.textSecondary }}>
-                  We do not ensure or authorize to add this in publication.
-                </p>
               </div>
             </div>
           </div>

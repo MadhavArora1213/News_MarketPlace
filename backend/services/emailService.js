@@ -1,17 +1,43 @@
-const nodemailer = require('nodemailer');
+require('dotenv').config();
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
-// Create transporter (configure based on your email service)
+// Initialize Brevo API
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+// Set API key from environment variables
+if (process.env.BREVO_API_KEY) {
+  apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+  console.log('Brevo API key configured successfully');
+} else {
+  console.warn('BREVO_API_KEY not found in environment variables');
+}
+
+// Create transporter function for Brevo
 const createTransporter = () => {
-  // For development, we'll use a console logger
-  // In production, configure with actual SMTP settings
   return {
     sendMail: async (mailOptions) => {
-      console.log('📧 Email would be sent:', {
-        to: mailOptions.to,
-        subject: mailOptions.subject,
-        html: mailOptions.html ? 'HTML content included' : 'No HTML content'
-      });
-      return { messageId: 'dev-' + Date.now() };
+      try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.subject = mailOptions.subject;
+        sendSmtpEmail.htmlContent = mailOptions.html;
+        sendSmtpEmail.sender = {
+          name: process.env.BREVO_FROM_NAME || 'News Marketplace',
+          email: process.env.BREVO_FROM_EMAIL || 'noreply@newsmarketplace.com'
+        };
+        sendSmtpEmail.to = [{ email: mailOptions.to }];
+
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log('📧 Email sent via Brevo:', {
+          to: mailOptions.to,
+          subject: mailOptions.subject,
+          messageId: result.messageId
+        });
+        return { messageId: result.messageId };
+      } catch (error) {
+        console.error('❌ Error sending email via Brevo:', error.message);
+        throw error;
+      }
     }
   };
 };
