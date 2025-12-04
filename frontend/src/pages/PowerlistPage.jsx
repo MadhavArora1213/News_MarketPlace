@@ -61,6 +61,7 @@ const PowerlistPage = () => {
   const [companyOrIndividualFilter, setCompanyOrIndividualFilter] = useState('');
   const [locationRegionFilter, setLocationRegionFilter] = useState('');
   const [monthFilter, setMonthFilter] = useState(''); // New month filter
+  const [publicationFilter, setPublicationFilter] = useState(''); // New publication filter
 
   // Sorting state
   const [sortField, setSortField] = useState('publication_name');
@@ -104,6 +105,7 @@ const PowerlistPage = () => {
       if (companyOrIndividualFilter) params.append('company_or_individual', companyOrIndividualFilter);
       if (locationRegionFilter) params.append('location_region', locationRegionFilter);
       if (monthFilter) params.append('tentative_month', monthFilter);
+      if (publicationFilter) params.append('publication_name', publicationFilter);
 
       // Use the powerlist nominations endpoint for approved nominations
       const response = await api.get(`/powerlist-nominations/public?${params.toString()}`);
@@ -133,7 +135,7 @@ const PowerlistPage = () => {
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, industryFilter, companyOrIndividualFilter, locationRegionFilter, monthFilter]);
+  }, [searchTerm, industryFilter, companyOrIndividualFilter, locationRegionFilter, monthFilter, publicationFilter]);
 
   // Handle page changes
   const handlePageChange = (page) => {
@@ -182,10 +184,11 @@ const PowerlistPage = () => {
     setCompanyOrIndividualFilter('');
     setLocationRegionFilter('');
     setMonthFilter('');
+    setPublicationFilter('');
   };
 
   const hasActiveFilters = () => {
-    return industryFilter || companyOrIndividualFilter || locationRegionFilter || monthFilter;
+    return industryFilter || companyOrIndividualFilter || locationRegionFilter || monthFilter || publicationFilter;
   };
 
   // Get unique values for filter options
@@ -207,6 +210,11 @@ const PowerlistPage = () => {
   const getUniqueMonths = () => {
     const months = powerlists.map(p => p.tentative_month).filter(Boolean);
     return [...new Set(months)].sort();
+  };
+
+  const getUniquePublications = () => {
+    const publications = powerlists.map(p => p.publication_name).filter(Boolean);
+    return [...new Set(publications)].sort();
   };
 
   const handleShowAuth = () => {
@@ -486,6 +494,23 @@ const PowerlistPage = () => {
                       <option value="">All Months</option>
                       {getUniqueMonths().map(month => (
                         <option key={month} value={month}>{month}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Publication Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Publication
+                    </label>
+                    <select
+                      value={publicationFilter}
+                      onChange={(e) => setPublicationFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Publications</option>
+                      {getUniquePublications().map(publication => (
+                        <option key={publication} value={publication}>{publication}</option>
                       ))}
                     </select>
                   </div>

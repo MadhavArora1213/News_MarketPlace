@@ -96,6 +96,12 @@ class PowerlistNomination {
       paramCount++;
     }
 
+    if (filters.tentative_month) {
+      sql += ` AND tentative_month = $${paramCount}`;
+      values.push(filters.tentative_month);
+      paramCount++;
+    }
+
     // Add search conditions
     if (searchSql) {
       sql += searchSql;
@@ -253,6 +259,12 @@ class PowerlistNomination {
         paramCount++;
       }
 
+      if (filters.tentative_month) {
+        sql += ` AND tentative_month = $${paramCount}`;
+        values.push(filters.tentative_month);
+        paramCount++;
+      }
+
       if (searchSql) {
         sql += searchSql;
         values.push(...searchValues);
@@ -300,6 +312,12 @@ class PowerlistNomination {
       if (filters.company_or_individual) {
         sql += ` AND company_or_individual = $${paramCount}`;
         values.push(filters.company_or_individual);
+        paramCount++;
+      }
+
+      if (filters.tentative_month) {
+        sql += ` AND tentative_month = $${paramCount}`;
+        values.push(filters.tentative_month);
         paramCount++;
       }
 
