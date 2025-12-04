@@ -235,12 +235,24 @@ const PowerlistOrders = () => {
   };
 
   const handleStatusChange = async (submissionId, newStatus) => {
+    if (!window.confirm(`Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this nomination?\n\nThis will send email notifications to both the applicant and admin team.`)) {
+      return;
+    }
+
     try {
-      await api.put(`/powerlist-nomination-submissions/${submissionId}/status`, { status: newStatus });
+      const response = await api.put(`/powerlist-nomination-submissions/${submissionId}/status`, { status: newStatus });
+      
+      // Show success message with email confirmation
+      alert(`✅ Nomination ${newStatus} successfully!\n\n📧 Email notifications have been sent to:\n• The applicant\n• Admin team\n\nThe status has been updated in the system.`);
+      
       fetchSubmissions();
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Error updating status. Please try again.');
+      let errorMessage = 'Error updating status. Please try again.';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+      alert(`❌ ${errorMessage}`);
     }
   };
 
@@ -425,6 +437,7 @@ const PowerlistOrders = () => {
                                 fontWeight: '600'
                               }}
                               disabled={!hasAnyRole(['super_admin', 'content_manager'])}
+                              title={`${submission.status === 'approved' ? 'Reject' : 'Approve'} nomination (sends email notifications)`}
                             >
                               {submission.status === 'approved' ? 'Reject' : 'Approve'}
                             </button>
@@ -441,6 +454,7 @@ const PowerlistOrders = () => {
                                 fontWeight: '600'
                               }}
                               disabled={!hasAnyRole(['super_admin'])}
+                              title="Permanently delete this nomination"
                             >
                               Delete
                             </button>

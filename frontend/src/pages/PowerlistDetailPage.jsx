@@ -152,9 +152,11 @@ const PowerlistDetailPage = () => {
         ...nominationForm
       };
 
-      await api.post('/powerlist-nomination-submissions', submissionData);
+      const response = await api.post('/powerlist-nomination-submissions', submissionData);
 
-      alert('Nomination submitted successfully! Our team will contact you soon.');
+      // Show success message with email confirmation info
+      alert(`✅ ${response.data.message}\n\n📧 Confirmation emails have been sent to:\n• Your email: ${nominationForm.email}\n• Our team for review\n\nPlease check your email for details and next steps.`);
+      
       setNominationForm({
         full_name: '',
         email: '',
@@ -163,7 +165,15 @@ const PowerlistDetailPage = () => {
       });
     } catch (error) {
       console.error('Error submitting nomination:', error);
-      alert('Failed to submit nomination. Please try again.');
+      
+      let errorMessage = 'Failed to submit nomination. Please try again.';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.details) {
+        errorMessage = error.response.data.details.map(d => d.msg).join(', ');
+      }
+      
+      alert(`❌ ${errorMessage}`);
     } finally {
       setSubmittingNomination(false);
     }
@@ -475,7 +485,14 @@ const PowerlistDetailPage = () => {
                 </h3>
                 <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#FFEBEE', border: `1px solid ${theme.danger}` }}>
                   <p className="text-sm font-medium" style={{ color: theme.danger }}>
-                    Disclaimer: We do not ensure or authorize to add this in publication.
+                    <strong>Disclaimer:</strong> We do not guarantee or authorize inclusion in the publication. 
+                    All nominations are subject to review and editorial discretion.
+                  </p>
+                </div>
+                <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#E3F2FD', border: `1px solid ${theme.primary}` }}>
+                  <p className="text-sm font-medium" style={{ color: theme.primary }}>
+                    📧 <strong>Email Notifications:</strong> You and our team will receive confirmation emails immediately upon submission. 
+                    Status updates will also be sent via email.
                   </p>
                 </div>
                 <form onSubmit={handleNominationSubmit} className="space-y-4">
@@ -536,10 +553,17 @@ const PowerlistDetailPage = () => {
                   <button
                     type="submit"
                     disabled={submittingNomination}
-                    className="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+                    className="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ backgroundColor: theme.primary }}
                   >
-                    {submittingNomination ? 'Submitting...' : 'Submit Nomination'}
+                    {submittingNomination ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Submitting & Sending Emails...
+                      </div>
+                    ) : (
+                      'Submit Nomination'
+                    )}
                   </button>
                 </form>
               </div>

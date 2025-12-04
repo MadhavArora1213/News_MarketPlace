@@ -23,7 +23,7 @@ const createTransporter = () => {
         sendSmtpEmail.htmlContent = mailOptions.html;
         sendSmtpEmail.sender = {
           name: process.env.BREVO_FROM_NAME || 'News Marketplace',
-          email: process.env.BREVO_FROM_EMAIL || 'noreply@newsmarketplace.com'
+          email: process.env.BREVO_FROM_EMAIL || 'menastories71@gmail.com'
         };
         sendSmtpEmail.to = [{ email: mailOptions.to }];
 
@@ -50,7 +50,7 @@ const sendCustomEmail = async (to, subject, html) => {
     console.log('📧 Attempting to send email to:', to, 'Subject:', subject);
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'noreply@newsmarketplace.com',
+      from: process.env.EMAIL_FROM || 'menastories71@gmail.com',
       to,
       subject,
       html
