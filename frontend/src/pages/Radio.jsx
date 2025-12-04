@@ -442,12 +442,6 @@ const RadioPage = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         </div>
 
-                        {/* Heart Icon */}
-                        <div className="absolute top-4 right-4 z-20">
-                          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                            <Radio className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
 
                         {/* Enhanced Status Badges */}
                         <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
@@ -463,12 +457,14 @@ const RadioPage = () => {
 
                         {/* Enhanced Engagement Stats */}
                         <div className="absolute top-16 right-4 z-20 flex flex-col gap-2">
-                          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                            <User className="w-4 h-4 text-white" />
-                            <span className="text-white text-xs font-medium">
-                              {radio.radio_popular_rj || 'N/A'}
-                            </span>
-                          </div>
+                          {radio.radio_popular_rj && (
+                            <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                              <User className="w-4 h-4 text-white" />
+                              <span className="text-white text-xs font-medium">
+                                {radio.radio_popular_rj}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Bottom Content Overlay */}
