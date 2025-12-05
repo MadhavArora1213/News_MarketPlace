@@ -409,13 +409,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
         } else if (key === 'custom_location') {
           // Skip the old custom_location field as it's replaced by the new location fields
           return;
-        } else if (key === 'callingNumber') {
-          submitData.append('owner_number', formatPhoneNumber(formData.callingCountry, formData.callingNumber));
-        } else if (key === 'whatsappNumber') {
-          submitData.append('owner_whatsapp', formatPhoneNumber(formData.whatsappCountry, formData.whatsappNumber));
-        } else if (key === 'callingCountry' || key === 'whatsappCountry') {
-          // Skip these as they're not needed in backend
-          return;
         } else {
           submitData.append(key, formData[key]);
         }

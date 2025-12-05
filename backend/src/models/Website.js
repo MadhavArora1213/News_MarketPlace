@@ -117,13 +117,13 @@ class Website {
       errors.push('Categories must be a non-empty array');
     }
 
-    const validLocationTypes = ['Global', 'Specific'];
+    const validLocationTypes = ['Global', 'Regional'];
     if (!websiteData.location_type || !validLocationTypes.includes(websiteData.location_type)) {
-      errors.push('Location type must be one of: Global, Specific');
+      errors.push('Location type must be one of: Global, Regional');
     }
 
-    if (websiteData.location_type === 'Specific' && (!websiteData.country_name || typeof websiteData.country_name !== 'string' || websiteData.country_name.trim().length === 0)) {
-      errors.push('Country name is required when location type is Specific');
+    if (websiteData.location_type === 'Regional' && (!websiteData.selected_country || typeof websiteData.selected_country !== 'string' || websiteData.selected_country.trim().length === 0)) {
+      errors.push('Country is required when location type is Regional');
     }
 
     // Content Policies
