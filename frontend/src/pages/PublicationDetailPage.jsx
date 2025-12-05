@@ -6,11 +6,12 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
-import { 
-  ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield, 
-  Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle, 
+import {
+  ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield,
+  Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
   DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
-  MapPin, Calendar, Users, Zap, Eye, Heart, Share
+  MapPin, Calendar, Users, Zap, Eye, Heart, Share,
+  Instagram, Facebook, Twitter, Linkedin
 } from 'lucide-react';
 
 // Updated theme colors matching the color palette from PDF
@@ -44,13 +45,6 @@ const PublicationDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-  const [stats, setStats] = useState({
-    views: 0,
-    orders: 0,
-    rating: 0,
-    reviews: 0
-  });
   const [isOrdering, setIsOrdering] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orderFormData, setOrderFormData] = useState({
@@ -94,10 +88,6 @@ const PublicationDetailPage = () => {
     return numPrice > 0 ? `$${numPrice.toFixed(2)}` : 'Contact for pricing';
   };
 
-  const getRatingStars = (da) => {
-    const rating = Math.min(Math.max(Math.round((parseInt(da) || 0) / 20), 1), 5);
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
-  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -159,27 +149,6 @@ const PublicationDetailPage = () => {
     }
   };
 
-  const handleViewStats = async () => {
-    if (!isAuthenticated) {
-      setShowAuth(true);
-      return;
-    }
-
-    try {
-      // Use real data from the publication instead of dummy data
-      const realStats = {
-        views: (parseInt(publication.website_news_index) || 0) * 50 + (parseInt(publication.da) || 0) * 10,
-        orders: (parseInt(publication.da) || 0) * 2 + (parseInt(publication.dr) || 0),
-        rating: (parseInt(publication.da) || 50) >= 80 ? 4.8 : (parseInt(publication.da) || 50) >= 60 ? 4.5 : 4.2,
-        reviews: Math.floor(((parseInt(publication.da) || 0) + (parseInt(publication.dr) || 0)) / 3)
-      };
-      
-      setStats(realStats);
-      setShowStats(true);
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    }
-  };
 
   const handlePlaceOrder = () => {
     if (!isAuthenticated) {
@@ -310,11 +279,23 @@ const PublicationDetailPage = () => {
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Publication Header */}
                 <div className="flex items-start gap-6 mb-8">
-                  <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: theme.primaryLight }}
-                  >
-                    <Globe size={32} style={{ color: theme.primary }} />
+                  <div className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {publication.image ? (
+                      <img
+                        src={publication.image}
+                        alt={publication.publication_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = '/logo.png';
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="w-12 h-12 object-contain"
+                      />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
@@ -384,15 +365,11 @@ const PublicationDetailPage = () => {
                       <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
                         <li className="flex items-center gap-2">
                           <FileText size={14} />
-                          <span>Word Limit: {publication.words_limit || 'N/A'}</span>
+                          <span>Word Limit: {publication.word_limit ? `${publication.word_limit} words` : 'N/A'}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <ImageIcon size={14} />
-                          <span>Images: {publication.number_of_images || 0}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <LinkIcon size={14} />
-                          <span>Link Building: {publication.do_follow ? 'Do-follow' : 'No-follow'}</span>
+                          <span>Images: {publication.image_count || 0} needed</span>
                         </li>
                       </ul>
                     </div>
@@ -417,13 +394,13 @@ const PublicationDetailPage = () => {
                 </div>
 
                 {/* Example Link */}
-                {publication.example_link && (
+                {publication.article_reference_link && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Example Work
+                      Example Article
                     </h3>
                     <a
-                      href={publication.example_link}
+                      href={publication.article_reference_link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
@@ -523,7 +500,7 @@ const PublicationDetailPage = () => {
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
                   SEO Metrics
                 </h3>
-                <div className="grid grid-cols-2 gap-4 text-center">
+                <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                     <div className="text-2xl font-bold mb-1" style={{ color: theme.primary }}>
                       {publication.da || 0}
@@ -536,11 +513,11 @@ const PublicationDetailPage = () => {
                     </div>
                     <div className="text-xs" style={{ color: theme.textSecondary }}>Domain Rating</div>
                   </div>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-sm" style={{ color: theme.textSecondary }}>Rating</div>
-                  <div className="text-lg font-medium" style={{ color: theme.warning }}>
-                    {getRatingStars(publication.da)}
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
+                    <div className="text-lg font-bold mb-1" style={{ color: publication.do_follow ? '#4CAF50' : '#F44336' }}>
+                      {publication.do_follow ? 'Yes' : 'No'}
+                    </div>
+                    <div className="text-xs" style={{ color: theme.textSecondary }}>Opinion</div>
                   </div>
                 </div>
               </div>
@@ -613,17 +590,80 @@ const PublicationDetailPage = () => {
               <Share size={16} style={{ color: theme.primary }} />
               <span style={{ color: theme.textSecondary }}>Share</span>
             </button>
-            <button
-              onClick={handleViewStats}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: theme.borderLight,
-                color: theme.textSecondary
-              }}
-            >
-              <Eye size={16} style={{ color: theme.success }} />
-              <span style={{ color: theme.textSecondary }}>View Stats</span>
-            </button>
+            {/* Social Media Links */}
+            <div className="flex items-center gap-2">
+              {publication.instagram && (
+                <a
+                  href={publication.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: theme.borderLight }}
+                  title="Instagram"
+                >
+                  <Instagram size={16} style={{ color: '#E4405F' }} />
+                </a>
+              )}
+              {!publication.instagram && (
+                <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                  <Instagram size={16} style={{ color: '#E4405F' }} />
+                </div>
+              )}
+
+              {publication.facebook && (
+                <a
+                  href={publication.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: theme.borderLight }}
+                  title="Facebook"
+                >
+                  <Facebook size={16} style={{ color: '#1877F2' }} />
+                </a>
+              )}
+              {!publication.facebook && (
+                <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                  <Facebook size={16} style={{ color: '#1877F2' }} />
+                </div>
+              )}
+
+              {publication.twitter && (
+                <a
+                  href={publication.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: theme.borderLight }}
+                  title="X (Twitter)"
+                >
+                  <Twitter size={16} style={{ color: '#000000' }} />
+                </a>
+              )}
+              {!publication.twitter && (
+                <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                  <Twitter size={16} style={{ color: '#000000' }} />
+                </div>
+              )}
+
+              {publication.linkedin && (
+                <a
+                  href={publication.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: theme.borderLight }}
+                  title="LinkedIn"
+                >
+                  <Linkedin size={16} style={{ color: '#0077B5' }} />
+                </a>
+              )}
+              {!publication.linkedin && (
+                <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                  <Linkedin size={16} style={{ color: '#0077B5' }} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -639,191 +679,6 @@ const PublicationDetailPage = () => {
         />
       )}
 
-      {/* Stats Modal */}
-      {showStats && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10000,
-          padding: '20px'
-        }} onClick={() => setShowStats(false)}>
-          <div style={{
-            backgroundColor: theme.background,
-            borderRadius: '12px',
-            padding: '24px',
-            maxWidth: '500px',
-            width: '100%',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
-          }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.textPrimary }}>
-                Publication Statistics
-              </h2>
-              <button
-                onClick={() => setShowStats(false)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  color: theme.textSecondary
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div style={{
-                backgroundColor: theme.backgroundSoft,
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{
-                  fontSize: '24px',
-                  fontWeight: '700',
-                  color: theme.primary,
-                  marginBottom: '4px'
-                }}>
-                  {stats.views.toLocaleString()}
-                </div>
-                <div style={{
-                  fontSize: '12px',
-                  color: theme.textSecondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Total Views
-                </div>
-              </div>
-
-              <div style={{
-                backgroundColor: theme.backgroundSoft,
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{
-                  fontSize: '24px',
-                  fontWeight: '700',
-                  color: theme.success,
-                  marginBottom: '4px'
-                }}>
-                  {stats.orders}
-                </div>
-                <div style={{
-                  fontSize: '12px',
-                  color: theme.textSecondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Total Orders
-                </div>
-              </div>
-
-              <div style={{
-                backgroundColor: theme.backgroundSoft,
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{
-                  fontSize: '24px',
-                  fontWeight: '700',
-                  color: theme.warning,
-                  marginBottom: '4px'
-                }}>
-                  {stats.rating}★
-                </div>
-                <div style={{
-                  fontSize: '12px',
-                  color: theme.textSecondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Average Rating
-                </div>
-              </div>
-
-              <div style={{
-                backgroundColor: theme.backgroundSoft,
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{
-                  fontSize: '24px',
-                  fontWeight: '700',
-                  color: theme.info,
-                  marginBottom: '4px'
-                }}>
-                  {stats.reviews}
-                </div>
-                <div style={{
-                  fontSize: '12px',
-                  color: theme.textSecondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Total Reviews
-                </div>
-              </div>
-            </div>
-
-            <div style={{
-              backgroundColor: theme.primaryLight,
-              padding: '16px',
-              borderRadius: '8px',
-              marginBottom: '16px'
-            }}>
-              <h4 style={{
-                margin: '0 0 8px 0',
-                fontSize: '16px',
-                fontWeight: '600',
-                color: theme.primary
-              }}>
-                Performance Summary
-              </h4>
-              <p style={{
-                margin: 0,
-                fontSize: '14px',
-                color: theme.textSecondary
-              }}>
-                This publication has shown strong performance with high engagement rates and positive customer feedback.
-                The {stats.rating}★ rating reflects excellent service quality and customer satisfaction.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setShowStats(false)}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: theme.primary,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Order Modal */}
       {showOrderModal && (
