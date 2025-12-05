@@ -17,6 +17,8 @@ class AdminPublicationManagementController {
     body('do_follow').optional().isBoolean().withMessage('Do follow must be a boolean'),
     body('dr').optional().isInt({ min: 0, max: 100 }).withMessage('DR must be between 0 and 100'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
+    body('needs_images').optional().isBoolean().withMessage('Needs images must be a boolean'),
+    body('image_count').optional().isInt({ min: 1, max: 2 }).withMessage('Image count must be 1 or 2'),
     body('remarks').optional().trim(),
   ];
 
@@ -35,6 +37,8 @@ class AdminPublicationManagementController {
     body('do_follow').optional().isBoolean().withMessage('Do follow must be a boolean'),
     body('dr').optional().isInt({ min: 0, max: 100 }).withMessage('DR must be between 0 and 100'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
+    body('needs_images').optional().isBoolean().withMessage('Needs images must be a boolean'),
+    body('image_count').optional().isInt({ min: 1, max: 2 }).withMessage('Image count must be 1 or 2'),
     body('remarks').optional().trim(),
   ];
 

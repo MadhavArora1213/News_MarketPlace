@@ -20,6 +20,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
     do_follow: false,
     dr: '',
     word_limit: '',
+    needs_images: false,
+    image_count: '',
     remarks: ''
   });
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         do_follow: record.do_follow || false,
         dr: record.dr || '',
         word_limit: record.word_limit || '',
+        needs_images: record.needs_images || false,
+        image_count: record.image_count || '',
         remarks: record.remarks || ''
       });
     } else {
@@ -57,6 +61,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         do_follow: false,
         dr: '',
         word_limit: '',
+        needs_images: false,
+        image_count: '',
         remarks: ''
       });
     }
@@ -74,7 +80,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         practical_tat: parseInt(formData.practical_tat) || 0,
         price_usd: parseFloat(formData.price_usd) || 0,
         dr: parseInt(formData.dr) || 0,
-        word_limit: parseInt(formData.word_limit) || 0
+        word_limit: parseInt(formData.word_limit) || 0,
+        image_count: formData.needs_images ? parseInt(formData.image_count) || null : null
       };
 
       if (record) {
@@ -295,6 +302,46 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
                 style={inputStyle}
               />
             </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Needs Images</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="checkbox"
+                  id="needs_images"
+                  checked={formData.needs_images}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setFormData({
+                      ...formData,
+                      needs_images: checked,
+                      image_count: checked ? formData.image_count : ''
+                    });
+                  }}
+                  style={{ marginRight: '8px' }}
+                />
+                <label htmlFor="needs_images" style={{ fontSize: '14px', color: '#212121', margin: 0 }}>
+                  Requires images for publication
+                </label>
+              </div>
+            </div>
+
+            {formData.needs_images && (
+              <div style={formGroupStyle}>
+                <label style={labelStyle}>Image Count</label>
+                <select
+                  value={formData.image_count}
+                  onChange={(e) => setFormData({ ...formData, image_count: e.target.value })}
+                  style={inputStyle}
+                >
+                  <option value="">Select count</option>
+                  <option value="1">1 Image</option>
+                  <option value="2">2 Images</option>
+                </select>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>

@@ -17,6 +17,8 @@ class PublicationManagement {
     this.dr = data.dr;
     this.remarks = data.remarks;
     this.word_limit = data.word_limit;
+    this.needs_images = data.needs_images || false;
+    this.image_count = data.image_count;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
   }
@@ -37,22 +39,24 @@ class PublicationManagement {
       do_follow,
       dr,
       remarks,
-      word_limit
+      word_limit,
+      needs_images,
+      image_count
     } = data;
 
     const sql = `
       INSERT INTO publication_managements (
         region, publication_name, publication_url, da, article_reference_link,
         committed_tat, language, publication_primary_focus, practical_tat,
-        price_usd, do_follow, dr, remarks, word_limit
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        price_usd, do_follow, dr, remarks, word_limit, needs_images, image_count
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
       RETURNING *
     `;
 
     const values = [
       region, publication_name, publication_url, da, article_reference_link,
       committed_tat, language, publication_primary_focus, practical_tat,
-      price_usd, do_follow, dr, remarks, word_limit
+      price_usd, do_follow, dr, remarks, word_limit, needs_images, image_count
     ];
 
     const result = await query(sql, values);
@@ -133,6 +137,8 @@ class PublicationManagement {
       do_follow: this.do_follow,
       dr: this.dr,
       word_limit: this.word_limit,
+      needs_images: this.needs_images,
+      image_count: this.image_count,
       remarks: this.remarks,
       created_at: this.created_at,
       updated_at: this.updated_at
