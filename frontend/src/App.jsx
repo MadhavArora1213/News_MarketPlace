@@ -113,6 +113,7 @@ import ThemeOrderManagement from './components/admin/ThemeOrderManagement';
 import PressPackOrderManagement from './components/admin/PressPackOrderManagement';
 import PublicationManagementPage from './pages/admin/PublicationManagement';
 import PowerlistOrders from './pages/admin/PowerlistOrders';
+import RadioOrders from './pages/admin/RadioOrders';
 import Icon from './components/common/Icon';
 import PaparazziCreations from './pages/admin/PaparazziCreations';
 import EventCreationPage from './pages/admin/EventCreation';
@@ -173,28 +174,28 @@ const IconBadge = ({ name = 'document', size = 20, bg = '#E3F2FD', color = '#0D4
       case 'pencil':
         return (
           <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         );
       case 'eye':
         return (
           <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.3"/>
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.3" />
           </svg>
         );
       case 'bell':
         return (
           <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         );
       default:
         return (
           <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="1.4"/>
+            <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="1.4" />
           </svg>
         );
     }
@@ -265,565 +266,575 @@ function App() {
           <AdminAuthProvider>
             <AuthModalContext.Provider value={{ showAuthModal: handleShowAuth }}>
               <Router>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/csr" element={<CSR />} />
-            <Route path="/trademark-policy" element={<TrademarkPolicy />} />
-            <Route path="/data-protection" element={<DataProtection />} />
-            <Route path="/reselling-agreement" element={<ResellingAgreement />} />
-            <Route path="/press-guidelines" element={<PressGuidelines />} />
-            <Route path="/brands-people" element={<BrandsPeople />} />
-            <Route path="/media-partnerships" element={<MediaPartnerships />} />
-            <Route path="/otp" element={<OTPTest />} />
-            <Route path="/services-overview" element={<ServicesOverview />} />
-            <Route path="/podcasters" element={<PodcastersList />} />
-            <Route path="/podcasters/:id" element={<PodcasterDetail />} />
-            <Route path="/real-estates" element={<RealEstateList />} />
-            <Route path="/real-estates/:id" element={<RealEstateDetail />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/video-tutorials"
-              element={
-                <ProtectedRoute>
-                  <VideoTutorials />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/how-to-guides"
-              element={
-                <ProtectedRoute>
-                  <HowToGuides />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/download-center"
-              element={
-                <ProtectedRoute>
-                  <DownloadCenter />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/resource-library"
-              element={
-                <ProtectedRoute>
-                  <ResourceLibrary />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/careers/:id" element={<CareerDetailPage />} />
-            <Route path="/blogs" element={<BlogListingPage />} />
-            <Route path="/blog/:id" element={<BlogDetailPage />} />
-            <Route path="/radio" element={<Radio />} />
-            <Route path="/publications" element={<PublicationsPage />} />
-            <Route path="/publications/:id" element={<PublicationDetailPage />} />
-            <Route path="/published-works" element={<PublishedWorksPage />} />
-            <Route path="/published-works/:id" element={<PublishedWorkDetailPage />} />
-            <Route path="/orders-delivered" element={<OrdersDeliveredPage />} />
-            <Route path="/careers" element={<CareersPage />} />
-            <Route path="/careers/:id" element={<CareerDetailPage />} />
-            <Route path="/radio" element={<Radio />} />
-            <Route path="/radio/:id" element={<RadioDetails />} />
-            <Route path="/paparazzi" element={<Paparazzi />} />
-            <Route path="/paparazzi/:id" element={<PaparazziDetailPage />} />
-            
-            <Route
-              path="/paparazzi/submit"
-              element={
-                <ProtectedRoute>
-                  <PaparazziSubmissionPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/power-lists" element={<PowerlistPage />} />
-            <Route path="/power-lists/:id" element={<PowerlistDetailPage />} />
-            <Route path="/awards" element={<AwardsPage />} />
-            <Route path="/awards/:id" element={<AwardDetailPage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/themes" element={<ThemesPage />} />
-            <Route path="/themes/:id" element={<ThemeDetailPage />} />
-            <Route
-              path="/themes/submit"
-              element={
-                <ProtectedRoute>
-                  <ThemeSubmissionPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/press-packs" element={<PressPacksPage />} />
-            <Route path="/press-packs/:id" element={<PressPackDetailPage />} />
-            <Route path="/event-enquiry" element={<EventEnquiryPage />} />
-            <Route
-              path="/affiliate-program"
-              element={
-                <ProtectedRoute>
-                  <AffiliateEnquiryPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/agency-registration"
-              element={
-                <ProtectedRoute>
-                  <AgencyRegistrationPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reporter-registration"
-              element={
-                <ProtectedRoute>
-                  <ReporterRegistrationPage />
-                </ProtectedRoute>
-              }
-            />
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about-us" element={<AboutUs />} />
+                  <Route path="/contact-us" element={<ContactUs />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/cookie-policy" element={<CookiePolicy />} />
+                  <Route path="/refund-policy" element={<RefundPolicy />} />
+                  <Route path="/csr" element={<CSR />} />
+                  <Route path="/trademark-policy" element={<TrademarkPolicy />} />
+                  <Route path="/data-protection" element={<DataProtection />} />
+                  <Route path="/reselling-agreement" element={<ResellingAgreement />} />
+                  <Route path="/press-guidelines" element={<PressGuidelines />} />
+                  <Route path="/brands-people" element={<BrandsPeople />} />
+                  <Route path="/media-partnerships" element={<MediaPartnerships />} />
+                  <Route path="/otp" element={<OTPTest />} />
+                  <Route path="/services-overview" element={<ServicesOverview />} />
+                  <Route path="/podcasters" element={<PodcastersList />} />
+                  <Route path="/podcasters/:id" element={<PodcasterDetail />} />
+                  <Route path="/real-estates" element={<RealEstateList />} />
+                  <Route path="/real-estates/:id" element={<RealEstateDetail />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/video-tutorials"
+                    element={
+                      <ProtectedRoute>
+                        <VideoTutorials />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/how-to-guides"
+                    element={
+                      <ProtectedRoute>
+                        <HowToGuides />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/download-center"
+                    element={
+                      <ProtectedRoute>
+                        <DownloadCenter />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/resource-library"
+                    element={
+                      <ProtectedRoute>
+                        <ResourceLibrary />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/careers/:id" element={<CareerDetailPage />} />
+                  <Route path="/blogs" element={<BlogListingPage />} />
+                  <Route path="/blog/:id" element={<BlogDetailPage />} />
+                  <Route path="/radio" element={<Radio />} />
+                  <Route path="/publications" element={<PublicationsPage />} />
+                  <Route path="/publications/:id" element={<PublicationDetailPage />} />
+                  <Route path="/published-works" element={<PublishedWorksPage />} />
+                  <Route path="/published-works/:id" element={<PublishedWorkDetailPage />} />
+                  <Route path="/orders-delivered" element={<OrdersDeliveredPage />} />
+                  <Route path="/careers" element={<CareersPage />} />
+                  <Route path="/careers/:id" element={<CareerDetailPage />} />
+                  <Route path="/radio" element={<Radio />} />
+                  <Route path="/radio/:id" element={<RadioDetails />} />
+                  <Route path="/paparazzi" element={<Paparazzi />} />
+                  <Route path="/paparazzi/:id" element={<PaparazziDetailPage />} />
 
-            <Route
-              path="/website-submission"
-              element={
-                <ProtectedRoute>
-                  <WebsiteSubmissionPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/submit-article"
-              element={
-                <ProtectedRoute>
-                  <ArticleSubmissionPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai-article-questionnaire"
-              element={
-                <ProtectedRoute>
-                  <AiArticleQuestionnairePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai-article-generation/:id"
-              element={
-                <ProtectedRoute>
-                  <AiArticleGenerationPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/new/form/exhibition_form" element={<ExhibitionFormPage />} />
-            <Route
-              path="/reporter-submissions"
-              element={
-                <ProtectedRoute>
-                  <ReporterSubmissionsDashboard />
-                </ProtectedRoute>
-              }
-            />
+                  <Route
+                    path="/paparazzi/submit"
+                    element={
+                      <ProtectedRoute>
+                        <PaparazziSubmissionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/power-lists" element={<PowerlistPage />} />
+                  <Route path="/power-lists/:id" element={<PowerlistDetailPage />} />
+                  <Route path="/awards" element={<AwardsPage />} />
+                  <Route path="/awards/:id" element={<AwardDetailPage />} />
+                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/themes" element={<ThemesPage />} />
+                  <Route path="/themes/:id" element={<ThemeDetailPage />} />
+                  <Route
+                    path="/themes/submit"
+                    element={
+                      <ProtectedRoute>
+                        <ThemeSubmissionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/press-packs" element={<PressPacksPage />} />
+                  <Route path="/press-packs/:id" element={<PressPackDetailPage />} />
+                  <Route path="/event-enquiry" element={<EventEnquiryPage />} />
+                  <Route
+                    path="/affiliate-program"
+                    element={
+                      <ProtectedRoute>
+                        <AffiliateEnquiryPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <UserProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/agency-registration"
+                    element={
+                      <ProtectedRoute>
+                        <AgencyRegistrationPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/reporter-registration"
+                    element={
+                      <ProtectedRoute>
+                        <ReporterRegistrationPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <AdminProtectedRoute>
-                  <AdminDashboard />
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/groups"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <GroupManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/contacts"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <ContactManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <UserManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/publications"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PublicationManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/publication-management"
-              element={
-                <AdminProtectedRoute>
-                  <PublicationManagementPage />
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/power-lists"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PowerlistManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/powerlist-management"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PowerlistManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/powerlist-orders"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PowerlistOrders />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/awards"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AwardManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/award-submissions"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AwardSubmissionManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/article-submissions"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <ArticleSubmissionsManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/ai-articles"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AiArticlesManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/radios"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <RadioManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/themes"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <ThemeManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/press-packs"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PressPackManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/paparazzi"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PaparazziManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/agencies"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AgencyManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/websites"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <WebsiteManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/reporters"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <ReporterManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/podcasters"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PodcasterManagementView />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/real-estates"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <RealEstateManagementView />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/event-enquiries"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <EventEnquiriesView />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/events"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <EventManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/affiliate-enquiries"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AffiliateEnquiriesView />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/careers"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <CareerManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/blogs"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <BlogManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/published-works"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PublishedWorkManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/orders"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <OrderManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/paparazzi-orders"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PaparazziOrderManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/theme-orders"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <ThemeOrderManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/press-pack-orders"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PressPackOrderManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/roles-permissions"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <RolePermissionManagement />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/paparazzi-creation"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <PaparazziCreations />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/event-creation"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <EventCreationPage />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/award-creation"
-              element={
-                <AdminProtectedRoute>
-                  <div className="min-h-screen bg-gray-50">
-                    <AwardCreationPage />
-                  </div>
-                </AdminProtectedRoute>
-              }
-            />
+                  <Route
+                    path="/website-submission"
+                    element={
+                      <ProtectedRoute>
+                        <WebsiteSubmissionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/submit-article"
+                    element={
+                      <ProtectedRoute>
+                        <ArticleSubmissionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-article-questionnaire"
+                    element={
+                      <ProtectedRoute>
+                        <AiArticleQuestionnairePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-article-generation/:id"
+                    element={
+                      <ProtectedRoute>
+                        <AiArticleGenerationPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/new/form/exhibition_form" element={<ExhibitionFormPage />} />
+                  <Route
+                    path="/reporter-submissions"
+                    element={
+                      <ProtectedRoute>
+                        <ReporterSubmissionsDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-            <Route path="/data/new/cookies/user" element={<UserCookiesData />} />
+                  {/* Admin Routes */}
+                  <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <AdminProtectedRoute>
+                        <AdminDashboard />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/groups"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <GroupManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/contacts"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <ContactManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/users"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <UserManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/publications"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PublicationManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/publication-management"
+                    element={
+                      <AdminProtectedRoute>
+                        <PublicationManagementPage />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/power-lists"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PowerlistManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/powerlist-management"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PowerlistManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/powerlist-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PowerlistOrders />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/radio-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RadioOrders />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/awards"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AwardManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/award-submissions"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AwardSubmissionManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/article-submissions"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <ArticleSubmissionsManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/ai-articles"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AiArticlesManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/radios"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RadioManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/themes"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <ThemeManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/press-packs"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PressPackManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/paparazzi"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PaparazziManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/agencies"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AgencyManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/websites"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <WebsiteManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/reporters"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <ReporterManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/podcasters"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PodcasterManagementView />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/real-estates"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RealEstateManagementView />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/event-enquiries"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <EventEnquiriesView />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/events"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <EventManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/affiliate-enquiries"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AffiliateEnquiriesView />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/careers"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <CareerManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/blogs"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <BlogManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/published-works"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PublishedWorkManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <OrderManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/paparazzi-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PaparazziOrderManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/theme-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <ThemeOrderManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/press-pack-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PressPackOrderManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/roles-permissions"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RolePermissionManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/paparazzi-creation"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <PaparazziCreations />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/event-creation"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <EventCreationPage />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/award-creation"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <AwardCreationPage />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
 
-            {/* Catch all route - redirect to admin login if accessing /admin */}
-            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
-            <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
+                  <Route path="/data/new/cookies/user" element={<UserCookiesData />} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+                  {/* Catch all route - redirect to admin login if accessing /admin */}
+                  <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+                  <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
 
-          {/* Global Auth Modal */}
-          <AuthModal
-            isOpen={showAuthModal}
-            onClose={() => setShowAuthModal(false)}
-          />
-        </Router>
-          </AuthModalContext.Provider>
-        </AdminAuthProvider>
-      </AuthProvider>
+                  {/* Fallback */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+
+                {/* Global Auth Modal */}
+                <AuthModal
+                  isOpen={showAuthModal}
+                  onClose={() => setShowAuthModal(false)}
+                />
+              </Router>
+            </AuthModalContext.Provider>
+          </AdminAuthProvider>
+        </AuthProvider>
       </LanguageProvider>
     </HelmetProvider>
   );
