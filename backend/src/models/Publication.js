@@ -116,6 +116,13 @@ class Publication {
     return result.rows[0] ? new Publication(result.rows[0]) : null;
   }
 
+  // Find publication by name
+  static async findByPublicationName(publication_name) {
+    const sql = 'SELECT * FROM publications WHERE publication_name = $1';
+    const result = await query(sql, [publication_name]);
+    return result.rows[0] ? new Publication(result.rows[0]) : null;
+  }
+
   // Find publications by group ID
   static async findByGroupId(group_id) {
     const sql = 'SELECT * FROM publications WHERE group_id = $1 ORDER BY created_at DESC';

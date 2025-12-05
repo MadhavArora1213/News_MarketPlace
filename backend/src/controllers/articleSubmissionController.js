@@ -127,6 +127,12 @@ class ArticleSubmissionController {
         return res.status(404).json({ error: 'Publication not found' });
       }
 
+      // Find the corresponding Publication record by name
+      const publication = await Publication.findByPublicationName ? await Publication.findByPublicationName(pubManagement.publication_name) : null;
+      if (!publication) {
+        return res.status(404).json({ error: 'Publication record not found' });
+      }
+
       // Validate title: <= 12 words, no special characters
       const titleWords = title.trim().split(/\s+/);
       if (titleWords.length > 12) {
@@ -194,7 +200,7 @@ class ArticleSubmissionController {
 
       const submissionData = {
         user_id: userId,
-        publication_id,
+        publication_id: publication.id, // Use the actual Publication ID, not PublicationManagement ID
         title,
         sub_title,
         by_line,
