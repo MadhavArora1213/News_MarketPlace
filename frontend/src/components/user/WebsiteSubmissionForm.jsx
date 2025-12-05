@@ -263,7 +263,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     }
 
     // File validations (required)
-    const requiredFiles = ['website_registration_document', 'tax_document', 'bank_details', 'owner_passport', 'general_contact_details'];
+    const requiredFiles = ['website_registration_document', 'bank_details', 'general_contact_details'];
     requiredFiles.forEach(field => {
       if (!files[field]) {
         newErrors[field] = 'This file is required';
@@ -1306,7 +1306,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
                   <div style={formGroupStyle}>
                     <label style={labelStyle}>
-                      Tax Document <span style={requiredAsterisk}>*</span>
+                      Tax Document
                     </label>
                     <input
                       type="file"
@@ -1314,7 +1314,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                       onChange={handleFileChange}
                       style={fileInputStyle}
                       accept=".pdf,.jpg,.jpeg,.png"
-                      required
                     />
                     {errors.tax_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.tax_document}</div>}
                   </div>
@@ -1336,7 +1335,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
                   <div style={formGroupStyle}>
                     <label style={labelStyle}>
-                      Owner Passport <span style={requiredAsterisk}>*</span>
+                      Owner Passport
                     </label>
                     <input
                       type="file"
@@ -1344,7 +1343,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                       onChange={handleFileChange}
                       style={fileInputStyle}
                       accept=".pdf,.jpg,.jpeg,.png"
-                      required
                     />
                     {errors.owner_passport && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.owner_passport}</div>}
                   </div>
