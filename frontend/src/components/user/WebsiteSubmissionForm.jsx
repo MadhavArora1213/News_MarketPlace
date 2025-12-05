@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -289,7 +288,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     const requiredFields = [
       'media_name', 'media_website_address', 'news_media_type', 'website_owner_name',
-      'website_owner_nationality', 'website_owner_gender', 'callingNumber', 'callingCountry', 'email', 'how_did_you_hear'
+      'website_owner_nationality', 'website_owner_gender', 'email', 'how_did_you_hear'
     ];
 
     requiredFields.forEach(field => {
@@ -298,6 +297,11 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
         newErrors[field] = 'This field is required';
       }
     });
+
+    // Phone number validation - check both fields are present
+    if (!currentFormData.callingCountry || !currentFormData.callingNumber || currentFormData.callingNumber.trim() === '') {
+      newErrors.callingNumber = 'Phone number is required';
+    }
 
     // URL validations
     if (currentFormData.media_website_address && !currentFormData.media_website_address.match(/^https?:\/\/.+/)) {
@@ -320,10 +324,10 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       }
     }
 
-    if (currentFormData.whatsappCountry && currentFormData.whatsappNumber) {
+    if (currentFormData.whatsappCountry && currentFormData.whatsappNumber && currentFormData.whatsappNumber.trim() !== '') {
       const countryData = countryPhoneData[currentFormData.whatsappCountry];
       if (countryData) {
-        const length = currentFormData.whatsappNumber.length;
+        const length = currentFormData.whatsappNumber.trim().length;
         if (length < countryData.minLength || length > countryData.maxLength) {
           newErrors.whatsappNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.whatsappCountry}`;
         }
@@ -1415,7 +1419,11 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                         name="callingCountry"
                         value={formData.callingCountry}
                         onChange={(e) => handlePhoneChange('callingCountry', e.target.value)}
-                        style={{ ...inputStyle, flex: '0 0 120px' }}
+                        style={{ 
+                          ...inputStyle, 
+                          flex: '0 0 120px',
+                          borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
+                        }}
                         required
                       >
                         <option value="">Country</option>
@@ -1430,7 +1438,11 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                         name="callingNumber"
                         value={formData.callingNumber}
                         onChange={(e) => handlePhoneChange('callingNumber', e.target.value)}
-                        style={{ ...inputStyle, flex: 1 }}
+                        style={{ 
+                          ...inputStyle, 
+                          flex: 1,
+                          borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
+                        }}
                         placeholder="Enter phone number"
                         required
                       />

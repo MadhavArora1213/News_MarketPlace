@@ -137,8 +137,8 @@ class WebsiteController {
     body('website_owner_nationality').trim().isLength({ min: 1 }).withMessage('Owner nationality is required'),
     body('website_owner_gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid owner gender is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid owner email is required'),
-    body('callingNumber').isLength({ min: 1 }).withMessage('Owner number is required'),
-    body('callingCountry').isLength({ min: 1 }).withMessage('Owner country is required'),
+    body('callingNumber').isLength({ min: 1 }).withMessage('Phone number is required'),
+    body('callingCountry').isLength({ min: 1 }).withMessage('Country code is required'),
     body('terms_accepted').custom(value => value === true || value === 'true').withMessage('Terms must be accepted'),
     body('recaptchaToken').optional().isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
   ];
@@ -354,7 +354,7 @@ class WebsiteController {
       });
 
       // Handle phone number formatting
-      if (websiteData.callingNumber !== undefined && websiteData.callingCountry !== undefined) {
+      if (websiteData.callingNumber && websiteData.callingCountry) {
         mappedData.owner_number = formatPhoneNumber(websiteData.callingCountry, websiteData.callingNumber);
       }
       if (websiteData.whatsappNumber && websiteData.whatsappCountry) {
