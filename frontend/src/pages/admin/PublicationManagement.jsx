@@ -350,7 +350,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Publication Image</label>
+              <label style={labelStyle}>Publication Image *</label>
               <input
                 type="file"
                 accept="image/*"
@@ -402,7 +402,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Instagram URL</label>
+              <label style={labelStyle}>Instagram URL *</label>
               <input
                 type="url"
                 value={formData.instagram}
@@ -413,7 +413,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Facebook URL</label>
+              <label style={labelStyle}>Facebook URL *</label>
               <input
                 type="url"
                 value={formData.facebook}
@@ -426,7 +426,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Twitter/X URL</label>
+              <label style={labelStyle}>Twitter/X URL *</label>
               <input
                 type="url"
                 value={formData.twitter}
@@ -437,7 +437,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>LinkedIn URL</label>
+              <label style={labelStyle}>LinkedIn URL *</label>
               <input
                 type="url"
                 value={formData.linkedin}
