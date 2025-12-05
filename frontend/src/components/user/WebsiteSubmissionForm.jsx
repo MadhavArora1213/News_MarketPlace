@@ -208,6 +208,8 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   };
 
   const handlePhoneChange = (name, value) => {
+    console.log(`Phone change: ${name} = "${value}"`);
+
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
 
@@ -219,6 +221,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
         newData.whatsappNumber = prev.callingNumber; // Also copy the number
       }
 
+      console.log('Updated form data:', newData);
       return newData;
     });
 
@@ -232,6 +235,24 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       setErrors(prev => ({ ...prev, whatsappNumber: '' }));
     } else if (name === 'callingCountry' && sameAsCalling && errors.whatsappNumber) {
       setErrors(prev => ({ ...prev, whatsappNumber: '' }));
+    }
+
+    // Re-validate phone number when it changes
+    if (name === 'callingNumber' || name === 'callingCountry') {
+      setTimeout(() => {
+        const newErrors = {};
+        if (formData.callingCountry && value && value.trim() !== '') {
+          const countryData = countryPhoneData[formData.callingCountry];
+          if (countryData) {
+            const length = value.trim().length;
+            console.log(`Validating phone: country=${formData.callingCountry}, number="${value}", length=${length}, required=${countryData.minLength}-${countryData.maxLength}`);
+            if (length < countryData.minLength || length > countryData.maxLength) {
+              newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${formData.callingCountry}`;
+            }
+          }
+        }
+        setErrors(prev => ({ ...prev, ...newErrors }));
+      }, 0);
     }
   };
 
@@ -260,6 +281,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   };
 
   const validateForm = () => {
+    console.log('Validating form, current formData:', formData);
     const newErrors = {};
 
     const requiredFields = [
@@ -268,8 +290,11 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     ];
 
     requiredFields.forEach(field => {
-      if (!formData[field] || formData[field].toString().trim() === '') {
+      const value = formData[field];
+      console.log(`Checking required field ${field}: "${value}" (type: ${typeof value})`);
+      if (value === undefined || value === null || value.toString().trim() === '') {
         newErrors[field] = 'This field is required';
+        console.log(`Field ${field} is required but empty`);
       }
     });
 
@@ -284,12 +309,18 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     }
 
     // Phone validation - check against country-specific requirements
-    if (formData.callingCountry && formData.callingNumber) {
+    console.log(`Phone validation: callingCountry="${formData.callingCountry}", callingNumber="${formData.callingNumber}"`);
+    if (formData.callingCountry && formData.callingNumber && formData.callingNumber.trim() !== '') {
       const countryData = countryPhoneData[formData.callingCountry];
+      console.log('Country data:', countryData);
       if (countryData) {
-        const length = formData.callingNumber.length;
+        const length = formData.callingNumber.trim().length;
+        console.log(`Phone length: ${length}, required: ${countryData.minLength}-${countryData.maxLength}`);
         if (length < countryData.minLength || length > countryData.maxLength) {
           newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${formData.callingCountry}`;
+          console.log('Phone validation failed:', newErrors.callingNumber);
+        } else {
+          console.log('Phone validation passed');
         }
       }
     }
@@ -353,6 +384,8 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     }
 
     setErrors(newErrors);
+    console.log('Validation errors:', newErrors);
+    console.log('Validation result:', Object.keys(newErrors).length === 0);
     return Object.keys(newErrors).length === 0;
   };
 
