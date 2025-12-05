@@ -11,7 +11,10 @@ class Website {
     this.categories = data.categories;
     this.custom_category = data.custom_category;
     this.location_type = data.location_type;
-    this.country_name = data.country_name;
+    this.selected_continent = data.selected_continent;
+    this.selected_country = data.selected_country;
+    this.selected_state = data.selected_state;
+    this.country_name = data.country_name; // Keep for backward compatibility
 
     // Social Media Links
     this.ig = data.ig;
@@ -308,7 +311,7 @@ class Website {
     // Only use the fields that exist in our model
     const allowedFields = [
       'id', 'media_name', 'media_website_address', 'news_media_type', 'languages',
-      'categories', 'location_type', 'country_name', 'ig', 'facebook', 'linkedin',
+      'categories', 'location_type', 'selected_continent', 'selected_country', 'selected_state', 'country_name', 'ig', 'facebook', 'linkedin',
       'tiktok', 'youtube', 'snapchat', 'twitter', 'social_media_embedded_allowed',
       'social_media_url_allowed', 'external_website_link_allowed', 'images_allowed',
       'words_limit', 'back_date_allowed', 'da_score', 'dr_score', 'pa_score',
@@ -424,6 +427,9 @@ class Website {
       categories: this.categories,
       custom_category: this.custom_category,
       location_type: this.location_type,
+      selected_continent: this.selected_continent,
+      selected_country: this.selected_country,
+      selected_state: this.selected_state,
       country_name: this.country_name,
       ig: this.ig,
       facebook: this.facebook,

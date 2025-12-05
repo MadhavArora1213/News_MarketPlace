@@ -20,7 +20,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     categories: [],
     custom_category: '',
     location_type: 'Global',
-    custom_location: '',
+    selected_continent: '',
+    selected_country: '',
+    selected_state: '',
     ig: '',
     facebook: '',
     linkedin: '',
@@ -304,6 +306,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       Object.keys(formData).forEach(key => {
         if (Array.isArray(formData[key])) {
           submitData.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'custom_location') {
+          // Skip the old custom_location field as it's replaced by the new location fields
+          return;
         } else {
           submitData.append(key, formData[key]);
         }
@@ -432,6 +437,52 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   if (!isAuthenticated || isAdminAuthenticated) {
     return null;
   }
+
+  // Location data
+  const continents = [
+    'Africa', 'Asia', 'Europe', 'North America', 'South America', 'Australia/Oceania', 'Antarctica'
+  ];
+
+  const countries = [
+    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia',
+    'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin',
+    'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+    'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia',
+    'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica',
+    'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini',
+    'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada',
+    'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia',
+    'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati',
+    'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania',
+    'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania',
+    'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique',
+    'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea',
+    'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines',
+    'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines',
+    'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone',
+    'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan',
+    'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
+    'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
+    'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu',
+    'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
+  ];
+
+  const states = [
+    // US States
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+    'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+    'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+    'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
+    'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
+    'West Virginia', 'Wisconsin', 'Wyoming',
+    // Canadian Provinces
+    'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories',
+    'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon',
+    // Indian States
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh',
+    'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland',
+    'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+  ];
 
   const theme = {
     primary: '#1976D2',
@@ -673,13 +724,13 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                   <div style={formGroupStyle}>
                     <label style={labelStyle}>Do You Cover Any Specific Category?</label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {['tech', 'marketing', 'finance', 'web 3', 'entrepreneur', 'hospitality', 'etc'].map(category => (
+                      {['Tech', 'Marketing', 'Finance', 'Web 3', 'Entrepreneur', 'Hospitality', 'Other'].map(category => (
                         <label key={category} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
                           <input
                             type="checkbox"
                             name="categories"
-                            value={category}
-                            checked={formData.categories.includes(category)}
+                            value={category.toLowerCase()}
+                            checked={formData.categories.includes(category.toLowerCase())}
                             onChange={handleInputChange}
                             style={checkboxStyle}
                           />
@@ -706,17 +757,51 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                       style={inputStyle}
                     >
                       <option value="Global">Global</option>
-                      <option value="Specific">Specific Location</option>
+                      <option value="Regional">Regional</option>
                     </select>
-                    {formData.location_type === 'Specific' && (
-                      <input
-                        type="text"
-                        name="custom_location"
-                        value={formData.custom_location}
-                        onChange={handleInputChange}
-                        style={{ ...inputStyle, marginTop: '8px' }}
-                        placeholder="Enter country name"
-                      />
+
+                    {formData.location_type === 'Regional' && (
+                      <div style={{ marginTop: '8px' }}>
+                        <select
+                          name="selected_continent"
+                          value={formData.selected_continent}
+                          onChange={handleInputChange}
+                          style={{ ...inputStyle, marginBottom: '8px' }}
+                        >
+                          <option value="">Select a continent</option>
+                          {continents.map(continent => (
+                            <option key={continent} value={continent}>{continent}</option>
+                          ))}
+                        </select>
+
+                        {formData.selected_continent && (
+                          <select
+                            name="selected_country"
+                            value={formData.selected_country}
+                            onChange={handleInputChange}
+                            style={{ ...inputStyle, marginBottom: '8px' }}
+                          >
+                            <option value="">Select a country</option>
+                            {countries.map(country => (
+                              <option key={country} value={country}>{country}</option>
+                            ))}
+                          </select>
+                        )}
+
+                        {formData.selected_country && (
+                          <select
+                            name="selected_state"
+                            value={formData.selected_state}
+                            onChange={handleInputChange}
+                            style={inputStyle}
+                          >
+                            <option value="">Select a state/province</option>
+                            {states.map(state => (
+                              <option key={state} value={state}>{state}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

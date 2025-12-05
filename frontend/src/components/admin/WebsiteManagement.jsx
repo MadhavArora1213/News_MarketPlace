@@ -69,6 +69,13 @@ const WebsiteDetailsModal = ({ isOpen, onClose, website }) => {
               <div><strong>Languages:</strong> {formatArray(website.languages)}</div>
               <div><strong>Categories:</strong> {formatArray(website.categories)}</div>
               <div><strong>Location Type:</strong> {website.location_type}</div>
+              {website.location_type === 'Regional' && (
+                <>
+                  {website.selected_continent && <div><strong>Continent:</strong> {website.selected_continent}</div>}
+                  {website.selected_country && <div><strong>Country:</strong> {website.selected_country}</div>}
+                  {website.selected_state && <div><strong>State/Province:</strong> {website.selected_state}</div>}
+                </>
+              )}
               {website.location_type === 'Specific' && <div><strong>Country:</strong> {website.country_name}</div>}
               <div><strong>Status:</strong> <span style={{
                 backgroundColor: website.status === 'approved' ? '#4CAF5020' : website.status === 'rejected' ? '#F4433620' : '#FF980020',
