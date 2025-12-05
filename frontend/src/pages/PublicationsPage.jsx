@@ -370,7 +370,7 @@ const PublicationsPage = () => {
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}
-      <section className="relative py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
+      <section className="relative py-4 md:py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -378,51 +378,34 @@ const PublicationsPage = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4 tracking-tight">
               Publications
             </h1>
-            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Global, Regional, National and Local Newspapers and Magazines.<br />
-              Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently.
+            <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
+              Discover credible media outlets to amplify your vision and reach your target audience effectively.
             </p>
-            
+
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mt-8">
+            <div className="max-w-xl mx-auto">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search publications by name, region, or industry..."
+                  placeholder="Search publications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-10 pr-10 py-3 border border-[#E0E0E0] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} style={{ color: theme.textSecondary }} />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#757575] hover:text-[#212121] transition-colors"
                   >
                     ×
                   </button>
                 )}
               </div>
             </div>
-
-            {/* Add Publication Button */}
-            {isAuthenticated && (
-              <div className="max-w-2xl mx-auto mt-6">
-                <button
-                  onClick={() => setShowSubmissionForm(true)}
-                  className="w-full text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                  style={{ backgroundColor: theme.primary }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                >
-                  <Plus size={20} />
-                  Add Publication
-                </button>
-              </div>
-            )}
           </motion.div>
         </div>
       </section>
