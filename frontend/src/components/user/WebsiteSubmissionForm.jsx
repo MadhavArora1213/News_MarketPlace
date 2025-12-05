@@ -224,12 +224,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       return newData;
     });
 
-    // Clear errors for the changed field
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-
-    // Clear phone number errors when country or number changes
+    // Clear errors immediately when user types/selects
     if (name === 'callingNumber' || name === 'callingCountry') {
       setErrors(prev => ({ ...prev, callingNumber: '' }));
     }
@@ -241,27 +236,26 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       setErrors(prev => ({ ...prev, whatsappNumber: '' }));
     }
 
-    // Re-validate phone number when it changes (with a slight delay to allow state to update)
-    if (name === 'callingNumber' || name === 'callingCountry') {
-      setTimeout(() => {
-        const newErrors = {};
-        const currentFormData = { ...formData, [name]: value };
-        
-        if (currentFormData.callingCountry && currentFormData.callingNumber && currentFormData.callingNumber.trim() !== '') {
-          const countryData = countryPhoneData[currentFormData.callingCountry];
-          if (countryData) {
-            const length = currentFormData.callingNumber.trim().length;
-            console.log(`Validating phone: country=${currentFormData.callingCountry}, number="${currentFormData.callingNumber}", length=${length}, required=${countryData.minLength}-${countryData.maxLength}`);
-            if (length < countryData.minLength || length > countryData.maxLength) {
-              newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.callingCountry}`;
-            }
+    // Validate phone number length after state update (only show error if both fields are filled)
+    setTimeout(() => {
+      const currentFormData = { ...formData, [name]: value };
+      
+      if (currentFormData.callingCountry && currentFormData.callingNumber && currentFormData.callingNumber.trim() !== '') {
+        const countryData = countryPhoneData[currentFormData.callingCountry];
+        if (countryData) {
+          const length = currentFormData.callingNumber.trim().length;
+          console.log(`Validating phone: country=${currentFormData.callingCountry}, number="${currentFormData.callingNumber}", length=${length}, required=${countryData.minLength}-${countryData.maxLength}`);
+          
+          // Only show length validation error, not "required" error
+          if (length < countryData.minLength || length > countryData.maxLength) {
+            setErrors(prev => ({ 
+              ...prev, 
+              callingNumber: `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.callingCountry}` 
+            }));
           }
         }
-        if (Object.keys(newErrors).length > 0) {
-          setErrors(prev => ({ ...prev, ...newErrors }));
-        }
-      }, 100);
-    }
+      }
+    }, 200);
   };
 
   // Handle same as calling checkbox
@@ -307,13 +301,18 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       }
     });
 
-    // Phone number validation - check both fields are present and not empty
-    if (!currentFormData.callingCountry || currentFormData.callingCountry.trim() === '') {
+    // Phone number validation - more specific checking
+    const hasCallingCountry = currentFormData.callingCountry && currentFormData.callingCountry.trim() !== '';
+    const hasCallingNumber = currentFormData.callingNumber && currentFormData.callingNumber.trim() !== '';
+    
+    console.log('Form validation - Phone check:', { hasCallingCountry, hasCallingNumber, callingCountry: currentFormData.callingCountry, callingNumber: currentFormData.callingNumber });
+
+    if (!hasCallingCountry) {
       newErrors.callingNumber = 'Country is required for phone number';
-    } else if (!currentFormData.callingNumber || currentFormData.callingNumber.trim() === '') {
+    } else if (!hasCallingNumber) {
       newErrors.callingNumber = 'Phone number is required';
     } else {
-      // Additional validation for phone number length
+      // Both fields have values, validate length
       const countryData = countryPhoneData[currentFormData.callingCountry];
       if (countryData) {
         const length = currentFormData.callingNumber.trim().length;
@@ -392,6 +391,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
     }
 
+    console.log('Form validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -644,7 +644,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   const inputStyle = {
     width: '100%',
     padding: '10px 12px',
-    border: `1px solid ${errors[name] ? theme.danger : '#d1d5db'}`,
+    border: '1px solid #d1d5db',
     borderRadius: '8px',
     fontSize: '14px',
     boxSizing: 'border-box',
