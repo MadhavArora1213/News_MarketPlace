@@ -344,4 +344,4 @@ class AdminPublicationManagementController {
   }
 }
 
-module.exports = new AdminPublicationManagementController();
+module.exports = AdminPublicationManagementController;

@@ -5,8 +5,8 @@ const {
   verifyAdminToken,
   requireAdminPanelAccess
 } = require('../middleware/auth');
-// Controller is already an instance, use it directly to access upload middleware
-const controller = adminPublicationManagementController;
+// Instantiate the controller class
+const controller = new adminPublicationManagementController();
 
 // Test route
 router.get('/test', (req, res) => {
@@ -15,12 +15,12 @@ router.get('/test', (req, res) => {
 
 // Get all publication management records (public for GET)
 router.get('/',
-  adminPublicationManagementController.getAll
+  controller.getAll
 );
 
 // Get publication management record by ID (public for GET)
 router.get('/:id',
-  adminPublicationManagementController.getById
+  controller.getById
 );
 
 // Create a new publication management record (admin only)
@@ -28,8 +28,8 @@ router.post('/',
   verifyAdminToken,
   requireAdminPanelAccess,
   controller.upload.single('image'),
-  adminPublicationManagementController.createValidation,
-  adminPublicationManagementController.create
+  controller.createValidation,
+  controller.create
 );
 
 // Update publication management record (admin only)
@@ -37,15 +37,15 @@ router.put('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,
   controller.upload.single('image'),
-  adminPublicationManagementController.updateValidation,
-  adminPublicationManagementController.update
+  controller.updateValidation,
+  controller.update
 );
 
 // Delete publication management record (admin only)
 router.delete('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,
-  adminPublicationManagementController.delete
+  controller.delete
 );
 
 module.exports = router;
