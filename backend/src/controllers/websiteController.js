@@ -117,22 +117,46 @@ class WebsiteController {
     body('location_type').isIn(['Global', 'Regional']).withMessage('Valid location type is required'),
     body('selected_continent').custom((value, { req }) => {
       if (req.body.location_type === 'Regional') {
-        return value && value.trim().length > 0;
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) && parsed.length > 0;
+          } catch (e) {
+            return false;
+          }
+        }
+        return Array.isArray(value) && value.length > 0;
       }
       return true; // Optional for Global
-    }).withMessage('Continent is required when location type is Regional'),
+    }).withMessage('At least one continent is required when location type is Regional'),
     body('selected_country').custom((value, { req }) => {
       if (req.body.location_type === 'Regional') {
-        return value && value.trim().length > 0;
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) && parsed.length > 0;
+          } catch (e) {
+            return false;
+          }
+        }
+        return Array.isArray(value) && value.length > 0;
       }
       return true; // Optional for Global
-    }).withMessage('Country is required when location type is Regional'),
+    }).withMessage('At least one country is required when location type is Regional'),
     body('selected_state').custom((value, { req }) => {
       if (req.body.location_type === 'Regional') {
-        return value && value.trim().length > 0;
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) && parsed.length >= 0; // States are optional
+          } catch (e) {
+            return false;
+          }
+        }
+        return Array.isArray(value); // States are optional
       }
       return true; // Optional for Global
-    }).withMessage('State/Province is required when location type is Regional'),
+    }).withMessage('States/Provinces must be an array when location type is Regional'),
     body('website_owner_name').trim().isLength({ min: 1 }).withMessage('Owner name is required'),
     body('website_owner_nationality').trim().isLength({ min: 1 }).withMessage('Owner nationality is required'),
     body('website_owner_gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid owner gender is required'),
@@ -256,6 +280,31 @@ class WebsiteController {
           websiteData.categories = JSON.parse(websiteData.categories);
         } catch (e) {
           websiteData.categories = [websiteData.categories];
+        }
+      }
+
+      // Process location fields
+      if (typeof websiteData.selected_continent === 'string') {
+        try {
+          websiteData.selected_continent = JSON.parse(websiteData.selected_continent);
+        } catch (e) {
+          websiteData.selected_continent = [websiteData.selected_continent];
+        }
+      }
+
+      if (typeof websiteData.selected_country === 'string') {
+        try {
+          websiteData.selected_country = JSON.parse(websiteData.selected_country);
+        } catch (e) {
+          websiteData.selected_country = [websiteData.selected_country];
+        }
+      }
+
+      if (typeof websiteData.selected_state === 'string') {
+        try {
+          websiteData.selected_state = JSON.parse(websiteData.selected_state);
+        } catch (e) {
+          websiteData.selected_state = [websiteData.selected_state];
         }
       }
 

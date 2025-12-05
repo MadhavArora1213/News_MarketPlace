@@ -19,9 +19,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     categories: [],
     custom_category: '',
     location_type: 'Global',
-    selected_continent: '',
-    selected_country: '',
-    selected_state: '',
+    selected_continent: [],
+    selected_country: [],
+    selected_state: [],
     ig: '',
     facebook: '',
     linkedin: '',
@@ -179,7 +179,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   }, []);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, options } = e.target;
     if (type === 'checkbox') {
       if (name === 'languages' || name === 'categories') {
         setFormData(prev => ({
@@ -194,6 +194,15 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
           [name]: checked
         }));
       }
+    } else if (options && e.target.multiple) {
+      // Handle multi-select
+      const selectedValues = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: selectedValues
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
@@ -1075,43 +1084,45 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                       <div style={{ marginTop: '8px' }}>
                         <select
                           name="selected_continent"
-                          value={formData.selected_continent}
                           onChange={handleInputChange}
-                          style={{ ...inputStyle, marginBottom: '8px' }}
+                          multiple
+                          style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
                         >
-                          <option value="">Select a continent</option>
                           {continents.map(continent => (
-                            <option key={continent} value={continent}>{continent}</option>
+                            <option key={continent} value={continent} selected={formData.selected_continent.includes(continent)}>{continent}</option>
                           ))}
                         </select>
+                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
+                          Hold Ctrl/Cmd to select multiple continents
+                        </div>
 
-                        {formData.selected_continent && (
-                          <select
-                            name="selected_country"
-                            value={formData.selected_country}
-                            onChange={handleInputChange}
-                            style={{ ...inputStyle, marginBottom: '8px' }}
-                          >
-                            <option value="">Select a country</option>
-                            {countries.map(country => (
-                              <option key={country} value={country}>{country}</option>
-                            ))}
-                          </select>
-                        )}
+                        <select
+                          name="selected_country"
+                          onChange={handleInputChange}
+                          multiple
+                          style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
+                        >
+                          {countries.map(country => (
+                            <option key={country} value={country} selected={formData.selected_country.includes(country)}>{country}</option>
+                          ))}
+                        </select>
+                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
+                          Hold Ctrl/Cmd to select multiple countries
+                        </div>
 
-                        {formData.selected_country && (
-                          <select
-                            name="selected_state"
-                            value={formData.selected_state}
-                            onChange={handleInputChange}
-                            style={inputStyle}
-                          >
-                            <option value="">Select a state/province</option>
-                            {states.map(state => (
-                              <option key={state} value={state}>{state}</option>
-                            ))}
-                          </select>
-                        )}
+                        <select
+                          name="selected_state"
+                          onChange={handleInputChange}
+                          multiple
+                          style={{ ...inputStyle, minHeight: '100px' }}
+                        >
+                          {states.map(state => (
+                            <option key={state} value={state} selected={formData.selected_state.includes(state)}>{state}</option>
+                          ))}
+                        </select>
+                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                          Hold Ctrl/Cmd to select multiple states/provinces
+                        </div>
                       </div>
                     )}
                   </div>

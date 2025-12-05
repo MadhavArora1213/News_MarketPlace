@@ -11,9 +11,9 @@ class Website {
     this.categories = data.categories;
     this.custom_category = data.custom_category;
     this.location_type = data.location_type;
-    this.selected_continent = data.selected_continent;
-    this.selected_country = data.selected_country;
-    this.selected_state = data.selected_state;
+    this.selected_continent = Array.isArray(data.selected_continent) ? data.selected_continent : (data.selected_continent ? JSON.parse(data.selected_continent) : []);
+    this.selected_country = Array.isArray(data.selected_country) ? data.selected_country : (data.selected_country ? JSON.parse(data.selected_country) : []);
+    this.selected_state = Array.isArray(data.selected_state) ? data.selected_state : (data.selected_state ? JSON.parse(data.selected_state) : []);
     this.country_name = data.country_name; // Keep for backward compatibility
 
     // Social Media Links
@@ -122,8 +122,10 @@ class Website {
       errors.push('Location type must be one of: Global, Regional');
     }
 
-    if (websiteData.location_type === 'Regional' && (!websiteData.selected_country || typeof websiteData.selected_country !== 'string' || websiteData.selected_country.trim().length === 0)) {
-      errors.push('Country is required when location type is Regional');
+    if (websiteData.location_type === 'Regional') {
+      if (!Array.isArray(websiteData.selected_country) || websiteData.selected_country.length === 0) {
+        errors.push('At least one country is required when location type is Regional');
+      }
     }
 
     // Content Policies
@@ -333,7 +335,7 @@ class Website {
         let value = websiteData[field];
         
         // Convert JavaScript arrays to JSON strings for database
-        if ((field === 'languages' || field === 'categories') && Array.isArray(value)) {
+        if ((field === 'languages' || field === 'categories' || field === 'selected_continent' || field === 'selected_country' || field === 'selected_state') && Array.isArray(value)) {
           value = JSON.stringify(value);
         }
         
