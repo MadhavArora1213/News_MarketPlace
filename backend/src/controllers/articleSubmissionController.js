@@ -1251,7 +1251,11 @@ class ArticleSubmissionController {
       const teamEmail = 'menastories71@gmail.com';
 
       // Create a mock user object if no user found
-      const emailUser = user || { first_name: req?.user?.first_name || 'User', email: userEmail };
+      const emailUser = user || {
+        first_name: req?.user?.first_name || 'User',
+        email: userEmail,
+        id: req?.user?.userId || req?.user?.id || req?.user?.adminId || 'N/A'
+      };
 
       // Email to user
       const userSubject = 'Article Submission Received - News Marketplace';
@@ -1294,7 +1298,11 @@ class ArticleSubmissionController {
       }
 
       // Create a mock user object if no user found
-      const emailUser = user || { first_name: req?.user?.first_name || 'User', email: userEmail };
+      const emailUser = user || {
+        first_name: req?.user?.first_name || 'User',
+        email: userEmail,
+        id: req?.user?.userId || req?.user?.id || req?.user?.adminId || 'N/A'
+      };
 
       const subject = 'Article Submission Approved! - News Marketplace';
       const htmlContent = this.generateApprovalEmailTemplate(submission, publication, emailUser);
@@ -1327,7 +1335,11 @@ class ArticleSubmissionController {
       }
 
       // Create a mock user object if no user found
-      const emailUser = user || { first_name: req?.user?.first_name || 'User', email: userEmail };
+      const emailUser = user || {
+        first_name: req?.user?.first_name || 'User',
+        email: userEmail,
+        id: req?.user?.userId || req?.user?.id || req?.user?.adminId || 'N/A'
+      };
 
       const subject = 'Article Submission Update - News Marketplace';
       const htmlContent = this.generateRejectionEmailTemplate(submission, publication, emailUser);
