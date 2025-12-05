@@ -337,9 +337,19 @@ class WebsiteController {
       console.log(`Generated ${type} OTP: ${otp}`);
 
       await otpService.sendEmailOtp(email, otp);
-      // Store OTP temporarily
-      if (!global.tempOtps) global.tempOtps = {};
-      global.tempOtps[email] = { otp, expiry: Date.now() + 10 * 60 * 1000 };
+
+      // Store OTP in database instead of memory
+      const expiryTime = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+      const otpInsertQuery = `
+        INSERT INTO otp_verifications (email, otp_code, expiry_time, created_at)
+        VALUES ($1, $2, $3, NOW())
+        ON CONFLICT (email)
+        DO UPDATE SET
+          otp_code = EXCLUDED.otp_code,
+          expiry_time = EXCLUDED.expiry_time,
+          created_at = NOW()
+      `;
+      await query(otpInsertQuery, [email, otp, expiryTime]);
 
       res.json({ message: `${type} OTP sent successfully`, otp: otp });
     } catch (error) {
@@ -361,25 +371,29 @@ class WebsiteController {
         return res.status(400).json({ error: 'Only email OTP verification is supported' });
       }
 
-      // Verify OTP from temp storage
-      const otpData = global.tempOtps?.[email];
-      if (!otpData) {
+      // Verify OTP from database
+      const otpSelectQuery = `
+        SELECT otp_code, expiry_time
+        FROM otp_verifications
+        WHERE email = $1 AND expiry_time > NOW()
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+      const otpResult = await query(otpSelectQuery, [email]);
+
+      if (otpResult.rows.length === 0) {
         return res.status(400).json({ error: 'No OTP found for this email. Please request a new OTP.' });
       }
 
-      if (otpData.otp !== otp) {
+      const otpData = otpResult.rows[0];
+
+      if (otpData.otp_code !== otp) {
         return res.status(400).json({ error: 'Invalid email OTP. Please check and try again.' });
       }
 
-      if (Date.now() > otpData.expiry) {
-        delete global.tempOtps[email];
-        return res.status(400).json({ error: 'Expired email OTP. Please request a new OTP.' });
-      }
-
-      // Clean up temp OTPs
-      if (global.tempOtps) {
-        delete global.tempOtps[email];
-      }
+      // Clean up used OTP
+      const otpDeleteQuery = `DELETE FROM otp_verifications WHERE email = $1`;
+      await query(otpDeleteQuery, [email]);
 
       res.json({
         message: `${type} verified successfully`,
