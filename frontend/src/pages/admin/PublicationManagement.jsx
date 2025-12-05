@@ -22,7 +22,6 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
     word_limit: '',
     needs_images: false,
     image_count: '1',
-    image: '',
     rating_type: '',
     instagram: '',
     facebook: '',
@@ -30,6 +29,9 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
     linkedin: '',
     remarks: ''
   });
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,6 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         word_limit: record.word_limit || '',
         needs_images: record.needs_images || false,
         image_count: record.image_count || '',
-        image: record.image || '',
         rating_type: record.rating_type || '',
         instagram: record.instagram || '',
         facebook: record.facebook || '',
@@ -58,6 +59,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         linkedin: record.linkedin || '',
         remarks: record.remarks || ''
       });
+      setImagePreview(record.image || '');
     } else {
       setFormData({
         region: '',
@@ -75,7 +77,6 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         word_limit: '',
         needs_images: false,
         image_count: '1',
-        image: '',
         rating_type: '',
         instagram: '',
         facebook: '',
@@ -83,6 +84,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         linkedin: '',
         remarks: ''
       });
+      setImagePreview('');
+      setSelectedImage(null);
     }
   }, [record, isOpen]);
 
@@ -91,21 +94,44 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
     setLoading(true);
 
     try {
-      const dataToSend = {
-        ...formData,
-        da: parseInt(formData.da) || 0,
-        committed_tat: parseInt(formData.committed_tat) || 0,
-        practical_tat: parseInt(formData.practical_tat) || 0,
-        price_usd: parseFloat(formData.price_usd) || 0,
-        dr: parseInt(formData.dr) || 0,
-        word_limit: parseInt(formData.word_limit) || 0,
-        image_count: formData.needs_images ? parseInt(formData.image_count) || 0 : 0
+      const formDataToSend = new FormData();
+
+      // Add all form fields to FormData
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== undefined && formData[key] !== null) {
+          // Convert boolean values to strings for FormData
+          if (typeof formData[key] === 'boolean') {
+            formDataToSend.append(key, formData[key].toString());
+          } else {
+            formDataToSend.append(key, formData[key]);
+          }
+        }
+      });
+
+      // Convert numeric fields
+      formDataToSend.set('da', parseInt(formData.da) || 0);
+      formDataToSend.set('committed_tat', parseInt(formData.committed_tat) || 0);
+      formDataToSend.set('practical_tat', parseInt(formData.practical_tat) || 0);
+      formDataToSend.set('price_usd', parseFloat(formData.price_usd) || 0);
+      formDataToSend.set('dr', parseInt(formData.dr) || 0);
+      formDataToSend.set('word_limit', parseInt(formData.word_limit) || 0);
+      formDataToSend.set('image_count', formData.needs_images ? parseInt(formData.image_count) || 0 : 0);
+
+      // Add the selected image file if exists
+      if (selectedImage) {
+        formDataToSend.append('image', selectedImage);
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       };
 
       if (record) {
-        await api.put(`/admin/publication-management/${record.id}`, dataToSend);
+        await api.put(`/admin/publication-management/${record.id}`, formDataToSend, config);
       } else {
-        await api.post('/admin/publication-management', dataToSend);
+        await api.post('/admin/publication-management', formDataToSend, config);
       }
 
       onSave();
@@ -324,14 +350,37 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Publication Image URL</label>
+              <label style={labelStyle}>Publication Image</label>
               <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setSelectedImage(file);
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => setImagePreview(e.target.result);
+                    reader.readAsDataURL(file);
+                  } else {
+                    setImagePreview(record?.image || '');
+                  }
+                }}
                 style={inputStyle}
-                placeholder="https://example.com/image.jpg"
               />
+              {imagePreview && (
+                <div style={{ marginTop: '8px' }}>
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{
+                      maxWidth: '200px',
+                      maxHeight: '150px',
+                      borderRadius: '8px',
+                      border: '1px solid #d1d5db'
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div style={formGroupStyle}>
