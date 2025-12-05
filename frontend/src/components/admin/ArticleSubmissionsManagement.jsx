@@ -811,27 +811,31 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
 
 // Article Submission Edit Modal Component
 const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => {
-     const [formData, setFormData] = useState({
-       publication_id: '',
-       title: '',
-       sub_title: '',
-       by_line: '',
-       tentative_publish_date: '',
-       article_text: '',
-       website_link: '',
-       instagram_link: '',
-       facebook_link: '',
-       delete_image1: false,
-       delete_image2: false
-     });
-     const [publications, setPublications] = useState([]);
-     const [publicationSearch, setPublicationSearch] = useState('');
-     const [filteredPublications, setFilteredPublications] = useState([]);
-     const [loading, setLoading] = useState(false);
-     const [image1File, setImage1File] = useState(null);
-     const [image2File, setImage2File] = useState(null);
-     const [image1Preview, setImage1Preview] = useState(null);
-     const [image2Preview, setImage2Preview] = useState(null);
+      const [formData, setFormData] = useState({
+        publication_id: '',
+        title: '',
+        sub_title: '',
+        by_line: '',
+        tentative_publish_date: '',
+        article_text: '',
+        website_link: '',
+        instagram_link: '',
+        facebook_link: '',
+        delete_image1: false,
+        delete_image2: false
+      });
+      const [publications, setPublications] = useState([]);
+      const [publicationSearch, setPublicationSearch] = useState('');
+      const [filteredPublications, setFilteredPublications] = useState([]);
+      const [loading, setLoading] = useState(false);
+      const [image1File, setImage1File] = useState(null);
+      const [image2File, setImage2File] = useState(null);
+      const [image1Preview, setImage1Preview] = useState(null);
+      const [image2Preview, setImage2Preview] = useState(null);
+      const [publicationImageRequirements, setPublicationImageRequirements] = useState({
+        needs_images: false,
+        image_count: 0
+      });
 
   useEffect(() => {
     if (isOpen) {
