@@ -668,18 +668,39 @@ class ArticleSubmissionController {
       const userId = req.user.userId;
       const { page = 1, limit = 10 } = req.query;
 
-      const offset = (page - 1) * limit;
-      const submissions = await ArticleSubmission.findByUserId(userId, parseInt(limit), offset);
+      const offset = (page - 1) * parseInt(limit);
+      const limitInt = parseInt(limit);
+
+      // Get submissions with publication data
+      const sql = `
+        SELECT asub.*, p.publication_name
+        FROM article_submissions asub
+        LEFT JOIN publications p ON asub.publication_id = p.id
+        WHERE asub.user_id = $1
+        ORDER BY asub.created_at DESC
+        LIMIT $2 OFFSET $3
+      `;
+      const values = [userId, limitInt, offset];
+      const result = await query(sql, values);
+
+      // Build submissions with publication_name
+      const submissions = result.rows.map(row => {
+        const submission = new ArticleSubmission(row);
+        submission.publication_name = row.publication_name;
+        return submission.toJSON();
+      });
 
       // Get total count for pagination
-      const totalCount = await this.getUserSubmissionCount(userId);
-      const totalPages = Math.ceil(totalCount / limit);
+      const countSql = "SELECT COUNT(*) FROM article_submissions WHERE user_id = $1";
+      const countResult = await query(countSql, [userId]);
+      const totalCount = parseInt(countResult.rows[0].count);
+      const totalPages = Math.ceil(totalCount / limitInt);
 
       res.json({
-        submissions: submissions.map(s => s.toJSON()),
+        submissions: submissions,
         pagination: {
           page: parseInt(page),
-          limit: parseInt(limit),
+          limit: limitInt,
           total: totalCount,
           totalPages
         }
