@@ -19,6 +19,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
     price_usd: '',
     do_follow: false,
     dr: '',
+    word_limit: '',
     remarks: ''
   });
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         price_usd: record.price_usd || '',
         do_follow: record.do_follow || false,
         dr: record.dr || '',
+        word_limit: record.word_limit || '',
         remarks: record.remarks || ''
       });
     } else {
@@ -54,6 +56,7 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         price_usd: '',
         do_follow: false,
         dr: '',
+        word_limit: '',
         remarks: ''
       });
     }
@@ -70,7 +73,8 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
         committed_tat: parseInt(formData.committed_tat) || 0,
         practical_tat: parseInt(formData.practical_tat) || 0,
         price_usd: parseFloat(formData.price_usd) || 0,
-        dr: parseInt(formData.dr) || 0
+        dr: parseInt(formData.dr) || 0,
+        word_limit: parseInt(formData.word_limit) || 0
       };
 
       if (record) {
@@ -277,6 +281,17 @@ const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => 
                 max="100"
                 value={formData.dr}
                 onChange={(e) => setFormData({ ...formData, dr: e.target.value })}
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Word Limit</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.word_limit}
+                onChange={(e) => setFormData({ ...formData, word_limit: e.target.value })}
                 style={inputStyle}
               />
             </div>
@@ -806,6 +821,9 @@ const PublicationManagementPage = () => {
                           </div>
                           <div style={{ fontSize: '12px', color: theme.textSecondary }}>
                             Prac: {record.practical_tat}d
+                          </div>
+                          <div style={{ fontSize: '12px', color: theme.textSecondary }}>
+                            Words: {record.word_limit || 'N/A'}
                           </div>
                         </td>
                         <td style={{ padding: '16px' }}>

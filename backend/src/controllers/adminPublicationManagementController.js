@@ -16,6 +16,7 @@ class AdminPublicationManagementController {
     body('price_usd').optional().isFloat({ min: 0 }).withMessage('Price USD must be a positive number'),
     body('do_follow').optional().isBoolean().withMessage('Do follow must be a boolean'),
     body('dr').optional().isInt({ min: 0, max: 100 }).withMessage('DR must be between 0 and 100'),
+    body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('remarks').optional().trim(),
   ];
 
@@ -33,6 +34,7 @@ class AdminPublicationManagementController {
     body('price_usd').optional().isFloat({ min: 0 }).withMessage('Price USD must be a positive number'),
     body('do_follow').optional().isBoolean().withMessage('Do follow must be a boolean'),
     body('dr').optional().isInt({ min: 0, max: 100 }).withMessage('DR must be between 0 and 100'),
+    body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('remarks').optional().trim(),
   ];
 

@@ -1288,6 +1288,9 @@ class PublicationController {
       if (updates.practical_tat !== undefined) {
         transformedUpdates.practical_tat = parseInt(updates.practical_tat);
       }
+      if (updates.words_limit !== undefined) {
+        transformedUpdates.words_limit = parseInt(updates.words_limit);
+      }
 
       const updatedPublications = [];
       const updateErrors = [];
