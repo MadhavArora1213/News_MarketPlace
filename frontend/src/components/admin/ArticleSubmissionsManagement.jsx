@@ -253,7 +253,7 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
 
   const fetchPublications = async () => {
     try {
-      const response = await api.get('/publications');
+      const response = await api.get('/admin/publication-managements');
       setPublications(response.data.publications || []);
     } catch (error) {
       console.error('Error fetching publications:', error);
@@ -866,7 +866,7 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
 
   const fetchPublications = async () => {
     try {
-      const response = await api.get('/publications');
+      const response = await api.get('/admin/publication-managements');
       setPublications(response.data.publications || []);
     } catch (error) {
       console.error('Error fetching publications:', error);

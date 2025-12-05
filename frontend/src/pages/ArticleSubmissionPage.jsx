@@ -93,16 +93,10 @@ const ArticleSubmissionPage = () => {
 
   const fetchPublications = async () => {
     try {
-      // For testing/development, temporarily fetch all publications
-      // In production, use: '/publications?live_on_platform=true&status=approved&is_active=true'
-      const response = await api.get('/publications');
-      // Filter client-side for approved, active publications that are live on platform
-      const filteredPublications = (response.data.publications || []).filter(pub =>
-        pub.status === 'approved' &&
-        pub.is_active === true &&
-        pub.live_on_platform === true
-      );
-      setPublications(filteredPublications);
+      // Fetch publications from admin publication management
+      const response = await api.get('/admin/publication-managements');
+      // All publication managements are available for selection
+      setPublications(response.data.publications || []);
     } catch (error) {
       console.error('Error fetching publications:', error);
     }

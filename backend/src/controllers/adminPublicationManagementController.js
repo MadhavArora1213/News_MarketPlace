@@ -41,6 +41,7 @@ class AdminPublicationManagementController {
   // Get all publication management records
   async getAll(req, res) {
     try {
+      // Allow non-admin GET requests for frontend publication selection
       const {
         page = 1,
         limit = 10,
