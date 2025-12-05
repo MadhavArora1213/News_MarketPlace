@@ -207,8 +207,13 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   };
 
   const handlePhoneChange = (name, value) => {
-    console.log(`Phone change: ${name} = "${value}"`);
+    console.log(`=== PHONE CHANGE: ${name} = "${value}" ===`);
+    console.log('Current formData before change:', { 
+      callingCountry: formData.callingCountry, 
+      callingNumber: formData.callingNumber 
+    });
 
+    // Update form data immediately
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
 
@@ -220,13 +225,22 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
         newData.whatsappNumber = prev.callingNumber; // Also copy the number
       }
 
-      console.log('Updated form data:', newData);
+      console.log('New formData after change:', { 
+        callingCountry: newData.callingCountry, 
+        callingNumber: newData.callingNumber 
+      });
       return newData;
     });
 
     // Clear errors immediately when user types/selects
     if (name === 'callingNumber' || name === 'callingCountry') {
-      setErrors(prev => ({ ...prev, callingNumber: '' }));
+      console.log('Clearing phone errors');
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.callingNumber;
+        console.log('Errors after clearing phone errors:', newErrors);
+        return newErrors;
+      });
     }
 
     // Clear WhatsApp errors when auto-updating due to sameAsCalling
@@ -235,27 +249,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     } else if (name === 'callingCountry' && sameAsCalling && errors.whatsappNumber) {
       setErrors(prev => ({ ...prev, whatsappNumber: '' }));
     }
-
-    // Validate phone number length after state update (only show error if both fields are filled)
-    setTimeout(() => {
-      const currentFormData = { ...formData, [name]: value };
-      
-      if (currentFormData.callingCountry && currentFormData.callingNumber && currentFormData.callingNumber.trim() !== '') {
-        const countryData = countryPhoneData[currentFormData.callingCountry];
-        if (countryData) {
-          const length = currentFormData.callingNumber.trim().length;
-          console.log(`Validating phone: country=${currentFormData.callingCountry}, number="${currentFormData.callingNumber}", length=${length}, required=${countryData.minLength}-${countryData.maxLength}`);
-          
-          // Only show length validation error, not "required" error
-          if (length < countryData.minLength || length > countryData.maxLength) {
-            setErrors(prev => ({ 
-              ...prev, 
-              callingNumber: `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.callingCountry}` 
-            }));
-          }
-        }
-      }
-    }, 200);
   };
 
   // Handle same as calling checkbox
@@ -287,6 +280,17 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     const currentFormData = { ...formData };
     const currentFiles = { ...files };
 
+    console.log('=== FORM VALIDATION START ===');
+    console.log('Current form data:', currentFormData);
+    console.log('Phone fields check:', {
+      callingCountry: currentFormData.callingCountry,
+      callingNumber: currentFormData.callingNumber,
+      callingCountryType: typeof currentFormData.callingCountry,
+      callingNumberType: typeof currentFormData.callingNumber,
+      callingCountryLength: currentFormData.callingCountry?.length,
+      callingNumberLength: currentFormData.callingNumber?.length
+    });
+
     const newErrors = {};
 
     const requiredFields = [
@@ -298,27 +302,60 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       const value = currentFormData[field];
       if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
         newErrors[field] = 'This field is required';
+        console.log(`Required field missing: ${field} = "${value}"`);
       }
     });
 
-    // Phone number validation - more specific checking
-    const hasCallingCountry = currentFormData.callingCountry && currentFormData.callingCountry.trim() !== '';
-    const hasCallingNumber = currentFormData.callingNumber && currentFormData.callingNumber.trim() !== '';
+    // Phone number validation - more specific checking with detailed logging
+    const callingCountry = currentFormData.callingCountry;
+    const callingNumber = currentFormData.callingNumber;
     
-    console.log('Form validation - Phone check:', { hasCallingCountry, hasCallingNumber, callingCountry: currentFormData.callingCountry, callingNumber: currentFormData.callingNumber });
+    console.log('Phone validation details:', {
+      callingCountry,
+      callingNumber,
+      callingCountryTrimmed: callingCountry?.trim(),
+      callingNumberTrimmed: callingNumber?.trim(),
+      hasCallingCountry: !!(callingCountry && callingCountry.trim() !== ''),
+      hasCallingNumber: !!(callingNumber && callingNumber.trim() !== '')
+    });
+
+    const hasCallingCountry = callingCountry && typeof callingCountry === 'string' && callingCountry.trim() !== '';
+    const hasCallingNumber = callingNumber && typeof callingNumber === 'string' && callingNumber.trim() !== '';
+    
+    console.log('Final phone validation:', { hasCallingCountry, hasCallingNumber });
 
     if (!hasCallingCountry) {
       newErrors.callingNumber = 'Country is required for phone number';
+      console.log('❌ Country missing');
     } else if (!hasCallingNumber) {
       newErrors.callingNumber = 'Phone number is required';
+      console.log('❌ Phone number missing');
     } else {
       // Both fields have values, validate length
-      const countryData = countryPhoneData[currentFormData.callingCountry];
+      const countryData = countryPhoneData[callingCountry.trim()];
+      console.log('Country data lookup:', { 
+        country: callingCountry.trim(), 
+        found: !!countryData, 
+        countryData 
+      });
+      
       if (countryData) {
-        const length = currentFormData.callingNumber.trim().length;
-        if (length < countryData.minLength || length > countryData.maxLength) {
-          newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.callingCountry}`;
+        const numberLength = callingNumber.trim().length;
+        console.log('Phone length validation:', {
+          number: callingNumber.trim(),
+          length: numberLength,
+          required: `${countryData.minLength}-${countryData.maxLength}`,
+          valid: numberLength >= countryData.minLength && numberLength <= countryData.maxLength
+        });
+        
+        if (numberLength < countryData.minLength || numberLength > countryData.maxLength) {
+          newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${callingCountry}`;
+          console.log('❌ Phone length invalid');
+        } else {
+          console.log('✅ Phone validation passed');
         }
+      } else {
+        console.log('⚠️ Country data not found for:', callingCountry.trim());
       }
     }
 
@@ -373,6 +410,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     requiredFiles.forEach(field => {
       if (!currentFiles[field]) {
         newErrors[field] = 'This file is required';
+        console.log(`Required file missing: ${field}`);
       }
     });
 
@@ -384,14 +422,22 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     // OTP verification
     if (!otpVerified.email) {
       newErrors.otp = 'Please verify your email OTP before submitting';
+      console.log('❌ Email OTP not verified');
+    } else {
+      console.log('✅ Email OTP verified');
     }
 
     // reCAPTCHA
     if (!recaptchaToken) {
       newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
+      console.log('❌ reCAPTCHA not completed');
+    } else {
+      console.log('✅ reCAPTCHA completed');
     }
 
-    console.log('Form validation errors:', newErrors);
+    console.log('Final validation errors:', newErrors);
+    console.log('=== FORM VALIDATION END ===');
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -399,9 +445,18 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('=== FORM SUBMISSION ATTEMPT ===');
+    console.log('Form data at submission:', formData);
+    console.log('OTP verified status:', otpVerified);
+    console.log('reCAPTCHA token:', recaptchaToken ? 'Present' : 'Missing');
+    console.log('Files:', files);
+
     if (!validateForm()) {
+      console.log('❌ Form validation failed, stopping submission');
       return;
     }
+
+    console.log('✅ Form validation passed, proceeding with submission');
 
     setLoading(true);
     setSubmitStatus(null);
