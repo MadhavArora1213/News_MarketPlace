@@ -1591,7 +1591,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                 <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                   <div style={formGroupStyle}>
                     <label style={labelStyle}>
-                      Website Registration Document <span style={requiredAsterisk}>*</span>
+                      Company Registration Document/Business License Document <span style={requiredAsterisk}>*</span>
                     </label>
                     <input
                       type="file"
@@ -1688,7 +1688,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                   </div>
 
                   <div style={formGroupStyle}>
-                    <label style={labelStyle}>Any to Say</label>
+                    <label style={labelStyle}>Message</label>
                     <textarea
                       name="any_to_say"
                       value={formData.any_to_say}

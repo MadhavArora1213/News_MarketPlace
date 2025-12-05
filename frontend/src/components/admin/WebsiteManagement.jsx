@@ -143,7 +143,7 @@ const WebsiteDetailsModal = ({ isOpen, onClose, website }) => {
           <div>
             <h3 style={{ marginBottom: '12px', color: '#1976D2', fontSize: '18px' }}>Documents</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div><strong>Registration Document:</strong> {website.registration_document ? <a href={getDocumentUrl(website.registration_document)} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Download</a> : 'N/A'}</div>
+              <div><strong>Company Registration Document/Business License Document:</strong> {website.registration_document ? <a href={getDocumentUrl(website.registration_document)} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Download</a> : 'N/A'}</div>
               <div><strong>Tax Document:</strong> {website.tax_document ? <a href={getDocumentUrl(website.tax_document)} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Download</a> : 'N/A'}</div>
               <div><strong>Bank Details:</strong> {website.bank_details_document ? <a href={getDocumentUrl(website.bank_details_document)} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Download</a> : 'N/A'}</div>
               <div><strong>Passport:</strong> {website.passport_document ? <a href={getDocumentUrl(website.passport_document)} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Download</a> : 'N/A'}</div>
