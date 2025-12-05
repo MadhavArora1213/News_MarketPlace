@@ -212,7 +212,7 @@ const ArticleSubmissionPage = () => {
 
     // Required fields
     const requiredFields = [
-      'publication_id', 'title', 'article_text'
+      'publication_id', 'title', 'article_text', 'website_link', 'instagram_link', 'facebook_link'
     ];
 
     requiredFields.forEach(field => {
@@ -630,8 +630,8 @@ const ArticleSubmissionPage = () => {
             {/* Website Link */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Website Link
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Optional website link" />
+                Website Link <span style={{ color: theme.danger }}>*</span>
+                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Required website link" />
               </label>
               <input
                 type="url"
@@ -648,7 +648,7 @@ const ArticleSubmissionPage = () => {
             {/* Instagram Link */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Instagram Link
+                Instagram Link <span style={{ color: theme.danger }}>*</span>
               </label>
               <input
                 type="url"
@@ -665,7 +665,7 @@ const ArticleSubmissionPage = () => {
             {/* Facebook Link */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Facebook Link
+                Facebook Link <span style={{ color: theme.danger }}>*</span>
               </label>
               <input
                 type="url"
