@@ -4,6 +4,7 @@ const PublicationManagement = require('../models/PublicationManagement');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const { s3Service } = require('../services/s3Service');
+const emailService = require('../services/emailService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -289,6 +290,14 @@ class ArticleSubmissionController {
         console.log('Creating submission in database...');
         const submission = await ArticleSubmission.create(submissionData);
         console.log('Submission created successfully with ID:', submission.id);
+
+        // Send confirmation emails
+        try {
+          await this.sendSubmissionConfirmationEmails(submission, publication, pubManagement);
+        } catch (emailError) {
+          console.error('Failed to send submission confirmation emails:', emailError);
+          // Don't fail the request if email fails
+        }
 
         res.status(201).json({
           message: 'Article submission created successfully',
@@ -640,6 +649,15 @@ class ArticleSubmissionController {
       }
 
       const approvedSubmission = await submission.approve();
+
+      // Send approval notification email
+      try {
+        await this.sendApprovalNotificationEmail(approvedSubmission);
+      } catch (emailError) {
+        console.error('Failed to send approval notification email:', emailError);
+        // Don't fail the request if email fails
+      }
+
       res.json({
         message: 'Article submission approved successfully',
         submission: approvedSubmission.toJSON()
@@ -661,6 +679,15 @@ class ArticleSubmissionController {
       }
 
       const rejectedSubmission = await submission.reject();
+
+      // Send rejection notification email
+      try {
+        await this.sendRejectionNotificationEmail(rejectedSubmission);
+      } catch (emailError) {
+        console.error('Failed to send rejection notification email:', emailError);
+        // Don't fail the request if email fails
+      }
+
       res.json({
         message: 'Article submission rejected successfully',
         submission: rejectedSubmission.toJSON()
@@ -1192,6 +1219,274 @@ class ArticleSubmissionController {
     const sql = "SELECT COUNT(*) FROM article_submissions WHERE status = 'approved'";
     const result = await query(sql);
     return parseInt(result.rows[0].count);
+  }
+
+  // Send submission confirmation emails
+  async sendSubmissionConfirmationEmails(submission, publication, pubManagement) {
+    try {
+      // Get user information
+      const user = await submission.getUser();
+      if (!user) {
+        console.warn('User not found for submission confirmation email');
+        return;
+      }
+
+      const teamEmail = 'menastories71@gmail.com';
+
+      // Email to user
+      const userSubject = 'Article Submission Received - News Marketplace';
+      const userHtmlContent = this.generateSubmissionConfirmationEmailTemplate(submission, publication, pubManagement, user);
+
+      // Email to team
+      const teamSubject = 'New Article Submission - News Marketplace';
+      const teamHtmlContent = this.generateTeamNotificationEmailTemplate(submission, publication, pubManagement, user);
+
+      // Send emails
+      await Promise.all([
+        emailService.sendCustomEmail(user.email, userSubject, userHtmlContent),
+        emailService.sendCustomEmail(teamEmail, teamSubject, teamHtmlContent)
+      ]);
+
+      console.log('Submission confirmation emails sent successfully');
+    } catch (error) {
+      console.error('Error sending submission confirmation emails:', error);
+      throw error;
+    }
+  }
+
+  // Send approval notification email
+  async sendApprovalNotificationEmail(submission) {
+    try {
+      const user = await submission.getUser();
+      const publication = await submission.getPublication();
+
+      if (!user) {
+        console.warn('User not found for approval notification email');
+        return;
+      }
+
+      const subject = 'Article Submission Approved! - News Marketplace';
+      const htmlContent = this.generateApprovalEmailTemplate(submission, publication, user);
+
+      await emailService.sendCustomEmail(user.email, subject, htmlContent);
+      console.log('Approval notification email sent successfully');
+    } catch (error) {
+      console.error('Error sending approval notification email:', error);
+      throw error;
+    }
+  }
+
+  // Send rejection notification email
+  async sendRejectionNotificationEmail(submission) {
+    try {
+      const user = await submission.getUser();
+      const publication = await submission.getPublication();
+
+      if (!user) {
+        console.warn('User not found for rejection notification email');
+        return;
+      }
+
+      const subject = 'Article Submission Update - News Marketplace';
+      const htmlContent = this.generateRejectionEmailTemplate(submission, publication, user);
+
+      await emailService.sendCustomEmail(user.email, subject, htmlContent);
+      console.log('Rejection notification email sent successfully');
+    } catch (error) {
+      console.error('Error sending rejection notification email:', error);
+      throw error;
+    }
+  }
+
+  // Generate submission confirmation email template for user
+  generateSubmissionConfirmationEmailTemplate(submission, publication, pubManagement, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #2196F3; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #2196F3; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>📝 Article Submission Received</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${user.first_name || 'User'}!</h2>
+              <p>Thank you for submitting your article to News Marketplace. Your submission has been received and is now under review.</p>
+
+              <div class="submission-details">
+                <h3>Submission Details:</h3>
+                <p><strong>Title:</strong> ${submission.title}</p>
+                <p><strong>Publication:</strong> ${publication ? publication.publication_name : 'N/A'}</p>
+                <p><strong>Status:</strong> <span style="color: #FF9800; font-weight: bold;">Pending Review</span></p>
+                <p><strong>Submitted on:</strong> ${new Date(submission.created_at).toLocaleDateString()}</p>
+                ${submission.image1 ? '<p><strong>Images:</strong> Included</p>' : ''}
+                ${submission.document ? '<p><strong>Document:</strong> Included</p>' : ''}
+              </div>
+
+              <p>You will receive an email notification once your submission has been reviewed. This process typically takes 2-3 business days.</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate team notification email template
+  generateTeamNotificationEmailTemplate(submission, publication, pubManagement, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #FF9800; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #FF9800; }
+            .user-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #4CAF50; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🆕 New Article Submission</h1>
+            </div>
+            <div class="content">
+              <p>A new article submission has been received and requires review.</p>
+
+              <div class="submission-details">
+                <h3>Article Details:</h3>
+                <p><strong>Title:</strong> ${submission.title}</p>
+                <p><strong>Publication:</strong> ${publication ? publication.publication_name : 'N/A'}</p>
+                <p><strong>Word Count:</strong> ${submission.article_text ? submission.article_text.split(/\s+/).length : 0}</p>
+                <p><strong>Status:</strong> <span style="color: #FF9800; font-weight: bold;">Pending Review</span></p>
+                <p><strong>Submitted on:</strong> ${new Date(submission.created_at).toLocaleDateString()}</p>
+                ${submission.image1 ? '<p><strong>Images:</strong> Yes</p>' : '<p><strong>Images:</strong> No</p>'}
+                ${submission.document ? '<p><strong>Document:</strong> Yes</p>' : '<p><strong>Document:</strong> No</p>'}
+              </div>
+
+              <div class="user-details">
+                <h3>User Details:</h3>
+                <p><strong>Name:</strong> ${user.first_name || 'N/A'} ${user.last_name || ''}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>User ID:</strong> ${user.id}</p>
+              </div>
+
+              <p>Please review this submission in the admin panel and take appropriate action.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate approval email template
+  generateApprovalEmailTemplate(submission, publication, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #4CAF50; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎉 Article Submission Approved!</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${user.first_name || 'User'}!</h2>
+              <p>Great news! Your article submission has been reviewed and <strong>approved</strong> by our team.</p>
+
+              <div class="submission-details">
+                <h3>Approved Article Details:</h3>
+                <p><strong>Title:</strong> ${submission.title}</p>
+                <p><strong>Publication:</strong> ${publication ? publication.publication_name : 'N/A'}</p>
+                <p><strong>Status:</strong> <span style="color: #4CAF50; font-weight: bold;">Approved</span></p>
+                <p><strong>Approved on:</strong> ${new Date().toLocaleDateString()}</p>
+              </div>
+
+              <p>Your article is now live on our platform and available for publication. You can view your approved articles in your dashboard.</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate rejection email template
+  generateRejectionEmailTemplate(submission, publication, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #F44336; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #F44336; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Article Submission Update</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${user.first_name || 'User'},</h2>
+              <p>Thank you for submitting your article to News Marketplace. After careful review, we regret to inform you that your submission has not been approved at this time.</p>
+
+              <div class="submission-details">
+                <h3>Submission Details:</h3>
+                <p><strong>Title:</strong> ${submission.title}</p>
+                <p><strong>Publication:</strong> ${publication ? publication.publication_name : 'N/A'}</p>
+                <p><strong>Status:</strong> <span style="color: #F44336; font-weight: bold;">Rejected</span></p>
+                <p><strong>Reviewed on:</strong> ${new Date().toLocaleDateString()}</p>
+              </div>
+
+              <p>You can edit and resubmit your article after addressing any issues. We're here to help you improve your submission!</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
   }
 }
 

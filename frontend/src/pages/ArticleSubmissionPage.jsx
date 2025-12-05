@@ -349,7 +349,7 @@ const ArticleSubmissionPage = () => {
       });
 
       // Show success popup
-      setPopupMessage('Article submitted successfully! Your article has been submitted and is pending review.');
+      setPopupMessage('Article submitted successfully! Your article has been submitted and is pending review. Confirmation emails have been sent to you and our team.');
       setPopupType('success');
       setShowPopup(true);
       setTimeout(() => {

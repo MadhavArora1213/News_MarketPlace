@@ -1495,11 +1495,12 @@ const ArticleSubmissionsManagement = () => {
   };
 
   const handleApproveSubmission = async (submissionId) => {
-    if (!window.confirm('Are you sure you want to approve this submission?')) return;
+    if (!window.confirm('Are you sure you want to approve this submission? An approval email will be sent to the user.')) return;
 
     try {
       await api.put(`/admin/article-submissions/${submissionId}/approve`);
       fetchSubmissions();
+      alert('Submission approved successfully! An approval email has been sent to the user.');
     } catch (error) {
       console.error('Error approving submission:', error);
       alert('Error approving submission. Please try again.');
@@ -1507,11 +1508,12 @@ const ArticleSubmissionsManagement = () => {
   };
 
   const handleRejectSubmission = async (submissionId) => {
-    if (!window.confirm('Are you sure you want to reject this submission?')) return;
+    if (!window.confirm('Are you sure you want to reject this submission? A rejection email will be sent to the user.')) return;
 
     try {
       await api.put(`/admin/article-submissions/${submissionId}/reject`);
       fetchSubmissions();
+      alert('Submission rejected successfully! A rejection email has been sent to the user.');
     } catch (error) {
       console.error('Error rejecting submission:', error);
       alert('Error rejecting submission. Please try again.');
