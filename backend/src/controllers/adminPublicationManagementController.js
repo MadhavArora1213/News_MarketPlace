@@ -124,7 +124,14 @@ class AdminPublicationManagementController {
         });
       }
 
-      const publication = await PublicationManagement.create(req.body);
+      // Set all publications to require 2 images
+      const publicationData = {
+        ...req.body,
+        needs_images: true,
+        image_count: 2
+      };
+
+      const publication = await PublicationManagement.create(publicationData);
 
       res.status(201).json({
         message: 'Publication management record created successfully',
@@ -158,7 +165,14 @@ class AdminPublicationManagementController {
         return res.status(404).json({ error: 'Publication management record not found' });
       }
 
-      const updatedPublication = await publication.update(req.body);
+      // Set all publications to require 2 images
+      const updateData = {
+        ...req.body,
+        needs_images: true,
+        image_count: 2
+      };
+
+      const updatedPublication = await publication.update(updateData);
       res.json({
         message: 'Publication management record updated successfully',
         publication: updatedPublication.toJSON()
