@@ -352,7 +352,7 @@ class WebsiteController {
       });
 
       // Handle phone number formatting
-      if (websiteData.callingNumber && websiteData.callingCountry) {
+      if (websiteData.callingNumber !== undefined && websiteData.callingCountry !== undefined) {
         mappedData.owner_number = formatPhoneNumber(websiteData.callingCountry, websiteData.callingNumber);
       }
       if (websiteData.whatsappNumber && websiteData.whatsappCountry) {

@@ -274,8 +274,8 @@ class Website {
       errors.push('Terms must be accepted');
     }
 
-    if (!websiteData.captcha_response || typeof websiteData.captcha_response !== 'string' || websiteData.captcha_response.trim().length === 0) {
-      errors.push('Captcha response is required and must be a non-empty string');
+    if (websiteData.captcha_response !== undefined && (typeof websiteData.captcha_response !== 'string' || websiteData.captcha_response.trim().length === 0)) {
+      errors.push('Captcha response must be a non-empty string if provided');
     }
 
     // Metadata
