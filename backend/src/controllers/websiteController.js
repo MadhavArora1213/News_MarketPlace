@@ -224,10 +224,15 @@ class WebsiteController {
       // Format phone numbers with country codes
       const formatPhoneNumber = (country, number) => {
         if (!country || !number) return '';
-        // Import country phone data (you might need to import this from a separate file)
-        const countryPhoneData = require('../data/countryPhoneData');
-        const countryData = countryPhoneData[country];
-        return countryData ? `${countryData.code}${number}` : number;
+        try {
+          // Import country phone data (you might need to import this from a separate file)
+          const countryPhoneData = require('../data/countryPhoneData');
+          const countryData = countryPhoneData[country];
+          return countryData ? `${countryData.code}${number}` : number;
+        } catch (error) {
+          console.error('Error formatting phone number:', error);
+          return number; // Return original number if formatting fails
+        }
       };
 
       // Map field names to database fields
@@ -315,8 +320,21 @@ class WebsiteController {
         website: website.toJSON()
       });
     } catch (error) {
-      console.error('Website submission error:', error);
-      res.status(500).json({ error: error.message });
+      console.error('=== Website Submission Error ===');
+      console.error('Error type:', error.constructor.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('=== End Error Details ===');
+
+      // Send more detailed error in development
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      res.status(500).json({
+        error: 'Internal server error',
+        ...(isDevelopment && {
+          details: error.message,
+          stack: error.stack
+        })
+      });
     }
   }
 
