@@ -34,6 +34,10 @@ const ArticleSubmissionPage = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState('submit'); // 'submit' or 'my-submissions'
+
+  // Form state
   const [formData, setFormData] = useState({
     publication_id: '',
     title: '',
@@ -65,6 +69,10 @@ const ArticleSubmissionPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // My submissions state
+  const [mySubmissions, setMySubmissions] = useState([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -77,8 +85,11 @@ const ArticleSubmissionPage = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchPublications();
+      if (activeTab === 'my-submissions') {
+        fetchMySubmissions();
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, activeTab]);
 
   const fetchPublications = async () => {
     try {
@@ -94,6 +105,19 @@ const ArticleSubmissionPage = () => {
       setPublications(filteredPublications);
     } catch (error) {
       console.error('Error fetching publications:', error);
+    }
+  };
+
+  const fetchMySubmissions = async () => {
+    try {
+      setSubmissionsLoading(true);
+      const response = await api.get('/article-submissions/my');
+      setMySubmissions(response.data.submissions || []);
+    } catch (error) {
+      console.error('Error fetching my submissions:', error);
+      setMySubmissions([]);
+    } finally {
+      setSubmissionsLoading(false);
     }
   };
 
@@ -351,14 +375,42 @@ const ArticleSubmissionPage = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm p-8">
+          {/* Tab Navigation */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-4" style={{ color: theme.textPrimary }}>
-              Submit Article
-            </h1>
-            <p style={{ color: theme.textSecondary }}>
-              Share your article with our network of publications
-            </p>
+            <div className="flex border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab('submit')}
+                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                  activeTab === 'submit'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Submit Article
+              </button>
+              <button
+                onClick={() => setActiveTab('my-submissions')}
+                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                  activeTab === 'my-submissions'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                My Submissions
+              </button>
+            </div>
           </div>
+
+          {activeTab === 'submit' && (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold mb-4" style={{ color: theme.textPrimary }}>
+                  Submit Article
+                </h1>
+                <p style={{ color: theme.textSecondary }}>
+                  Share your article with our network of publications
+                </p>
+              </div>
 
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: '#e8f5e8', border: `1px solid ${theme.success}` }}>
@@ -714,8 +766,104 @@ const ArticleSubmissionPage = () => {
               </button>
             </div>
           </form>
+          </>
+          )}
+
+         {activeTab === 'my-submissions' && (
+            <div>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold mb-4" style={{ color: theme.textPrimary }}>
+                  My Submissions
+                </h1>
+                <p style={{ color: theme.textSecondary }}>
+                  View all your article submissions and their status
+                </p>
+              </div>
+
+              {submissionsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Icon name="arrow-path" size="lg" className="animate-spin text-primary mx-auto" />
+                  <span className="ml-2" style={{ color: theme.textSecondary }}>Loading submissions...</span>
+                </div>
+              ) : mySubmissions.length === 0 ? (
+                <div className="text-center py-12">
+                  <Icon name="document-text" size="lg" className="mx-auto mb-4" style={{ color: theme.textDisabled }} />
+                  <h3 className="text-lg font-medium mb-2" style={{ color: theme.textPrimary }}>No submissions yet</h3>
+                  <p style={{ color: theme.textSecondary }}>You haven't submitted any articles yet.</p>
+                  <button
+                    onClick={() => setActiveTab('submit')}
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Submit Your First Article
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {mySubmissions.map((submission) => (
+                    <div key={submission.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2" style={{ color: theme.textPrimary }}>
+                            {submission.title}
+                          </h3>
+                          <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>
+                            Submitted to: <span className="font-medium">{submission.publication_name}</span>
+                          </p>
+                          <p className="text-sm" style={{ color: theme.textSecondary }}>
+                            Submitted on: {new Date(submission.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="ml-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              submission.status === 'approved'
+                                ? 'bg-green-100 text-green-800'
+                                : submission.status === 'rejected'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}
+                          >
+                            {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {submission.sub_title && (
+                        <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>
+                          <strong>Subtitle:</strong> {submission.sub_title}
+                        </p>
+                      )}
+
+                      {submission.article_text && (
+                        <div className="mt-4">
+                          <p className="text-sm line-clamp-3" style={{ color: theme.textSecondary }}>
+                            {submission.article_text.substring(0, 200)}...
+                          </p>
+                        </div>
+                      )}
+
+                      {submission.status === 'approved' && submission.published_url && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <a
+                            href={submission.published_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            <Icon name="external-link" size="sm" className="mr-1" />
+                            View Published Article
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+      
 
       <UserFooter />
     </div>
