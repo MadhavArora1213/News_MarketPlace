@@ -177,40 +177,36 @@ const updateStatus = async (req, res) => {
     const updateResult = await db.query(updateQuery, [status, id]);
     const updatedOrder = updateResult.rows[0];
 
-    // Send email notification
+    // Send email notifications
     try {
-      let subject, message;
+      console.log(`📧 Sending radio order status update emails for status change: ${oldStatus} -> ${status}`);
 
-      if (status === 'approved') {
-        subject = 'Radio Interview Booking Request Approved - News Marketplace';
-        message = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #4CAF50;">Your radio interview booking request has been approved!</h2>
-            <p>Dear ${customerInfo.fullName},</p>
-            <p>Great news! Your radio interview booking request for <strong>${order.radio_name}</strong> has been approved.</p>
-            <p>Our team will contact you shortly to schedule the interview and discuss the details.</p>
-            <p>If you have any questions, please don't hesitate to contact us.</p>
-            <p>Best regards,<br>News Marketplace Team</p>
-          </div>
-        `;
-      } else if (status === 'rejected') {
-        subject = 'Radio Interview Booking Request Update - News Marketplace';
-        message = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #FF9800;">Radio Interview Booking Request Update</h2>
-            <p>Dear ${customerInfo.fullName},</p>
-            <p>We regret to inform you that your radio interview booking request for <strong>${order.radio_name}</strong> could not be accepted at this time.</p>
-            <p>If you have any questions or would like to discuss alternative options, please don't hesitate to contact us.</p>
-            <p>Best regards,<br>News Marketplace Team</p>
-          </div>
-        `;
-      }
+      // Email to user
+      await emailService.sendCustomEmail(
+        customerInfo.email,
+        `Radio Interview Booking ${status.charAt(0).toUpperCase() + status.slice(1)} - News Marketplace`,
+        generateStatusUpdateEmailTemplate(
+          customerInfo.fullName,
+          order.radio_name,
+          status
+        )
+      );
 
-      if (subject && message) {
-        await emailService.sendCustomEmail(customerInfo.email, subject, message);
-      }
+      // Email to admin
+      await emailService.sendCustomEmail(
+        process.env.ADMIN_EMAIL || 'admin@newsmarketplace.com',
+        `Radio Order Status Updated - ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+        generateAdminStatusUpdateEmailTemplate(
+          order,
+          customerInfo,
+          status
+        )
+      );
+
+      console.log('✅ Radio order status update emails sent successfully');
     } catch (emailError) {
-      console.error('Error sending status update email:', emailError);
+      console.error('❌ Failed to send radio order status update emails:', emailError);
+      // Don't fail the status update if email fails
     }
 
     res.json({
@@ -408,6 +404,139 @@ function generateAdminNotificationEmailTemplate(order, radioName, customerInfo) 
       <div style="background: #FAFAFA; padding: 20px; text-align: center; border-top: 1px solid #E0E0E0;">
         <p style="font-size: 12px; color: #BDBDBD; margin: 0;">
           &copy; 2024 News Marketplace Admin Panel. All rights reserved.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function generateStatusUpdateEmailTemplate(fullName, radioName, status) {
+  const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+  const statusColor = status === 'approved' ? '#4CAF50' : status === 'rejected' ? '#F44336' : '#FF9800';
+  const statusBg = status === 'approved' ? '#E8F5E8' : status === 'rejected' ? '#FFEBEE' : '#FFF3E0';
+
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, ${statusColor} 0%, ${statusColor}DD 100%); padding: 30px 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Radio Interview Booking ${statusText}</h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 16px;">Status Update</p>
+      </div>
+      <div style="padding: 30px 20px;">
+        <h2 style="color: #212121; margin: 0 0 20px 0; font-size: 24px;">Dear ${fullName},</h2>
+
+        <div style="background: ${statusBg}; border-left: 4px solid ${statusColor}; padding: 20px; margin: 20px 0; border-radius: 4px;">
+          <p style="color: ${statusColor}; font-weight: 600; margin: 0 0 10px 0; font-size: 18px;">
+            Your radio interview booking request has been ${statusText.toLowerCase()}
+          </p>
+          <p style="color: #212121; margin: 0; font-size: 16px;">
+            Radio Station: <strong>${radioName}</strong>
+          </p>
+        </div>
+
+        ${status === 'approved' ? `
+        <div style="background: #E8F5E8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #4CAF50; margin: 0 0 15px 0; font-size: 18px;">🎉 Congratulations!</h3>
+          <p style="color: #212121; margin: 0; line-height: 1.6;">
+            Your radio interview booking request has been accepted! Our team will be in touch with you shortly
+            to schedule the interview and discuss the details. Thank you for your interest in our radio programs.
+          </p>
+        </div>
+        ` : status === 'rejected' ? `
+        <div style="background: #FFEBEE; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #F44336; margin: 0 0 15px 0; font-size: 18px;">Booking Status</h3>
+          <p style="color: #212121; margin: 0; line-height: 1.6;">
+            We regret to inform you that your radio interview booking request could not be accepted at this time.
+            This decision was made after careful consideration by our editorial team.
+            We encourage you to apply for future opportunities.
+          </p>
+        </div>
+        ` : `
+        <div style="background: #FFF3E0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #FF9800; margin: 0 0 15px 0; font-size: 18px;">Under Review</h3>
+          <p style="color: #212121; margin: 0; line-height: 1.6;">
+            Your radio interview booking request is still being reviewed by our team.
+            We will update you once a decision has been made.
+          </p>
+        </div>
+        `}
+
+        <p style="color: #212121; font-size: 16px; margin: 30px 0 0 0;">
+          Best regards,<br>
+          <strong style="color: #1976D2;">The News Marketplace Team</strong>
+        </p>
+      </div>
+      <div style="background: #FAFAFA; padding: 20px; text-align: center; border-top: 1px solid #E0E0E0;">
+        <p style="font-size: 12px; color: #BDBDBD; margin: 0;">
+          &copy; 2024 News Marketplace. All rights reserved.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function generateAdminStatusUpdateEmailTemplate(order, customerInfo, status) {
+  const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); padding: 30px 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Radio Booking Status Updated</h1>
+        <p style="color: #FFF3E0; margin: 8px 0 0 0; font-size: 16px;">Status Change Notification</p>
+      </div>
+      <div style="padding: 30px 20px;">
+        <h2 style="color: #FF9800; margin: 0 0 20px 0; font-size: 24px;">Radio Interview Booking ${statusText}</h2>
+
+        <div style="background: #F5F5F5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #212121; margin: 0 0 15px 0; font-size: 18px;">Booking Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #E0E0E0;">
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Radio Station:</td>
+              <td style="padding: 8px 0; color: #212121;"><strong>${order.radio_name}</strong></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #E0E0E0;">
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Order ID:</td>
+              <td style="padding: 8px 0; color: #212121;">${order.id}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #E0E0E0;">
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Full Name:</td>
+              <td style="padding: 8px 0; color: #212121;">${customerInfo.fullName}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #E0E0E0;">
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Email:</td>
+              <td style="padding: 8px 0; color: #212121;">${customerInfo.email}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #E0E0E0;">
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Phone:</td>
+              <td style="padding: 8px 0; color: #212121;">${customerInfo.phone || 'Not provided'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #757575; font-weight: 600;">Status:</td>
+              <td style="padding: 8px 0;">
+                <span style="background: #FFF3E0; color: #FF9800; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                  ${statusText}
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        ${customerInfo.message ? `
+        <div style="background: #E3F2FD; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h4 style="color: #1976D2; margin: 0 0 10px 0;">Additional Message:</h4>
+          <p style="color: #212121; margin: 0; font-style: italic;">"${customerInfo.message}"</p>
+        </div>
+        ` : ''}
+
+        <div style="text-align: center; margin: 30px 0;">
+          <p style="color: #757575; margin-bottom: 15px;">The status of this radio booking has been updated.</p>
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/admin/radio-orders"
+             style="background: #1976D2; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+            View in Admin Panel
+          </a>
+        </div>
+      </div>
+      <div style="background: #FAFAFA; padding: 20px; text-align: center; border-top: 1px solid #E0E0E0;">
+        <p style="font-size: 12px; color: #BDBDBD; margin: 0;">
+          &copy; 2024 News Marketplace. All rights reserved.
         </p>
       </div>
     </div>
