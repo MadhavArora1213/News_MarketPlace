@@ -115,48 +115,10 @@ class WebsiteController {
       return Array.isArray(value) && value.length > 0;
     }).withMessage('At least one category is required'),
     body('location_type').isIn(['Global', 'Regional']).withMessage('Valid location type is required'),
-    body('selected_continent').custom((value, { req }) => {
-      if (req.body.location_type === 'Regional') {
-        if (typeof value === 'string') {
-          try {
-            const parsed = JSON.parse(value);
-            return Array.isArray(parsed) && parsed.length > 0;
-          } catch (e) {
-            return false;
-          }
-        }
-        return Array.isArray(value) && value.length > 0;
-      }
-      return true; // Optional for Global
-    }).withMessage('At least one continent is required when location type is Regional'),
-    body('selected_country').custom((value, { req }) => {
-      if (req.body.location_type === 'Regional') {
-        if (typeof value === 'string') {
-          try {
-            const parsed = JSON.parse(value);
-            return Array.isArray(parsed) && parsed.length > 0;
-          } catch (e) {
-            return false;
-          }
-        }
-        return Array.isArray(value) && value.length > 0;
-      }
-      return true; // Optional for Global
-    }).withMessage('At least one country is required when location type is Regional'),
-    body('selected_state').custom((value, { req }) => {
-      if (req.body.location_type === 'Regional') {
-        if (typeof value === 'string') {
-          try {
-            const parsed = JSON.parse(value);
-            return Array.isArray(parsed) && parsed.length >= 0; // States are optional
-          } catch (e) {
-            return false;
-          }
-        }
-        return Array.isArray(value); // States are optional
-      }
-      return true; // Optional for Global
-    }).withMessage('States/Provinces must be an array when location type is Regional'),
+    // Simplified location validation - we'll handle it in the controller
+    body('selected_continent').optional(),
+    body('selected_country').optional(),
+    body('selected_state').optional(),
     body('website_owner_name').trim().isLength({ min: 1 }).withMessage('Owner name is required'),
     body('website_owner_nationality').trim().isLength({ min: 1 }).withMessage('Owner nationality is required'),
     body('website_owner_gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid owner gender is required'),
@@ -283,30 +245,65 @@ class WebsiteController {
         }
       }
 
-      // Process location fields
-      if (typeof websiteData.selected_continent === 'string') {
-        try {
-          websiteData.selected_continent = JSON.parse(websiteData.selected_continent);
-        } catch (e) {
-          websiteData.selected_continent = [websiteData.selected_continent];
+      // Process location fields - handle based on location_type
+      if (websiteData.location_type === 'Global') {
+        // For Global, set location fields to null or empty arrays
+        websiteData.selected_continent = [];
+        websiteData.selected_country = [];
+        websiteData.selected_state = [];
+      } else if (websiteData.location_type === 'Regional') {
+        // For Regional, process the arrays
+        if (typeof websiteData.selected_continent === 'string') {
+          try {
+            websiteData.selected_continent = JSON.parse(websiteData.selected_continent);
+          } catch (e) {
+            websiteData.selected_continent = websiteData.selected_continent ? [websiteData.selected_continent] : [];
+          }
+        }
+
+        if (typeof websiteData.selected_country === 'string') {
+          try {
+            websiteData.selected_country = JSON.parse(websiteData.selected_country);
+          } catch (e) {
+            websiteData.selected_country = websiteData.selected_country ? [websiteData.selected_country] : [];
+          }
+        }
+
+        if (typeof websiteData.selected_state === 'string') {
+          try {
+            websiteData.selected_state = JSON.parse(websiteData.selected_state);
+          } catch (e) {
+            websiteData.selected_state = websiteData.selected_state ? [websiteData.selected_state] : [];
+          }
+        }
+
+        // Ensure arrays are not null/undefined for Regional type
+        websiteData.selected_continent = websiteData.selected_continent || [];
+        websiteData.selected_country = websiteData.selected_country || [];
+        websiteData.selected_state = websiteData.selected_state || [];
+
+        // Validate that at least continent and country are selected for Regional
+        if (websiteData.selected_continent.length === 0) {
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ path: 'selected_continent', msg: 'At least one continent must be selected for Regional location type' }]
+          });
+        }
+
+        if (websiteData.selected_country.length === 0) {
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ path: 'selected_country', msg: 'At least one country must be selected for Regional location type' }]
+          });
         }
       }
 
-      if (typeof websiteData.selected_country === 'string') {
-        try {
-          websiteData.selected_country = JSON.parse(websiteData.selected_country);
-        } catch (e) {
-          websiteData.selected_country = [websiteData.selected_country];
-        }
-      }
-
-      if (typeof websiteData.selected_state === 'string') {
-        try {
-          websiteData.selected_state = JSON.parse(websiteData.selected_state);
-        } catch (e) {
-          websiteData.selected_state = [websiteData.selected_state];
-        }
-      }
+      console.log('Processed location data:', {
+        location_type: websiteData.location_type,
+        selected_continent: websiteData.selected_continent,
+        selected_country: websiteData.selected_country,
+        selected_state: websiteData.selected_state
+      });
 
       // Convert boolean fields
       const booleanFields = [
