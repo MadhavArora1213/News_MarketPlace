@@ -20,7 +20,6 @@ const ExhibitionFormPage = () => {
     email: '',
     gender: '',
     countryOfResidence: '',
-    languages: [],
     currentRoles: [],
     interestedIn: [],
     otherCurrentRole: '',
@@ -35,7 +34,7 @@ const ExhibitionFormPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [isRateLimited, setIsRateLimited] = useState(false);
-  const [languageSearch, setLanguageSearch] = useState('');
+  const [sameAsCalling, setSameAsCalling] = useState(false);
 
   // Rate limiting configuration
   const MAX_SUBMISSIONS_PER_USER_PER_DAY = 5; // Per user limit to prevent spam
@@ -332,28 +331,6 @@ const ExhibitionFormPage = () => {
     "Zimbabwe": { code: "+263", minLength: 9, maxLength: 9 }
   };
 
-  // Comprehensive world languages list
-  const languages = [
-    "Abkhaz", "Afar", "Afrikaans", "Akan", "Albanian", "Amharic", "Arabic", "Aragonese", "Armenian", "Assamese",
-    "Avaric", "Avestan", "Aymara", "Azerbaijani", "Bambara", "Bashkir", "Basque", "Belarusian", "Bengali", "Bihari",
-    "Bislama", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chichewa", "Chinese",
-    "Chuvash", "Cornish", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Divehi", "Dutch", "Dzongkha",
-    "English", "Esperanto", "Estonian", "Ewe", "Faroese", "Fijian", "Finnish", "French", "Fula", "Galician",
-    "Georgian", "German", "Greek", "Guaraní", "Gujarati", "Haitian", "Hausa", "Hebrew", "Herero", "Hindi",
-    "Hiri Motu", "Hungarian", "Icelandic", "Ido", "Igbo", "Indonesian", "Interlingua", "Interlingue", "Inuktitut",
-    "Inupiaq", "Irish", "Italian", "Japanese", "Javanese", "Kalaallisut", "Kannada", "Kanuri", "Kashmiri", "Kazakh",
-    "Khmer", "Kikuyu", "Kinyarwanda", "Kirghiz", "Komi", "Kongo", "Korean", "Kurdish", "Kwanyama", "Lao",
-    "Latin", "Latvian", "Limburgish", "Lingala", "Lithuanian", "Luba-Katanga", "Luxembourgish", "Macedonian",
-    "Malagasy", "Malay", "Malayalam", "Maltese", "Manx", "Maori", "Marathi", "Marshallese", "Mongolian",
-    "Nauru", "Navajo", "Ndonga", "Nepali", "North Ndebele", "Northern Sami", "Norwegian", "Norwegian Bokmål",
-    "Norwegian Nynorsk", "Nuosu", "Occitan", "Ojibwe", "Oriya", "Oromo", "Ossetian", "Pali", "Panjabi", "Pashto",
-    "Persian", "Polish", "Portuguese", "Quechua", "Romanian", "Romansh", "Russian", "Samoan", "Sango", "Sanskrit",
-    "Sardinian", "Scottish Gaelic", "Serbian", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali",
-    "South Ndebele", "Southern Sotho", "Spanish", "Sundanese", "Swahili", "Swati", "Swedish", "Tagalog", "Tahitian",
-    "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Tibetan", "Tigrinya", "Tonga", "Tsonga", "Tswana", "Turkish",
-    "Turkmen", "Twi", "Uighur", "Ukrainian", "Urdu", "Uzbek", "Venda", "Vietnamese", "Volapük", "Walloon",
-    "Welsh", "Western Frisian", "Wolof", "Xhosa", "Yiddish", "Yoruba", "Zhuang", "Zulu"
-  ];
 
   // Current roles - alphabetical
   const currentRoles = [
@@ -377,13 +354,13 @@ const ExhibitionFormPage = () => {
 
   // Interested in options
   const interestedInOptions = [
-    "Affiliate Programmed",
+    "Affiliate Programme",
     "Corporate Communication",
-    "Influencer Platform Registration",
-    "Influencer access",
+    "Registration for Influencer Lifestyle App",
+    "Influencer Database Access",
     "Press and Social Media Distribution",
     "Recurring Media and Press Services",
-    "Social Media Account Assistance",
+    "Social Media Accounts Assistance",
     "Others"
   ];
 
@@ -394,13 +371,6 @@ const ExhibitionFormPage = () => {
     }
   }, []);
 
-  // Filtered languages based on search
-  const filteredLanguages = useMemo(() => {
-    if (!languageSearch.trim()) return languages.slice(0, 20); // Show first 20 by default
-    return languages.filter(language =>
-      language.toLowerCase().includes(languageSearch.toLowerCase())
-    );
-  }, [languageSearch, languages]);
 
   // Load reCAPTCHA script and render widget
   useEffect(() => {
@@ -497,15 +467,24 @@ const ExhibitionFormPage = () => {
   }, [errors]);
 
   const handlePhoneChange = useCallback((name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+
+      // If changing calling number and sameAsCalling is checked, update WhatsApp
+      if (name === 'callingNumber' && sameAsCalling) {
+        newData.whatsappNumber = value;
+      } else if (name === 'callingCountry' && sameAsCalling) {
+        newData.whatsappCountry = value;
+        newData.whatsappNumber = prev.callingNumber; // Also copy the number
+      }
+
+      return newData;
+    });
 
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
-  }, [errors]);
+  }, [errors, sameAsCalling]);
 
   const handleMultiSelectChange = useCallback((name, value, checked) => {
     setFormData(prev => ({
@@ -685,7 +664,6 @@ const ExhibitionFormPage = () => {
         email: sanitizeInput(formData.email),
         gender: sanitizeInput(formData.gender),
         countryOfResidence: sanitizeInput(formData.countryOfResidence),
-        languages: formData.languages,
         currentRoles: processedCurrentRoles,
         interestedIn: processedInterestedIn,
         termsAccepted: formData.termsAccepted,
@@ -723,7 +701,6 @@ const ExhibitionFormPage = () => {
           email: '',
           gender: '',
           countryOfResidence: '',
-          languages: [],
           currentRoles: [],
           interestedIn: [],
           otherCurrentRole: '',
@@ -731,6 +708,7 @@ const ExhibitionFormPage = () => {
           termsAccepted: false
         });
         setRecaptchaToken('');
+        setSameAsCalling(false);
 
         // Reset reCAPTCHA
         if (window.grecaptcha) {
@@ -1400,22 +1378,57 @@ const ExhibitionFormPage = () => {
                 </div>
 
                 <div style={formGroupStyle}>
+                  <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px', color: theme.textPrimary }}>
+                    <input
+                      type="checkbox"
+                      checked={sameAsCalling}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setSameAsCalling(checked);
+                        if (checked) {
+                          // Copy calling number to WhatsApp
+                          setFormData(prev => ({
+                            ...prev,
+                            whatsappNumber: prev.callingNumber,
+                            whatsappCountry: prev.callingCountry
+                          }));
+                        } else {
+                          // Clear WhatsApp fields
+                          setFormData(prev => ({
+                            ...prev,
+                            whatsappNumber: '',
+                            whatsappCountry: ''
+                          }));
+                        }
+                      }}
+                      style={{ marginRight: '8px' }}
+                    />
+                    WhatsApp number is same as calling number
+                  </label>
+                </div>
+
+                <div style={formGroupStyle}>
                   <label style={labelStyle}>WhatsApp Number</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <select
                       value={formData.whatsappCountry}
                       onChange={(e) => {
-                        const country = e.target.value;
-                        setFormData(prev => ({
-                          ...prev,
-                          whatsappCountry: country,
-                          whatsappNumber: '' // Reset number when country changes
-                        }));
+                        if (!sameAsCalling) {
+                          const country = e.target.value;
+                          setFormData(prev => ({
+                            ...prev,
+                            whatsappCountry: country,
+                            whatsappNumber: '' // Reset number when country changes
+                          }));
+                        }
                       }}
+                      disabled={sameAsCalling}
                       style={{
                         ...getInputStyle('whatsappCountry'),
                         flex: '0 0 150px',
-                        minWidth: '150px'
+                        minWidth: '150px',
+                        opacity: sameAsCalling ? 0.6 : 1,
+                        cursor: sameAsCalling ? 'not-allowed' : 'pointer'
                       }}
                     >
                       <option value="">Select Country</option>
@@ -1429,16 +1442,21 @@ const ExhibitionFormPage = () => {
                       type="tel"
                       value={formData.whatsappNumber}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                        const countryData = countryPhoneData[formData.whatsappCountry];
-                        if (countryData && value.length <= countryData.maxLength) {
-                          setFormData(prev => ({ ...prev, whatsappNumber: value }));
+                        if (!sameAsCalling) {
+                          const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                          const countryData = countryPhoneData[formData.whatsappCountry];
+                          if (countryData && value.length <= countryData.maxLength) {
+                            setFormData(prev => ({ ...prev, whatsappNumber: value }));
+                          }
                         }
                       }}
-                      placeholder={`Enter ${countryPhoneData[formData.whatsappCountry]?.minLength || 10}-${countryPhoneData[formData.whatsappCountry]?.maxLength || 10} digits`}
+                      disabled={sameAsCalling}
+                      placeholder={sameAsCalling ? 'Same as calling number' : `Enter ${countryPhoneData[formData.whatsappCountry]?.minLength || 10}-${countryPhoneData[formData.whatsappCountry]?.maxLength || 10} digits`}
                       style={{
                         ...getInputStyle('whatsappNumber'),
-                        flex: 1
+                        flex: 1,
+                        opacity: sameAsCalling ? 0.6 : 1,
+                        cursor: sameAsCalling ? 'not-allowed' : 'text'
                       }}
                       maxLength={countryPhoneData[formData.whatsappCountry]?.maxLength || 10}
                     />
@@ -1475,92 +1493,6 @@ const ExhibitionFormPage = () => {
               </div>
             </div>
 
-            {/* Language Section */}
-            <div className="form-section" style={{
-              marginBottom: '28px',
-              background: `linear-gradient(135deg, ${theme.backgroundAlt} 0%, rgba(255,255,255,0.8) 100%)`,
-              borderRadius: '12px',
-              padding: '20px',
-              border: `1px solid ${theme.borderLight}`,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-            }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                margin: '0 0 20px 0',
-                color: theme.textPrimary,
-                paddingBottom: '12px',
-                borderBottom: `2px solid ${theme.secondarySolid}`
-              }}>
-                Language Preferences
-              </h2>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Languages (Select multiple)</label>
-                <input
-                  type="text"
-                  placeholder="Search languages..."
-                  value={languageSearch}
-                  onChange={(e) => setLanguageSearch(e.target.value)}
-                  style={{
-                    ...getInputStyle('languageSearch'),
-                    marginBottom: '12px'
-                  }}
-                />
-                <div style={{
-                  maxHeight: '200px',
-                  overflowY: 'auto',
-                  border: `1px solid ${theme.borderLight}`,
-                  borderRadius: '8px',
-                  padding: '12px',
-                  backgroundColor: theme.background
-                }}>
-                  <div className="language-grid" style={{ display: 'grid', gap: '8px' }}>
-                    {filteredLanguages.map(language => (
-                      <label key={language} className="checkbox-item" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        fontSize: '14px',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        margin: '2px'
-                      }}>
-                        <input
-                          type="checkbox"
-                          checked={formData.languages.includes(language)}
-                          onChange={(e) => handleMultiSelectChange('languages', language, e.target.checked)}
-                          style={{ marginRight: '8px' }}
-                        />
-                        {language}
-                      </label>
-                    ))}
-                  </div>
-                  {filteredLanguages.length === 0 && languageSearch && (
-                    <div style={{
-                      textAlign: 'center',
-                      padding: '20px',
-                      color: theme.textSecondary,
-                      fontSize: '14px'
-                    }}>
-                      No languages found matching "{languageSearch}"
-                    </div>
-                  )}
-                </div>
-                {formData.languages.length > 0 && (
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: theme.primaryLight,
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    color: theme.primaryDark
-                  }}>
-                    <strong>Selected Languages ({formData.languages.length}):</strong> {formData.languages.join(', ')}
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Current Role Section */}
             <div className="form-section" style={{
