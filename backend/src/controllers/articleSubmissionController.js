@@ -144,10 +144,18 @@ class ArticleSubmissionController {
         });
       }
 
-      // Handle file uploads to S3
+      // Handle file uploads to S3 - Always require both images
       let image1 = null;
       let image2 = null;
       let document = null;
+
+      // Validate that both images are provided
+      if (!req.files || !req.files.image1 || !req.files.image1[0]) {
+        return res.status(400).json({ error: 'Primary image is required' });
+      }
+      if (!req.files || !req.files.image2 || !req.files.image2[0]) {
+        return res.status(400).json({ error: 'Secondary image is required' });
+      }
 
       if (req.files && req.files.image1 && req.files.image1[0]) {
         const file = req.files.image1[0];
@@ -1010,10 +1018,18 @@ class ArticleSubmissionController {
         });
       }
 
-      // Handle file uploads to S3
+      // Handle file uploads to S3 - Always require both images
       let image1 = null;
       let image2 = null;
       let document = null;
+
+      // Validate that both images are provided
+      if (!req.files || !req.files.image1 || !req.files.image1[0]) {
+        return res.status(400).json({ error: 'Primary image is required' });
+      }
+      if (!req.files || !req.files.image2 || !req.files.image2[0]) {
+        return res.status(400).json({ error: 'Secondary image is required' });
+      }
 
       if (req.files && req.files.image1 && req.files.image1[0]) {
         const file = req.files.image1[0];
@@ -1025,6 +1041,19 @@ class ArticleSubmissionController {
         } catch (uploadError) {
           console.error('Failed to upload image1 to S3:', uploadError);
           throw new Error('Failed to upload image1');
+        }
+      }
+
+      if (req.files && req.files.image2 && req.files.image2[0]) {
+        const file = req.files.image2[0];
+        const s3Key = s3Service.generateKey('articles', 'image2', file.originalname);
+        const contentType = s3Service.getContentType(file.originalname);
+
+        try {
+          image2 = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+        } catch (uploadError) {
+          console.error('Failed to upload image2 to S3:', uploadError);
+          throw new Error('Failed to upload image2');
         }
       }
 

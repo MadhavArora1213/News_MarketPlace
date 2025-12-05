@@ -204,6 +204,10 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
   const [image1Preview, setImage1Preview] = useState(null);
   const [image2Preview, setImage2Preview] = useState(null);
   const [generatedSlug, setGeneratedSlug] = useState('');
+  const [publicationImageRequirements, setPublicationImageRequirements] = useState({
+    needs_images: false,
+    image_count: 0
+  });
 
   // Generate slug from title
   const generateSlug = (title) => {
@@ -265,6 +269,12 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
     if (selectedPub) {
       setWordLimit(selectedPub.word_limit || 500);
       setFormData({ ...formData, publication_id: pubId });
+
+      // Set image requirements based on publication
+      setPublicationImageRequirements({
+        needs_images: selectedPub.needs_images || false,
+        image_count: selectedPub.image_count || 0
+      });
     }
   };
 
@@ -360,8 +370,13 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
       alert('Article text is required');
       return;
     }
+    // Always require both images
     if (!formData.image1) {
       alert('Primary image is required');
+      return;
+    }
+    if (!formData.image2) {
+      alert('Secondary image is required');
       return;
     }
     if (!formData.recaptcha_token) {
@@ -638,10 +653,10 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Image Uploads */}
+          {/* Image Uploads - Always required */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Image Upload *</label>
+              <label style={labelStyle}>Primary Image *</label>
               <input
                 type="file"
                 accept="image/*"
@@ -662,18 +677,16 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>
-                Image Upload
-                <Info className="w-4 h-4 inline ml-1 text-[#9C27B0] cursor-help" title="Not guaranteed" />
-              </label>
+              <label style={labelStyle}>Secondary Image *</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImage2Change}
                 style={{ ...inputStyle, padding: '8px' }}
+                required
               />
               <small style={{ color: '#757575', fontSize: '12px' }}>
-                Optional landscape image, high resolution
+                Required landscape image, high resolution (min 1000x600px)
               </small>
               {image2Preview && (
                 <img
@@ -798,27 +811,27 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
 
 // Article Submission Edit Modal Component
 const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => {
-    const [formData, setFormData] = useState({
-      publication_id: '',
-      title: '',
-      sub_title: '',
-      by_line: '',
-      tentative_publish_date: '',
-      article_text: '',
-      website_link: '',
-      instagram_link: '',
-      facebook_link: '',
-      delete_image1: false,
-      delete_image2: false
-    });
-    const [publications, setPublications] = useState([]);
-    const [publicationSearch, setPublicationSearch] = useState('');
-    const [filteredPublications, setFilteredPublications] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [image1File, setImage1File] = useState(null);
-    const [image2File, setImage2File] = useState(null);
-    const [image1Preview, setImage1Preview] = useState(null);
-    const [image2Preview, setImage2Preview] = useState(null);
+     const [formData, setFormData] = useState({
+       publication_id: '',
+       title: '',
+       sub_title: '',
+       by_line: '',
+       tentative_publish_date: '',
+       article_text: '',
+       website_link: '',
+       instagram_link: '',
+       facebook_link: '',
+       delete_image1: false,
+       delete_image2: false
+     });
+     const [publications, setPublications] = useState([]);
+     const [publicationSearch, setPublicationSearch] = useState('');
+     const [filteredPublications, setFilteredPublications] = useState([]);
+     const [loading, setLoading] = useState(false);
+     const [image1File, setImage1File] = useState(null);
+     const [image2File, setImage2File] = useState(null);
+     const [image1Preview, setImage1Preview] = useState(null);
+     const [image2Preview, setImage2Preview] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -848,6 +861,14 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
           delete_image1: false,
           delete_image2: false
         });
+
+        // Set image requirements based on current publication
+        if (submission.publication) {
+          setPublicationImageRequirements({
+            needs_images: submission.publication.needs_images || false,
+            image_count: submission.publication.image_count || 0
+          });
+        }
       }
       setPublicationSearch('');
       setImage1File(null);
@@ -913,6 +934,17 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
 
   const handlePublicationChange = (pubId) => {
     setFormData({ ...formData, publication_id: pubId || '' });
+
+    // Update image requirements when publication changes
+    if (pubId) {
+      const selectedPub = publications.find(p => p.id === parseInt(pubId));
+      if (selectedPub) {
+        setPublicationImageRequirements({
+          needs_images: selectedPub.needs_images || false,
+          image_count: selectedPub.image_count || 0
+        });
+      }
+    }
   };
 
   const validateImage = (file) => {
@@ -1152,10 +1184,10 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
             </div>
           </div>
 
-          {/* Image Uploads */}
+          {/* Image Uploads - Always required */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Primary Image</label>
+              <label style={labelStyle}>Primary Image *</label>
               <div style={{ marginBottom: '8px' }}>
                 {submission?.image1 && !formData.delete_image1 && (
                   <div style={{ marginBottom: '8px' }}>
@@ -1198,7 +1230,7 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Secondary Image</label>
+              <label style={labelStyle}>Secondary Image *</label>
               <div style={{ marginBottom: '8px' }}>
                 {submission?.image2 && !formData.delete_image2 && (
                   <div style={{ marginBottom: '8px' }}>

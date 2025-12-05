@@ -202,6 +202,7 @@ const ArticleSubmissionPage = () => {
     setWordLimit(pub?.word_limit || 500);
     setSearchTerm(pub ? pub.publication_name : '');
 
+
     if (errors.publication_id) {
       setErrors(prev => ({ ...prev, publication_id: '' }));
     }
@@ -253,9 +254,12 @@ const ArticleSubmissionPage = () => {
       newErrors.terms_agreed = 'You must accept the terms and conditions';
     }
 
-    // Required files
+    // Required files - always require images
     if (!files.image1) {
       newErrors.image1 = 'Image 1 is required';
+    }
+    if (!files.image2) {
+      newErrors.image2 = 'Image 2 is required';
     }
 
     // reCAPTCHA
@@ -587,45 +591,49 @@ const ArticleSubmissionPage = () => {
               {errors.article_text && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.article_text}</div>}
             </div>
 
-            {/* Image 1 */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Image 1 <span style={{ color: theme.danger }}>*</span>
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB" />
-              </label>
-              <input
-                type="file"
-                name="image1"
-                onChange={handleFileChange}
-                accept="image/*"
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.image1 ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-              />
-              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                Must be landscape orientation (width greater than height), high resolution recommended. Size limit: 10 MB. No logos, thumbnails, icons, or text in image.
+            {/* Image Upload Section - Always required */}
+            <>
+              {/* Image 1 */}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                  Image 1 <span style={{ color: theme.danger }}>*</span>
+                  <Icon name="information-circle" size="sm" className="ml-1 inline" title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB" />
+                </label>
+                <input
+                  type="file"
+                  name="image1"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                  style={{ borderColor: errors.image1 ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                />
+                <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                  Must be landscape orientation (width greater than height), high resolution recommended. Size limit: 10 MB. No logos, thumbnails, icons, or text in image.
+                </div>
+                {errors.image1 && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.image1}</div>}
               </div>
-              {errors.image1 && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.image1}</div>}
-            </div>
 
-            {/* Image 2 */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Image 2
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
-              </label>
-              <input
-                type="file"
-                name="image2"
-                onChange={handleFileChange}
-                accept="image/*"
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.image2 ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-              />
-              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                Optional, must be landscape orientation if provided
+              {/* Image 2 - Always required */}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                  Image 2 <span style={{ color: theme.danger }}>*</span>
+                  <Icon name="information-circle" size="sm" className="ml-1 inline" title="Required for all submissions" />
+                </label>
+                <input
+                  type="file"
+                  name="image2"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                  style={{ borderColor: errors.image2 ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                />
+                <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                  Must be landscape orientation (width greater than height), high resolution recommended. Size limit: 10 MB. No logos, thumbnails, icons, or text in image.
+                </div>
+                {errors.image2 && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.image2}</div>}
               </div>
-              {errors.image2 && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.image2}</div>}
-            </div>
+            </>
+
 
             {/* Website Link */}
             <div>
