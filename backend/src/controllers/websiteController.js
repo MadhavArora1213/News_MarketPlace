@@ -137,7 +137,8 @@ class WebsiteController {
     body('website_owner_nationality').trim().isLength({ min: 1 }).withMessage('Owner nationality is required'),
     body('website_owner_gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid owner gender is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid owner email is required'),
-    body('owner_number').isLength({ min: 1 }).withMessage('Owner number is required'),
+    body('callingNumber').isLength({ min: 1 }).withMessage('Owner number is required'),
+    body('callingCountry').isLength({ min: 1 }).withMessage('Owner country is required'),
     body('terms_accepted').custom(value => value === true || value === 'true').withMessage('Terms must be accepted'),
     body('recaptchaToken').optional().isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
   ];
@@ -288,7 +289,8 @@ class WebsiteController {
           // Import country phone data (you might need to import this from a separate file)
           const countryPhoneData = require('../data/countryPhoneData');
           const countryData = countryPhoneData[country];
-          return countryData ? `${countryData.code}${number}` : number;
+          const trimmedNumber = number.toString().trim();
+          return countryData ? `${countryData.code}${trimmedNumber}` : trimmedNumber;
         } catch (error) {
           console.error('Error formatting phone number:', error);
           return number; // Return original number if formatting fails
