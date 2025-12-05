@@ -140,7 +140,7 @@ class WebsiteController {
     body('callingNumber').isLength({ min: 1 }).withMessage('Owner number is required'),
     body('callingCountry').isLength({ min: 1 }).withMessage('Owner country is required'),
     body('terms_accepted').custom(value => value === true || value === 'true').withMessage('Terms must be accepted'),
-    body('recaptchaToken').isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
+    body('recaptchaToken').optional().isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
   ];
 
   otpValidation = [
@@ -180,10 +180,15 @@ class WebsiteController {
         });
       }
 
-      // Verify reCAPTCHA
-      const recaptchaScore = await recaptchaService.verifyRecaptcha(req.body.recaptchaToken);
-      if (recaptchaScore === null || recaptchaScore < 0.5) {
-        return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+      // Verify reCAPTCHA (optional for now)
+      if (req.body.recaptchaToken) {
+        const recaptchaScore = await recaptchaService.verifyRecaptcha(req.body.recaptchaToken);
+        if (recaptchaScore === null || recaptchaScore < 0.5) {
+          console.warn('reCAPTCHA verification failed, but proceeding with submission');
+          // Don't fail the request, just log the warning
+        }
+      } else {
+        console.warn('No reCAPTCHA token provided, proceeding with submission');
       }
 
       const websiteData = req.body;
