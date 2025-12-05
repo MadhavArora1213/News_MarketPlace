@@ -186,6 +186,8 @@ const AiArticleQuestionnaireForm = () => {
 
     if (!formData.part1.background.trim()) {
       newErrors['part1.background'] = 'This field is required';
+    } else if (formData.part1.background.trim().length < 5) {
+      newErrors['part1.background'] = 'Background must be at least 5 characters long';
     }
 
     if (!formData.part1.inspiration.trim()) {
@@ -194,18 +196,26 @@ const AiArticleQuestionnaireForm = () => {
 
     if (!formData.part1.challenges.trim()) {
       newErrors['part1.challenges'] = 'This field is required';
+    } else if (formData.part1.challenges.trim().length < 5) {
+      newErrors['part1.challenges'] = 'Challenges must be at least 5 characters long';
     }
 
     if (!formData.part1.uniquePerspective.trim()) {
       newErrors['part1.uniquePerspective'] = 'This field is required';
+    } else if (formData.part1.uniquePerspective.trim().length < 5) {
+      newErrors['part1.uniquePerspective'] = 'Unique perspective must be at least 5 characters long';
     }
 
     if (!formData.part1.highlights.trim()) {
       newErrors['part1.highlights'] = 'This field is required';
+    } else if (formData.part1.highlights.trim().length < 5) {
+      newErrors['part1.highlights'] = 'Highlights must be at least 5 characters long';
     }
 
     if (!formData.part1.futureVision.trim()) {
       newErrors['part1.futureVision'] = 'This field is required';
+    } else if (formData.part1.futureVision.trim().length < 5) {
+      newErrors['part1.futureVision'] = 'Future vision must be at least 5 characters long';
     }
 
     // Part 2 required fields
@@ -433,6 +443,7 @@ const AiArticleQuestionnaireForm = () => {
                 <label className="block text-sm font-medium text-gray-900 mb-2 font-['Inter']">
                   {index + 1}. {question.label}
                   {question.required && <span className="text-red-500 ml-1">*</span>}
+                  {question.required && <span className="text-gray-500 text-xs ml-2">(min 5 characters)</span>}
                 </label>
                 <textarea
                   value={formData.part1[question.key]}
@@ -440,7 +451,14 @@ const AiArticleQuestionnaireForm = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white text-gray-900 placeholder-gray-500 transition-all duration-200 font-['Open_Sans'] min-h-[100px] resize-vertical"
                   placeholder="Enter your response here..."
                 />
-                {errors[`part1.${question.key}`] && <p className="text-red-600 text-sm mt-1">{errors[`part1.${question.key}`]}</p>}
+                <div className="flex justify-between mt-1">
+                  {errors[`part1.${question.key}`] && <p className="text-red-600 text-sm">{errors[`part1.${question.key}`]}</p>}
+                  {question.required && (
+                    <p className={`text-sm ${formData.part1[question.key].trim().length < 5 ? 'text-orange-600' : 'text-green-600'}`}>
+                      {formData.part1[question.key].trim().length}/5 min characters
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
