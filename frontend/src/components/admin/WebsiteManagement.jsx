@@ -129,8 +129,8 @@ const WebsiteDetailsModal = ({ isOpen, onClose, website }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div><strong>Owner Name:</strong> {website.owner_name}</div>
               <div><strong>Owner Email:</strong> {website.owner_email}</div>
-              <div><strong>Owner Number:</strong> {website.owner_number || 'N/A'}</div>
-              <div><strong>WhatsApp:</strong> {website.owner_whatsapp || 'N/A'}</div>
+              <div><strong>Owner Number:</strong> {website.owner_number ? <a href={`tel:${website.owner_number}`} style={{ color: '#1976D2' }}>{website.owner_number}</a> : 'N/A'}</div>
+              <div><strong>WhatsApp:</strong> {website.owner_whatsapp ? <a href={`https://wa.me/${website.owner_whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366' }}>WhatsApp: {website.owner_whatsapp}</a> : 'N/A'}</div>
               <div><strong>Telegram:</strong> {website.owner_telegram || 'N/A'}</div>
               <div><strong>Nationality:</strong> {website.owner_nationality || 'N/A'}</div>
               <div><strong>Gender:</strong> {website.owner_gender || 'N/A'}</div>

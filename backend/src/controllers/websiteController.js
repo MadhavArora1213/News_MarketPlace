@@ -90,7 +90,8 @@ class WebsiteController {
     body('website_owner_nationality').trim().isLength({ min: 1 }).withMessage('Owner nationality is required'),
     body('website_owner_gender').isIn(['Male', 'Female', 'Other']).withMessage('Valid owner gender is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid owner email is required'),
-    body('number').isLength({ min: 1 }).withMessage('Owner number is required'),
+    body('callingNumber').isLength({ min: 1 }).withMessage('Owner number is required'),
+    body('callingCountry').isLength({ min: 1 }).withMessage('Owner country is required'),
     body('terms_accepted').custom(value => value === true || value === 'true').withMessage('Terms must be accepted'),
     body('recaptchaToken').isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
   ];
@@ -220,6 +221,15 @@ class WebsiteController {
         }
       });
 
+      // Format phone numbers with country codes
+      const formatPhoneNumber = (country, number) => {
+        if (!country || !number) return '';
+        // Import country phone data (you might need to import this from a separate file)
+        const countryPhoneData = require('../data/countryPhoneData');
+        const countryData = countryPhoneData[country];
+        return countryData ? `${countryData.code}${number}` : number;
+      };
+
       // Map field names to database fields
       const fieldMappings = {
         'media_name': 'media_name',
@@ -262,8 +272,6 @@ class WebsiteController {
         'website_owner_name': 'owner_name',
         'website_owner_nationality': 'owner_nationality',
         'website_owner_gender': 'owner_gender',
-        'number': 'owner_number',
-        'whatsapp': 'owner_whatsapp',
         'email': 'owner_email',
         'telegram': 'owner_telegram',
         'terms_accepted': 'terms_accepted',
@@ -278,6 +286,14 @@ class WebsiteController {
         }
       });
 
+      // Handle phone number formatting
+      if (websiteData.callingNumber && websiteData.callingCountry) {
+        mappedData.owner_number = formatPhoneNumber(websiteData.callingCountry, websiteData.callingNumber);
+      }
+      if (websiteData.whatsappNumber && websiteData.whatsappCountry) {
+        mappedData.owner_whatsapp = formatPhoneNumber(websiteData.whatsappCountry, websiteData.whatsappNumber);
+      }
+
       // Add user information
       mappedData.submitted_by = userId;
       mappedData.status = 'pending';
@@ -285,6 +301,14 @@ class WebsiteController {
 
       // Create website in database
       const website = await Website.create(mappedData);
+
+      // Send confirmation emails
+      try {
+        await this.sendWebsiteSubmissionConfirmationEmails(website, req);
+      } catch (emailError) {
+        console.error('Failed to send website submission confirmation emails:', emailError);
+        // Don't fail the request if email fails
+      }
 
       res.status(201).json({
         message: 'Website submitted successfully',
@@ -523,21 +547,13 @@ class WebsiteController {
         submitted_by_admin: adminId
       });
 
-      // Send notification email
+      // Send approval/rejection notification email
       try {
-        const subject = status === 'approved' ? 'Website Submission Approved' : 'Website Submission Rejected';
-        const statusMessage = status === 'approved' ? 'approved' : 'rejected';
-        const reasonText = reason ? `\n\nReason: ${reason}` : '';
-
-        await emailService.sendCustomEmail(
-          website.owner_email,
-          subject,
-          `<p>Dear ${website.owner_name},</p>
-          <p>Your website submission has been ${statusMessage}.${reasonText}</p>
-          <p>Media Name: ${website.media_name}</p>
-          <p>If you have any questions, please contact our support team.</p>
-          <p>Thank you for using News Marketplace!</p>`
-        );
+        if (status === 'approved') {
+          await this.sendWebsiteApprovalNotificationEmail(website, req);
+        } else if (status === 'rejected') {
+          await this.sendWebsiteRejectionNotificationEmail(website, reason, req);
+        }
       } catch (emailError) {
         console.error('Status notification email failed:', emailError);
       }
@@ -746,6 +762,277 @@ class WebsiteController {
       console.error('Bulk delete error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
+  }
+
+  // Send website submission confirmation emails
+  async sendWebsiteSubmissionConfirmationEmails(website, req) {
+    try {
+      // Get user information
+      const user = await website.getUser();
+      let userEmail = user?.email;
+
+      const teamEmail = 'menastories71@gmail.com';
+
+      // Email to team (always send)
+      const teamSubject = 'New Website Submission - News Marketplace';
+      const teamHtmlContent = this.generateTeamWebsiteNotificationEmailTemplate(website, user);
+
+      await emailService.sendCustomEmail(teamEmail, teamSubject, teamHtmlContent);
+
+      // Email to user (only if user exists)
+      if (userEmail) {
+        const userSubject = 'Website Submission Received - News Marketplace';
+        const userHtmlContent = this.generateWebsiteSubmissionConfirmationEmailTemplate(website, user);
+
+        await emailService.sendCustomEmail(userEmail, userSubject, userHtmlContent);
+        console.log('Website submission confirmation emails sent successfully');
+      } else {
+        console.warn('No user email found for website submission confirmation email - team notification sent only');
+      }
+    } catch (error) {
+      console.error('Error sending website submission confirmation emails:', error);
+      throw error;
+    }
+  }
+
+  // Send website approval notification email
+  async sendWebsiteApprovalNotificationEmail(website, req) {
+    try {
+      let userEmail = website.owner_email;
+
+      if (!userEmail) {
+        console.warn('No user email found for website approval notification email');
+        return;
+      }
+
+      const subject = 'Website Submission Approved! - News Marketplace';
+      const htmlContent = this.generateWebsiteApprovalEmailTemplate(website);
+
+      await emailService.sendCustomEmail(userEmail, subject, htmlContent);
+      console.log('Website approval notification email sent successfully');
+    } catch (error) {
+      console.error('Error sending website approval notification email:', error);
+      throw error;
+    }
+  }
+
+  // Send website rejection notification email
+  async sendWebsiteRejectionNotificationEmail(website, reason, req) {
+    try {
+      let userEmail = website.owner_email;
+
+      if (!userEmail) {
+        console.warn('No user email found for website rejection notification email');
+        return;
+      }
+
+      const subject = 'Website Submission Update - News Marketplace';
+      const htmlContent = this.generateWebsiteRejectionEmailTemplate(website, reason);
+
+      await emailService.sendCustomEmail(userEmail, subject, htmlContent);
+      console.log('Website rejection notification email sent successfully');
+    } catch (error) {
+      console.error('Error sending website rejection notification email:', error);
+      throw error;
+    }
+  }
+
+  // Generate website submission confirmation email template for user
+  generateWebsiteSubmissionConfirmationEmailTemplate(website, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #2196F3; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #2196F3; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🌐 Website Submission Received</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${user.first_name || 'User'}!</h2>
+              <p>Thank you for submitting your website to News Marketplace. Your submission has been received and is now under review.</p>
+
+              <div class="submission-details">
+                <h3>Submission Details:</h3>
+                <p><strong>Media Name:</strong> ${website.media_name}</p>
+                <p><strong>Website Address:</strong> ${website.media_website_address}</p>
+                <p><strong>Media Type:</strong> ${website.news_media_type}</p>
+                <p><strong>Status:</strong> <span style="color: #FF9800; font-weight: bold;">Pending Review</span></p>
+                <p><strong>Submitted on:</strong> ${new Date(website.created_at).toLocaleDateString()}</p>
+                ${website.registration_document ? '<p><strong>Documents:</strong> Included</p>' : ''}
+              </div>
+
+              <p>You will receive an email notification once your submission has been reviewed. This process typically takes 2-3 business days.</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate team website notification email template
+  generateTeamWebsiteNotificationEmailTemplate(website, user) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #FF9800; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #FF9800; }
+            .user-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #4CAF50; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🆕 New Website Submission</h1>
+            </div>
+            <div class="content">
+              <p>A new website submission has been received and requires review.</p>
+
+              <div class="submission-details">
+                <h3>Website Details:</h3>
+                <p><strong>Media Name:</strong> ${website.media_name}</p>
+                <p><strong>Website Address:</strong> ${website.media_website_address}</p>
+                <p><strong>Media Type:</strong> ${website.news_media_type}</p>
+                <p><strong>Location Type:</strong> ${website.location_type}</p>
+                <p><strong>Status:</strong> <span style="color: #FF9800; font-weight: bold;">Pending Review</span></p>
+                <p><strong>Submitted on:</strong> ${new Date(website.created_at).toLocaleDateString()}</p>
+                ${website.registration_document ? '<p><strong>Documents:</strong> Yes</p>' : '<p><strong>Documents:</strong> No</p>'}
+              </div>
+
+              <div class="user-details">
+                <h3>Owner Details:</h3>
+                <p><strong>Name:</strong> ${website.owner_name}</p>
+                <p><strong>Email:</strong> ${website.owner_email}</p>
+                <p><strong>Phone:</strong> ${website.owner_number || 'N/A'}</p>
+                <p><strong>WhatsApp:</strong> ${website.owner_whatsapp || 'N/A'}</p>
+                ${user ? `<p><strong>User Account:</strong> ${user.first_name} ${user.last_name} (${user.email})</p>` : ''}
+              </div>
+
+              <p>Please review this submission in the admin panel and take appropriate action.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate website approval email template
+  generateWebsiteApprovalEmailTemplate(website) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #4CAF50; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎉 Website Submission Approved!</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${website.owner_name}!</h2>
+              <p>Great news! Your website submission has been reviewed and <strong>approved</strong> by our team.</p>
+
+              <div class="submission-details">
+                <h3>Approved Website Details:</h3>
+                <p><strong>Media Name:</strong> ${website.media_name}</p>
+                <p><strong>Website Address:</strong> ${website.media_website_address}</p>
+                <p><strong>Media Type:</strong> ${website.news_media_type}</p>
+                <p><strong>Status:</strong> <span style="color: #4CAF50; font-weight: bold;">Approved</span></p>
+                <p><strong>Approved on:</strong> ${new Date().toLocaleDateString()}</p>
+              </div>
+
+              <p>Your website is now live on our platform and available for publication. You can view your approved websites in your dashboard.</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Generate website rejection email template
+  generateWebsiteRejectionEmailTemplate(website, reason) {
+    const reasonText = reason ? `<p><strong>Reason:</strong> ${reason}</p>` : '';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #212121; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #F44336; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #FAFAFA; padding: 30px; border-radius: 0 0 8px 8px; }
+            .submission-details { background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #F44336; }
+            .footer { text-align: center; margin-top: 20px; color: #757575; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Website Submission Update</h1>
+            </div>
+            <div class="content">
+              <h2>Hello ${website.owner_name},</h2>
+              <p>Thank you for submitting your website to News Marketplace. After careful review, we regret to inform you that your submission has not been approved at this time.</p>
+
+              <div class="submission-details">
+                <h3>Submission Details:</h3>
+                <p><strong>Media Name:</strong> ${website.media_name}</p>
+                <p><strong>Website Address:</strong> ${website.media_website_address}</p>
+                <p><strong>Media Type:</strong> ${website.news_media_type}</p>
+                <p><strong>Status:</strong> <span style="color: #F44336; font-weight: bold;">Rejected</span></p>
+                <p><strong>Reviewed on:</strong> ${new Date().toLocaleDateString()}</p>
+                ${reasonText}
+              </div>
+
+              <p>You can edit and resubmit your website after addressing any issues. We're here to help you improve your submission!</p>
+              <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 News Marketplace. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
   }
 }
 

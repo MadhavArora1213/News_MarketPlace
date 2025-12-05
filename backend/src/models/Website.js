@@ -224,8 +224,8 @@ class Website {
       errors.push('Owner gender must be a string');
     }
 
-    if (websiteData.owner_number && typeof websiteData.owner_number !== 'string') {
-      errors.push('Owner number must be a string');
+    if (!websiteData.owner_number || typeof websiteData.owner_number !== 'string' || websiteData.owner_number.trim().length === 0) {
+      errors.push('Owner number is required and must be a non-empty string');
     }
 
     if (websiteData.owner_whatsapp && typeof websiteData.owner_whatsapp !== 'string') {
@@ -414,6 +414,17 @@ class Website {
   async delete() {
     const sql = 'DELETE FROM websites WHERE id = $1';
     await query(sql, [this.id]);
+  }
+
+  // Get associated user (if submitted_by is set)
+  async getUser() {
+    if (!this.submitted_by) {
+      return null;
+    }
+
+    const sql = 'SELECT * FROM users WHERE id = $1';
+    const result = await query(sql, [this.submitted_by]);
+    return result.rows[0] || null;
   }
 
   // Convert to JSON

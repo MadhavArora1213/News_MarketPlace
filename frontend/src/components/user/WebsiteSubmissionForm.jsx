@@ -54,8 +54,10 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     website_owner_name: '',
     website_owner_nationality: '',
     website_owner_gender: '',
-    number: '',
-    whatsapp: '',
+    callingNumber: '',
+    callingCountry: '',
+    whatsappNumber: '',
+    whatsappCountry: '',
     email: '',
     telegram: '',
     terms_accepted: false,
@@ -75,6 +77,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null); // null, 'success', 'error'
+  const [sameAsCalling, setSameAsCalling] = useState(false);
 
   // Removed currentStep as OTP is now part of the form
   const [otpData, setOtpData] = useState({
@@ -201,6 +204,38 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     }
   };
 
+  const handlePhoneChange = (name, value) => {
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+
+      // If changing calling number and sameAsCalling is checked, update WhatsApp
+      if (name === 'callingNumber' && sameAsCalling) {
+        newData.whatsappNumber = value;
+      } else if (name === 'callingCountry' && sameAsCalling) {
+        newData.whatsappCountry = value;
+        newData.whatsappNumber = prev.callingNumber; // Also copy the number
+      }
+
+      return newData;
+    });
+
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  // Handle same as calling checkbox
+  const handleSameAsCallingChange = (checked) => {
+    setSameAsCalling(checked);
+    if (checked) {
+      setFormData(prev => ({
+        ...prev,
+        whatsappCountry: prev.callingCountry,
+        whatsappNumber: prev.callingNumber
+      }));
+    }
+  };
+
   const handleFileChange = (e) => {
     const { name, files: fileList } = e.target;
     setFiles(prev => ({
@@ -218,7 +253,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     const requiredFields = [
       'media_name', 'media_website_address', 'news_media_type', 'website_owner_name',
-      'website_owner_nationality', 'website_owner_gender', 'number', 'email', 'how_did_you_hear'
+      'website_owner_nationality', 'website_owner_gender', 'callingNumber', 'callingCountry', 'email', 'how_did_you_hear'
     ];
 
     requiredFields.forEach(field => {
@@ -235,6 +270,27 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     // Email validations
     if (formData.email && !formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Phone validation - check against country-specific requirements
+    if (formData.callingCountry && formData.callingNumber) {
+      const countryData = countryPhoneData[formData.callingCountry];
+      if (countryData) {
+        const length = formData.callingNumber.length;
+        if (length < countryData.minLength || length > countryData.maxLength) {
+          newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${formData.callingCountry}`;
+        }
+      }
+    }
+
+    if (formData.whatsappCountry && formData.whatsappNumber) {
+      const countryData = countryPhoneData[formData.whatsappCountry];
+      if (countryData) {
+        const length = formData.whatsappNumber.length;
+        if (length < countryData.minLength || length > countryData.maxLength) {
+          newErrors.whatsappNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${formData.whatsappCountry}`;
+        }
+      }
     }
 
     // Number validations
@@ -302,12 +358,26 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     try {
       const submitData = new FormData();
 
+      // Format phone numbers with country codes
+      const formatPhoneNumber = (country, number) => {
+        if (!country || !number) return '';
+        const countryData = countryPhoneData[country];
+        return countryData ? `${countryData.code}${number}` : number;
+      };
+
       // Add form data
       Object.keys(formData).forEach(key => {
         if (Array.isArray(formData[key])) {
           submitData.append(key, JSON.stringify(formData[key]));
         } else if (key === 'custom_location') {
           // Skip the old custom_location field as it's replaced by the new location fields
+          return;
+        } else if (key === 'callingNumber') {
+          submitData.append('owner_number', formatPhoneNumber(formData.callingCountry, formData.callingNumber));
+        } else if (key === 'whatsappNumber') {
+          submitData.append('owner_whatsapp', formatPhoneNumber(formData.whatsappCountry, formData.whatsappNumber));
+        } else if (key === 'callingCountry' || key === 'whatsappCountry') {
+          // Skip these as they're not needed in backend
           return;
         } else {
           submitData.append(key, formData[key]);
@@ -443,30 +513,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     'Africa', 'Asia', 'Europe', 'North America', 'South America', 'Australia/Oceania', 'Antarctica'
   ];
 
-  const countries = [
-    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia',
-    'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin',
-    'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
-    'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia',
-    'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica',
-    'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini',
-    'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada',
-    'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia',
-    'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati',
-    'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania',
-    'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania',
-    'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique',
-    'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea',
-    'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines',
-    'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines',
-    'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone',
-    'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan',
-    'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
-    'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
-    'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu',
-    'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
-  ];
-
   const states = [
     // US States
     'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
@@ -582,6 +628,206 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     color: theme.danger,
     marginLeft: '4px'
   };
+
+  // Country codes and phone number formats
+  const countryPhoneData = {
+    "Afghanistan": { code: "+93", minLength: 9, maxLength: 9 },
+    "Albania": { code: "+355", minLength: 9, maxLength: 9 },
+    "Algeria": { code: "+213", minLength: 9, maxLength: 9 },
+    "Andorra": { code: "+376", minLength: 6, maxLength: 9 },
+    "Angola": { code: "+244", minLength: 9, maxLength: 9 },
+    "Antigua and Barbuda": { code: "+1", minLength: 10, maxLength: 10 },
+    "Argentina": { code: "+54", minLength: 10, maxLength: 10 },
+    "Armenia": { code: "+374", minLength: 8, maxLength: 8 },
+    "Australia": { code: "+61", minLength: 9, maxLength: 9 },
+    "Austria": { code: "+43", minLength: 10, maxLength: 13 },
+    "Azerbaijan": { code: "+994", minLength: 9, maxLength: 9 },
+    "Bahamas": { code: "+1", minLength: 10, maxLength: 10 },
+    "Bahrain": { code: "+973", minLength: 8, maxLength: 8 },
+    "Bangladesh": { code: "+880", minLength: 10, maxLength: 10 },
+    "Barbados": { code: "+1", minLength: 10, maxLength: 10 },
+    "Belarus": { code: "+375", minLength: 9, maxLength: 9 },
+    "Belgium": { code: "+32", minLength: 9, maxLength: 9 },
+    "Belize": { code: "+501", minLength: 7, maxLength: 7 },
+    "Benin": { code: "+229", minLength: 8, maxLength: 8 },
+    "Bhutan": { code: "+975", minLength: 8, maxLength: 8 },
+    "Bolivia": { code: "+591", minLength: 8, maxLength: 8 },
+    "Bosnia and Herzegovina": { code: "+387", minLength: 8, maxLength: 9 },
+    "Botswana": { code: "+267", minLength: 8, maxLength: 8 },
+    "Brazil": { code: "+55", minLength: 10, maxLength: 11 },
+    "Brunei": { code: "+673", minLength: 7, maxLength: 7 },
+    "Bulgaria": { code: "+359", minLength: 9, maxLength: 9 },
+    "Burkina Faso": { code: "+226", minLength: 8, maxLength: 8 },
+    "Burundi": { code: "+257", minLength: 8, maxLength: 8 },
+    "Cabo Verde": { code: "+238", minLength: 7, maxLength: 7 },
+    "Cambodia": { code: "+855", minLength: 8, maxLength: 9 },
+    "Cameroon": { code: "+237", minLength: 9, maxLength: 9 },
+    "Canada": { code: "+1", minLength: 10, maxLength: 10 },
+    "Central African Republic": { code: "+236", minLength: 8, maxLength: 8 },
+    "Chad": { code: "+235", minLength: 8, maxLength: 8 },
+    "Chile": { code: "+56", minLength: 9, maxLength: 9 },
+    "China": { code: "+86", minLength: 11, maxLength: 11 },
+    "Colombia": { code: "+57", minLength: 10, maxLength: 10 },
+    "Comoros": { code: "+269", minLength: 7, maxLength: 7 },
+    "Congo": { code: "+242", minLength: 9, maxLength: 9 },
+    "Costa Rica": { code: "+506", minLength: 8, maxLength: 8 },
+    "Croatia": { code: "+385", minLength: 9, maxLength: 9 },
+    "Cuba": { code: "+53", minLength: 8, maxLength: 8 },
+    "Cyprus": { code: "+357", minLength: 8, maxLength: 8 },
+    "Czech Republic": { code: "+420", minLength: 9, maxLength: 9 },
+    "Denmark": { code: "+45", minLength: 8, maxLength: 8 },
+    "Djibouti": { code: "+253", minLength: 8, maxLength: 8 },
+    "Dominica": { code: "+1", minLength: 10, maxLength: 10 },
+    "Dominican Republic": { code: "+1", minLength: 10, maxLength: 10 },
+    "Ecuador": { code: "+593", minLength: 9, maxLength: 9 },
+    "Egypt": { code: "+20", minLength: 10, maxLength: 10 },
+    "El Salvador": { code: "+503", minLength: 8, maxLength: 8 },
+    "Equatorial Guinea": { code: "+240", minLength: 9, maxLength: 9 },
+    "Eritrea": { code: "+291", minLength: 7, maxLength: 7 },
+    "Estonia": { code: "+372", minLength: 7, maxLength: 8 },
+    "Eswatini": { code: "+268", minLength: 8, maxLength: 8 },
+    "Ethiopia": { code: "+251", minLength: 9, maxLength: 9 },
+    "Fiji": { code: "+679", minLength: 7, maxLength: 7 },
+    "Finland": { code: "+358", minLength: 9, maxLength: 11 },
+    "France": { code: "+33", minLength: 9, maxLength: 9 },
+    "Gabon": { code: "+241", minLength: 8, maxLength: 8 },
+    "Gambia": { code: "+220", minLength: 7, maxLength: 7 },
+    "Georgia": { code: "+995", minLength: 9, maxLength: 9 },
+    "Germany": { code: "+49", minLength: 10, maxLength: 13 },
+    "Ghana": { code: "+233", minLength: 9, maxLength: 9 },
+    "Greece": { code: "+30", minLength: 10, maxLength: 10 },
+    "Grenada": { code: "+1", minLength: 10, maxLength: 10 },
+    "Guatemala": { code: "+502", minLength: 8, maxLength: 8 },
+    "Guinea": { code: "+224", minLength: 9, maxLength: 9 },
+    "Guinea-Bissau": { code: "+245", minLength: 7, maxLength: 7 },
+    "Guyana": { code: "+592", minLength: 7, maxLength: 7 },
+    "Haiti": { code: "+509", minLength: 8, maxLength: 8 },
+    "Honduras": { code: "+504", minLength: 8, maxLength: 8 },
+    "Hungary": { code: "+36", minLength: 9, maxLength: 9 },
+    "Iceland": { code: "+354", minLength: 7, maxLength: 9 },
+    "India": { code: "+91", minLength: 10, maxLength: 10 },
+    "Indonesia": { code: "+62", minLength: 10, maxLength: 13 },
+    "Iran": { code: "+98", minLength: 10, maxLength: 10 },
+    "Iraq": { code: "+964", minLength: 10, maxLength: 10 },
+    "Ireland": { code: "+353", minLength: 9, maxLength: 9 },
+    "Israel": { code: "+972", minLength: 9, maxLength: 9 },
+    "Italy": { code: "+39", minLength: 9, maxLength: 12 },
+    "Jamaica": { code: "+1", minLength: 10, maxLength: 10 },
+    "Japan": { code: "+81", minLength: 10, maxLength: 11 },
+    "Jordan": { code: "+962", minLength: 9, maxLength: 9 },
+    "Kazakhstan": { code: "+7", minLength: 10, maxLength: 10 },
+    "Kenya": { code: "+254", minLength: 9, maxLength: 9 },
+    "Kiribati": { code: "+686", minLength: 5, maxLength: 5 },
+    "Kuwait": { code: "+965", minLength: 8, maxLength: 8 },
+    "Kyrgyzstan": { code: "+996", minLength: 9, maxLength: 9 },
+    "Laos": { code: "+856", minLength: 8, maxLength: 10 },
+    "Latvia": { code: "+371", minLength: 8, maxLength: 8 },
+    "Lebanon": { code: "+961", minLength: 8, maxLength: 8 },
+    "Lesotho": { code: "+266", minLength: 8, maxLength: 8 },
+    "Liberia": { code: "+231", minLength: 8, maxLength: 9 },
+    "Libya": { code: "+218", minLength: 9, maxLength: 9 },
+    "Liechtenstein": { code: "+423", minLength: 7, maxLength: 9 },
+    "Lithuania": { code: "+370", minLength: 8, maxLength: 8 },
+    "Luxembourg": { code: "+352", minLength: 9, maxLength: 9 },
+    "Madagascar": { code: "+261", minLength: 9, maxLength: 9 },
+    "Malawi": { code: "+265", minLength: 9, maxLength: 9 },
+    "Malaysia": { code: "+60", minLength: 9, maxLength: 10 },
+    "Maldives": { code: "+960", minLength: 7, maxLength: 7 },
+    "Mali": { code: "+223", minLength: 8, maxLength: 8 },
+    "Malta": { code: "+356", minLength: 8, maxLength: 8 },
+    "Marshall Islands": { code: "+692", minLength: 7, maxLength: 7 },
+    "Mauritania": { code: "+222", minLength: 8, maxLength: 8 },
+    "Mauritius": { code: "+230", minLength: 8, maxLength: 8 },
+    "Mexico": { code: "+52", minLength: 10, maxLength: 10 },
+    "Micronesia": { code: "+691", minLength: 7, maxLength: 7 },
+    "Moldova": { code: "+373", minLength: 8, maxLength: 8 },
+    "Monaco": { code: "+377", minLength: 8, maxLength: 9 },
+    "Mongolia": { code: "+976", minLength: 8, maxLength: 8 },
+    "Montenegro": { code: "+382", minLength: 8, maxLength: 9 },
+    "Morocco": { code: "+212", minLength: 9, maxLength: 9 },
+    "Mozambique": { code: "+258", minLength: 9, maxLength: 9 },
+    "Myanmar": { code: "+95", minLength: 8, maxLength: 10 },
+    "Namibia": { code: "+264", minLength: 9, maxLength: 9 },
+    "Nauru": { code: "+674", minLength: 7, maxLength: 7 },
+    "Nepal": { code: "+977", minLength: 10, maxLength: 10 },
+    "Netherlands": { code: "+31", minLength: 9, maxLength: 9 },
+    "New Zealand": { code: "+64", minLength: 8, maxLength: 10 },
+    "Nicaragua": { code: "+505", minLength: 8, maxLength: 8 },
+    "Niger": { code: "+227", minLength: 8, maxLength: 8 },
+    "Nigeria": { code: "+234", minLength: 10, maxLength: 11 },
+    "North Korea": { code: "+850", minLength: 8, maxLength: 10 },
+    "North Macedonia": { code: "+389", minLength: 8, maxLength: 8 },
+    "Norway": { code: "+47", minLength: 8, maxLength: 8 },
+    "Oman": { code: "+968", minLength: 8, maxLength: 8 },
+    "Pakistan": { code: "+92", minLength: 10, maxLength: 10 },
+    "Palau": { code: "+680", minLength: 7, maxLength: 7 },
+    "Panama": { code: "+507", minLength: 8, maxLength: 8 },
+    "Papua New Guinea": { code: "+675", minLength: 8, maxLength: 11 },
+    "Paraguay": { code: "+595", minLength: 9, maxLength: 9 },
+    "Peru": { code: "+51", minLength: 9, maxLength: 9 },
+    "Philippines": { code: "+63", minLength: 10, maxLength: 10 },
+    "Poland": { code: "+48", minLength: 9, maxLength: 9 },
+    "Portugal": { code: "+351", minLength: 9, maxLength: 9 },
+    "Qatar": { code: "+974", minLength: 8, maxLength: 8 },
+    "Romania": { code: "+40", minLength: 10, maxLength: 10 },
+    "Russia": { code: "+7", minLength: 10, maxLength: 10 },
+    "Rwanda": { code: "+250", minLength: 9, maxLength: 9 },
+    "Saint Kitts and Nevis": { code: "+1", minLength: 10, maxLength: 10 },
+    "Saint Lucia": { code: "+1", minLength: 10, maxLength: 10 },
+    "Saint Vincent and the Grenadines": { code: "+1", minLength: 10, maxLength: 10 },
+    "Samoa": { code: "+685", minLength: 5, maxLength: 7 },
+    "San Marino": { code: "+378", minLength: 9, maxLength: 10 },
+    "Sao Tome and Principe": { code: "+239", minLength: 7, maxLength: 7 },
+    "Saudi Arabia": { code: "+966", minLength: 9, maxLength: 9 },
+    "Senegal": { code: "+221", minLength: 9, maxLength: 9 },
+    "Serbia": { code: "+381", minLength: 9, maxLength: 9 },
+    "Seychelles": { code: "+248", minLength: 7, maxLength: 7 },
+    "Sierra Leone": { code: "+232", minLength: 8, maxLength: 8 },
+    "Singapore": { code: "+65", minLength: 8, maxLength: 8 },
+    "Slovakia": { code: "+421", minLength: 9, maxLength: 9 },
+    "Slovenia": { code: "+386", minLength: 8, maxLength: 8 },
+    "Solomon Islands": { code: "+677", minLength: 7, maxLength: 7 },
+    "Somalia": { code: "+252", minLength: 8, maxLength: 9 },
+    "South Africa": { code: "+27", minLength: 9, maxLength: 9 },
+    "South Korea": { code: "+82", minLength: 10, maxLength: 11 },
+    "South Sudan": { code: "+211", minLength: 9, maxLength: 9 },
+    "Spain": { code: "+34", minLength: 9, maxLength: 9 },
+    "Sri Lanka": { code: "+94", minLength: 9, maxLength: 9 },
+    "Sudan": { code: "+249", minLength: 9, maxLength: 9 },
+    "Suriname": { code: "+597", minLength: 7, maxLength: 7 },
+    "Sweden": { code: "+46", minLength: 9, maxLength: 10 },
+    "Switzerland": { code: "+41", minLength: 9, maxLength: 12 },
+    "Syria": { code: "+963", minLength: 9, maxLength: 9 },
+    "Taiwan": { code: "+886", minLength: 9, maxLength: 9 },
+    "Tajikistan": { code: "+992", minLength: 9, maxLength: 9 },
+    "Tanzania": { code: "+255", minLength: 9, maxLength: 9 },
+    "Thailand": { code: "+66", minLength: 9, maxLength: 9 },
+    "Timor-Leste": { code: "+670", minLength: 8, maxLength: 9 },
+    "Togo": { code: "+228", minLength: 8, maxLength: 8 },
+    "Tonga": { code: "+676", minLength: 5, maxLength: 7 },
+    "Trinidad and Tobago": { code: "+1", minLength: 10, maxLength: 10 },
+    "Tunisia": { code: "+216", minLength: 8, maxLength: 8 },
+    "Turkey": { code: "+90", minLength: 10, maxLength: 10 },
+    "Turkmenistan": { code: "+993", minLength: 8, maxLength: 8 },
+    "Tuvalu": { code: "+688", minLength: 5, maxLength: 6 },
+    "Uganda": { code: "+256", minLength: 9, maxLength: 9 },
+    "Ukraine": { code: "+380", minLength: 9, maxLength: 9 },
+    "United Arab Emirates": { code: "+971", minLength: 9, maxLength: 9 },
+    "United Kingdom": { code: "+44", minLength: 10, maxLength: 11 },
+    "United States": { code: "+1", minLength: 10, maxLength: 10 },
+    "Uruguay": { code: "+598", minLength: 8, maxLength: 8 },
+    "Uzbekistan": { code: "+998", minLength: 9, maxLength: 9 },
+    "Vanuatu": { code: "+678", minLength: 7, maxLength: 7 },
+    "Vatican City": { code: "+39", minLength: 9, maxLength: 12 },
+    "Venezuela": { code: "+58", minLength: 10, maxLength: 10 },
+    "Vietnam": { code: "+84", minLength: 9, maxLength: 10 },
+    "Yemen": { code: "+967", minLength: 9, maxLength: 9 },
+    "Zambia": { code: "+260", minLength: 9, maxLength: 9 },
+    "Zimbabwe": { code: "+263", minLength: 9, maxLength: 9 }
+  };
+
+  // Countries list
+  const countries = Object.keys(countryPhoneData);
 
   return (
     <div style={modalStyle} onClick={onClose}>
@@ -1168,28 +1414,82 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
                     <label style={labelStyle}>
                       Number <span style={requiredAsterisk}>*</span>
                     </label>
-                    <input
-                      type="tel"
-                      name="number"
-                      value={formData.number}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                      placeholder="Enter phone number"
-                    />
-                    {errors.number && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.number}</div>}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <select
+                        name="callingCountry"
+                        value={formData.callingCountry}
+                        onChange={(e) => handlePhoneChange('callingCountry', e.target.value)}
+                        style={{ ...inputStyle, flex: '0 0 120px' }}
+                        required
+                      >
+                        <option value="">Country</option>
+                        {countries.map(country => (
+                          <option key={country} value={country}>
+                            {country} ({countryPhoneData[country]?.code})
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        name="callingNumber"
+                        value={formData.callingNumber}
+                        onChange={(e) => handlePhoneChange('callingNumber', e.target.value)}
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder="Enter phone number"
+                        required
+                      />
+                    </div>
+                    {formData.callingCountry && (
+                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                        Expected length: {countryPhoneData[formData.callingCountry]?.minLength}-{countryPhoneData[formData.callingCountry]?.maxLength} digits
+                      </div>
+                    )}
+                    {errors.callingNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.callingNumber}</div>}
                   </div>
 
                   <div style={formGroupStyle}>
                     <label style={labelStyle}>WhatsApp</label>
-                    <input
-                      type="tel"
-                      name="whatsapp"
-                      value={formData.whatsapp}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="Enter WhatsApp number"
-                    />
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <select
+                        name="whatsappCountry"
+                        value={formData.whatsappCountry}
+                        onChange={(e) => handlePhoneChange('whatsappCountry', e.target.value)}
+                        style={{ ...inputStyle, flex: '0 0 120px' }}
+                      >
+                        <option value="">Country</option>
+                        {countries.map(country => (
+                          <option key={country} value={country}>
+                            {country} ({countryPhoneData[country]?.code})
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        name="whatsappNumber"
+                        value={formData.whatsappNumber}
+                        onChange={(e) => handlePhoneChange('whatsappNumber', e.target.value)}
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder="Enter WhatsApp number"
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                      <input
+                        type="checkbox"
+                        id="sameAsCalling"
+                        checked={sameAsCalling}
+                        onChange={(e) => handleSameAsCallingChange(e.target.checked)}
+                        style={checkboxStyle}
+                      />
+                      <label htmlFor="sameAsCalling" style={{ fontSize: '12px', color: theme.textSecondary }}>
+                        Same as calling number
+                      </label>
+                    </div>
+                    {formData.whatsappCountry && (
+                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                        Expected length: {countryPhoneData[formData.whatsappCountry]?.minLength}-{countryPhoneData[formData.whatsappCountry]?.maxLength} digits
+                      </div>
+                    )}
+                    {errors.whatsappNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsappNumber}</div>}
                   </div>
 
                   <div style={formGroupStyle}>
