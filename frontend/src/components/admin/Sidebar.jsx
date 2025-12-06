@@ -30,6 +30,7 @@ export default function Sidebar({
   const [awardsDropdownOpen, setAwardsDropdownOpen] = useState(false);
   const [radioDropdownOpen, setRadioDropdownOpen] = useState(false);
   const [realEstateDropdownOpen, setRealEstateDropdownOpen] = useState(false);
+  const [pressReleaseDropdownOpen, setPressReleaseDropdownOpen] = useState(false);
 
   // compute desktop fixed styles so sidebar sticks to viewport left (matches screenshot)
   const desktopFixedStyles = {
@@ -631,6 +632,47 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
+              <div
+                style={navItemBase}
+                onClick={() => setPressReleaseDropdownOpen(!pressReleaseDropdownOpen)}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Press Release</span>
+                <span style={{ marginLeft: 'auto', transform: pressReleaseDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                  <Icon name="chevron-down" size="sm" style={{ color: '#4CAF50' }} />
+                </span>
+              </div>
+              {pressReleaseDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/press-packs"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-cart" size="sm" style={{ color: '#4CAF50' }} /></span>
+                      <span>add to cart</span>
+                    </a>
+                  </li>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/press-pack-creation"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#e8f5e8')}><Icon name="cog" size="sm" style={{ color: '#4CAF50' }} /></span>
+                      <span>Press Pack Creation</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
               <a
                 href="/admin/reporters"
                 style={navItemBase}
@@ -782,6 +824,15 @@ export default function Sidebar({
                   <li style={{ marginBottom: 5 }}><Link to="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Add to Cart</Link></li>
                   <li style={{ marginBottom: 5 }}><Link to="/admin/real-estate-creation" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Creation</Link></li>
                   <li style={{ marginBottom: 5 }}><Link to="/admin/real-estate-orders" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Orders</Link></li>
+                </ul>
+              )}
+            </li>
+            <li style={{ marginBottom: 12 }}>
+              <div onClick={() => setPressReleaseDropdownOpen(!pressReleaseDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Press Release</div>
+              {pressReleaseDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>add to cart</a></li>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/press-pack-creation" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Creation</a></li>
                 </ul>
               )}
             </li>

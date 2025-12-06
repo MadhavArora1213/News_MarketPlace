@@ -491,6 +491,9 @@ const update = async (req, res) => {
       });
     }
 
+    const oldOrder = findResult.rows[0];
+    const oldStatus = oldOrder.status;
+
     // Build dynamic update query
     const allowedFields = ['status', 'admin_notes', 'price'];
     const updateFields = [];
@@ -528,6 +531,11 @@ const update = async (req, res) => {
     const updateResult = await pool.query(updateQuery, values);
     const updatedOrder = updateResult.rows[0];
 
+    // Send email notification if status changed
+    if (updateData.status && updateData.status !== oldStatus) {
+      await sendOrderStatusUpdateEmail(updatedOrder);
+    }
+
     res.json({
       success: true,
       message: 'Order updated successfully',
@@ -541,6 +549,65 @@ const update = async (req, res) => {
       message: 'Failed to update order',
       error: error.message
     });
+  }
+};
+
+// Send email notification when order status is updated
+const sendOrderStatusUpdateEmail = async (order) => {
+  try {
+    let subject, statusMessage, statusColor;
+
+    switch (order.status) {
+      case 'approved':
+        subject = 'Press Pack Order Approved - News Marketplace';
+        statusMessage = 'Congratulations! Your press pack order has been approved.';
+        statusColor = '#4CAF50';
+        break;
+      case 'rejected':
+        subject = 'Press Pack Order Update - News Marketplace';
+        statusMessage = 'We regret to inform you that your press pack order has been rejected.';
+        statusColor = '#F44336';
+        break;
+      case 'completed':
+        subject = 'Press Pack Order Completed - News Marketplace';
+        statusMessage = 'Your press pack order has been successfully completed.';
+        statusColor = '#2196F3';
+        break;
+      default:
+        return; // Don't send email for other status changes
+    }
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: ${statusColor};">${statusMessage}</h2>
+        <p>Dear ${order.customer_name},</p>
+
+        <div style="background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
+          <h3>Order Details:</h3>
+          <p><strong>Order ID:</strong> ${order.id}</p>
+          <p><strong>Press Pack:</strong> ${order.press_pack_name}</p>
+          <p><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${order.status.toUpperCase()}</span></p>
+          <p><strong>Price:</strong> $${order.price}</p>
+        </div>
+
+        ${order.admin_notes ? `
+          <div style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #ffc107;">
+            <strong>Admin Notes:</strong><br>
+            ${order.admin_notes}
+          </div>
+        ` : ''}
+
+        <p>If you have any questions, please contact our support team.</p>
+
+        <p>Best regards,<br>News Marketplace Team</p>
+      </div>
+    `;
+
+    await emailService.sendCustomEmail(order.customer_email, subject, html);
+
+  } catch (error) {
+    console.error('Error sending order status update email:', error);
+    // Don't throw error as the order status was successfully updated
   }
 };
 
