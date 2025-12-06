@@ -46,8 +46,10 @@ class AdminPressReleaseController {
     body('guaranteed_media_placements').optional().isInt({ min: 0 }).withMessage('Guaranteed media placements must be a non-negative integer'),
     body('end_client_media_details').optional().trim(),
     body('middlemen_contact_details').optional().trim(),
-    body('google_search_optimised').optional().isBoolean().withMessage('Google search optimised must be a boolean'),
-    body('google_news_index').optional().isBoolean().withMessage('Google news index must be a boolean'),
+    body('google_search_optimised_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google search optimised status must be Not Guaranteed or Guaranteed'),
+    body('google_search_optimised_publications').optional().isInt({ min: 1 }).withMessage('Google search optimised publications must be a positive integer'),
+    body('google_news_index_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google news index status must be Not Guaranteed or Guaranteed'),
+    body('google_news_index_publications').optional().isInt({ min: 1 }).withMessage('Google news index publications must be a positive integer'),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('package_options').optional().isArray().withMessage('Package options must be an array'),
@@ -69,8 +71,10 @@ class AdminPressReleaseController {
     body('guaranteed_media_placements').optional().isInt({ min: 0 }).withMessage('Guaranteed media placements must be a non-negative integer'),
     body('end_client_media_details').optional().trim(),
     body('middlemen_contact_details').optional().trim(),
-    body('google_search_optimised').optional().isBoolean().withMessage('Google search optimised must be a boolean'),
-    body('google_news_index').optional().isBoolean().withMessage('Google news index must be a boolean'),
+    body('google_search_optimised_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google search optimised status must be Not Guaranteed or Guaranteed'),
+    body('google_search_optimised_publications').optional().isInt({ min: 1 }).withMessage('Google search optimised publications must be a positive integer'),
+    body('google_news_index_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google news index status must be Not Guaranteed or Guaranteed'),
+    body('google_news_index_publications').optional().isInt({ min: 1 }).withMessage('Google news index publications must be a positive integer'),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('package_options').optional().isArray().withMessage('Package options must be an array'),
@@ -96,8 +100,8 @@ class AdminPressReleaseController {
         region,
         niche,
         best_seller,
-        google_search_optimised,
-        google_news_index,
+        google_search_optimised_status,
+        google_news_index_status,
         status,
         is_active
       } = req.query;
@@ -107,8 +111,8 @@ class AdminPressReleaseController {
       if (status) filters.status = status;
       if (is_active !== undefined) filters.is_active = is_active === 'true';
       if (best_seller !== undefined) filters.best_seller = best_seller === 'true';
-      if (google_search_optimised !== undefined) filters.google_search_optimised = google_search_optimised === 'true';
-      if (google_news_index !== undefined) filters.google_news_index = google_news_index === 'true';
+      if (google_search_optimised_status) filters.google_search_optimised_status = google_search_optimised_status;
+      if (google_news_index_status) filters.google_news_index_status = google_news_index_status;
 
       // Add search filters
       let searchSql = '';

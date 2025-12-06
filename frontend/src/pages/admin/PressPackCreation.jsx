@@ -15,7 +15,9 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
     end_client_media_details_in_press_release: '',
     middlemen_or_pr_agency_contact_details_in_press_release: '',
     google_search_optimised: '',
+    google_search_optimised_publications_count: '',
     google_news_index: '',
+    google_news_index_publications_count: '',
     no_of_images_allowed: '',
     word_limit: '',
     press_release_package_options: [],
@@ -101,7 +103,9 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         end_client_media_details_in_press_release: record.end_client_media_details_in_press_release || '',
         middlemen_or_pr_agency_contact_details_in_press_release: record.middlemen_or_pr_agency_contact_details_in_press_release || '',
         google_search_optimised: record.google_search_optimised || '',
+        google_search_optimised_publications_count: record.google_search_optimised_publications_count || '',
         google_news_index: record.google_news_index || '',
+        google_news_index_publications_count: record.google_news_index_publications_count || '',
         no_of_images_allowed: record.no_of_images_allowed || '',
         word_limit: record.word_limit || '',
         press_release_package_options: record.press_release_package_options || [],
@@ -132,7 +136,9 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         end_client_media_details_in_press_release: '',
         middlemen_or_pr_agency_contact_details_in_press_release: '',
         google_search_optimised: '',
+        google_search_optimised_publications_count: '',
         google_news_index: '',
+        google_news_index_publications_count: '',
         no_of_images_allowed: '',
         word_limit: '',
         press_release_package_options: [],
@@ -170,7 +176,9 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
       submitData.append('end_client_media_details_in_press_release', formData.end_client_media_details_in_press_release);
       submitData.append('middlemen_or_pr_agency_contact_details_in_press_release', formData.middlemen_or_pr_agency_contact_details_in_press_release);
       submitData.append('google_search_optimised', formData.google_search_optimised);
+      submitData.append('google_search_optimised_publications_count', formData.google_search_optimised_publications_count);
       submitData.append('google_news_index', formData.google_news_index);
+      submitData.append('google_news_index_publications_count', formData.google_news_index_publications_count);
       submitData.append('no_of_images_allowed', formData.no_of_images_allowed);
       submitData.append('word_limit', formData.word_limit);
       submitData.append('press_release_package_options', JSON.stringify(formData.press_release_package_options));

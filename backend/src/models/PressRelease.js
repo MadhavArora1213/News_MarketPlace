@@ -10,8 +10,10 @@ class PressRelease {
     this.guaranteed_media_placements = data.guaranteed_media_placements;
     this.end_client_media_details = data.end_client_media_details;
     this.middlemen_contact_details = data.middlemen_contact_details;
-    this.google_search_optimised = data.google_search_optimised !== undefined ? data.google_search_optimised : false;
-    this.google_news_index = data.google_news_index !== undefined ? data.google_news_index : false;
+    this.google_search_optimised_status = data.google_search_optimised_status || 'Not Guaranteed';
+    this.google_search_optimised_publications = data.google_search_optimised_publications;
+    this.google_news_index_status = data.google_news_index_status || 'Not Guaranteed';
+    this.google_news_index_publications = data.google_news_index_publications;
     this.images_allowed = data.images_allowed;
     this.word_limit = data.word_limit;
     // Handle package_options field - ensure it's always an array
@@ -83,12 +85,38 @@ class PressRelease {
     }
 
     // Boolean fields
-    const booleanFields = ['google_search_optimised', 'google_news_index', 'best_seller', 'content_writing_assistance'];
+    const booleanFields = ['best_seller', 'content_writing_assistance'];
     booleanFields.forEach(field => {
       if (pressReleaseData[field] !== undefined && typeof pressReleaseData[field] !== 'boolean') {
         errors.push(`${field.replace(/_/g, ' ')} must be a boolean`);
       }
     });
+
+    // Google search optimised status
+    if (pressReleaseData.google_search_optimised_status !== undefined) {
+      const validStatuses = ['Not Guaranteed', 'Guaranteed'];
+      if (!validStatuses.includes(pressReleaseData.google_search_optimised_status)) {
+        errors.push('Google search optimised status must be one of: Not Guaranteed, Guaranteed');
+      }
+      if (pressReleaseData.google_search_optimised_status === 'Guaranteed') {
+        if (pressReleaseData.google_search_optimised_publications === undefined || pressReleaseData.google_search_optimised_publications === null || !Number.isInteger(pressReleaseData.google_search_optimised_publications) || pressReleaseData.google_search_optimised_publications <= 0) {
+          errors.push('Google search optimised publications must be a positive integer when status is Guaranteed');
+        }
+      }
+    }
+
+    // Google news index status
+    if (pressReleaseData.google_news_index_status !== undefined) {
+      const validStatuses = ['Not Guaranteed', 'Guaranteed'];
+      if (!validStatuses.includes(pressReleaseData.google_news_index_status)) {
+        errors.push('Google news index status must be one of: Not Guaranteed, Guaranteed');
+      }
+      if (pressReleaseData.google_news_index_status === 'Guaranteed') {
+        if (pressReleaseData.google_news_index_publications === undefined || pressReleaseData.google_news_index_publications === null || !Number.isInteger(pressReleaseData.google_news_index_publications) || pressReleaseData.google_news_index_publications <= 0) {
+          errors.push('Google news index publications must be a positive integer when status is Guaranteed');
+        }
+      }
+    }
 
     // Package options array
     if (pressReleaseData.package_options !== undefined && !Array.isArray(pressReleaseData.package_options)) {
@@ -132,8 +160,9 @@ class PressRelease {
     console.log('PressRelease.create - Validation passed');
     const allowedFields = [
       'name', 'region', 'niche', 'distribution_media_websites', 'guaranteed_media_placements',
-      'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised',
-      'google_news_index', 'images_allowed', 'word_limit', 'package_options', 'price',
+      'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised_status',
+      'google_search_optimised_publications', 'google_news_index_status',
+      'google_news_index_publications', 'images_allowed', 'word_limit', 'package_options', 'price',
       'turnaround_time', 'customer_info_needed', 'description', 'image_logo',
       'best_seller', 'content_writing_assistance', 'is_active'
     ];
@@ -241,8 +270,9 @@ class PressRelease {
 
     const allowedUpdateFields = [
       'name', 'region', 'niche', 'distribution_media_websites', 'guaranteed_media_placements',
-      'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised',
-      'google_news_index', 'images_allowed', 'word_limit', 'package_options', 'price',
+      'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised_status',
+      'google_search_optimised_publications', 'google_news_index_status',
+      'google_news_index_publications', 'images_allowed', 'word_limit', 'package_options', 'price',
       'turnaround_time', 'customer_info_needed', 'description', 'image_logo',
       'best_seller', 'content_writing_assistance', 'is_active',
       'status', 'admin_comments', 'rejection_reason'
@@ -303,8 +333,10 @@ class PressRelease {
       guaranteed_media_placements: this.guaranteed_media_placements,
       end_client_media_details: this.end_client_media_details,
       middlemen_contact_details: this.middlemen_contact_details,
-      google_search_optimised: this.google_search_optimised,
-      google_news_index: this.google_news_index,
+      google_search_optimised_status: this.google_search_optimised_status,
+      google_search_optimised_publications: this.google_search_optimised_publications,
+      google_news_index_status: this.google_news_index_status,
+      google_news_index_publications: this.google_news_index_publications,
       images_allowed: this.images_allowed,
       word_limit: this.word_limit,
       package_options: this.package_options,
