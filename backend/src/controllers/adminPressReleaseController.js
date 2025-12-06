@@ -74,8 +74,8 @@ class AdminPressReleaseController {
       }
     });
 
-    // Parse JSON fields
-    const jsonFields = ['package_options', 'customer_info_needed'];
+    // Parse JSON fields (only package_options, customer_info_needed stays as string for model)
+    const jsonFields = ['package_options'];
     jsonFields.forEach(field => {
       if (sanitized[field] && typeof sanitized[field] === 'string') {
         try {
@@ -88,6 +88,13 @@ class AdminPressReleaseController {
         sanitized[field] = [];
       }
     });
+
+    // Ensure customer_info_needed is a string (model will parse it)
+    if (Array.isArray(sanitized.customer_info_needed)) {
+      sanitized.customer_info_needed = JSON.stringify(sanitized.customer_info_needed);
+    } else if (!sanitized.customer_info_needed) {
+      sanitized.customer_info_needed = '[]'; // Empty array as string
+    }
 
     return sanitized;
   }
