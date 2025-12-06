@@ -32,7 +32,44 @@ const RealEstateProfessionalsManagementFormModal = ({ isOpen, onClose, record, o
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
-  const [languageInput, setLanguageInput] = useState('');
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [availableLanguages, setAvailableLanguages] = useState([]);
+
+  // Fetch countries, cities, and languages on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [countriesRes, languagesRes] = await Promise.all([
+          api.get('/real-estate-professionals/countries'),
+          api.get('/real-estate-professionals/languages')
+        ]);
+        setCountries(countriesRes.data.countries || []);
+        setAvailableLanguages(languagesRes.data.languages || []);
+      } catch (error) {
+        console.error('Error fetching dropdown data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Fetch cities when country changes
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (formData.nationality) {
+        try {
+          const response = await api.get(`/real-estate-professionals/cities/${encodeURIComponent(formData.nationality)}`);
+          setCities(response.data.cities || []);
+        } catch (error) {
+          console.error('Error fetching cities:', error);
+          setCities([]);
+        }
+      } else {
+        setCities([]);
+      }
+    };
+    fetchCities();
+  }, [formData.nationality]);
 
   useEffect(() => {
     if (record) {
@@ -138,22 +175,6 @@ const RealEstateProfessionalsManagementFormModal = ({ isOpen, onClose, record, o
     }
   };
 
-  const addLanguage = () => {
-    if (languageInput.trim() && !formData.languages.includes(languageInput.trim())) {
-      setFormData({
-        ...formData,
-        languages: [...formData.languages, languageInput.trim()]
-      });
-      setLanguageInput('');
-    }
-  };
-
-  const removeLanguage = (lang) => {
-    setFormData({
-      ...formData,
-      languages: formData.languages.filter(l => l !== lang)
-    });
-  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -274,22 +295,35 @@ const RealEstateProfessionalsManagementFormModal = ({ isOpen, onClose, record, o
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Nationality</label>
-              <input
-                type="text"
+              <select
                 value={formData.nationality}
-                onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, nationality: e.target.value, current_residence_city: '' })}
                 style={inputStyle}
-              />
+              >
+                <option value="">Select Nationality</option>
+                {countries.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Current Residence City</label>
-              <input
-                type="text"
+              <select
                 value={formData.current_residence_city}
                 onChange={(e) => setFormData({ ...formData, current_residence_city: e.target.value })}
                 style={inputStyle}
-              />
+                disabled={!formData.nationality}
+              >
+                <option value="">Select City</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div style={formGroupStyle}>
@@ -375,48 +409,23 @@ const RealEstateProfessionalsManagementFormModal = ({ isOpen, onClose, record, o
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
               <label style={labelStyle}>Languages</label>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                <input
-                  type="text"
-                  value={languageInput}
-                  onChange={(e) => setLanguageInput(e.target.value)}
-                  style={{ ...inputStyle, flex: 1 }}
-                  placeholder="Add language"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLanguage())}
-                />
-                <button
-                  type="button"
-                  onClick={addLanguage}
-                  style={{ padding: '10px 16px', backgroundColor: '#1976D2', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                >
-                  Add
-                </button>
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {formData.languages.map((lang, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      padding: '4px 8px',
-                      backgroundColor: '#e3f2fd',
-                      color: '#1976D2',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
-                  >
+              <select
+                multiple
+                value={formData.languages}
+                onChange={(e) => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                  setFormData({ ...formData, languages: selectedOptions });
+                }}
+                style={{ ...inputStyle, height: '120px' }}
+              >
+                {availableLanguages.map((lang) => (
+                  <option key={lang} value={lang}>
                     {lang}
-                    <button
-                      type="button"
-                      onClick={() => removeLanguage(lang)}
-                      style={{ background: 'transparent', border: 'none', color: '#1976D2', cursor: 'pointer', fontSize: '14px' }}
-                    >
-                      ×
-                    </button>
-                  </span>
+                  </option>
                 ))}
+              </select>
+              <div style={{ fontSize: '12px', color: '#757575', marginTop: '4px' }}>
+                Hold Ctrl (Cmd on Mac) to select multiple languages
               </div>
             </div>
 
