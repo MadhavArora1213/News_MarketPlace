@@ -10,6 +10,7 @@ class AdminPressReleaseController {
     // Configure multer for image uploads (using memory storage for S3)
     this.storage = multer.memoryStorage();
 
+    console.log('AdminPressReleaseController: Creating multer without fileFilter');
     this.upload = multer({
       storage: this.storage,
       limits: {
