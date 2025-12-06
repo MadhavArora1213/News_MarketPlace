@@ -59,12 +59,12 @@ const RealEstateOrdersManagement = () => {
   });
 
   useEffect(() => {
-    if (!isAuthenticated || !hasRole('admin')) {
+    if (!isAuthenticated || !hasAnyRole(['super_admin', 'content_manager'])) {
       navigate('/admin/login');
       return;
     }
     fetchOrders();
-  }, [isAuthenticated, hasRole, navigate]);
+  }, [isAuthenticated, hasAnyRole, navigate]);
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
