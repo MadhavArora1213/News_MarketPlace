@@ -49,7 +49,7 @@ const RealEstateSimplified = () => {
                 variant="small"
                 textColor="#ffffff"
                 className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
-                onClick={() => navigate('/real-estates')}
+                onClick={() => navigate('/real-estate-professionals')}
               >
                 {viewRealEstateText}
               </CosmicButton>
