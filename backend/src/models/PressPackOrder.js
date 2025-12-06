@@ -110,7 +110,7 @@ class PressPackOrder {
       name: 'customer_name',
       whatsapp_number: 'customer_phone',
       // calling_number column doesn't exist in remote DB
-      press_release_selection: 'press_release_selection',
+      // press_release_selection column doesn't exist in remote DB
       email: 'customer_email',
       company_registration_document: 'company_registration_document',
       letter_of_authorisation: 'letter_of_authorisation',
@@ -127,7 +127,7 @@ class PressPackOrder {
       submitted_by_admin: 'submitted_by_admin'
     };
 
-    const allowedFields = Object.keys(fieldMapping).filter(field => field !== 'calling_number');
+    const allowedFields = Object.keys(fieldMapping).filter(field => !['calling_number', 'press_release_selection'].includes(field));
 
     const filteredData = {};
     const dbFields = [];
@@ -167,7 +167,7 @@ class PressPackOrder {
     const params = [];
     let paramCount = 1;
 
-    const filterFields = ['status', 'press_release_selection', 'submitted_by', 'approved_by', 'rejected_by'];
+    const filterFields = ['status', 'submitted_by', 'approved_by', 'rejected_by'];
     const conditions = [];
 
     filterFields.forEach(field => {
@@ -198,7 +198,7 @@ class PressPackOrder {
     let whereClause = '';
     const params = [];
 
-    const filterFields = ['status', 'press_release_selection', 'submitted_by', 'approved_by', 'rejected_by'];
+    const filterFields = ['status', 'submitted_by', 'approved_by', 'rejected_by'];
     const conditions = [];
 
     filterFields.forEach(field => {

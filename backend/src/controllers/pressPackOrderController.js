@@ -70,14 +70,12 @@ const create = async (req, res) => {
     const orderData = {
       name: name,
       whatsapp_number: whatsapp_number,
-      calling_number: calling_number || null,
       email: email,
       company_registration_document: uploadedFiles.company_registration_document || null,
       letter_of_authorisation: uploadedFiles.letter_of_authorisation || null,
       image: uploadedFiles.image || null,
       word_pdf_document: uploadedFiles.word_pdf_document || null,
       submitted_by_type: submitted_by_type || 'agency',
-      press_release_selection: parsedPressReleaseSelection,
       package_selection: package_selection || null,
       message: message || null,
       captcha_token: captcha_token || null,
@@ -249,7 +247,7 @@ const getAll = async (req, res) => {
       calling_country_code: '+91', // Default country code, could be enhanced
       company_project_type: order.press_release_type ? JSON.parse(order.press_release_type).join(', ') : '',
       submitted_by: order.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
-      press_release_name: order.press_release_selection || 'Not specified',
+      press_release_name: 'Not specified',
       press_release_package: order.package_selection || 'Not specified',
       content_writing_assistance: order.content_writing_assistance ? 'Yes' : 'No',
       status: order.status,
