@@ -412,6 +412,86 @@ const PublicationDetailPage = () => {
                   </div>
                 )}
 
+                {/* Social Media Links */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                    Social Media
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    {publication.instagram && (
+                      <a
+                        href={publication.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="Instagram"
+                      >
+                        <Instagram size={16} style={{ color: '#E4405F' }} />
+                      </a>
+                    )}
+                    {!publication.instagram && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Instagram size={16} style={{ color: '#E4405F' }} />
+                      </div>
+                    )}
+
+                    {publication.facebook && (
+                      <a
+                        href={publication.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="Facebook"
+                      >
+                        <Facebook size={16} style={{ color: '#1877F2' }} />
+                      </a>
+                    )}
+                    {!publication.facebook && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Facebook size={16} style={{ color: '#1877F2' }} />
+                      </div>
+                    )}
+
+                    {publication.twitter && (
+                      <a
+                        href={publication.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="X (Twitter)"
+                      >
+                        <Twitter size={16} style={{ color: '#000000' }} />
+                      </a>
+                    )}
+                    {!publication.twitter && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Twitter size={16} style={{ color: '#000000' }} />
+                      </div>
+                    )}
+
+                    {publication.linkedin && (
+                      <a
+                        href={publication.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="LinkedIn"
+                      >
+                        <Linkedin size={16} style={{ color: '#0077B5' }} />
+                      </a>
+                    )}
+                    {!publication.linkedin && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Linkedin size={16} style={{ color: '#0077B5' }} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Tags/Badges */}
                 {publication.tags_badges && (
                   <div className="mb-8">
