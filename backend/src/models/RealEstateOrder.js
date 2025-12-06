@@ -106,7 +106,7 @@ class RealEstateOrder {
     const filteredData = {};
     allowedFields.forEach(field => {
       if (orderData[field] !== undefined) {
-        filteredData[field] = field === 'languages_required' ? JSON.stringify(orderData[field]) : orderData[field];
+        filteredData[field] = orderData[field];
       }
     });
 
@@ -242,7 +242,7 @@ class RealEstateOrder {
     Object.keys(updateData).forEach(key => {
       if (updateData[key] !== undefined) {
         fields.push(`${key} = $${paramCount}`);
-        values.push((key === 'languages_required') ? JSON.stringify(updateData[key]) : updateData[key]);
+        values.push(updateData[key]);
         paramCount++;
       }
     });
