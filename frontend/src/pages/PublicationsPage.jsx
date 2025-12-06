@@ -102,7 +102,6 @@ const PublicationsPage = () => {
       setLoading(true);
       
       const params = new URLSearchParams({
-        live_on_platform: 'true',
         limit: '100'
       });
 
