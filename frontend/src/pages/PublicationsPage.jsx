@@ -766,8 +766,34 @@ const PublicationsPage = () => {
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
                       }}
                     >
-                      {/* NEW Badge - Angled at top left */}
+                      {/* Rating Type or NEW Badge - Angled at top left */}
                       {(() => {
+                        // Show rating type first if exists
+                        if (publication.rating_type) {
+                          const badgeColors = {
+                            'Customer Choice': 'linear-gradient(135deg, #2196F3 0%, #21CBF3 100%)',
+                            'Best Seller': 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)',
+                            'Editor\'s Pick': 'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)',
+                            'Trending': 'linear-gradient(135deg, #F44336 0%, #EF5350 100%)',
+                            'Featured': 'linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)'
+                          };
+
+                          const badgeColor = badgeColors[publication.rating_type] || 'linear-gradient(135deg, #607D8B 0%, #90A4AE 100%)';
+
+                          return (
+                            <div
+                              className="absolute top-0 left-0 text-white text-xs font-bold px-3 py-1 rounded-br-lg transform -rotate-12 shadow-lg z-10"
+                              style={{
+                                background: badgeColor,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                              }}
+                            >
+                              {publication.rating_type}
+                            </div>
+                          );
+                        }
+
+                        // Otherwise show NEW if recently added
                         const createdDate = new Date(publication.created_at);
                         const thirtyDaysAgo = new Date();
                         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -851,20 +877,6 @@ const PublicationsPage = () => {
                           <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E3F2FD', color: theme.primary }}>
                             {publication.word_limit ? `${publication.word_limit} words` : 'Word count TBA'}
                           </span>
-
-                          {/* Rating Type Badges */}
-                          {publication.rating_type && (
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              publication.rating_type === 'Customer Choice' ? 'bg-blue-100 text-blue-800' :
-                              publication.rating_type === 'Best Seller' ? 'bg-green-100 text-green-800' :
-                              publication.rating_type === 'Editor\'s Pick' ? 'bg-purple-100 text-purple-800' :
-                              publication.rating_type === 'Trending' ? 'bg-red-100 text-red-800' :
-                              publication.rating_type === 'Featured' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {publication.rating_type}
-                            </span>
-                          )}
 
                           <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF8E1', color: theme.warning }}>
                             {formatTAT(publication.committed_tat)}
