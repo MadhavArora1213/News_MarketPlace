@@ -124,14 +124,27 @@ class RealEstateProfessional {
     }
 
     console.log('RealEstateProfessional.create - Validation passed');
+    // Only include fields that exist in the database table
+    // This prevents errors when columns haven't been added yet via migration
     const allowedFields = [
       'first_name', 'last_name', 'ig_url', 'no_of_followers', 'verified_tick',
       'linkedin', 'tiktok', 'facebook', 'youtube', 'real_estate_agency_owner',
       'real_estate_agent', 'developer_employee', 'gender', 'nationality',
-      'current_residence_city', 'languages', 'image',
-      'status', 'submitted_by', 'submitted_by_admin', 'approved_at', 'approved_by',
-      'rejected_at', 'rejected_by', 'rejection_reason', 'admin_comments', 'is_active'
+      'current_residence_city', 'languages', 'image', 'is_active'
     ];
+
+    // Add optional fields that might exist depending on migration status
+    const optionalFields = [
+      'status', 'submitted_by', 'submitted_by_admin', 'approved_at', 'approved_by',
+      'rejected_at', 'rejected_by', 'rejection_reason', 'admin_comments'
+    ];
+
+    // Check which optional fields exist in the data
+    optionalFields.forEach(field => {
+      if (professionalData[field] !== undefined) {
+        allowedFields.push(field);
+      }
+    });
 
     const filteredData = {};
     allowedFields.forEach(field => {
