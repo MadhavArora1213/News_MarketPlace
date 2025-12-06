@@ -25,7 +25,7 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
     turnaround_time_in_days: '',
     information_and_documents_needed_from_customers: [],
     description: '',
-    image_or_logo: '',
+    image_logo: '',
     best_seller: false,
     newly_added: false,
     exclusive: false,
@@ -71,7 +71,7 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
-    setFormData(prev => ({ ...prev, image_or_logo: '' }));
+    setFormData(prev => ({ ...prev, image_logo: '' }));
   };
 
   const handlePackageOptionChange = (option, checked) => {
@@ -113,7 +113,7 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         turnaround_time_in_days: record.turnaround_time_in_days || '',
         information_and_documents_needed_from_customers: record.information_and_documents_needed_from_customers || [],
         description: record.description || '',
-        image_or_logo: record.image_or_logo || '',
+        image_logo: record.image_logo || '',
         best_seller: record.best_seller || false,
         newly_added: record.newly_added || false,
         exclusive: record.exclusive || false,
@@ -123,8 +123,8 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
       });
 
       // Set image preview for existing record
-      if (record.image_or_logo) {
-        setImagePreview(record.image_or_logo);
+      if (record.image_logo) {
+        setImagePreview(record.image_logo);
       }
     } else {
       setFormData({
@@ -146,7 +146,7 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         turnaround_time_in_days: '',
         information_and_documents_needed_from_customers: [],
         description: '',
-        image_or_logo: '',
+        image_logo: '',
         best_seller: false,
         newly_added: false,
         exclusive: false,
@@ -199,7 +199,7 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
 
       // Add image file if selected
       if (selectedImage) {
-        submitData.append('image_or_logo', selectedImage);
+        submitData.append('image_logo', selectedImage);
       }
 
       const config = {
@@ -1137,9 +1137,9 @@ const PressPackCreationPage = () => {
                           </div>
                         </td>
                         <td style={{ padding: '16px' }}>
-                          {record.image_or_logo ? (
+                          {record.image_logo ? (
                             <img
-                              src={record.image_or_logo}
+                              src={record.image_logo}
                               alt="Press Pack"
                               style={{
                                 width: '50px',
