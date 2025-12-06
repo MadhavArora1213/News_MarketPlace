@@ -28,6 +28,68 @@ class AdminPressReleaseController {
     this.reject = this.reject.bind(this);
     this.findAllWithFilters = this.findAllWithFilters.bind(this);
     this.getCount = this.getCount.bind(this);
+    this.sanitizePressReleaseData = this.sanitizePressReleaseData.bind(this);
+  }
+
+  // Sanitize press release data types
+  sanitizePressReleaseData(data) {
+    const sanitized = { ...data };
+
+    // Convert numeric fields
+    const numericFields = [
+      'distribution_media_websites',
+      'guaranteed_media_placements',
+      'images_allowed',
+      'word_limit',
+      'google_search_optimised_publications',
+      'google_news_index_publications'
+    ];
+
+    numericFields.forEach(field => {
+      if (sanitized[field] !== undefined && sanitized[field] !== null && sanitized[field] !== '') {
+        const num = parseInt(sanitized[field], 10);
+        sanitized[field] = isNaN(num) ? 0 : num;
+      } else {
+        sanitized[field] = 0; // Default to 0 for empty fields
+      }
+    });
+
+    // Convert price to float
+    if (sanitized.price !== undefined && sanitized.price !== null && sanitized.price !== '') {
+      const price = parseFloat(sanitized.price);
+      sanitized.price = isNaN(price) ? 0 : price;
+    } else {
+      sanitized.price = 0; // Default to 0
+    }
+
+    // Convert boolean fields
+    const booleanFields = ['best_seller', 'content_writing_assistance', 'is_active'];
+    booleanFields.forEach(field => {
+      if (sanitized[field] === 'true' || sanitized[field] === true) {
+        sanitized[field] = true;
+      } else if (sanitized[field] === 'false' || sanitized[field] === false) {
+        sanitized[field] = false;
+      } else {
+        sanitized[field] = false; // Default to false
+      }
+    });
+
+    // Parse JSON fields
+    const jsonFields = ['package_options', 'customer_info_needed'];
+    jsonFields.forEach(field => {
+      if (sanitized[field] && typeof sanitized[field] === 'string') {
+        try {
+          sanitized[field] = JSON.parse(sanitized[field]);
+        } catch (e) {
+          console.warn(`Failed to parse ${field} JSON, using empty array`);
+          sanitized[field] = [];
+        }
+      } else if (!sanitized[field]) {
+        sanitized[field] = [];
+      }
+    });
+
+    return sanitized;
   }
 
   // Validation rules for create
@@ -280,8 +342,11 @@ class AdminPressReleaseController {
       }
 
       console.log('AdminPressReleaseController.create - Validation passed');
-      const pressReleaseData = { ...req.body };
-      console.log('AdminPressReleaseController.create - Press release data prepared:', Object.keys(pressReleaseData));
+      let pressReleaseData = { ...req.body };
+
+      // Sanitize data types for model validation
+      pressReleaseData = this.sanitizePressReleaseData(pressReleaseData);
+      console.log('AdminPressReleaseController.create - Press release data sanitized:', Object.keys(pressReleaseData));
 
       // Handle image upload to S3
       if (req.file) {
@@ -357,7 +422,11 @@ class AdminPressReleaseController {
 
       console.log('AdminPressReleaseController.update - Validation passed');
       const { id } = req.params;
-      console.log('AdminPressReleaseController.update - Looking up press release with ID:', id);
+      let updateData = { ...req.body };
+
+      // Sanitize data types for model validation
+      updateData = this.sanitizePressReleaseData(updateData);
+      console.log('AdminPressReleaseController.update - Update data sanitized:', Object.keys(updateData));
 
       const pressRelease = await PressRelease.findById(id);
 
@@ -367,8 +436,6 @@ class AdminPressReleaseController {
       }
 
       console.log('AdminPressReleaseController.update - Press release found:', pressRelease.id);
-      const updateData = { ...req.body };
-      console.log('AdminPressReleaseController.update - Update data prepared:', Object.keys(updateData));
 
       // Handle image upload to S3 for updates
       if (req.file) {
