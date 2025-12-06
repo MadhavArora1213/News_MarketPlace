@@ -250,8 +250,16 @@ class RealEstateProfessional {
     const values = [];
     let paramCount = 1;
 
+    // Only include fields that exist in the database table
+    const allowedUpdateFields = [
+      'first_name', 'last_name', 'ig_url', 'no_of_followers', 'verified_tick',
+      'linkedin', 'tiktok', 'facebook', 'youtube', 'real_estate_agency_owner',
+      'real_estate_agent', 'developer_employee', 'gender', 'nationality',
+      'current_residence_city', 'languages', 'image', 'is_active'
+    ];
+
     Object.keys(updateData).forEach(key => {
-      if (updateData[key] !== undefined) {
+      if (updateData[key] !== undefined && allowedUpdateFields.includes(key)) {
         fields.push(`${key} = $${paramCount}`);
         values.push((key === 'languages') ? JSON.stringify(updateData[key]) : updateData[key]);
         paramCount++;
