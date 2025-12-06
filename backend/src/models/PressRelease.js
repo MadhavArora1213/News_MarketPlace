@@ -99,7 +99,8 @@ class PressRelease {
         errors.push('Google search optimised status must be one of: Not Guaranteed, Guaranteed');
       }
       if (pressReleaseData.google_search_optimised_status === 'Guaranteed') {
-        if (pressReleaseData.google_search_optimised_publications === undefined || pressReleaseData.google_search_optimised_publications === null || !Number.isInteger(pressReleaseData.google_search_optimised_publications) || pressReleaseData.google_search_optimised_publications <= 0) {
+        const publications = pressReleaseData.google_search_optimised_publications;
+        if (publications === undefined || publications === null || publications === '' || !Number.isInteger(Number(publications)) || Number(publications) <= 0) {
           errors.push('Google search optimised publications must be a positive integer when status is Guaranteed');
         }
       }
@@ -112,7 +113,8 @@ class PressRelease {
         errors.push('Google news index status must be one of: Not Guaranteed, Guaranteed');
       }
       if (pressReleaseData.google_news_index_status === 'Guaranteed') {
-        if (pressReleaseData.google_news_index_publications === undefined || pressReleaseData.google_news_index_publications === null || !Number.isInteger(pressReleaseData.google_news_index_publications) || pressReleaseData.google_news_index_publications <= 0) {
+        const publications = pressReleaseData.google_news_index_publications;
+        if (publications === undefined || publications === null || publications === '' || !Number.isInteger(Number(publications)) || Number(publications) <= 0) {
           errors.push('Google news index publications must be a positive integer when status is Guaranteed');
         }
       }

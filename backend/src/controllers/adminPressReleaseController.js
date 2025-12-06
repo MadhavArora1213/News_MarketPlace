@@ -14,7 +14,6 @@ class AdminPressReleaseController {
       storage: this.storage,
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB limit per file
-        files: 1 // Maximum 1 file for press release logo
       },
       fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
@@ -47,9 +46,23 @@ class AdminPressReleaseController {
     body('end_client_media_details').optional().trim(),
     body('middlemen_contact_details').optional().trim(),
     body('google_search_optimised_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google search optimised status must be Not Guaranteed or Guaranteed'),
-    body('google_search_optimised_publications').optional().isInt({ min: 1 }).withMessage('Google search optimised publications must be a positive integer'),
+    body('google_search_optimised_publications').optional().custom((value, { req }) => {
+      if (req.body.google_search_optimised_status === 'Guaranteed') {
+        if (!value || value === '' || !Number.isInteger(Number(value)) || Number(value) < 1) {
+          throw new Error('Google search optimised publications must be a positive integer when status is Guaranteed');
+        }
+      }
+      return true;
+    }),
     body('google_news_index_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google news index status must be Not Guaranteed or Guaranteed'),
-    body('google_news_index_publications').optional().isInt({ min: 1 }).withMessage('Google news index publications must be a positive integer'),
+    body('google_news_index_publications').optional().custom((value, { req }) => {
+      if (req.body.google_news_index_status === 'Guaranteed') {
+        if (!value || value === '' || !Number.isInteger(Number(value)) || Number(value) < 1) {
+          throw new Error('Google news index publications must be a positive integer when status is Guaranteed');
+        }
+      }
+      return true;
+    }),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('package_options').optional().isArray().withMessage('Package options must be an array'),
@@ -72,9 +85,23 @@ class AdminPressReleaseController {
     body('end_client_media_details').optional().trim(),
     body('middlemen_contact_details').optional().trim(),
     body('google_search_optimised_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google search optimised status must be Not Guaranteed or Guaranteed'),
-    body('google_search_optimised_publications').optional().isInt({ min: 1 }).withMessage('Google search optimised publications must be a positive integer'),
+    body('google_search_optimised_publications').optional().custom((value, { req }) => {
+      if (req.body.google_search_optimised_status === 'Guaranteed') {
+        if (!value || value === '' || !Number.isInteger(Number(value)) || Number(value) < 1) {
+          throw new Error('Google search optimised publications must be a positive integer when status is Guaranteed');
+        }
+      }
+      return true;
+    }),
     body('google_news_index_status').optional().isIn(['Not Guaranteed', 'Guaranteed']).withMessage('Google news index status must be Not Guaranteed or Guaranteed'),
-    body('google_news_index_publications').optional().isInt({ min: 1 }).withMessage('Google news index publications must be a positive integer'),
+    body('google_news_index_publications').optional().custom((value, { req }) => {
+      if (req.body.google_news_index_status === 'Guaranteed') {
+        if (!value || value === '' || !Number.isInteger(Number(value)) || Number(value) < 1) {
+          throw new Error('Google news index publications must be a positive integer when status is Guaranteed');
+        }
+      }
+      return true;
+    }),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
     body('package_options').optional().isArray().withMessage('Package options must be an array'),

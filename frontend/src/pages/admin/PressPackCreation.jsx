@@ -176,9 +176,13 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
       submitData.append('end_client_media_details_in_press_release', formData.end_client_media_details_in_press_release);
       submitData.append('middlemen_or_pr_agency_contact_details_in_press_release', formData.middlemen_or_pr_agency_contact_details_in_press_release);
       submitData.append('google_search_optimised_status', formData.google_search_optimised_status);
-      submitData.append('google_search_optimised_publications', formData.google_search_optimised_publications);
+      if (formData.google_search_optimised_status === 'Guaranteed' && formData.google_search_optimised_publications) {
+        submitData.append('google_search_optimised_publications', formData.google_search_optimised_publications);
+      }
       submitData.append('google_news_index_status', formData.google_news_index_status);
-      submitData.append('google_news_index_publications', formData.google_news_index_publications);
+      if (formData.google_news_index_status === 'Guaranteed' && formData.google_news_index_publications) {
+        submitData.append('google_news_index_publications', formData.google_news_index_publications);
+      }
       submitData.append('no_of_images_allowed', formData.no_of_images_allowed);
       submitData.append('word_limit', formData.word_limit);
       submitData.append('press_release_package_options', JSON.stringify(formData.press_release_package_options));
