@@ -78,6 +78,7 @@ const RealEstateProfessionalDetail = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -85,8 +86,16 @@ const RealEstateProfessionalDetail = () => {
     }
   }, [id]);
 
+  // Mark component as mounted
+  useEffect(() => {
+    setIsComponentMounted(true);
+  }, []);
+
   // Load reCAPTCHA script and render widget
   useEffect(() => {
+    // Only load reCAPTCHA after component is mounted
+    if (!isComponentMounted) return;
+
     const loadRecaptcha = () => {
       if (!window.grecaptcha) {
         const script = document.createElement('script');
@@ -104,16 +113,20 @@ const RealEstateProfessionalDetail = () => {
           }
         };
       } else {
-        setTimeout(() => {
-          renderRecaptcha();
-        }, 100);
+        renderRecaptcha();
       }
     };
 
     const renderRecaptcha = () => {
       const container = document.getElementById('recaptcha-container-order');
       if (!container) {
-        console.log('reCAPTCHA container not found');
+        console.log('reCAPTCHA container not found, will retry...');
+        // Retry after component update
+        setTimeout(() => {
+          if (document.getElementById('recaptcha-container-order')) {
+            renderRecaptcha();
+          }
+        }, 200);
         return;
       }
 
@@ -147,7 +160,7 @@ const RealEstateProfessionalDetail = () => {
     };
 
     loadRecaptcha();
-  }, []);
+  }, [isComponentMounted]);
 
   const fetchProfessionalDetails = async () => {
     try {
