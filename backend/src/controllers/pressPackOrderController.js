@@ -1,20 +1,19 @@
 const PressPackOrder = require('../models/PressPackOrder');
 const PressPack = require('../models/PressPack');
 const emailService = require('../services/emailService');
+const { s3Service } = require('../services/s3Service');
 
 // Create a new press pack order
 const create = async (req, res) => {
   try {
     const {
       name,
+      whatsapp_country_code,
       whatsapp_number,
+      calling_country_code,
       calling_number,
       press_release_type,
       email,
-      company_registration_document,
-      letter_of_authorisation,
-      image,
-      word_pdf_document,
       submitted_by_type,
       press_release_selection,
       package_selection,
@@ -23,6 +22,29 @@ const create = async (req, res) => {
       terms_accepted,
       content_writing_assistance
     } = req.body;
+
+    // Handle file uploads to S3
+    const uploadedFiles = {};
+
+    if (req.files) {
+      const fileFields = ['company_registration_document', 'letter_of_authorisation', 'image', 'word_pdf_document'];
+
+      for (const fieldName of fileFields) {
+        if (req.files[fieldName] && req.files[fieldName][0]) {
+          const file = req.files[fieldName][0];
+          const s3Key = s3Service.generateKey('press-pack-orders', fieldName, file.originalname);
+          const contentType = s3Service.getContentType(file.originalname);
+
+          try {
+            const s3Url = await s3Service.uploadFile(file.buffer, s3Key, contentType, file.originalname);
+            uploadedFiles[fieldName] = s3Url;
+          } catch (uploadError) {
+            console.error(`Error uploading ${fieldName}:`, uploadError);
+            // Continue with other files, don't fail the whole order
+          }
+        }
+      }
+    }
 
     // Validate required fields
     if (!name || !email || !whatsapp_number) {
@@ -42,14 +64,16 @@ const create = async (req, res) => {
     // Create order data
     const orderData = {
       name: name,
+      whatsapp_country_code: whatsapp_country_code || '+91',
       whatsapp_number: whatsapp_number,
+      calling_country_code: calling_country_code || '+91',
       calling_number: calling_number || null,
       press_release_type: Array.isArray(press_release_type) ? JSON.stringify(press_release_type) : JSON.stringify([]),
       email: email,
-      company_registration_document: company_registration_document || null,
-      letter_of_authorisation: letter_of_authorisation || null,
-      image: image || null,
-      word_pdf_document: word_pdf_document || null,
+      company_registration_document: uploadedFiles.company_registration_document || null,
+      letter_of_authorisation: uploadedFiles.letter_of_authorisation || null,
+      image: uploadedFiles.image || null,
+      word_pdf_document: uploadedFiles.word_pdf_document || null,
       submitted_by_type: submitted_by_type || 'agency',
       press_release_selection: press_release_selection || null,
       package_selection: package_selection || null,

@@ -1,14 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const pressPackOrderController = require('../controllers/pressPackOrderController');
+const multer = require('multer');
 const {
   verifyToken,
   verifyAdminToken,
   requireAdminPanelAccess
 } = require('../middleware/auth');
 
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit per file
+  }
+});
+
+// Middleware for multiple file fields
+const uploadFields = upload.fields([
+  { name: 'company_registration_document', maxCount: 1 },
+  { name: 'letter_of_authorisation', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+  { name: 'word_pdf_document', maxCount: 1 }
+]);
+
 // Create a new press pack order (public route for users)
-router.post('/', pressPackOrderController.create);
+router.post('/', uploadFields, pressPackOrderController.create);
 
 // Get all press pack orders (admin only)
 router.get('/', verifyAdminToken, requireAdminPanelAccess, pressPackOrderController.getAll);
