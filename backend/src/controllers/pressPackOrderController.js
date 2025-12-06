@@ -67,6 +67,7 @@ const create = async (req, res) => {
       whatsapp_number: whatsapp_number,
       email: email,
       press_pack_id: press_release_selection || 1, // Use press_release_selection or default to 1
+      package_selection: package_selection || 'Press Release Package', // Required press_pack_name
       status: 'pending'
     };
 

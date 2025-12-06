@@ -88,6 +88,7 @@ class PressPackOrder {
       whatsapp_number: 'customer_phone',
       email: 'customer_email',
       press_pack_id: 'press_pack_id',
+      package_selection: 'press_pack_name',
       status: 'status'
     };
 
