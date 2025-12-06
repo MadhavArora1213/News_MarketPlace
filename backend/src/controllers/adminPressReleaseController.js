@@ -59,10 +59,40 @@ class AdminPressReleaseController {
     }),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
-    body('package_options').optional().isArray().withMessage('Package options must be an array'),
+    body('package_options').optional().custom((value) => {
+      if (!value) return true; // Allow empty
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return true;
+          throw new Error('Package options must be an array');
+        } catch (e) {
+          throw new Error('Package options must be a valid JSON array');
+        }
+      } else if (Array.isArray(value)) {
+        return true;
+      } else {
+        throw new Error('Package options must be an array');
+      }
+    }),
     body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a non-negative number'),
     body('turnaround_time').optional().trim(),
-    body('customer_info_needed').optional().trim(),
+    body('customer_info_needed').optional().custom((value) => {
+      if (!value) return true; // Allow empty
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return true;
+          throw new Error('Customer info needed must be an array');
+        } catch (e) {
+          throw new Error('Customer info needed must be a valid JSON array');
+        }
+      } else if (Array.isArray(value)) {
+        return true;
+      } else {
+        throw new Error('Customer info needed must be an array');
+      }
+    }),
     body('description').optional().trim(),
     body('best_seller').optional().isBoolean().withMessage('Best seller must be a boolean'),
     body('content_writing_assistance').optional().isBoolean().withMessage('Content writing assistance must be a boolean'),
@@ -98,10 +128,40 @@ class AdminPressReleaseController {
     }),
     body('images_allowed').optional().isInt({ min: 0 }).withMessage('Images allowed must be a non-negative integer'),
     body('word_limit').optional().isInt({ min: 0 }).withMessage('Word limit must be a non-negative integer'),
-    body('package_options').optional().isArray().withMessage('Package options must be an array'),
+    body('package_options').optional().custom((value) => {
+      if (!value) return true; // Allow empty
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return true;
+          throw new Error('Package options must be an array');
+        } catch (e) {
+          throw new Error('Package options must be a valid JSON array');
+        }
+      } else if (Array.isArray(value)) {
+        return true;
+      } else {
+        throw new Error('Package options must be an array');
+      }
+    }),
     body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a non-negative number'),
     body('turnaround_time').optional().trim(),
-    body('customer_info_needed').optional().trim(),
+    body('customer_info_needed').optional().custom((value) => {
+      if (!value) return true; // Allow empty
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return true;
+          throw new Error('Customer info needed must be an array');
+        } catch (e) {
+          throw new Error('Customer info needed must be a valid JSON array');
+        }
+      } else if (Array.isArray(value)) {
+        return true;
+      } else {
+        throw new Error('Customer info needed must be an array');
+      }
+    }),
     body('description').optional().trim(),
     body('best_seller').optional().isBoolean().withMessage('Best seller must be a boolean'),
     body('content_writing_assistance').optional().isBoolean().withMessage('Content writing assistance must be a boolean'),
