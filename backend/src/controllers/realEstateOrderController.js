@@ -1,7 +1,7 @@
 const RealEstateOrder = require('../models/RealEstateOrder');
 const RealEstateProfessional = require('../models/RealEstateProfessional');
 const { verifyRecaptcha } = require('../services/recaptchaService');
-const { sendCustomEmail } = require('../services/emailService');
+const { sendCustomEmail } = require('../../services/emailService');
 const { body, validationResult } = require('express-validator');
 
 class RealEstateOrderController {
