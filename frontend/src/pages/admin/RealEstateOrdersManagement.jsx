@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import {
@@ -34,7 +34,7 @@ const theme = {
 };
 
 const RealEstateOrdersManagement = () => {
-  const { hasRole } = useAuth();
+  const { isAuthenticated, hasRole } = useAdminAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,12 +59,12 @@ const RealEstateOrdersManagement = () => {
   });
 
   useEffect(() => {
-    if (!hasRole('admin')) {
+    if (!isAuthenticated || !hasRole('admin')) {
       navigate('/admin/login');
       return;
     }
     fetchOrders();
-  }, [hasRole, navigate]);
+  }, [isAuthenticated, hasRole, navigate]);
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
