@@ -458,6 +458,9 @@ class AdminPressReleaseController {
 
       console.log('AdminPressReleaseController.update - Press release found:', pressRelease.id);
 
+      // Ensure admin submission details are preserved for updates
+      updateData.submitted_by_admin = updateData.submitted_by_admin || req.admin.adminId;
+
       // Handle image upload to S3 for updates
       if (req.file) {
         console.log('AdminPressReleaseController.update - Uploading image to S3');
