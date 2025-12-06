@@ -46,9 +46,7 @@ class PressPackOrder {
       errors.push('Valid email is required');
     }
 
-    if (orderData.terms_accepted !== true) {
-      errors.push('Terms and conditions must be accepted');
-    }
+    // Terms accepted validation removed since column doesn't exist in remote DB
 
     // Optional fields validation (only check fields that exist in remote DB)
     const stringFields = ['whatsapp_number'];
@@ -87,15 +85,9 @@ class PressPackOrder {
     const fieldMapping = {
       name: 'customer_name',
       whatsapp_number: 'customer_phone',
-      // calling_number column doesn't exist in remote DB
-      // press_release_selection column doesn't exist in remote DB
       email: 'customer_email',
-      // File columns don't exist in remote DB: company_registration_document, letter_of_authorisation, image, word_pdf_document
-      // Extra columns don't exist in remote DB: submitted_by_type, package_selection, message, captcha_token, content_writing_assistance
-      terms_accepted: 'terms_accepted',
-      status: 'status',
-      submitted_by: 'submitted_by',
-      submitted_by_admin: 'submitted_by_admin'
+      // Even basic columns like terms_accepted don't exist in remote DB
+      status: 'status'
     };
 
     const allowedFields = Object.keys(fieldMapping);

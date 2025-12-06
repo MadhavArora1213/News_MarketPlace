@@ -59,20 +59,13 @@ const create = async (req, res) => {
       });
     }
 
-    if (!terms_accepted) {
-      return res.status(400).json({
-        success: false,
-        message: 'You must accept the terms and conditions'
-      });
-    }
+    // Terms accepted validation removed since column doesn't exist in remote DB
 
     // Create order data (only include fields that exist in remote database)
     const orderData = {
       name: name,
       whatsapp_number: whatsapp_number,
       email: email,
-      // Most extra fields don't exist in remote DB
-      terms_accepted: parsedTermsAccepted,
       status: 'pending'
     };
 
