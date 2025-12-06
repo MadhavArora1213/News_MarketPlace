@@ -122,6 +122,7 @@ import EventCreationPage from './pages/admin/EventCreation';
 import AwardCreationPage from './pages/admin/AwardCreation';
 import RealEstateManagement from './pages/admin/RealEstateManagement';
 import RealEstateProfessionalsManagement from './pages/admin/RealEstateProfessionalsManagement';
+import RealEstateOrdersManagement from './pages/admin/RealEstateOrdersManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -710,6 +711,16 @@ function App() {
                       <AdminProtectedRoute>
                         <div className="min-h-screen bg-gray-50">
                           <RealEstateProfessionalsManagement />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/real-estate-orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RealEstateOrdersManagement />
                         </div>
                       </AdminProtectedRoute>
                     }
