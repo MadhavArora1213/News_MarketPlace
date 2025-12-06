@@ -28,6 +28,7 @@ export default function Sidebar({
   const [eventDropdownOpen, setEventDropdownOpen] = useState(false);
   const [awardsDropdownOpen, setAwardsDropdownOpen] = useState(false);
   const [radioDropdownOpen, setRadioDropdownOpen] = useState(false);
+  const [realEstateDropdownOpen, setRealEstateDropdownOpen] = useState(false);
 
   // compute desktop fixed styles so sidebar sticks to viewport left (matches screenshot)
   const desktopFixedStyles = {
@@ -576,15 +577,44 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/real-estates"
+              <div
                 style={navItemBase}
+                onClick={() => setRealEstateDropdownOpen(!realEstateDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
                 <span>Real Estate Management</span>
-              </a>
+                <span style={{ marginLeft: 'auto', transform: realEstateDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                  <Icon name="chevron-down" size="sm" style={{ color: '#FF9800' }} />
+                </span>
+              </div>
+              {realEstateDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/real-estates"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#fff3e0')}><Icon name="shopping-cart" size="sm" style={{ color: '#FF9800' }} /></span>
+                      <span>Add to Cart</span>
+                    </a>
+                  </li>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/real-estate-creation"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#fff3e0')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
+                      <span>Real Estate Creation</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -732,7 +762,15 @@ export default function Sidebar({
                 </ul>
               )}
             </li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Management</a></li>
+            <li style={{ marginBottom: 12 }}>
+              <div onClick={() => setRealEstateDropdownOpen(!realEstateDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Real Estate Management</div>
+              {realEstateDropdownOpen && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Add to Cart</a></li>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/real-estate-creation" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Creation</a></li>
+                </ul>
+              )}
+            </li>
             <li style={{ marginBottom: 12 }}><a href="/admin/reporters" style={{ color: '#212121', textDecoration: 'none' }}>Reporter Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/roles-permissions" style={{ color: '#212121', textDecoration: 'none' }}>Roles & Permissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>

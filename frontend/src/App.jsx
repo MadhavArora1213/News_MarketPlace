@@ -38,6 +38,8 @@ import PodcastersList from './pages/PodcastersList';
 import PodcasterDetail from './pages/PodcasterDetail';
 import RealEstateList from './pages/RealEstateList';
 import RealEstateDetail from './pages/RealEstateDetail';
+import RealEstateProfessionalsList from './pages/RealEstateProfessionalsList';
+import RealEstateProfessionalDetail from './pages/RealEstateProfessionalDetail';
 import HowToGuides from './pages/HowToGuides';
 import DownloadCenter from './pages/DownloadCenter';
 import OTPTest from './pages/OTPTest';
@@ -118,6 +120,8 @@ import Icon from './components/common/Icon';
 import PaparazziCreations from './pages/admin/PaparazziCreations';
 import EventCreationPage from './pages/admin/EventCreation';
 import AwardCreationPage from './pages/admin/AwardCreation';
+import RealEstateManagement from './pages/admin/RealEstateManagement';
+import RealEstateProfessionalsManagement from './pages/admin/RealEstateProfessionalsManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -312,8 +316,8 @@ function App() {
                   <Route path="/services-overview" element={<ServicesOverview />} />
                   <Route path="/podcasters" element={<PodcastersList />} />
                   <Route path="/podcasters/:id" element={<PodcasterDetail />} />
-                  <Route path="/real-estates" element={<RealEstateList />} />
-                  <Route path="/real-estates/:id" element={<RealEstateDetail />} />
+                  <Route path="/real-estate-professionals" element={<RealEstateProfessionalsList />} />
+                  <Route path="/real-estate-professionals/:id" element={<RealEstateProfessionalDetail />} />
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route
                     path="/dashboard"
@@ -696,6 +700,16 @@ function App() {
                       <AdminProtectedRoute>
                         <div className="min-h-screen bg-gray-50">
                           <RealEstateManagementView />
+                        </div>
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/real-estate-creation"
+                    element={
+                      <AdminProtectedRoute>
+                        <div className="min-h-screen bg-gray-50">
+                          <RealEstateProfessionalsManagement />
                         </div>
                       </AdminProtectedRoute>
                     }

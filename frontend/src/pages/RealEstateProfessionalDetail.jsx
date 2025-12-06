@@ -7,10 +7,12 @@ import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import {
-  ArrowLeft, Home, MapPin, DollarSign, Bed, Bath, Square, ImageIcon,
-  ExternalLink, Shield, CheckCircle, Clock, Heart, Share, Mail,
-  Phone, MessageCircle, Calendar, Eye, Star, BookOpen, Target,
-  TrendingUp, Award, Zap, Users, Globe, FileText, BarChart3
+  ArrowLeft, Globe, User, Star, ExternalLink, Shield,
+  Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
+  DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
+  MapPin, Calendar, Users, Zap, Eye, Heart, Share,
+  Instagram, Facebook, Twitter, Linkedin, Youtube, MessageCircle,
+  Languages, Building, UserCheck, Crown
 } from 'lucide-react';
 
 // Updated theme colors matching the color palette from PDF
@@ -36,41 +38,46 @@ const theme = {
   borderDark: '#757575'
 };
 
-const RealEstateDetail = () => {
+const RealEstateProfessionalDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const [realEstate, setRealEstate] = useState(null);
+  const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
+  const [professional, setProfessional] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [isOrdering, setIsOrdering] = useState(false);
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [orderFormData, setOrderFormData] = useState({
+  const [isContacting, setIsContacting] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactFormData, setContactFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     message: ''
   });
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
-      fetchRealEstateDetails();
+      fetchProfessionalDetails();
     }
   }, [id]);
 
-  const fetchRealEstateDetails = async () => {
+  const fetchProfessionalDetails = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/real-estates/approved/${id}`);
-      setRealEstate(response.data.realEstate || response.data);
+      console.log('Fetching professional details for ID:', id);
+
+      const response = await api.get(`/real-estate-professionals/${id}`);
+      console.log('Professional details response:', response.data);
+
+      setProfessional(response.data.professional || response.data);
     } catch (error) {
-      console.error('Error fetching real estate details:', error);
+      console.error('Error fetching professional details:', error);
       if (error.response?.status === 401) {
         setShowAuth(true);
       } else {
-        navigate('/real-estates');
+        // Handle error - maybe navigate back or show error message
+        console.error('Failed to load professional details');
+        navigate('/real-estate-professionals');
       }
     } finally {
       setLoading(false);
@@ -98,97 +105,83 @@ const RealEstateDetail = () => {
       setShowAuth(true);
       return;
     }
-    setIsSaved(!isSaved);
+
+    try {
+      // Simulate save action
+      setIsSaved(!isSaved);
+      console.log('Save toggled:', !isSaved);
+
+      // Here you would typically call an API to save/unsave the professional
+      // await api.post(`/real-estate-professionals/${id}/save`, { saved: !isSaved });
+    } catch (error) {
+      console.error('Error saving professional:', error);
+    }
   };
 
   const handleShare = () => {
     const shareData = {
-      title: `${realEstate.first_name} ${realEstate.last_name} - Real Estate Professional`,
-      text: `Check out this professional: ${realEstate.first_name} ${realEstate.last_name}`,
+      title: `${professional.first_name} ${professional.last_name}`,
+      text: `Check out this real estate professional: ${professional.first_name} ${professional.last_name}`,
       url: window.location.href
     };
 
     if (navigator.share) {
       navigator.share(shareData);
     } else {
+      // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(() => {
+        // Ultimate fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
         alert('Link copied to clipboard!');
       });
     }
   };
 
-  const handleAddProperty = () => {
+  const handleContact = () => {
     if (!isAuthenticated) {
       setShowAuth(true);
       return;
     }
-    // Navigate to add property form or show modal
-    navigate('/real-estates/add');
+    setShowContactModal(true);
   };
 
-  const handlePlaceOrder = () => {
-    if (!isAuthenticated) {
-      setShowAuth(true);
-      return;
-    }
-    setShowOrderModal(true);
-  };
-
-  const handleOrderSubmit = async (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setIsOrdering(true);
+    setIsContacting(true);
 
     try {
       // Create contact data for API
       const contactData = {
-        professionalId: realEstate.id,
-        professionalName: `${realEstate.first_name} ${realEstate.last_name}`,
-        profession: realEstate.real_estate_agent ? 'Real Estate Agent' : realEstate.real_estate_agency_owner ? 'Agency Owner' : 'Developer Employee',
-        customerInfo: orderFormData,
+        professionalId: professional.id,
+        professionalName: `${professional.first_name} ${professional.last_name}`,
+        customerInfo: contactFormData,
         contactDate: new Date().toISOString()
       };
 
-      // Submit contact to backend
-      const response = await api.post('/real-estates/contact', contactData);
+      // Submit contact request to backend
+      const response = await api.post('/real-estate-professionals/contact', contactData);
 
       if (response.data.success) {
-        alert('Message sent successfully! The professional will contact you soon.');
-        setShowOrderModal(false);
-        setOrderFormData({ fullName: '', email: '', phone: '', message: '' });
+        alert('Contact request submitted successfully! The professional will contact you soon.');
+        setShowContactModal(false);
+        setContactFormData({ fullName: '', email: '', phone: '', message: '' });
       } else {
-        throw new Error(response.data.message || 'Failed to send message');
+        throw new Error(response.data.message || 'Failed to submit contact request');
       }
 
     } catch (error) {
-      console.error('Error sending message:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Error sending message. Please try again.';
+      console.error('Error submitting contact request:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Error submitting contact request. Please try again.';
       alert(errorMessage);
     } finally {
-      setIsOrdering(false);
-    }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const nextImage = () => {
-    if (realEstate.images && realEstate.images.length > 1) {
-      setCurrentImageIndex((prev) =>
-        prev === realEstate.images.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevImage = () => {
-    if (realEstate.images && realEstate.images.length > 1) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? realEstate.images.length - 1 : prev - 1
-      );
+      setIsContacting(false);
     }
   };
 
@@ -205,7 +198,7 @@ const RealEstateDetail = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading professional profile...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading professional details...</p>
           </div>
         </div>
         <UserFooter />
@@ -213,7 +206,7 @@ const RealEstateDetail = () => {
     );
   }
 
-  if (!realEstate) {
+  if (!professional) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
@@ -223,16 +216,16 @@ const RealEstateDetail = () => {
               className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
               style={{ backgroundColor: theme.backgroundSoft }}
             >
-              <Home size={48} style={{ color: theme.textDisabled }} />
+              <User size={48} style={{ color: theme.textDisabled }} />
             </div>
             <h1 className="text-2xl font-semibold mb-4" style={{ color: theme.textPrimary }}>
               Professional Not Found
             </h1>
             <p className="mb-8" style={{ color: theme.textSecondary }}>
-              The professional profile you're looking for doesn't exist or has been removed.
+              The professional you're looking for doesn't exist or has been removed.
             </p>
             <button
-              onClick={() => navigate('/real-estates')}
+              onClick={() => navigate('/real-estate-professionals')}
               className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               style={{ backgroundColor: theme.primary }}
             >
@@ -242,6 +235,13 @@ const RealEstateDetail = () => {
           </div>
         </div>
         <UserFooter />
+        {showAuth && (
+          <AuthModal
+            isOpen={showAuth}
+            onClose={handleCloseAuth}
+            onLoginSuccess={handleCloseAuth}
+          />
+        )}
       </div>
     );
   }
@@ -256,27 +256,27 @@ const RealEstateDetail = () => {
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm mb-6" style={{ color: theme.textSecondary }}>
             <button
-              onClick={() => navigate('/real-estates')}
+              onClick={() => navigate('/real-estate-professionals')}
               className="flex items-center gap-1 hover:opacity-80"
             >
               <ArrowLeft size={16} />
               Back to Professionals
             </button>
             <span>/</span>
-            <span>Professional Profile</span>
+            <span>Professional Details</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border p-8">
-                {/* Professional Profile Header */}
+                {/* Professional Header */}
                 <div className="flex items-start gap-6 mb-8">
-                  <div className="w-24 h-24 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border-4 border-white shadow-lg">
-                    {realEstate.image ? (
+                  <div className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {professional.image ? (
                       <img
-                        src={realEstate.image}
-                        alt={`${realEstate.first_name} ${realEstate.last_name}`}
+                        src={professional.image}
+                        alt={`${professional.first_name} ${professional.last_name}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = '/logo.png';
@@ -285,7 +285,7 @@ const RealEstateDetail = () => {
                     ) : (
                       <img
                         src="/logo.png"
-                        alt="Profile"
+                        alt="Logo"
                         className="w-12 h-12 object-contain"
                       />
                     )}
@@ -293,71 +293,65 @@ const RealEstateDetail = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h1 className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
-                        {realEstate.first_name} {realEstate.last_name}
+                        {professional.first_name} {professional.last_name}
                       </h1>
-                      {realEstate.verified_tick && (
-                        <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: theme.success + '20', color: theme.success }}>
-                          <CheckCircle size={12} />
-                          Verified
-                        </div>
-                      )}
-                    </div>
-                    <div className="mb-3">
-                      {realEstate.real_estate_agent && (
-                        <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2" style={{ backgroundColor: theme.primaryLight, color: theme.primaryDark }}>
-                          Real Estate Agent
-                        </span>
-                      )}
-                      {realEstate.real_estate_agency_owner && (
-                        <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2" style={{ backgroundColor: theme.secondaryLight, color: theme.secondaryDark }}>
-                          Agency Owner
-                        </span>
-                      )}
-                      {realEstate.developer_employee && (
-                        <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2" style={{ backgroundColor: theme.info + '20', color: theme.info }}>
-                          Developer Employee
-                        </span>
+                      {professional.verified_tick && (
+                        <CheckCircle size={24} style={{ color: theme.success }} title="Verified Professional" />
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
                       <div className="flex items-center gap-2">
                         <MapPin size={16} />
-                        <span>{realEstate.current_residence_city || realEstate.location}</span>
+                        <span>{professional.current_residence_city || 'Location not specified'}</span>
                       </div>
-                      {realEstate.nationality && (
-                        <div className="flex items-center gap-2">
-                          <Globe size={16} />
-                          <span>{realEstate.nationality}</span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <Languages size={16} />
+                        <span>{professional.languages?.length ? professional.languages.join(', ') : 'Languages not specified'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} />
+                        <span>Joined {formatDate(professional.created_at)}</span>
+                      </div>
+                    </div>
+                    {/* Professional Roles */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {professional.real_estate_agency_owner && (
+                        <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.primaryLight, color: theme.primaryDark }}>
+                          <Crown size={14} className="inline mr-1" />
+                          Agency Owner
+                        </span>
                       )}
-                      {realEstate.no_of_followers && (
-                        <div className="flex items-center gap-2">
-                          <Users size={16} />
-                          <span>{realEstate.no_of_followers.toLocaleString()} followers</span>
-                        </div>
+                      {professional.real_estate_agent && (
+                        <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.secondaryLight, color: theme.secondaryDark }}>
+                          <UserCheck size={14} className="inline mr-1" />
+                          Real Estate Agent
+                        </span>
+                      )}
+                      {professional.developer_employee && (
+                        <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.info + '20', color: theme.info }}>
+                          <Building size={14} className="inline mr-1" />
+                          Developer Employee
+                        </span>
                       )}
                     </div>
                   </div>
                 </div>
 
-
-                {/* Description/About */}
+                {/* About Section */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
                     About This Professional
                   </h3>
                   <div className="prose max-w-none" style={{ color: theme.textSecondary }}>
                     <p>
-                      {realEstate.description || 'A dedicated real estate professional committed to providing exceptional service and expertise in the property market.'}
+                      {professional.first_name} is a verified real estate professional with expertise in the industry.
+                      {professional.nationality && ` Originally from ${professional.nationality},`}
+                      {professional.current_residence_city && ` currently based in ${professional.current_residence_city}.`}
+                      {professional.languages?.length > 0 && ` Fluent in ${professional.languages.join(', ')}.`}
                     </p>
-                    {realEstate.gender && (
+                    {professional.no_of_followers > 0 && (
                       <p className="mt-4">
-                        <strong>Gender:</strong> {realEstate.gender}
-                      </p>
-                    )}
-                    {realEstate.languages && realEstate.languages.length > 0 && (
-                      <p className="mt-4">
-                        <strong>Languages:</strong> {realEstate.languages.join(', ')}
+                        <strong>Social Media Presence:</strong> {professional.no_of_followers.toLocaleString()} followers on Instagram
                       </p>
                     )}
                   </div>
@@ -370,58 +364,36 @@ const RealEstateDetail = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Professional Details</h4>
+                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Personal Details</h4>
                       <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
-                        {realEstate.real_estate_agent && (
-                          <li className="flex items-center gap-2">
-                            <Award size={14} />
-                            <span>Real Estate Agent</span>
-                          </li>
-                        )}
-                        {realEstate.real_estate_agency_owner && (
-                          <li className="flex items-center gap-2">
-                            <Target size={14} />
-                            <span>Agency Owner</span>
-                          </li>
-                        )}
-                        {realEstate.developer_employee && (
-                          <li className="flex items-center gap-2">
-                            <Zap size={14} />
-                            <span>Developer Employee</span>
-                          </li>
-                        )}
-                        {realEstate.no_of_followers && (
-                          <li className="flex items-center gap-2">
-                            <Users size={14} />
-                            <span>{realEstate.no_of_followers.toLocaleString()} followers</span>
-                          </li>
-                        )}
+                        <li className="flex items-center gap-2">
+                          <User size={14} />
+                          <span>Gender: {professional.gender || 'Not specified'}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <MapPin size={14} />
+                          <span>Nationality: {professional.nationality || 'Not specified'}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <MapPin size={14} />
+                          <span>Current City: {professional.current_residence_city || 'Not specified'}</span>
+                        </li>
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Background & Location</h4>
+                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Professional Status</h4>
                       <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
-                        {realEstate.current_residence_city && (
-                          <li className="flex items-center gap-2">
-                            <MapPin size={14} />
-                            <span>Location: {realEstate.current_residence_city}</span>
-                          </li>
-                        )}
-                        {realEstate.nationality && (
-                          <li className="flex items-center gap-2">
-                            <Globe size={14} />
-                            <span>Nationality: {realEstate.nationality}</span>
-                          </li>
-                        )}
-                        {realEstate.verified_tick && (
-                          <li className="flex items-center gap-2">
-                            <CheckCircle size={14} style={{ color: theme.success }} />
-                            <span>Verified Professional</span>
-                          </li>
-                        )}
                         <li className="flex items-center gap-2">
-                          <Calendar size={14} />
-                          <span>Joined: {formatDate(realEstate.created_at)}</span>
+                          <CheckCircle size={14} style={{ color: professional.verified_tick ? theme.success : theme.textDisabled }} />
+                          <span>Verified: {professional.verified_tick ? 'Yes' : 'No'}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Users size={14} />
+                          <span>Followers: {professional.no_of_followers?.toLocaleString() || 0}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Languages size={14} />
+                          <span>Languages: {professional.languages?.length || 0}</span>
                         </li>
                       </ul>
                     </div>
@@ -430,115 +402,116 @@ const RealEstateDetail = () => {
 
                 {/* Social Media Links */}
                 <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Connect & Follow
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                    Social Media & Contact
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {realEstate.ig_url && (
+                  <div className="flex items-center gap-2">
+                    {professional.ig_url && (
                       <a
-                        href={realEstate.ig_url}
+                        href={professional.ig_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md"
-                        style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="Instagram"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E4405F' }}>
-                          <span className="text-white font-bold text-sm">IG</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm" style={{ color: theme.textPrimary }}>Instagram</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>
-                            {realEstate.no_of_followers ? `${realEstate.no_of_followers.toLocaleString()} followers` : 'Follow'}
-                          </div>
-                        </div>
+                        <Instagram size={16} style={{ color: '#E4405F' }} />
                       </a>
                     )}
-                    {realEstate.linkedin && (
+                    {!professional.ig_url && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Instagram size={16} style={{ color: '#E4405F' }} />
+                      </div>
+                    )}
+
+                    {professional.facebook && (
                       <a
-                        href={realEstate.linkedin}
+                        href={professional.facebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md"
-                        style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="Facebook"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0077B5' }}>
-                          <span className="text-white font-bold text-sm">LI</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm" style={{ color: theme.textPrimary }}>LinkedIn</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Connect</div>
-                        </div>
+                        <Facebook size={16} style={{ color: '#1877F2' }} />
                       </a>
                     )}
-                    {realEstate.facebook && (
+                    {!professional.facebook && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Facebook size={16} style={{ color: '#1877F2' }} />
+                      </div>
+                    )}
+
+                    {professional.linkedin && (
                       <a
-                        href={realEstate.facebook}
+                        href={professional.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md"
-                        style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="LinkedIn"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1877F2' }}>
-                          <span className="text-white font-bold text-sm">FB</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm" style={{ color: theme.textPrimary }}>Facebook</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Like & Follow</div>
-                        </div>
+                        <Linkedin size={16} style={{ color: '#0077B5' }} />
                       </a>
                     )}
-                    {realEstate.youtube && (
+                    {!professional.linkedin && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Linkedin size={16} style={{ color: '#0077B5' }} />
+                      </div>
+                    )}
+
+                    {professional.youtube && (
                       <a
-                        href={realEstate.youtube}
+                        href={professional.youtube}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md"
-                        style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="YouTube"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FF0000' }}>
-                          <span className="text-white font-bold text-sm">YT</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm" style={{ color: theme.textPrimary }}>YouTube</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Subscribe</div>
-                        </div>
+                        <Youtube size={16} style={{ color: '#FF0000' }} />
                       </a>
                     )}
-                    {realEstate.tiktok && (
+                    {!professional.youtube && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <Youtube size={16} style={{ color: '#FF0000' }} />
+                      </div>
+                    )}
+
+                    {professional.tiktok && (
                       <a
-                        href={realEstate.tiktok}
+                        href={professional.tiktok}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 rounded-lg border transition-all hover:shadow-md"
-                        style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                        className="p-2 rounded-lg border transition-colors hover:bg-gray-50"
+                        style={{ borderColor: theme.borderLight }}
+                        title="TikTok"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
-                          <span className="text-white font-bold text-sm">TT</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm" style={{ color: theme.textPrimary }}>TikTok</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Follow</div>
-                        </div>
+                        <span className="text-sm font-bold" style={{ color: '#000000' }}>TT</span>
                       </a>
+                    )}
+                    {!professional.tiktok && (
+                      <div className="p-2 rounded-lg border opacity-50" style={{ borderColor: theme.borderLight }}>
+                        <span className="text-sm font-bold" style={{ color: '#000000' }}>TT</span>
+                      </div>
                     )}
                   </div>
                 </div>
 
-
-                {/* Professional Specialties */}
-                {realEstate.amenities && (
+                {/* Languages */}
+                {professional.languages && professional.languages.length > 0 && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Specialties & Expertise
+                      Languages Spoken
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {realEstate.amenities.split(',').map((specialty, index) => (
+                      {professional.languages.map((language, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 rounded-full text-sm font-medium"
                           style={{ backgroundColor: theme.primaryLight, color: theme.primaryDark }}
                         >
-                          {specialty.trim()}
+                          {language}
                         </span>
                       ))}
                     </div>
@@ -552,68 +525,63 @@ const RealEstateDetail = () => {
               {/* Contact Card */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center mb-6">
-                  <div className="text-2xl font-bold mb-2" style={{ color: theme.primary }}>
-                    Get In Touch
+                  <div className="text-2xl font-bold mb-2" style={{ color: theme.success }}>
+                    Contact Professional
                   </div>
                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                    Connect with this professional
+                    Get in touch for real estate services
                   </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Profession</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>Status</span>
+                    <span className="font-medium" style={{ color: professional.verified_tick ? theme.success : theme.textSecondary }}>
+                      {professional.verified_tick ? 'Verified' : 'Active'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>Languages</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {realEstate.real_estate_agent ? 'Agent' : realEstate.real_estate_agency_owner ? 'Agency Owner' : 'Developer'}
+                      {professional.languages?.length || 0}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm" style={{ color: theme.textSecondary }}>Location</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {realEstate.current_residence_city || realEstate.location}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Status</span>
-                    <span className="font-medium" style={{ color: theme.success }}>
-                      {realEstate.verified_tick ? 'Verified' : 'Active'}
+                      {professional.current_residence_city || 'N/A'}
                     </span>
                   </div>
                 </div>
 
                 <button
-                  className="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                  className="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                   style={{ backgroundColor: theme.primary }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                   onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                  onClick={handlePlaceOrder}
-                  disabled={isOrdering}
+                  onClick={handleContact}
+                  disabled={isContacting}
                 >
-                  {isOrdering ? 'Processing...' : (isAuthenticated ? 'Add to Cart' : 'Sign In to Connect')}
+                  <MessageCircle size={16} />
+                  {isContacting ? 'Sending...' : (isAuthenticated ? 'Add to Cart' : 'Sign In to Contact')}
                 </button>
               </div>
 
-              {/* Professional Metrics */}
+              {/* Professional Stats */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Professional Metrics
+                  Professional Stats
                 </h3>
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                     <div className="text-2xl font-bold mb-1" style={{ color: theme.primary }}>
-                      {realEstate.no_of_followers ? Math.floor(realEstate.no_of_followers / 1000) + 'K' : 0}
+                      {professional.no_of_followers?.toLocaleString() || 0}
                     </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Followers</div>
+                    <div className="text-xs" style={{ color: theme.textSecondary }}>Instagram Followers</div>
                   </div>
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                     <div className="text-2xl font-bold mb-1" style={{ color: theme.success }}>
-                      {realEstate.verified_tick ? '✓' : '○'}
-                    </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Verified</div>
-                  </div>
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-lg font-bold mb-1" style={{ color: theme.info }}>
-                      {realEstate.languages ? realEstate.languages.length : 0}
+                      {professional.languages?.length || 0}
                     </div>
                     <div className="text-xs" style={{ color: theme.textSecondary }}>Languages</div>
                   </div>
@@ -627,31 +595,23 @@ const RealEstateDetail = () => {
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2">
-                    <Award size={16} style={{ color: theme.info }} />
+                    <Award size={16} style={{ color: professional.verified_tick ? theme.success : theme.textDisabled }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Role: {realEstate.real_estate_agent ? 'Real Estate Agent' : realEstate.real_estate_agency_owner ? 'Agency Owner' : 'Developer Employee'}
+                      Verification: {professional.verified_tick ? 'Verified' : 'Unverified'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <TrendingUp size={16} style={{ color: theme.success }} />
+                    <TrendingUp size={16} style={{ color: theme.primary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Joined: {formatDate(realEstate.created_at)}
+                      Member Since: {formatDate(professional.created_at)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} style={{ color: theme.secondary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Location: {realEstate.current_residence_city || realEstate.location}
+                      Professional Type: {professional.real_estate_agency_owner ? 'Agency Owner' : professional.real_estate_agent ? 'Agent' : professional.developer_employee ? 'Developer' : 'Professional'}
                     </span>
                   </div>
-                  {realEstate.languages && realEstate.languages.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Target size={16} style={{ color: theme.warning }} />
-                      <span style={{ color: theme.textSecondary }}>
-                        Languages: {realEstate.languages.length}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -703,8 +663,8 @@ const RealEstateDetail = () => {
         />
       )}
 
-      {/* Inquiry Modal */}
-      {showOrderModal && (
+      {/* Contact Modal */}
+      {showContactModal && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -718,7 +678,7 @@ const RealEstateDetail = () => {
           zIndex: 10000,
           padding: '20px',
           overflow: 'auto'
-        }} onClick={() => setShowOrderModal(false)}>
+        }} onClick={() => setShowContactModal(false)}>
           <div style={{
             backgroundColor: theme.background,
             borderRadius: '12px',
@@ -743,7 +703,7 @@ const RealEstateDetail = () => {
                 Contact Professional
               </h2>
               <button
-                onClick={() => setShowOrderModal(false)}
+                onClick={() => setShowContactModal(false)}
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -778,25 +738,17 @@ const RealEstateDetail = () => {
                   fontWeight: '600',
                   color: theme.textPrimary
                 }}>
-                  {realEstate.first_name} {realEstate.last_name}
+                  {professional.first_name} {professional.last_name}
                 </h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: theme.textSecondary }}>Profession:</span>
+                  <span style={{ color: theme.textSecondary }}>Professional Contact Request</span>
                   <span style={{ fontSize: '16px', fontWeight: '600', color: theme.primary }}>
-                    {realEstate.real_estate_agent ? 'Real Estate Agent' : realEstate.real_estate_agency_owner ? 'Agency Owner' : 'Developer Employee'}
+                    Real Estate Services
                   </span>
                 </div>
-                {realEstate.no_of_followers && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                    <span style={{ color: theme.textSecondary }}>Followers:</span>
-                    <span style={{ fontSize: '14px', fontWeight: '500', color: theme.textPrimary }}>
-                      {realEstate.no_of_followers.toLocaleString()}
-                    </span>
-                  </div>
-                )}
               </div>
 
-              <form id="inquiry-form" onSubmit={handleOrderSubmit}>
+              <form id="contact-form" onSubmit={handleContactSubmit}>
                 <div className="grid grid-cols-1 gap-4 mb-4">
                   <div>
                     <label style={{
@@ -810,8 +762,8 @@ const RealEstateDetail = () => {
                     </label>
                     <input
                       type="text"
-                      value={orderFormData.fullName}
-                      onChange={(e) => setOrderFormData({ ...orderFormData, fullName: e.target.value })}
+                      value={contactFormData.fullName}
+                      onChange={(e) => setContactFormData({ ...contactFormData, fullName: e.target.value })}
                       required
                       style={{
                         width: '100%',
@@ -837,8 +789,8 @@ const RealEstateDetail = () => {
                     </label>
                     <input
                       type="email"
-                      value={orderFormData.email}
-                      onChange={(e) => setOrderFormData({ ...orderFormData, email: e.target.value })}
+                      value={contactFormData.email}
+                      onChange={(e) => setContactFormData({ ...contactFormData, email: e.target.value })}
                       required
                       style={{
                         width: '100%',
@@ -864,8 +816,8 @@ const RealEstateDetail = () => {
                     </label>
                     <input
                       type="tel"
-                      value={orderFormData.phone}
-                      onChange={(e) => setOrderFormData({ ...orderFormData, phone: e.target.value })}
+                      value={contactFormData.phone}
+                      onChange={(e) => setContactFormData({ ...contactFormData, phone: e.target.value })}
                       required
                       style={{
                         width: '100%',
@@ -887,11 +839,11 @@ const RealEstateDetail = () => {
                       color: theme.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Additional Message
+                      Message
                     </label>
                     <textarea
-                      value={orderFormData.message}
-                      onChange={(e) => setOrderFormData({ ...orderFormData, message: e.target.value })}
+                      value={contactFormData.message}
+                      onChange={(e) => setContactFormData({ ...contactFormData, message: e.target.value })}
                       rows={3}
                       style={{
                         width: '100%',
@@ -903,7 +855,7 @@ const RealEstateDetail = () => {
                         backgroundColor: theme.background,
                         resize: 'vertical'
                       }}
-                      placeholder="Any specific questions or requirements..."
+                      placeholder="Tell us about your real estate needs..."
                     />
                   </div>
                 </div>
@@ -922,7 +874,7 @@ const RealEstateDetail = () => {
             }}>
               <button
                 type="button"
-                onClick={() => setShowOrderModal(false)}
+                onClick={() => setShowContactModal(false)}
                 style={{
                   padding: '12px 24px',
                   backgroundColor: theme.backgroundSoft,
@@ -933,13 +885,13 @@ const RealEstateDetail = () => {
                   cursor: 'pointer',
                   fontSize: '14px'
                 }}
-                disabled={isOrdering}
+                disabled={isContacting}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                form="inquiry-form"
+                form="contact-form"
                 style={{
                   padding: '12px 24px',
                   backgroundColor: theme.primary,
@@ -950,11 +902,11 @@ const RealEstateDetail = () => {
                   cursor: 'pointer',
                   fontSize: '14px'
                 }}
-                disabled={isOrdering}
+                disabled={isContacting}
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                {isOrdering ? 'Sending...' : 'Send Message'}
+                {isContacting ? 'Sending...' : 'Add to Cart'}
               </button>
             </div>
           </div>
@@ -964,4 +916,4 @@ const RealEstateDetail = () => {
   );
 };
 
-export default RealEstateDetail;
+export default RealEstateProfessionalDetail;

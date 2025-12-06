@@ -43,7 +43,7 @@ const UserHeader = () => {
 
   const menuItems = [
     {
-      href: "/real-estates",
+      href: "/real-estate-professionals",
       text: "Real Estate",
       icon: "home",
       description: "Real estate services and listings",

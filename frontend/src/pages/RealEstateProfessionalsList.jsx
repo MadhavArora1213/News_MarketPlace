@@ -13,7 +13,7 @@ import {
   ExternalLink, MapPin, Calendar, DollarSign, BarChart3, Users,
   Link as LinkIcon, Image as ImageIcon, FileText, Shield,
   ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Newspaper, Plus,
-  Home, Bed, Bath, Square
+  User, Building, Building2, Crown
 } from 'lucide-react';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -45,10 +45,10 @@ const theme = {
   hoverBg: '#F5F5F5'
 };
 
-const RealEstateList = () => {
+const RealEstateProfessionalsList = () => {
   const { isAuthenticated, hasRole, hasAnyRole, getRoleLevel } = useAuth();
   const navigate = useNavigate();
-  const [realEstates, setRealEstates] = useState([]);
+  const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAuth, setShowAuth] = useState(false);
@@ -66,7 +66,7 @@ const RealEstateList = () => {
   const [locationFilter, setLocationFilter] = useState('');
 
   // Sorting state
-  const [sortField, setSortField] = useState('name');
+  const [sortField, setSortField] = useState('first_name');
   const [sortDirection, setSortDirection] = useState('asc');
 
   useEffect(() => {
@@ -77,19 +77,19 @@ const RealEstateList = () => {
   }, []);
 
   useEffect(() => {
-    fetchRealEstates();
+    fetchProfessionals();
   }, []);
 
   // Enhanced search with debouncing
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchRealEstates();
+      fetchProfessionals();
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, professionTypeFilter, nationalityFilter, languagesFilter, genderFilter, locationFilter]);
+  }, [searchTerm, nationalityFilter, languagesFilter, locationFilter]);
 
-  const fetchRealEstates = async () => {
+  const fetchProfessionals = async () => {
     try {
       setLoading(true);
 
@@ -99,40 +99,35 @@ const RealEstateList = () => {
 
       // Enhanced search across multiple fields
       if (searchTerm.trim()) {
-        params.append('title', searchTerm.trim());
+        params.append('first_name', searchTerm.trim());
+        params.append('last_name', searchTerm.trim());
       }
 
-      if (professionTypeFilter) params.append('profession', professionTypeFilter);
       if (nationalityFilter) params.append('nationality', nationalityFilter);
+      if (locationFilter) params.append('current_residence_city', locationFilter);
       if (languagesFilter) params.append('languages', languagesFilter);
-      if (genderFilter) params.append('gender', genderFilter);
-      if (locationFilter) params.append('location', locationFilter);
 
-      const response = await api.get(`/real-estates?${params.toString()}`);
-      let estates = response.data.realEstates || [];
+      const response = await api.get(`/real-estate-professionals?${params.toString()}`);
+      let pros = response.data.professionals || [];
 
       // Client-side search for better results
       if (searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase().trim();
-        estates = estates.filter(estate => {
-          return (
-            estate.name?.toLowerCase().includes(searchLower) ||
-            estate.profession?.toLowerCase().includes(searchLower) ||
-            estate.nationality?.toLowerCase().includes(searchLower) ||
-            estate.languages?.toLowerCase().includes(searchLower) ||
-            estate.location?.toLowerCase().includes(searchLower) ||
-            estate.description?.toLowerCase().includes(searchLower)
-          );
-        });
+        pros = pros.filter(pro =>
+          pro.first_name?.toLowerCase().includes(searchLower) ||
+          pro.last_name?.toLowerCase().includes(searchLower) ||
+          pro.nationality?.toLowerCase().includes(searchLower) ||
+          pro.current_residence_city?.toLowerCase().includes(searchLower)
+        );
       }
 
-      setRealEstates(estates);
+      setProfessionals(pros);
     } catch (error) {
-      console.error('Error fetching real estates:', error);
+      console.error('Error fetching professionals:', error);
       if (error.response?.status === 401) {
         setShowAuth(true);
       } else {
-        setRealEstates([]);
+        setProfessionals([]);
       }
     } finally {
       setLoading(false);
@@ -140,50 +135,41 @@ const RealEstateList = () => {
   };
 
   // Filtering logic
-  const filteredRealEstates = useMemo(() => {
-    let filtered = [...realEstates];
+  const filteredProfessionals = useMemo(() => {
+    let filtered = [...professionals];
 
     // Apply filters
     if (professionTypeFilter) {
-      filtered = filtered.filter(estate =>
-        estate.profession?.toLowerCase().includes(professionTypeFilter.toLowerCase())
-      );
-    }
-
-    if (nationalityFilter) {
-      filtered = filtered.filter(estate =>
-        estate.nationality?.toLowerCase().includes(nationalityFilter.toLowerCase())
-      );
-    }
-
-    if (languagesFilter) {
-      filtered = filtered.filter(estate =>
-        estate.languages?.toLowerCase().includes(languagesFilter.toLowerCase())
-      );
+      filtered = filtered.filter(pro => {
+        switch (professionTypeFilter) {
+          case 'agency_owner':
+            return pro.real_estate_agency_owner;
+          case 'agent':
+            return pro.real_estate_agent;
+          case 'developer_employee':
+            return pro.developer_employee;
+          default:
+            return true;
+        }
+      });
     }
 
     if (genderFilter) {
-      filtered = filtered.filter(estate =>
-        estate.gender?.toLowerCase().includes(genderFilter.toLowerCase())
-      );
-    }
-
-    if (locationFilter) {
-      filtered = filtered.filter(estate =>
-        estate.location?.toLowerCase().includes(locationFilter.toLowerCase())
+      filtered = filtered.filter(pro =>
+        pro.gender?.toLowerCase().includes(genderFilter.toLowerCase())
       );
     }
 
     return filtered;
-  }, [realEstates, professionTypeFilter, nationalityFilter, languagesFilter, genderFilter, locationFilter]);
+  }, [professionals, professionTypeFilter, genderFilter]);
 
   // Sorting logic
-  const sortedRealEstates = useMemo(() => {
-    return [...filteredRealEstates].sort((a, b) => {
+  const sortedProfessionals = useMemo(() => {
+    return [...filteredProfessionals].sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
-      if (sortField === 'followers') {
+      if (sortField === 'no_of_followers') {
         aValue = parseInt(aValue) || 0;
         bValue = parseInt(bValue) || 0;
       } else if (sortField === 'created_at' || sortField === 'updated_at') {
@@ -200,7 +186,7 @@ const RealEstateList = () => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [filteredRealEstates, sortField, sortDirection]);
+  }, [filteredProfessionals, sortField, sortDirection]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -236,45 +222,38 @@ const RealEstateList = () => {
     setShowAuth(false);
   };
 
-  const handleRealEstateClick = (realEstate) => {
-    navigate(`/real-estates/${realEstate.id}`);
+  const handleProfessionalClick = (professional) => {
+    navigate(`/real-estate-professionals/${professional.id}`);
   };
 
   // Get unique values for filter options
-  const getUniqueLocations = () => {
-    const locations = realEstates.map(estate => estate.location).filter(Boolean);
-    const uniqueLocations = [...new Set(locations)].sort();
-    return uniqueLocations;
-  };
-
-  const getUniqueProfessionTypes = () => {
-    const professions = realEstates.map(estate => estate.profession).filter(Boolean);
-    return [...new Set(professions)].sort();
-  };
-
   const getUniqueNationalities = () => {
-    const nationalities = realEstates.map(estate => estate.nationality).filter(Boolean);
+    const nationalities = professionals.map(pro => pro.nationality).filter(Boolean);
     return [...new Set(nationalities)].sort();
   };
 
   const getUniqueLanguages = () => {
-    const languages = realEstates.map(estate => estate.languages).filter(Boolean);
-    return [...new Set(languages)].sort();
+    const allLanguages = professionals.flatMap(pro => pro.languages || []);
+    return [...new Set(allLanguages)].sort();
   };
 
-  const getUniqueGenders = () => {
-    const genders = realEstates.map(estate => estate.gender).filter(Boolean);
-    return [...new Set(genders)].sort();
+  const getUniqueLocations = () => {
+    const locations = professionals.map(pro => pro.current_residence_city).filter(Boolean);
+    return [...new Set(locations)].sort();
   };
 
-  const formatFollowers = (followers) => {
-    const numFollowers = parseInt(followers) || 0;
-    if (numFollowers >= 1000000) {
-      return `${(numFollowers / 1000000).toFixed(1)}M`;
-    } else if (numFollowers >= 1000) {
-      return `${(numFollowers / 1000).toFixed(1)}K`;
-    }
-    return numFollowers.toString();
+  const getProfessionTypeIcon = (professional) => {
+    if (professional.real_estate_agency_owner) return <Crown size={16} className="text-yellow-500" />;
+    if (professional.real_estate_agent) return <User size={16} className="text-blue-500" />;
+    if (professional.developer_employee) return <Building2 size={16} className="text-green-500" />;
+    return <User size={16} className="text-gray-500" />;
+  };
+
+  const getProfessionTypeLabel = (professional) => {
+    if (professional.real_estate_agency_owner) return 'Agency Owner';
+    if (professional.real_estate_agent) return 'Real Estate Agent';
+    if (professional.developer_employee) return 'Developer Employee';
+    return 'Professional';
   };
 
   if (loading) {
@@ -315,7 +294,7 @@ const RealEstateList = () => {
               Real Estate Professionals
             </h1>
             <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
-              Connect with verified real estate professionals and find the perfect partner for your property needs.
+              Connect with trusted real estate professionals and experts in your area.
             </p>
 
             {/* Search Bar */}
@@ -375,25 +354,25 @@ const RealEstateList = () => {
               {/* Basic Filters */}
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <Users size={16} className="text-[#1976D2]" />
-                  Professional Filters
+                  <User size={16} className="text-[#1976D2]" />
+                  Basic Filters
                 </h4>
 
                 <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
                   {/* Profession Type Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Profession
+                      Profession Type
                     </label>
                     <select
                       value={professionTypeFilter}
                       onChange={(e) => setProfessionTypeFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Professions</option>
-                      {getUniqueProfessionTypes().map(profession => (
-                        <option key={profession} value={profession}>{profession}</option>
-                      ))}
+                      <option value="">All Types</option>
+                      <option value="agency_owner">Agency Owner</option>
+                      <option value="agent">Real Estate Agent</option>
+                      <option value="developer_employee">Developer Employee</option>
                     </select>
                   </div>
 
@@ -442,9 +421,9 @@ const RealEstateList = () => {
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
                       <option value="">All Genders</option>
-                      {getUniqueGenders().map(gender => (
-                        <option key={gender} value={gender}>{gender}</option>
-                      ))}
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
 
@@ -466,7 +445,6 @@ const RealEstateList = () => {
                   </div>
                 </div>
               </div>
-
 
               {/* Clear Filters */}
               <button
@@ -525,7 +503,7 @@ const RealEstateList = () => {
                 </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {sortedRealEstates.length} professionals found
+                  {sortedProfessionals.length} professionals found
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
                       for "{searchTerm}"
@@ -546,138 +524,102 @@ const RealEstateList = () => {
                   }}
                   className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
                 >
-                  <option value="name-asc">Name (A-Z)</option>
-                  <option value="name-desc">Name (Z-A)</option>
-                  <option value="profession-asc">Profession (A-Z)</option>
-                  <option value="profession-desc">Profession (Z-A)</option>
-                  <option value="followers-desc">Followers (High to Low)</option>
-                  <option value="followers-asc">Followers (Low to High)</option>
-                  <option value="location-asc">Location (A-Z)</option>
+                  <option value="first_name-asc">Name (A-Z)</option>
+                  <option value="first_name-desc">Name (Z-A)</option>
+                  <option value="no_of_followers-desc">Followers (High to Low)</option>
+                  <option value="no_of_followers-asc">Followers (Low to High)</option>
                   <option value="nationality-asc">Nationality (A-Z)</option>
-                  <option value="created_at-desc">Newest First</option>
-                  <option value="created_at-asc">Oldest First</option>
+                  <option value="current_residence_city-asc">Location (A-Z)</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Real Estates Display */}
-          {sortedRealEstates.length > 0 ? (
+          {/* Professionals Display */}
+          {sortedProfessionals.length > 0 ? (
             <>
               {/* Enhanced Grid View */}
               {viewMode === 'grid' && (
                 <div className="grid grid-cols-3 gap-6">
-                  {sortedRealEstates.map((realEstate, index) => (
+                  {sortedProfessionals.map((professional, index) => (
                     <motion.div
-                      key={realEstate.id}
+                      key={professional.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
-                      onClick={() => handleRealEstateClick(realEstate)}
+                      onClick={() => handleProfessionalClick(professional)}
                       className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden relative"
                       style={{
                         borderColor: theme.borderLight,
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
                       }}
                     >
-                      {/* Professional Image */}
-                      <div className="relative h-48 overflow-hidden">
-                        {realEstate.images && realEstate.images.length > 0 ? (
-                          <img
-                            src={realEstate.images[0]}
-                            alt={realEstate.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              e.target.src = '/placeholder-professional.jpg';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <Users size={48} className="text-gray-400" />
-                          </div>
-                        )}
-                        {/* Verification Badge */}
-                        {realEstate.verification_status === 'verified' && (
-                          <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-lg shadow-md flex items-center gap-1">
-                            <CheckCircle size={14} />
-                            <span className="text-xs font-medium">Verified</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Professional Details */}
+                      {/* Enhanced Professional Header */}
                       <div className="p-6">
-                        <div className="mb-4">
-                          <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                            {realEstate.name}
-                          </h3>
-                          <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                            <Users size={14} className="mr-2" />
-                            <span>{realEstate.profession}</span>
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                              {professional.first_name} {professional.last_name}
+                            </h3>
+                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                              {getProfessionTypeIcon(professional)}
+                              <span className="ml-2">{getProfessionTypeLabel(professional)}</span>
+                            </div>
+                            <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
+                              <MapPin size={14} className="mr-2" />
+                              <span>{professional.current_residence_city || 'Location not specified'}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                            <MapPin size={14} className="mr-2" />
-                            <span>{realEstate.location}</span>
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {professional.image ? (
+                              <img
+                                src={professional.image}
+                                alt={`${professional.first_name} ${professional.last_name}`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = '/logo.png';
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src="/logo.png"
+                                alt="Logo"
+                                className="w-8 h-8 object-contain"
+                              />
+                            )}
                           </div>
                         </div>
 
-                        {/* Professional Metrics */}
+                        {/* Enhanced Professional Info */}
                         <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                           <div>
-                            <div className="text-lg font-bold" style={{ color: theme.primary }}>
-                              {formatFollowers(realEstate.followers || 0)}
-                            </div>
-                            <div className="text-xs flex items-center justify-center gap-1" style={{ color: theme.textSecondary }}>
-                              <Users size={12} />
-                              Followers
-                            </div>
+                            <div className="text-lg font-bold" style={{ color: theme.primary }}>{professional.no_of_followers || 0}</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>Followers</div>
                           </div>
                           <div>
-                            <div className="text-lg font-bold" style={{ color: realEstate.verification_status === 'verified' ? theme.success : theme.warning }}>
-                              {realEstate.verification_status === 'verified' ? 'Verified' : 'Pending'}
+                            <div className="text-lg font-bold" style={{ color: professional.verified_tick ? '#4CAF50' : '#F44336' }}>
+                              {professional.verified_tick ? '✓' : '✗'}
                             </div>
-                            <div className="text-xs flex items-center justify-center gap-1" style={{ color: theme.textSecondary }}>
-                              <Shield size={12} />
-                              Status
-                            </div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>Verified</div>
                           </div>
                         </div>
 
-                        {/* Social Media Links */}
+                        {/* Languages */}
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {realEstate.social_media && realEstate.social_media.instagram && (
-                            <a
-                              href={realEstate.social_media.instagram}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-700 hover:bg-pink-200 transition-colors"
-                            >
-                              Instagram
-                            </a>
-                          )}
-                          {realEstate.social_media && realEstate.social_media.linkedin && (
-                            <a
-                              href={realEstate.social_media.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
-                            >
-                              LinkedIn
-                            </a>
-                          )}
-                          {realEstate.social_media && realEstate.social_media.twitter && (
-                            <a
-                              href={realEstate.social_media.twitter}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1 rounded-full text-xs font-medium bg-sky-100 text-sky-700 hover:bg-sky-200 transition-colors"
-                            >
-                              Twitter
-                            </a>
+                          {professional.languages && professional.languages.length > 0 ? (
+                            professional.languages.slice(0, 3).map(lang => (
+                              <span key={lang} className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E3F2FD', color: theme.primary }}>
+                                {lang}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF3E0', color: theme.warning }}>
+                              Languages not specified
+                            </span>
                           )}
                         </div>
 
-                        {/* CTA Button */}
+                        {/* Enhanced CTA Button */}
                         <button
                           className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                           style={{ backgroundColor: theme.primary }}
@@ -707,44 +649,44 @@ const RealEstateList = () => {
                           <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('name')}
+                            onClick={() => handleSort('first_name')}
                           >
                             <div className="flex items-center gap-2">
-                              Professional {getSortIcon('name')}
-                            </div>
-                          </th>
-                          <th
-                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                            style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('profession')}
-                          >
-                            <div className="flex items-center gap-2">
-                              Profession {getSortIcon('profession')}
-                            </div>
-                          </th>
-                          <th
-                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                            style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('location')}
-                          >
-                            <div className="flex items-center gap-2">
-                              Location {getSortIcon('location')}
-                            </div>
-                          </th>
-                          <th
-                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                            style={{ color: theme.textPrimary }}
-                            onClick={() => handleSort('followers')}
-                          >
-                            <div className="flex items-center gap-2">
-                              Followers {getSortIcon('followers')}
+                              Professional {getSortIcon('first_name')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Verification
+                            Type
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('current_residence_city')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Location {getSortIcon('current_residence_city')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('nationality')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Nationality {getSortIcon('nationality')}
+                            </div>
+                          </th>
+                          <th
+                            className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{ color: theme.textPrimary }}
+                            onClick={() => handleSort('no_of_followers')}
+                          >
+                            <div className="flex items-center gap-2">
+                              Followers {getSortIcon('no_of_followers')}
+                            </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Social Media
+                            Languages
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
                             Action
@@ -752,107 +694,76 @@ const RealEstateList = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {sortedRealEstates.map((realEstate, index) => (
+                        {sortedProfessionals.map((professional, index) => (
                           <tr
-                            key={realEstate.id}
+                            key={professional.id}
                             className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
                             style={{ borderColor: theme.borderLight }}
-                            onClick={() => handleRealEstateClick(realEstate)}
+                            onClick={() => handleProfessionalClick(professional)}
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden bg-gray-100">
-                                  {realEstate.images && realEstate.images.length > 0 ? (
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+                                  {professional.image ? (
                                     <img
-                                      src={realEstate.images[0]}
-                                      alt={realEstate.name}
+                                      src={professional.image}
+                                      alt={`${professional.first_name} ${professional.last_name}`}
                                       className="w-full h-full object-cover"
                                       onError={(e) => {
-                                        e.target.src = '/placeholder-professional.jpg';
+                                        e.target.src = '/logo.png';
                                       }}
                                     />
                                   ) : (
-                                    <Users size={20} className="text-gray-400" />
+                                    <img
+                                      src="/logo.png"
+                                      alt="Logo"
+                                      className="w-6 h-6 object-contain"
+                                    />
                                   )}
                                 </div>
                                 <div>
                                   <div className="font-semibold" style={{ color: theme.textPrimary }}>
-                                    {realEstate.name}
+                                    {professional.first_name} {professional.last_name}
                                   </div>
                                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                                    {realEstate.profession}
+                                    {professional.verified_tick && <span className="text-green-600">✓ Verified</span>}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {realEstate.profession}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {realEstate.location}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-1">
-                                <Users size={16} style={{ color: theme.primary }} />
+                              <div className="flex items-center gap-2">
+                                {getProfessionTypeIcon(professional)}
                                 <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                  {formatFollowers(realEstate.followers || 0)}
+                                  {getProfessionTypeLabel(professional)}
                                 </span>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="flex items-center gap-2">
-                                {realEstate.verification_status === 'verified' ? (
-                                  <>
-                                    <CheckCircle size={16} style={{ color: theme.success }} />
-                                    <span className="text-sm" style={{ color: theme.success }}>
-                                      Verified
-                                    </span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Clock size={16} style={{ color: theme.warning }} />
-                                    <span className="text-sm" style={{ color: theme.warning }}>
-                                      Pending
-                                    </span>
-                                  </>
-                                )}
-                              </div>
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {professional.current_residence_city || 'Not specified'}
+                              </span>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="flex gap-1">
-                                {realEstate.social_media && realEstate.social_media.instagram && (
-                                  <a
-                                    href={realEstate.social_media.instagram}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-pink-500 hover:text-pink-700"
-                                  >
-                                    <ImageIcon size={16} />
-                                  </a>
-                                )}
-                                {realEstate.social_media && realEstate.social_media.linkedin && (
-                                  <a
-                                    href={realEstate.social_media.linkedin}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:text-blue-700"
-                                  >
-                                    <LinkIcon size={16} />
-                                  </a>
-                                )}
-                                {realEstate.social_media && realEstate.social_media.twitter && (
-                                  <a
-                                    href={realEstate.social_media.twitter}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sky-500 hover:text-sky-700"
-                                  >
-                                    <Newspaper size={16} />
-                                  </a>
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {professional.nationality || 'Not specified'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-lg font-bold" style={{ color: theme.success }}>
+                                {professional.no_of_followers || 0}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-wrap gap-1">
+                                {professional.languages && professional.languages.length > 0 ? (
+                                  professional.languages.slice(0, 2).map(lang => (
+                                    <span key={lang} className="px-2 py-1 rounded-full text-xs" style={{ backgroundColor: '#F3E5F5', color: theme.info }}>
+                                      {lang}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <span className="text-xs text-gray-500">None</span>
                                 )}
                               </div>
                             </td>
@@ -881,7 +792,7 @@ const RealEstateList = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{ backgroundColor: theme.backgroundSoft }}
               >
-                <Users size={48} style={{ color: theme.textDisabled }} />
+                <User size={48} style={{ color: theme.textDisabled }} />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
                 No professionals found
@@ -920,4 +831,4 @@ const RealEstateList = () => {
   );
 };
 
-export default RealEstateList;
+export default RealEstateProfessionalsList;
