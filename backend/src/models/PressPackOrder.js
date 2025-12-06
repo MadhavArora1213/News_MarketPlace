@@ -46,20 +46,12 @@ class PressPackOrder {
       errors.push('Valid email is required');
     }
 
-    if (!orderData.captcha_token || typeof orderData.captcha_token !== 'string') {
-      errors.push('CAPTCHA token is required');
-    }
-
     if (orderData.terms_accepted !== true) {
       errors.push('Terms and conditions must be accepted');
     }
 
-    // Optional fields validation
-    const stringFields = [
-      'whatsapp_number', 'calling_number', 'company_registration_document',
-      'letter_of_authorisation', 'image', 'word_pdf_document', 'submitted_by_type',
-      'package_selection', 'message'
-    ];
+    // Optional fields validation (only check fields that exist in remote DB)
+    const stringFields = ['whatsapp_number'];
 
     stringFields.forEach(field => {
       if (orderData[field] !== undefined && typeof orderData[field] !== 'string') {
@@ -67,13 +59,8 @@ class PressPackOrder {
       }
     });
 
-    // Press release selection
-    if (orderData.press_release_selection !== undefined && !Number.isInteger(orderData.press_release_selection)) {
-      errors.push('Press release selection must be an integer');
-    }
-
     // Boolean fields
-    const booleanFields = ['terms_accepted', 'content_writing_assistance'];
+    const booleanFields = ['terms_accepted'];
     booleanFields.forEach(field => {
       if (orderData[field] !== undefined && typeof orderData[field] !== 'boolean') {
         errors.push(`${field.replace(/_/g, ' ')} must be a boolean`);
@@ -84,16 +71,6 @@ class PressPackOrder {
     const validStatuses = ['pending', 'approved', 'rejected', 'completed'];
     if (orderData.status && !validStatuses.includes(orderData.status)) {
       errors.push('Status must be one of: pending, approved, rejected, completed');
-    }
-
-    // User association - submitted_by is required for user submissions, optional for admin submissions
-    if (orderData.submitted_by !== undefined && orderData.submitted_by !== null && !Number.isInteger(orderData.submitted_by)) {
-      errors.push('Submitted by must be an integer');
-    }
-
-    // For admin submissions, either submitted_by or submitted_by_admin should be present
-    if (orderData.submitted_by_admin !== undefined && orderData.submitted_by_admin !== null && !Number.isInteger(orderData.submitted_by_admin)) {
-      errors.push('Submitted by admin must be an integer');
     }
 
     return errors;
@@ -114,18 +91,14 @@ class PressPackOrder {
       // press_release_selection column doesn't exist in remote DB
       email: 'customer_email',
       // File columns don't exist in remote DB: company_registration_document, letter_of_authorisation, image, word_pdf_document
-      submitted_by_type: 'submitted_by_type',
-      package_selection: 'press_pack_name',
-      message: 'customer_message',
-      captcha_token: 'captcha_token',
+      // Extra columns don't exist in remote DB: submitted_by_type, package_selection, message, captcha_token, content_writing_assistance
       terms_accepted: 'terms_accepted',
-      content_writing_assistance: 'content_writing_assistance',
       status: 'status',
       submitted_by: 'submitted_by',
       submitted_by_admin: 'submitted_by_admin'
     };
 
-    const allowedFields = Object.keys(fieldMapping).filter(field => !['calling_number', 'press_release_selection'].includes(field));
+    const allowedFields = Object.keys(fieldMapping);
 
     const filteredData = {};
     const dbFields = [];

@@ -71,13 +71,8 @@ const create = async (req, res) => {
       name: name,
       whatsapp_number: whatsapp_number,
       email: email,
-      // File fields don't exist in remote DB
-      submitted_by_type: submitted_by_type || 'agency',
-      package_selection: package_selection || null,
-      message: message || null,
-      captcha_token: captcha_token || null,
+      // Most extra fields don't exist in remote DB
       terms_accepted: parsedTermsAccepted,
-      content_writing_assistance: parsedContentWritingAssistance,
       status: 'pending'
     };
 
