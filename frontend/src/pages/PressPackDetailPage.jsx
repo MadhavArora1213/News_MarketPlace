@@ -7,6 +7,7 @@ import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import ReCAPTCHA from 'react-google-recaptcha';
+import countryPhoneData from '../data/countryPhoneData.js';
 import {
   ArrowLeft, Package, MapPin, Building, Globe, DollarSign,
   FileText, ExternalLink, CheckCircle, ShoppingCart,
@@ -32,19 +33,23 @@ const PressPackDetailPage = () => {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [purchaseFormData, setPurchaseFormData] = useState({
     name: '',
-    email: '',
+    whatsapp_country_code: '+91',
     whatsapp_number: '',
+    calling_country_code: '+91',
     calling_number: '',
-    press_release_selection: '',
+    press_release_type: [], // multi check options: company/project, individual/brand
+    email: '',
     company_registration_document: '',
     letter_of_authorisation: '',
     image: '',
     word_pdf_document: '',
-    submitted_by_type: 'user',
+    submitted_by_type: 'agency', // agency or direct
+    press_release_selection: '',
     package_selection: '',
     message: '',
-    content_writing_assistance: false,
-    terms_accepted: false
+    captcha: '',
+    terms_accepted: false,
+    content_writing_assistance: 'required' // required or not_required
   });
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
@@ -174,20 +179,21 @@ const PressPackDetailPage = () => {
     try {
       const orderData = {
         name: purchaseFormData.name,
-        email: purchaseFormData.email,
         whatsapp_number: purchaseFormData.whatsapp_number,
         calling_number: purchaseFormData.calling_number,
-        press_release_selection: parseInt(purchaseFormData.press_release_selection) || null,
+        press_release_type: purchaseFormData.press_release_type,
+        email: purchaseFormData.email,
         company_registration_document: purchaseFormData.company_registration_document,
         letter_of_authorisation: purchaseFormData.letter_of_authorisation,
         image: purchaseFormData.image,
         word_pdf_document: purchaseFormData.word_pdf_document,
         submitted_by_type: purchaseFormData.submitted_by_type,
-        package_selection: purchaseFormData.package_selection || pressPack.name,
+        press_release_selection: purchaseFormData.press_release_selection,
+        package_selection: purchaseFormData.package_selection,
         message: purchaseFormData.message,
-        content_writing_assistance: purchaseFormData.content_writing_assistance,
+        captcha_token: recaptchaToken,
         terms_accepted: purchaseFormData.terms_accepted,
-        captcha_token: recaptchaToken
+        content_writing_assistance: purchaseFormData.content_writing_assistance
       };
 
       const response = await api.post('/press-pack-orders', orderData);
@@ -197,19 +203,23 @@ const PressPackDetailPage = () => {
         setShowPurchaseModal(false);
         setPurchaseFormData({
           name: '',
-          email: '',
+          whatsapp_country_code: '+91',
           whatsapp_number: '',
+          calling_country_code: '+91',
           calling_number: '',
-          press_release_selection: '',
+          press_release_type: [],
+          email: '',
           company_registration_document: '',
           letter_of_authorisation: '',
           image: '',
           word_pdf_document: '',
-          submitted_by_type: 'user',
+          submitted_by_type: 'agency',
+          press_release_selection: '',
           package_selection: '',
           message: '',
-          content_writing_assistance: false,
-          terms_accepted: false
+          captcha: '',
+          terms_accepted: false,
+          content_writing_assistance: 'required'
         });
         setRecaptchaToken('');
       } else {
@@ -871,210 +881,7 @@ const PressPackDetailPage = () => {
 
             <form onSubmit={handlePurchaseSubmit}>
               <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={purchaseFormData.name}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, name: e.target.value })}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      value={purchaseFormData.email}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, email: e.target.value })}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      WhatsApp Number *
-                    </label>
-                    <input
-                      type="tel"
-                      value={purchaseFormData.whatsapp_number}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, whatsapp_number: e.target.value })}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="+1234567890"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Calling Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={purchaseFormData.calling_number}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, calling_number: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="+1234567890"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Press Release Selection
-                    </label>
-                    <select
-                      value={purchaseFormData.press_release_selection}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, press_release_selection: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Select Press Release</option>
-                      <option value="1">Press Release 1</option>
-                      <option value="2">Press Release 2</option>
-                      <option value="3">Press Release 3</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Package Selection
-                    </label>
-                    <input
-                      type="text"
-                      value={purchaseFormData.package_selection || pressPack.distribution_package}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, package_selection: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Package name"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Company Registration Document
-                    </label>
-                    <input
-                      type="url"
-                      value={purchaseFormData.company_registration_document}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, company_registration_document: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Document URL"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Letter of Authorisation
-                    </label>
-                    <input
-                      type="url"
-                      value={purchaseFormData.letter_of_authorisation}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, letter_of_authorisation: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Document URL"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Image URL
-                    </label>
-                    <input
-                      type="url"
-                      value={purchaseFormData.image}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, image: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Image URL"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: themeColors.textPrimary,
-                      marginBottom: '6px'
-                    }}>
-                      Word/PDF Document URL
-                    </label>
-                    <input
-                      type="url"
-                      value={purchaseFormData.word_pdf_document}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, word_pdf_document: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Document URL"
-                    />
-                  </div>
-                </div>
-
+                {/* 1. Name (Mandatory) */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -1083,7 +890,363 @@ const PressPackDetailPage = () => {
                     color: themeColors.textPrimary,
                     marginBottom: '6px'
                   }}>
-                    Additional Message
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={purchaseFormData.name}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, name: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+
+                {/* 2. Whatsapp Number (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Whatsapp Number *
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      value={purchaseFormData.whatsapp_country_code}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, whatsapp_country_code: e.target.value })}
+                      style={{
+                        padding: '10px 8px',
+                        border: `1px solid ${themeColors.borderLight}`,
+                        borderRadius: '8px',
+                        backgroundColor: themeColors.background,
+                        width: '100px',
+                        fontSize: '12px'
+                      }}
+                    >
+                      {Object.entries(countryPhoneData).map(([country, data]) => (
+                        <option key={data.code} value={data.code}>
+                          {data.code} ({country})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      value={purchaseFormData.whatsapp_number}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, whatsapp_number: e.target.value })}
+                      required
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        border: `1px solid ${themeColors.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        backgroundColor: themeColors.background
+                      }}
+                      placeholder="1234567890"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Calling Number (Optional) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Calling Number
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      value={purchaseFormData.calling_country_code}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, calling_country_code: e.target.value })}
+                      style={{
+                        padding: '10px 8px',
+                        border: `1px solid ${themeColors.borderLight}`,
+                        borderRadius: '8px',
+                        backgroundColor: themeColors.background,
+                        width: '100px',
+                        fontSize: '12px'
+                      }}
+                    >
+                      {Object.entries(countryPhoneData).map(([country, data]) => (
+                        <option key={data.code} value={data.code}>
+                          {data.code} ({country})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      value={purchaseFormData.calling_number}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, calling_number: e.target.value })}
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        border: `1px solid ${themeColors.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        backgroundColor: themeColors.background
+                      }}
+                      placeholder="1234567890"
+                    />
+                  </div>
+                </div>
+
+                {/* 4. Press release for company/ Project, Individual/ Brand (multi check options) (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Press release for company/ Project, Individual/ Brand *
+                  </label>
+                  <div className="space-y-2">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={purchaseFormData.press_release_type.includes('company')}
+                        onChange={(e) => {
+                          const current = purchaseFormData.press_release_type;
+                          const updated = e.target.checked
+                            ? [...current, 'company']
+                            : current.filter(item => item !== 'company');
+                          setPurchaseFormData({ ...purchaseFormData, press_release_type: updated });
+                        }}
+                        required={purchaseFormData.press_release_type.length === 0}
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Company/Project</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={purchaseFormData.press_release_type.includes('individual')}
+                        onChange={(e) => {
+                          const current = purchaseFormData.press_release_type;
+                          const updated = e.target.checked
+                            ? [...current, 'individual']
+                            : current.filter(item => item !== 'individual');
+                          setPurchaseFormData({ ...purchaseFormData, press_release_type: updated });
+                        }}
+                        required={purchaseFormData.press_release_type.length === 0}
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Individual/Brand</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* 5. email (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    value={purchaseFormData.email}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, email: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                {/* 6. Company registration document upload option (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Company registration document upload option *
+                  </label>
+                  <input
+                    type="url"
+                    value={purchaseFormData.company_registration_document}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, company_registration_document: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Document URL"
+                  />
+                </div>
+
+                {/* 7. Letter of Authorisation (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Letter of Authorisation *
+                  </label>
+                  <input
+                    type="url"
+                    value={purchaseFormData.letter_of_authorisation}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, letter_of_authorisation: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Document URL"
+                  />
+                </div>
+
+                {/* 8. Image for the Press release (Optional) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Image for the Press release
+                  </label>
+                  <input
+                    type="url"
+                    value={purchaseFormData.image}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, image: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Image URL"
+                  />
+                </div>
+
+                {/* 9. Word or PDF Document upload (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Word or PDF Document upload *
+                  </label>
+                  <input
+                    type="url"
+                    value={purchaseFormData.word_pdf_document}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, word_pdf_document: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Document URL"
+                  />
+                </div>
+
+                {/* 10. Submitted by - Agency or Direct Company / Individual (Check option, only one) (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Submitted by - Agency or Direct Company / Individual *
+                  </label>
+                  <div className="space-y-2">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="submitted_by_type"
+                        value="agency"
+                        checked={purchaseFormData.submitted_by_type === 'agency'}
+                        onChange={(e) => setPurchaseFormData({ ...purchaseFormData, submitted_by_type: e.target.value })}
+                        required
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Agency</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="submitted_by_type"
+                        value="direct"
+                        checked={purchaseFormData.submitted_by_type === 'direct'}
+                        onChange={(e) => setPurchaseFormData({ ...purchaseFormData, submitted_by_type: e.target.value })}
+                        required
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Direct Company / Individual</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* 11. Selection of Press Release (Mandatory based on press release selection) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Selection of Press Release *
+                  </label>
+                  <select
+                    value={purchaseFormData.press_release_selection}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, press_release_selection: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select Press Release</option>
+                    <option value="press_release_1">Press Release 1</option>
+                    <option value="press_release_2">Press Release 2</option>
+                    <option value="press_release_3">Press Release 3</option>
+                  </select>
+                </div>
+
+                {/* 12. Selection of Press Release Package - Diamond, Titanium, Platinum, Gold, Silver, Bronze, Steel (Mandatory based on press release selection) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Selection of Press Release Package *
+                  </label>
+                  <select
+                    value={purchaseFormData.package_selection}
+                    onChange={(e) => setPurchaseFormData({ ...purchaseFormData, package_selection: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base box-border bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select Package</option>
+                    <option value="Diamond">Diamond</option>
+                    <option value="Titanium">Titanium</option>
+                    <option value="Platinum">Platinum</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Bronze">Bronze</option>
+                    <option value="Steel">Steel</option>
+                  </select>
+                </div>
+
+                {/* 13. any message (Optional) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Any message
                   </label>
                   <textarea
                     value={purchaseFormData.message}
@@ -1094,36 +1257,7 @@ const PressPackDetailPage = () => {
                   />
                 </div>
 
-                <div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={purchaseFormData.content_writing_assistance}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, content_writing_assistance: e.target.checked })}
-                    />
-                    <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>
-                      Request content writing assistance
-                    </span>
-                  </label>
-                </div>
-
-                {/* Terms and Conditions */}
-                <div>
-                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={purchaseFormData.terms_accepted}
-                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, terms_accepted: e.target.checked })}
-                      required
-                      style={{ marginTop: '2px' }}
-                    />
-                    <span style={{ fontSize: '14px', color: themeColors.textPrimary, lineHeight: '1.4' }}>
-                      I agree to the <a href="#" style={{ color: themeColors.primary, textDecoration: 'underline' }}>Terms and Conditions</a> and <a href="#" style={{ color: themeColors.primary, textDecoration: 'underline' }}>Privacy Policy</a> *
-                    </span>
-                  </label>
-                </div>
-
-                {/* reCAPTCHA */}
+                {/* 14. captcha (Mandatory) */}
                 <div>
                   <ReCAPTCHA
                     ref={recaptchaRef}
@@ -1143,7 +1277,62 @@ const PressPackDetailPage = () => {
                     </div>
                   )}
                   <div style={{ fontSize: '12px', color: themeColors.textSecondary, marginTop: '8px' }}>
-                    Complete the reCAPTCHA verification to submit your order.
+                    Complete the reCAPTCHA verification to submit your order. *
+                  </div>
+                </div>
+
+                {/* 15. terms (Mandatory) */}
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={purchaseFormData.terms_accepted}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, terms_accepted: e.target.checked })}
+                      required
+                      style={{ marginTop: '2px' }}
+                    />
+                    <span style={{ fontSize: '14px', color: themeColors.textPrimary, lineHeight: '1.4' }}>
+                      I agree to the <a href="#" style={{ color: themeColors.primary, textDecoration: 'underline' }}>Terms and Conditions</a> and <a href="#" style={{ color: themeColors.primary, textDecoration: 'underline' }}>Privacy Policy</a> *
+                    </span>
+                  </label>
+                </div>
+
+                {/* 16. submit (Mandatory) - This is the submit button below */}
+
+                {/* 17. Content writing assistance - Required, not required (Mandatory) */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: themeColors.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Content writing assistance *
+                  </label>
+                  <div className="space-y-2">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="content_writing_assistance"
+                        value="required"
+                        checked={purchaseFormData.content_writing_assistance === 'required'}
+                        onChange={(e) => setPurchaseFormData({ ...purchaseFormData, content_writing_assistance: e.target.value })}
+                        required
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Required</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="content_writing_assistance"
+                        value="not_required"
+                        checked={purchaseFormData.content_writing_assistance === 'not_required'}
+                        onChange={(e) => setPurchaseFormData({ ...purchaseFormData, content_writing_assistance: e.target.value })}
+                        required
+                      />
+                      <span style={{ fontSize: '14px', color: themeColors.textPrimary }}>Not required</span>
+                    </label>
                   </div>
                 </div>
               </div>

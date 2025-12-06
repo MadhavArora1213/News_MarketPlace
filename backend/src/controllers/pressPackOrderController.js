@@ -6,39 +6,58 @@ const emailService = require('../services/emailService');
 const create = async (req, res) => {
   try {
     const {
-      pressPackId,
-      pressPackName,
-      price,
-      customerInfo,
-      orderDate,
-      status
+      name,
+      whatsapp_number,
+      calling_number,
+      press_release_type,
+      email,
+      company_registration_document,
+      letter_of_authorisation,
+      image,
+      word_pdf_document,
+      submitted_by_type,
+      press_release_selection,
+      package_selection,
+      message,
+      captcha_token,
+      terms_accepted,
+      content_writing_assistance
     } = req.body;
 
     // Validate required fields
-    if (!pressPackId || !pressPackName) {
+    if (!name || !email || !whatsapp_number) {
       return res.status(400).json({
         success: false,
-        message: 'Press pack ID and name are required'
+        message: 'Name, email, and WhatsApp number are required'
       });
     }
 
-    if (!customerInfo?.email || !customerInfo?.fullName) {
+    if (!terms_accepted) {
       return res.status(400).json({
         success: false,
-        message: 'Customer email and full name are required'
+        message: 'You must accept the terms and conditions'
       });
     }
 
     // Create order data
     const orderData = {
-      press_pack_id: pressPackId,
-      press_pack_name: pressPackName,
-      price: price || 0,
-      customer_name: customerInfo.fullName,
-      customer_email: customerInfo.email,
-      customer_phone: customerInfo.phone || null,
-      customer_message: customerInfo.message || null,
-      status: status || 'pending'
+      name: name,
+      whatsapp_number: whatsapp_number,
+      calling_number: calling_number || null,
+      press_release_type: Array.isArray(press_release_type) ? JSON.stringify(press_release_type) : JSON.stringify([]),
+      email: email,
+      company_registration_document: company_registration_document || null,
+      letter_of_authorisation: letter_of_authorisation || null,
+      image: image || null,
+      word_pdf_document: word_pdf_document || null,
+      submitted_by_type: submitted_by_type || 'agency',
+      press_release_selection: press_release_selection || null,
+      package_selection: package_selection || null,
+      message: message || null,
+      captcha_token: captcha_token || null,
+      terms_accepted: terms_accepted || false,
+      content_writing_assistance: content_writing_assistance === 'required' || content_writing_assistance === true,
+      status: 'pending'
     };
 
     const order = await PressPackOrder.create(orderData);
@@ -46,21 +65,21 @@ const create = async (req, res) => {
     // Send confirmation email to user
     try {
       await emailService.sendCustomEmail(
-        order.customer_email,
-        'Press Pack Order Submitted - News Marketplace',
+        order.email,
+        'Press Release Order Submitted - News Marketplace',
         `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #1976D2;">Thank you for your press pack order!</h2>
-            <p>Dear ${order.customer_name},</p>
-            <p>Your press pack order for <strong>${pressPackName}</strong> has been successfully submitted.</p>
+            <h2 style="color: #1976D2;">Thank you for your press release order!</h2>
+            <p>Dear ${order.name},</p>
+            <p>Your press release order has been successfully submitted.</p>
             <p><strong>Order Details:</strong></p>
             <ul>
-              <li>Press Pack: ${pressPackName}</li>
-              <li>Price: $${order.price}</li>
+              <li>Package: ${order.package_selection || 'Not specified'}</li>
+              <li>Content Writing: ${order.content_writing_assistance ? 'Required' : 'Not Required'}</li>
               <li>Status: ${order.status}</li>
-              <li>Order Date: ${new Date(order.order_date).toLocaleDateString()}</li>
+              <li>Order Date: ${new Date(order.created_at).toLocaleString()}</li>
             </ul>
-            <p>Our team will review your request and contact you within 24-48 hours to discuss the press pack distribution details.</p>
+            <p>Our team will review your request and contact you within 24-48 hours to discuss the press release distribution details.</p>
             <p>If you have any questions, please don't hesitate to contact us.</p>
             <p>Best regards,<br>News Marketplace Team</p>
           </div>
@@ -75,22 +94,23 @@ const create = async (req, res) => {
     try {
       await emailService.sendCustomEmail(
         process.env.ADMIN_EMAIL || 'admin@newsmarketplace.com',
-        'New Press Pack Order - News Marketplace',
+        'New Press Release Order - News Marketplace',
         `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #1976D2;">New Press Pack Order</h2>
-            <p>A new press pack order has been submitted:</p>
+            <h2 style="color: #1976D2;">New Press Release Order</h2>
+            <p>A new press release order has been submitted:</p>
             <p><strong>Order Details:</strong></p>
             <ul>
               <li>Order ID: ${order.id}</li>
-              <li>Press Pack: ${pressPackName}</li>
-              <li>Price: $${order.price}</li>
-              <li>Customer: ${order.customer_name}</li>
-              <li>Email: ${order.customer_email}</li>
-              <li>Phone: ${order.customer_phone || 'Not provided'}</li>
-              <li>Message: ${order.customer_message || 'No message'}</li>
+              <li>Package: ${order.package_selection || 'Not specified'}</li>
+              <li>Customer: ${order.name}</li>
+              <li>Email: ${order.email}</li>
+              <li>WhatsApp: ${order.whatsapp_number}</li>
+              <li>Calling Number: ${order.calling_number || 'Not provided'}</li>
+              <li>Submitted By: ${order.submitted_by_type}</li>
+              <li>Content Writing: ${order.content_writing_assistance ? 'Required' : 'Not Required'}</li>
               <li>Status: ${order.status}</li>
-              <li>Order Date: ${new Date(order.order_date).toLocaleDateString()}</li>
+              <li>Order Date: ${new Date(order.created_at).toLocaleString()}</li>
             </ul>
             <p>Please review this order in the admin panel.</p>
           </div>
@@ -194,21 +214,50 @@ const getAll = async (req, res) => {
     // Format orders for response
     const formattedOrders = orders.map(order => ({
       id: order.id,
-      press_pack_id: order.press_pack_id,
-      press_pack_name: order.press_pack_name,
-      price: order.price,
-      customer_name: order.customer_name,
-      customer_email: order.customer_email,
-      customer_phone: order.customer_phone,
-      customer_message: order.customer_message,
+      // Map database fields to admin panel expected fields
+      name: order.name,
+      email: order.email,
+      whatsapp_number: order.whatsapp_number,
+      whatsapp_country_code: '+91', // Default country code, could be enhanced
+      calling_number: order.calling_number,
+      calling_country_code: '+91', // Default country code, could be enhanced
+      company_project_type: order.press_release_type ? JSON.parse(order.press_release_type).join(', ') : '',
+      submitted_by: order.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
+      press_release_name: order.press_release_selection || 'Not specified',
+      press_release_package: order.package_selection || 'Not specified',
+      content_writing_assistance: order.content_writing_assistance ? 'Yes' : 'No',
       status: order.status,
-      admin_notes: order.admin_notes,
+      admin_notes: order.admin_notes || '',
       created_at: order.created_at,
       updated_at: order.updated_at,
-      order_date: order.created_at, // Alias for compatibility
+      // Legacy fields for backward compatibility
+      press_pack_id: order.id,
+      press_pack_name: order.package_selection || 'Press Release Package',
+      price: 0, // Could be calculated based on package
+      customer_name: order.name,
+      customer_email: order.email,
+      customer_phone: order.whatsapp_number,
+      customer_message: order.message,
+      order_date: order.created_at,
       toJSON: function() {
         return {
           id: this.id,
+          name: this.name,
+          email: this.email,
+          whatsapp_number: this.whatsapp_number,
+          whatsapp_country_code: this.whatsapp_country_code,
+          calling_number: this.calling_number,
+          calling_country_code: this.calling_country_code,
+          company_project_type: this.company_project_type,
+          submitted_by: this.submitted_by,
+          press_release_name: this.press_release_name,
+          press_release_package: this.press_release_package,
+          content_writing_assistance: this.content_writing_assistance,
+          status: this.status,
+          admin_notes: this.admin_notes,
+          created_at: this.created_at,
+          updated_at: this.updated_at,
+          // Legacy fields
           press_pack_id: this.press_pack_id,
           press_pack_name: this.press_pack_name,
           price: this.price,
@@ -216,11 +265,7 @@ const getAll = async (req, res) => {
           customer_email: this.customer_email,
           customer_phone: this.customer_phone,
           customer_message: this.customer_message,
-          status: this.status,
-          admin_notes: this.admin_notes,
-          created_at: this.created_at,
-          updated_at: this.updated_at,
-          order_date: this.created_at
+          order_date: this.order_date
         };
       }
     }));

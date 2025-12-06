@@ -120,17 +120,27 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
 
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>Calling Number</label>
-              <div style={valueStyle}>{order.calling_country_code} {order.calling_number}</div>
+              <div style={valueStyle}>{order.calling_country_code} {order.calling_number || 'Not provided'}</div>
             </div>
 
             <div style={{ marginBottom: '12px' }}>
-              <label style={labelStyle}>Company/Project Type</label>
-              <div style={valueStyle}>{order.company_project_type}</div>
+              <label style={labelStyle}>Press Release Type</label>
+              <div style={valueStyle}>{order.company_project_type || 'Not specified'}</div>
             </div>
 
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>Submitted By</label>
               <div style={valueStyle}>{order.submitted_by}</div>
+            </div>
+
+            <div style={{ marginBottom: '12px' }}>
+              <label style={labelStyle}>Package Selection</label>
+              <div style={valueStyle}>{order.press_release_package}</div>
+            </div>
+
+            <div style={{ marginBottom: '12px' }}>
+              <label style={labelStyle}>Content Writing Assistance</label>
+              <div style={valueStyle}>{order.content_writing_assistance}</div>
             </div>
           </div>
 
@@ -768,10 +778,10 @@ const PressPackOrderManagement = () => {
                         Customer
                       </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Press Release
+                        Package
                       </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Package
+                        Type
                       </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Contact
@@ -805,12 +815,12 @@ const PressPackOrderManagement = () => {
                         </td>
                         <td style={{ padding: '16px' }}>
                           <div style={{ fontSize: '14px', color: theme.textPrimary }}>
-                            {order.press_release_name}
+                            {order.press_release_package}
                           </div>
                         </td>
                         <td style={{ padding: '16px' }}>
                           <div style={{ fontSize: '14px', color: theme.textPrimary }}>
-                            {order.press_release_package}
+                            {order.submitted_by}
                           </div>
                         </td>
                         <td style={{ padding: '16px' }}>
