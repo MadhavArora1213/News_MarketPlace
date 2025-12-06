@@ -14,13 +14,6 @@ class AdminPressReleaseController {
       storage: this.storage,
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB limit per file
-      },
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-          cb(null, true);
-        } else {
-          cb(new Error('Only image files are allowed'), false);
-        }
       }
     });
 
@@ -232,6 +225,12 @@ class AdminPressReleaseController {
       // Handle image upload to S3
       if (req.file) {
         console.log('AdminPressReleaseController.create - Uploading image to S3');
+
+        // Validate file type
+        if (!req.file.mimetype.startsWith('image/')) {
+          throw new Error('Only image files are allowed');
+        }
+
         const s3Key = s3Service.generateKey('press-releases', 'logo', req.file.originalname);
         const contentType = s3Service.getContentType(req.file.originalname);
 
