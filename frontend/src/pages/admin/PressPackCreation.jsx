@@ -14,10 +14,10 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
     guaranteed_no_of_media_placements: '',
     end_client_media_details_in_press_release: '',
     middlemen_or_pr_agency_contact_details_in_press_release: '',
-    google_search_optimised: '',
-    google_search_optimised_publications_count: '',
-    google_news_index: '',
-    google_news_index_publications_count: '',
+    google_search_optimised_status: '',
+    google_search_optimised_publications: '',
+    google_news_index_status: '',
+    google_news_index_publications: '',
     no_of_images_allowed: '',
     word_limit: '',
     press_release_package_options: [],
@@ -102,10 +102,10 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         guaranteed_no_of_media_placements: record.guaranteed_no_of_media_placements || '',
         end_client_media_details_in_press_release: record.end_client_media_details_in_press_release || '',
         middlemen_or_pr_agency_contact_details_in_press_release: record.middlemen_or_pr_agency_contact_details_in_press_release || '',
-        google_search_optimised: record.google_search_optimised || '',
-        google_search_optimised_publications_count: record.google_search_optimised_publications_count || '',
-        google_news_index: record.google_news_index || '',
-        google_news_index_publications_count: record.google_news_index_publications_count || '',
+        google_search_optimised_status: record.google_search_optimised_status || '',
+        google_search_optimised_publications: record.google_search_optimised_publications || '',
+        google_news_index_status: record.google_news_index_status || '',
+        google_news_index_publications: record.google_news_index_publications || '',
         no_of_images_allowed: record.no_of_images_allowed || '',
         word_limit: record.word_limit || '',
         press_release_package_options: record.press_release_package_options || [],
@@ -135,10 +135,10 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
         guaranteed_no_of_media_placements: '',
         end_client_media_details_in_press_release: '',
         middlemen_or_pr_agency_contact_details_in_press_release: '',
-        google_search_optimised: '',
-        google_search_optimised_publications_count: '',
-        google_news_index: '',
-        google_news_index_publications_count: '',
+        google_search_optimised_status: '',
+        google_search_optimised_publications: '',
+        google_news_index_status: '',
+        google_news_index_publications: '',
         no_of_images_allowed: '',
         word_limit: '',
         press_release_package_options: [],
@@ -175,10 +175,10 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
       submitData.append('guaranteed_no_of_media_placements', formData.guaranteed_no_of_media_placements);
       submitData.append('end_client_media_details_in_press_release', formData.end_client_media_details_in_press_release);
       submitData.append('middlemen_or_pr_agency_contact_details_in_press_release', formData.middlemen_or_pr_agency_contact_details_in_press_release);
-      submitData.append('google_search_optimised', formData.google_search_optimised);
-      submitData.append('google_search_optimised_publications_count', formData.google_search_optimised_publications_count);
-      submitData.append('google_news_index', formData.google_news_index);
-      submitData.append('google_news_index_publications_count', formData.google_news_index_publications_count);
+      submitData.append('google_search_optimised_status', formData.google_search_optimised_status);
+      submitData.append('google_search_optimised_publications', formData.google_search_optimised_publications);
+      submitData.append('google_news_index_status', formData.google_news_index_status);
+      submitData.append('google_news_index_publications', formData.google_news_index_publications);
       submitData.append('no_of_images_allowed', formData.no_of_images_allowed);
       submitData.append('word_limit', formData.word_limit);
       submitData.append('press_release_package_options', JSON.stringify(formData.press_release_package_options));
@@ -408,27 +408,53 @@ const PressPackCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
             <div style={formGroupStyle}>
               <label style={labelStyle}>Google Search Optimised</label>
               <select
-                value={formData.google_search_optimised}
-                onChange={(e) => setFormData({ ...formData, google_search_optimised: e.target.value })}
+                value={formData.google_search_optimised_status}
+                onChange={(e) => setFormData({ ...formData, google_search_optimised_status: e.target.value })}
                 style={inputStyle}
               >
                 <option value="">Select Option</option>
                 <option value="Not Guaranteed">Not Guaranteed</option>
                 <option value="Guaranteed">Guaranteed</option>
               </select>
+              {formData.google_search_optimised_status === 'Guaranteed' && (
+                <div style={{ marginTop: '8px' }}>
+                  <label style={{ ...labelStyle, fontSize: '12px', fontWeight: '500' }}>Number of Publications</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.google_search_optimised_publications}
+                    onChange={(e) => setFormData({ ...formData, google_search_optimised_publications: e.target.value })}
+                    style={inputStyle}
+                    placeholder="Enter number of publications"
+                  />
+                </div>
+              )}
             </div>
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Google News Index</label>
               <select
-                value={formData.google_news_index}
-                onChange={(e) => setFormData({ ...formData, google_news_index: e.target.value })}
+                value={formData.google_news_index_status}
+                onChange={(e) => setFormData({ ...formData, google_news_index_status: e.target.value })}
                 style={inputStyle}
               >
                 <option value="">Select Option</option>
                 <option value="Not Guaranteed">Not Guaranteed</option>
                 <option value="Guaranteed">Guaranteed</option>
               </select>
+              {formData.google_news_index_status === 'Guaranteed' && (
+                <div style={{ marginTop: '8px' }}>
+                  <label style={{ ...labelStyle, fontSize: '12px', fontWeight: '500' }}>Number of Publications</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.google_news_index_publications}
+                    onChange={(e) => setFormData({ ...formData, google_news_index_publications: e.target.value })}
+                    style={inputStyle}
+                    placeholder="Enter number of publications"
+                  />
+                </div>
+              )}
             </div>
 
             <div style={formGroupStyle}>
