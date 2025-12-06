@@ -92,8 +92,14 @@ class AdminPressReleaseController {
     // Ensure customer_info_needed is a string (model will parse it)
     if (Array.isArray(sanitized.customer_info_needed)) {
       sanitized.customer_info_needed = JSON.stringify(sanitized.customer_info_needed);
+    } else if (typeof sanitized.customer_info_needed === 'string') {
+      // Already a string, keep as is
+      sanitized.customer_info_needed = sanitized.customer_info_needed;
     } else if (!sanitized.customer_info_needed) {
       sanitized.customer_info_needed = '[]'; // Empty array as string
+    } else {
+      // Convert to string if it's something else
+      sanitized.customer_info_needed = JSON.stringify(sanitized.customer_info_needed);
     }
 
     return sanitized;
@@ -150,7 +156,11 @@ class AdminPressReleaseController {
       if (!value) return true; // Allow empty
       if (typeof value === 'string') {
         try {
-          const parsed = JSON.parse(value);
+          let parsed = JSON.parse(value);
+          // Handle double-encoded JSON
+          if (typeof parsed === 'string') {
+            parsed = JSON.parse(parsed);
+          }
           if (Array.isArray(parsed)) return true;
           throw new Error('Customer info needed must be an array');
         } catch (e) {
@@ -219,7 +229,11 @@ class AdminPressReleaseController {
       if (!value) return true; // Allow empty
       if (typeof value === 'string') {
         try {
-          const parsed = JSON.parse(value);
+          let parsed = JSON.parse(value);
+          // Handle double-encoded JSON
+          if (typeof parsed === 'string') {
+            parsed = JSON.parse(parsed);
+          }
           if (Array.isArray(parsed)) return true;
           throw new Error('Customer info needed must be an array');
         } catch (e) {
