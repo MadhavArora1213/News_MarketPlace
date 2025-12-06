@@ -181,31 +181,86 @@ class AdminRealEstateProfessionalController {
 
   // Create a new real estate professional (admin only)
   async create(req, res) {
+    console.log('AdminRealEstateProfessionalController.create - Starting');
+    console.log('Request body keys:', Object.keys(req.body));
+    console.log('Request file:', req.file ? { originalname: req.file.originalname, size: req.file.size } : 'No file');
+    console.log('Admin info:', req.admin);
+
     try {
       if (!req.admin) {
+        console.log('AdminRealEstateProfessionalController.create - No admin access');
         return res.status(403).json({ error: 'Admin access required' });
       }
 
+      console.log('AdminRealEstateProfessionalController.create - Parsing form data');
+
+      // Parse form data fields
+      if (req.body.languages && typeof req.body.languages === 'string') {
+        console.log('AdminRealEstateProfessionalController.create - Parsing languages:', req.body.languages);
+        try {
+          req.body.languages = JSON.parse(req.body.languages);
+          console.log('AdminRealEstateProfessionalController.create - Languages parsed successfully:', req.body.languages);
+        } catch (e) {
+          console.error('AdminRealEstateProfessionalController.create - Languages parsing error:', e);
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ msg: 'Languages must be a valid JSON array' }]
+          });
+        }
+      }
+
+      // Parse boolean fields that come as strings from FormData
+      const booleanFields = ['verified_tick', 'real_estate_agency_owner', 'real_estate_agent', 'developer_employee', 'is_active'];
+      booleanFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+          console.log(`AdminRealEstateProfessionalController.create - Parsing boolean ${field}:`, req.body[field]);
+          if (req.body[field] === 'true') req.body[field] = true;
+          else if (req.body[field] === 'false') req.body[field] = false;
+          console.log(`AdminRealEstateProfessionalController.create - ${field} parsed to:`, req.body[field]);
+        }
+      });
+
+      // Parse numeric fields
+      if (req.body.no_of_followers !== undefined) {
+        console.log('AdminRealEstateProfessionalController.create - Parsing no_of_followers:', req.body.no_of_followers);
+        const followers = parseInt(req.body.no_of_followers);
+        if (isNaN(followers)) {
+          console.error('AdminRealEstateProfessionalController.create - Invalid no_of_followers:', req.body.no_of_followers);
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ msg: 'Number of followers must be a valid number' }]
+          });
+        }
+        req.body.no_of_followers = followers;
+        console.log('AdminRealEstateProfessionalController.create - no_of_followers parsed to:', followers);
+      }
+
+      console.log('AdminRealEstateProfessionalController.create - Running validation');
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.error('AdminRealEstateProfessionalController.create - Validation errors:', errors.array());
         return res.status(400).json({
           error: 'Validation failed',
           details: errors.array()
         });
       }
 
+      console.log('AdminRealEstateProfessionalController.create - Validation passed');
       const professionalData = { ...req.body };
+      console.log('AdminRealEstateProfessionalController.create - Professional data prepared:', Object.keys(professionalData));
 
       // Handle image upload to S3
       if (req.file) {
+        console.log('AdminRealEstateProfessionalController.create - Uploading image to S3');
         const s3Key = s3Service.generateKey('real-estate-professionals', 'image', req.file.originalname);
         const contentType = s3Service.getContentType(req.file.originalname);
 
         try {
           const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
           professionalData.image = s3Url;
+          console.log('AdminRealEstateProfessionalController.create - Image uploaded successfully:', s3Url);
         } catch (uploadError) {
-          console.error(`Failed to upload professional image to S3:`, uploadError);
+          console.error('AdminRealEstateProfessionalController.create - S3 upload error:', uploadError);
           throw new Error('Failed to upload image');
         }
       }
@@ -213,63 +268,137 @@ class AdminRealEstateProfessionalController {
       // Set submission details for admin creation
       professionalData.submitted_by_admin = req.admin.adminId;
       professionalData.status = professionalData.status || 'approved'; // Default to approved for admin creations
+      console.log('AdminRealEstateProfessionalController.create - Final professional data:', {
+        submitted_by_admin: professionalData.submitted_by_admin,
+        status: professionalData.status,
+        first_name: professionalData.first_name,
+        last_name: professionalData.last_name
+      });
 
+      console.log('AdminRealEstateProfessionalController.create - Creating professional in database');
       const professional = await RealEstateProfessional.create(professionalData);
+      console.log('AdminRealEstateProfessionalController.create - Professional created successfully:', professional.id);
+
       res.status(201).json({
         message: 'Real estate professional created successfully',
         professional: professional.toJSON()
       });
     } catch (error) {
-      console.error('Create real estate professional error:', error);
+      console.error('AdminRealEstateProfessionalController.create - Error:', error);
+      console.error('AdminRealEstateProfessionalController.create - Error stack:', error.stack);
       res.status(500).json({ error: error.message || 'Internal server error' });
     }
   }
 
   // Update real estate professional (admin only)
   async update(req, res) {
+    console.log('AdminRealEstateProfessionalController.update - Starting');
+    console.log('Request params:', req.params);
+    console.log('Request body keys:', Object.keys(req.body));
+    console.log('Request file:', req.file ? { originalname: req.file.originalname, size: req.file.size } : 'No file');
+    console.log('Admin info:', req.admin);
+
     try {
       if (!req.admin) {
+        console.log('AdminRealEstateProfessionalController.update - No admin access');
         return res.status(403).json({ error: 'Admin access required' });
       }
 
+      console.log('AdminRealEstateProfessionalController.update - Parsing form data');
+
+      // Parse form data fields
+      if (req.body.languages && typeof req.body.languages === 'string') {
+        console.log('AdminRealEstateProfessionalController.update - Parsing languages:', req.body.languages);
+        try {
+          req.body.languages = JSON.parse(req.body.languages);
+          console.log('AdminRealEstateProfessionalController.update - Languages parsed successfully:', req.body.languages);
+        } catch (e) {
+          console.error('AdminRealEstateProfessionalController.update - Languages parsing error:', e);
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ msg: 'Languages must be a valid JSON array' }]
+          });
+        }
+      }
+
+      // Parse boolean fields that come as strings from FormData
+      const booleanFields = ['verified_tick', 'real_estate_agency_owner', 'real_estate_agent', 'developer_employee', 'is_active'];
+      booleanFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+          console.log(`AdminRealEstateProfessionalController.update - Parsing boolean ${field}:`, req.body[field]);
+          if (req.body[field] === 'true') req.body[field] = true;
+          else if (req.body[field] === 'false') req.body[field] = false;
+          console.log(`AdminRealEstateProfessionalController.update - ${field} parsed to:`, req.body[field]);
+        }
+      });
+
+      // Parse numeric fields
+      if (req.body.no_of_followers !== undefined) {
+        console.log('AdminRealEstateProfessionalController.update - Parsing no_of_followers:', req.body.no_of_followers);
+        const followers = parseInt(req.body.no_of_followers);
+        if (isNaN(followers)) {
+          console.error('AdminRealEstateProfessionalController.update - Invalid no_of_followers:', req.body.no_of_followers);
+          return res.status(400).json({
+            error: 'Validation failed',
+            details: [{ msg: 'Number of followers must be a valid number' }]
+          });
+        }
+        req.body.no_of_followers = followers;
+        console.log('AdminRealEstateProfessionalController.update - no_of_followers parsed to:', followers);
+      }
+
+      console.log('AdminRealEstateProfessionalController.update - Running validation');
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.error('AdminRealEstateProfessionalController.update - Validation errors:', errors.array());
         return res.status(400).json({
           error: 'Validation failed',
           details: errors.array()
         });
       }
 
+      console.log('AdminRealEstateProfessionalController.update - Validation passed');
       const { id } = req.params;
+      console.log('AdminRealEstateProfessionalController.update - Looking up professional with ID:', id);
+
       const professional = await RealEstateProfessional.findById(id);
 
       if (!professional) {
+        console.log('AdminRealEstateProfessionalController.update - Professional not found:', id);
         return res.status(404).json({ error: 'Real estate professional not found' });
       }
 
+      console.log('AdminRealEstateProfessionalController.update - Professional found:', professional.id);
       const updateData = { ...req.body };
+      console.log('AdminRealEstateProfessionalController.update - Update data prepared:', Object.keys(updateData));
 
       // Handle image upload to S3 for updates
       if (req.file) {
+        console.log('AdminRealEstateProfessionalController.update - Uploading image to S3');
         const s3Key = s3Service.generateKey('real-estate-professionals', 'image', req.file.originalname);
         const contentType = s3Service.getContentType(req.file.originalname);
 
         try {
           const s3Url = await s3Service.uploadFile(req.file.buffer, s3Key, contentType, req.file.originalname);
           updateData.image = s3Url;
+          console.log('AdminRealEstateProfessionalController.update - Image uploaded successfully:', s3Url);
         } catch (uploadError) {
-          console.error(`Failed to upload professional image to S3:`, uploadError);
+          console.error('AdminRealEstateProfessionalController.update - S3 upload error:', uploadError);
           throw new Error('Failed to upload image');
         }
       }
 
+      console.log('AdminRealEstateProfessionalController.update - Updating professional in database');
       const updatedProfessional = await professional.update(updateData);
+      console.log('AdminRealEstateProfessionalController.update - Professional updated successfully:', updatedProfessional.id);
+
       res.json({
         message: 'Real estate professional updated successfully',
         professional: updatedProfessional.toJSON()
       });
     } catch (error) {
-      console.error('Update real estate professional error:', error);
+      console.error('AdminRealEstateProfessionalController.update - Error:', error);
+      console.error('AdminRealEstateProfessionalController.update - Error stack:', error.stack);
       res.status(500).json({ error: error.message || 'Internal server error' });
     }
   }

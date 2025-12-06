@@ -33,7 +33,23 @@ router.post('/',
   verifyAdminToken,
   requireAdminPanelAccess,
   controller.upload.single('image'),
+  (req, res, next) => {
+    console.log('AdminRealEstateProfessionals POST route - After upload middleware');
+    console.log('Request body keys:', Object.keys(req.body));
+    console.log('Request file:', req.file ? { originalname: req.file.originalname, size: req.file.size } : 'No file');
+    next();
+  },
   controller.createValidation,
+  (req, res, next) => {
+    console.log('AdminRealEstateProfessionals POST route - After validation middleware');
+    const errors = require('express-validator').validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error('AdminRealEstateProfessionals POST route - Validation errors from middleware:', errors.array());
+    } else {
+      console.log('AdminRealEstateProfessionals POST route - Validation passed in middleware');
+    }
+    next();
+  },
   controller.create
 );
 
@@ -42,7 +58,24 @@ router.put('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,
   controller.upload.single('image'),
+  (req, res, next) => {
+    console.log('AdminRealEstateProfessionals PUT route - After upload middleware');
+    console.log('Request params:', req.params);
+    console.log('Request body keys:', Object.keys(req.body));
+    console.log('Request file:', req.file ? { originalname: req.file.originalname, size: req.file.size } : 'No file');
+    next();
+  },
   controller.updateValidation,
+  (req, res, next) => {
+    console.log('AdminRealEstateProfessionals PUT route - After validation middleware');
+    const errors = require('express-validator').validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error('AdminRealEstateProfessionals PUT route - Validation errors from middleware:', errors.array());
+    } else {
+      console.log('AdminRealEstateProfessionals PUT route - Validation passed in middleware');
+    }
+    next();
+  },
   controller.update
 );
 

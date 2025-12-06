@@ -116,11 +116,14 @@ class RealEstateProfessional {
 
   // Create a new real estate professional
   static async create(professionalData) {
+    console.log('RealEstateProfessional.create - Starting validation');
     const validationErrors = this.validate(professionalData);
     if (validationErrors.length > 0) {
+      console.error('RealEstateProfessional.create - Validation errors:', validationErrors);
       throw new Error(`Validation errors: ${validationErrors.join(', ')}`);
     }
 
+    console.log('RealEstateProfessional.create - Validation passed');
     const allowedFields = [
       'first_name', 'last_name', 'ig_url', 'no_of_followers', 'verified_tick',
       'linkedin', 'tiktok', 'facebook', 'youtube', 'real_estate_agency_owner',
@@ -137,6 +140,7 @@ class RealEstateProfessional {
       }
     });
 
+    console.log('RealEstateProfessional.create - Filtered data keys:', Object.keys(filteredData));
     const fields = Object.keys(filteredData);
     const values = Object.values(filteredData);
     const placeholders = fields.map((_, index) => `$${index + 1}`);
@@ -147,8 +151,14 @@ class RealEstateProfessional {
       RETURNING *
     `;
 
+    console.log('RealEstateProfessional.create - Executing SQL:', sql);
+    console.log('RealEstateProfessional.create - Values:', values);
     const result = await query(sql, values);
-    return new RealEstateProfessional(result.rows[0]);
+    console.log('RealEstateProfessional.create - Query result:', result.rows.length > 0 ? 'Success' : 'No rows returned');
+
+    const professional = new RealEstateProfessional(result.rows[0]);
+    console.log('RealEstateProfessional.create - Created professional with ID:', professional.id);
+    return professional;
   }
 
   // Find real estate professional by ID
@@ -198,23 +208,31 @@ class RealEstateProfessional {
 
   // Update real estate professional
   async update(updateData) {
+    console.log('RealEstateProfessional.update - Starting update for ID:', this.id);
+    console.log('RealEstateProfessional.update - Update data keys:', Object.keys(updateData));
+
     // For status updates, only validate the status field to avoid issues with existing invalid data
     if ('status' in updateData) {
+      console.log('RealEstateProfessional.update - Status-only update');
       const validStatuses = ['pending', 'approved', 'rejected'];
       if (!validStatuses.includes(updateData.status)) {
+        console.error('RealEstateProfessional.update - Invalid status:', updateData.status);
         throw new Error('Validation errors: Status must be one of: pending, approved, rejected');
       }
 
       // For status updates, skip full validation to avoid issues with existing invalid data
       // Only validate the status field
     } else {
+      console.log('RealEstateProfessional.update - Full validation');
       // For other updates (non-status updates), validate all fields
       const validationErrors = RealEstateProfessional.validate({ ...this, ...updateData });
       if (validationErrors.length > 0) {
+        console.error('RealEstateProfessional.update - Validation errors:', validationErrors);
         throw new Error(`Validation errors: ${validationErrors.join(', ')}`);
       }
     }
 
+    console.log('RealEstateProfessional.update - Validation passed');
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -227,23 +245,33 @@ class RealEstateProfessional {
       }
     });
 
-    if (fields.length === 0) return this;
+    if (fields.length === 0) {
+      console.log('RealEstateProfessional.update - No fields to update');
+      return this;
+    }
 
     values.push(this.id);
     const sql = `UPDATE real_estate_professionals SET ${fields.join(', ')}, updated_at = NOW() WHERE id = $${paramCount} RETURNING *`;
 
+    console.log('RealEstateProfessional.update - Executing SQL:', sql);
+    console.log('RealEstateProfessional.update - Values:', values);
+
     const result = await query(sql, values);
+    console.log('RealEstateProfessional.update - Query result:', result.rows.length > 0 ? 'Success' : 'No rows returned');
+
     // Handle languages field parsing for updated data
     const updatedData = result.rows[0];
     if (updatedData.languages && typeof updatedData.languages === 'string') {
       try {
         updatedData.languages = JSON.parse(updatedData.languages);
+        console.log('RealEstateProfessional.update - Languages parsed successfully');
       } catch (e) {
-        console.error('Error parsing languages in update:', e);
+        console.error('RealEstateProfessional.update - Error parsing languages in update:', e);
         updatedData.languages = [];
       }
     }
     Object.assign(this, updatedData);
+    console.log('RealEstateProfessional.update - Update completed for ID:', this.id);
     return this;
   }
 

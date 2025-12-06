@@ -54,7 +54,7 @@ class RealEstateProfessionalController {
     body('nationality').optional().trim(),
     body('current_residence_city').optional().trim(),
     body('languages').optional().isArray().withMessage('Languages must be an array'),
-    body('recaptchaToken').optional().isLength({ min: 1 }).withMessage('reCAPTCHA token is required')
+    body('recaptchaToken').optional()
   ];
 
   // Create a new real estate professional submission
@@ -68,8 +68,17 @@ class RealEstateProfessionalController {
         });
       }
 
-      // Verify reCAPTCHA for user submissions
-      if (req.user && req.body.recaptchaToken) {
+      // Check if user is authenticated
+      if (!req.user || !req.user.userId) {
+        return res.status(401).json({
+          error: 'Authentication required',
+          message: 'You must be logged in to submit a real estate professional application'
+        });
+      }
+
+      // Verify reCAPTCHA for user submissions (not admin submissions)
+      // Admin routes don't require reCAPTCHA
+      if (req.body.recaptchaToken && !req.originalUrl.includes('/admin/')) {
         const recaptchaScore = await verifyRecaptcha(req.body.recaptchaToken);
         if (recaptchaScore === null || recaptchaScore < 0.5) {
           return res.status(400).json({
@@ -99,7 +108,7 @@ class RealEstateProfessionalController {
       delete professionalData.recaptchaToken;
 
       // Set submission details
-      professionalData.submitted_by = req.user?.userId;
+      professionalData.submitted_by = req.user.userId;
       professionalData.status = 'pending';
 
       const professional = await RealEstateProfessional.create(professionalData);
