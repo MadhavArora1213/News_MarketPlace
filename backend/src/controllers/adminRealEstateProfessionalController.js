@@ -192,48 +192,7 @@ class AdminRealEstateProfessionalController {
         return res.status(403).json({ error: 'Admin access required' });
       }
 
-      console.log('AdminRealEstateProfessionalController.create - Parsing form data');
-
-      // Parse form data fields
-      if (req.body.languages && typeof req.body.languages === 'string') {
-        console.log('AdminRealEstateProfessionalController.create - Parsing languages:', req.body.languages);
-        try {
-          req.body.languages = JSON.parse(req.body.languages);
-          console.log('AdminRealEstateProfessionalController.create - Languages parsed successfully:', req.body.languages);
-        } catch (e) {
-          console.error('AdminRealEstateProfessionalController.create - Languages parsing error:', e);
-          return res.status(400).json({
-            error: 'Validation failed',
-            details: [{ msg: 'Languages must be a valid JSON array' }]
-          });
-        }
-      }
-
-      // Parse boolean fields that come as strings from FormData
-      const booleanFields = ['verified_tick', 'real_estate_agency_owner', 'real_estate_agent', 'developer_employee', 'is_active'];
-      booleanFields.forEach(field => {
-        if (req.body[field] !== undefined) {
-          console.log(`AdminRealEstateProfessionalController.create - Parsing boolean ${field}:`, req.body[field]);
-          if (req.body[field] === 'true') req.body[field] = true;
-          else if (req.body[field] === 'false') req.body[field] = false;
-          console.log(`AdminRealEstateProfessionalController.create - ${field} parsed to:`, req.body[field]);
-        }
-      });
-
-      // Parse numeric fields
-      if (req.body.no_of_followers !== undefined) {
-        console.log('AdminRealEstateProfessionalController.create - Parsing no_of_followers:', req.body.no_of_followers);
-        const followers = parseInt(req.body.no_of_followers);
-        if (isNaN(followers)) {
-          console.error('AdminRealEstateProfessionalController.create - Invalid no_of_followers:', req.body.no_of_followers);
-          return res.status(400).json({
-            error: 'Validation failed',
-            details: [{ msg: 'Number of followers must be a valid number' }]
-          });
-        }
-        req.body.no_of_followers = followers;
-        console.log('AdminRealEstateProfessionalController.create - no_of_followers parsed to:', followers);
-      }
+      console.log('AdminRealEstateProfessionalController.create - Form data already parsed by middleware');
 
       console.log('AdminRealEstateProfessionalController.create - Running validation');
       const errors = validationResult(req);
@@ -304,48 +263,7 @@ class AdminRealEstateProfessionalController {
         return res.status(403).json({ error: 'Admin access required' });
       }
 
-      console.log('AdminRealEstateProfessionalController.update - Parsing form data');
-
-      // Parse form data fields
-      if (req.body.languages && typeof req.body.languages === 'string') {
-        console.log('AdminRealEstateProfessionalController.update - Parsing languages:', req.body.languages);
-        try {
-          req.body.languages = JSON.parse(req.body.languages);
-          console.log('AdminRealEstateProfessionalController.update - Languages parsed successfully:', req.body.languages);
-        } catch (e) {
-          console.error('AdminRealEstateProfessionalController.update - Languages parsing error:', e);
-          return res.status(400).json({
-            error: 'Validation failed',
-            details: [{ msg: 'Languages must be a valid JSON array' }]
-          });
-        }
-      }
-
-      // Parse boolean fields that come as strings from FormData
-      const booleanFields = ['verified_tick', 'real_estate_agency_owner', 'real_estate_agent', 'developer_employee', 'is_active'];
-      booleanFields.forEach(field => {
-        if (req.body[field] !== undefined) {
-          console.log(`AdminRealEstateProfessionalController.update - Parsing boolean ${field}:`, req.body[field]);
-          if (req.body[field] === 'true') req.body[field] = true;
-          else if (req.body[field] === 'false') req.body[field] = false;
-          console.log(`AdminRealEstateProfessionalController.update - ${field} parsed to:`, req.body[field]);
-        }
-      });
-
-      // Parse numeric fields
-      if (req.body.no_of_followers !== undefined) {
-        console.log('AdminRealEstateProfessionalController.update - Parsing no_of_followers:', req.body.no_of_followers);
-        const followers = parseInt(req.body.no_of_followers);
-        if (isNaN(followers)) {
-          console.error('AdminRealEstateProfessionalController.update - Invalid no_of_followers:', req.body.no_of_followers);
-          return res.status(400).json({
-            error: 'Validation failed',
-            details: [{ msg: 'Number of followers must be a valid number' }]
-          });
-        }
-        req.body.no_of_followers = followers;
-        console.log('AdminRealEstateProfessionalController.update - no_of_followers parsed to:', followers);
-      }
+      console.log('AdminRealEstateProfessionalController.update - Form data already parsed by middleware');
 
       console.log('AdminRealEstateProfessionalController.update - Running validation');
       const errors = validationResult(req);
