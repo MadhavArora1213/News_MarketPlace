@@ -210,8 +210,11 @@ const RealEstateProfessionalDetail = () => {
     setIsSubmittingOrder(true);
 
     try {
-      // Get reCAPTCHA token
-      const captchaToken = await window.grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', { action: 'order_submit' });
+      // Get reCAPTCHA token (if available)
+      let captchaToken = '';
+      if (window.grecaptcha && window.grecaptcha.execute) {
+        captchaToken = await window.grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', { action: 'order_submit' });
+      }
 
       const orderData = {
         ...orderFormData,

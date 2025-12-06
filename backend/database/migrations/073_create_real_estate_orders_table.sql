@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS real_estate_orders (
 
     -- Additional Information
     message TEXT,
-    captcha_token TEXT NOT NULL,
+    captcha_token TEXT,
     terms_accepted BOOLEAN DEFAULT false,
 
     -- Order Status and Workflow
@@ -49,16 +49,4 @@ CREATE INDEX IF NOT EXISTS idx_real_estate_orders_approved_by ON real_estate_ord
 CREATE INDEX IF NOT EXISTS idx_real_estate_orders_rejected_by ON real_estate_orders(rejected_by);
 CREATE INDEX IF NOT EXISTS idx_real_estate_orders_created_at ON real_estate_orders(created_at);
 
--- Add trigger to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_real_estate_orders_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trigger_update_real_estate_orders_updated_at
-    BEFORE UPDATE ON real_estate_orders
-    FOR EACH ROW
-    EXECUTE FUNCTION update_real_estate_orders_updated_at();
+-- Note: updated_at will be manually updated in application code
