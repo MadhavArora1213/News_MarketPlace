@@ -536,27 +536,21 @@ const PublicationDetailPage = () => {
                       </span>
                     </div>
                   )}
+                  {publication.article_reference_link && (
+                    <div className="flex items-center gap-2">
+                      <ExternalLink size={16} style={{ color: theme.primary }} />
+                      <a
+                        href={publication.article_reference_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: theme.primary }}
+                      >
+                        View Example Article
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Example Article */}
-              {publication.article_reference_link && (
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    Example Article
-                  </h3>
-                  <a
-                    href={publication.article_reference_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
-                    style={{ backgroundColor: theme.success }}
-                  >
-                    <ExternalLink size={16} />
-                    View Example Article
-                  </a>
-                </div>
-              )}
             </div>
           </div>
         </div>
