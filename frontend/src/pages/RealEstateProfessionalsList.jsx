@@ -62,7 +62,6 @@ const RealEstateProfessionalsList = () => {
   const [professionTypeFilter, setProfessionTypeFilter] = useState('');
   const [nationalityFilter, setNationalityFilter] = useState('');
   const [languagesFilter, setLanguagesFilter] = useState('');
-  const [genderFilter, setGenderFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
 
   // Sorting state
@@ -154,12 +153,6 @@ const RealEstateProfessionalsList = () => {
       });
     }
 
-    if (genderFilter) {
-      filtered = filtered.filter(pro =>
-        pro.gender?.toLowerCase().includes(genderFilter.toLowerCase())
-      );
-    }
-
     return filtered;
   }, [professionals, professionTypeFilter, genderFilter]);
 
@@ -206,12 +199,11 @@ const RealEstateProfessionalsList = () => {
     setProfessionTypeFilter('');
     setNationalityFilter('');
     setLanguagesFilter('');
-    setGenderFilter('');
     setLocationFilter('');
   };
 
   const hasActiveFilters = () => {
-    return professionTypeFilter || nationalityFilter || languagesFilter || genderFilter || locationFilter;
+    return professionTypeFilter || nationalityFilter || languagesFilter || locationFilter;
   };
 
   const handleShowAuth = () => {
@@ -410,22 +402,6 @@ const RealEstateProfessionalsList = () => {
                     </select>
                   </div>
 
-                  {/* Gender Filter */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Gender
-                    </label>
-                    <select
-                      value={genderFilter}
-                      onChange={(e) => setGenderFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
-                    >
-                      <option value="">All Genders</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
 
                   {/* Location Filter */}
                   <div>

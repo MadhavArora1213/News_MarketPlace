@@ -613,6 +613,17 @@ export default function Sidebar({
                       <span>Real Estate Creation</span>
                     </a>
                   </li>
+                  <li style={{ marginBottom: 5 }}>
+                    <a
+                      href="/admin/real-estate-orders"
+                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={navIconCircle('#fff3e0')}><Icon name="document-text" size="sm" style={{ color: '#FF9800' }} /></span>
+                      <span>Real Estate Orders</span>
+                    </a>
+                  </li>
                 </ul>
               )}
             </li>
@@ -768,6 +779,7 @@ export default function Sidebar({
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
                   <li style={{ marginBottom: 5 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Add to Cart</a></li>
                   <li style={{ marginBottom: 5 }}><a href="/admin/real-estate-creation" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Creation</a></li>
+                  <li style={{ marginBottom: 5 }}><a href="/admin/real-estate-orders" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Orders</a></li>
                 </ul>
               )}
             </li>

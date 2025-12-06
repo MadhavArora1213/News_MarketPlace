@@ -33,6 +33,7 @@ const careersRoutes = require('./src/routes/careers');
 const blogsRoutes = require('./src/routes/blogs');
 const realEstatesRoutes = require('./src/routes/realEstates');
 const realEstateProfessionalsRoutes = require('./src/routes/realEstateProfessionals');
+const realEstateOrdersRoutes = require('./src/routes/realEstateOrders');
 const publishedWorksRoutes = require('./src/routes/publishedWorks');
 const articleSubmissionsRoutes = require('./src/routes/articleSubmissions');
 const adminArticleSubmissionsRoutes = require('./src/routes/adminArticleSubmissions');
@@ -120,20 +121,93 @@ pool.connect(async (err, client, release) => {
         CREATE INDEX IF NOT EXISTS idx_real_estate_professionals_submitted_by_admin ON real_estate_professionals(submitted_by_admin);
         CREATE INDEX IF NOT EXISTS idx_real_estate_professionals_approved_by ON real_estate_professionals(approved_by);
         CREATE INDEX IF NOT EXISTS idx_real_estate_professionals_rejected_by ON real_estate_professionals(rejected_by);
+
+        -- Migration 073: Create real estate orders table
+        CREATE TABLE IF NOT EXISTS real_estate_orders (
+            id SERIAL PRIMARY KEY,
+            professional_id INTEGER NOT NULL REFERENCES real_estate_professionals(id) ON DELETE CASCADE,
+
+            -- Customer Information
+            customer_name VARCHAR(255) NOT NULL,
+            customer_email VARCHAR(255) NOT NULL,
+            customer_whatsapp_country_code VARCHAR(10),
+            customer_whatsapp_number VARCHAR(20) NOT NULL,
+            customer_calling_country_code VARCHAR(10),
+            customer_calling_number VARCHAR(20),
+
+            -- Order Requirements
+            budget_range VARCHAR(50) NOT NULL CHECK (budget_range IN ('USD 15k-25k', 'USD 26k-50k', 'USD 51k-75k', 'USD 76k-100k', 'More than 100k')),
+            influencers_required VARCHAR(20) NOT NULL CHECK (influencers_required IN ('1-10', '11-25', '26-50', '51-100', 'More than 100')),
+            gender_required VARCHAR(10) NOT NULL CHECK (gender_required IN ('Male', 'Female', 'Both')),
+            languages_required TEXT[], -- Array of language codes/names
+            min_followers INTEGER,
+
+            -- Additional Information
+            message TEXT,
+            captcha_token TEXT NOT NULL,
+            terms_accepted BOOLEAN NOT NULL DEFAULT false,
+
+            -- Order Status and Workflow
+            status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'completed')),
+            submitted_by INTEGER REFERENCES users(id),
+
+            -- Admin Workflow Fields
+            approved_at TIMESTAMP,
+            approved_by INTEGER REFERENCES admins(id),
+            rejected_at TIMESTAMP,
+            rejected_by INTEGER REFERENCES admins(id),
+            rejection_reason TEXT,
+            admin_comments TEXT,
+
+            -- Timestamps
+            created_at TIMESTAMP DEFAULT NOW(),
+            updated_at TIMESTAMP DEFAULT NOW()
+        );
+
+        -- Create indexes for orders table
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_professional_id ON real_estate_orders(professional_id);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_status ON real_estate_orders(status);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_customer_email ON real_estate_orders(customer_email);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_submitted_by ON real_estate_orders(submitted_by);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_approved_by ON real_estate_orders(approved_by);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_rejected_by ON real_estate_orders(rejected_by);
+        CREATE INDEX IF NOT EXISTS idx_real_estate_orders_created_at ON real_estate_orders(created_at);
+
+        -- Add trigger to update updated_at timestamp for orders
+        CREATE OR REPLACE FUNCTION update_real_estate_orders_updated_at()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            NEW.updated_at = NOW();
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER IF NOT EXISTS trigger_update_real_estate_orders_updated_at
+            BEFORE UPDATE ON real_estate_orders
+            FOR EACH ROW
+            EXECUTE FUNCTION update_real_estate_orders_updated_at();
       `;
 
       await client.query(migrationSQL);
       console.log('✅ Migration 072 completed successfully');
 
-      // Verify columns were added
-      const result = await client.query(`
+      // Verify columns were added to professionals table
+      const profResult = await client.query(`
         SELECT column_name FROM information_schema.columns
         WHERE table_name = 'real_estate_professionals'
         AND column_name IN ('status', 'submitted_by_admin', 'admin_comments')
         ORDER BY column_name
       `);
 
-      console.log('📋 Migration verification - Added columns:', result.rows.map(r => r.column_name).join(', '));
+      // Verify orders table was created
+      const ordersResult = await client.query(`
+        SELECT table_name FROM information_schema.tables
+        WHERE table_name = 'real_estate_orders'
+      `);
+
+      console.log('📋 Migration verification:');
+      console.log('  - Professionals table columns added:', profResult.rows.map(r => r.column_name).join(', '));
+      console.log('  - Orders table created:', ordersResult.rows.length > 0 ? 'Yes' : 'No');
 
     } catch (migrationError) {
       console.error('❌ Migration failed:', migrationError.message);
@@ -271,6 +345,7 @@ app.use('/api/podcasters', podcastersRoutes);
 app.use('/api/event-enquiries', eventEnquiriesRoutes);
 app.use('/api/real-estates', realEstatesRoutes);
 app.use('/api/real-estate-professionals', realEstateProfessionalsRoutes);
+app.use('/api/real-estate-orders', realEstateOrdersRoutes);
 app.use('/api/published-works', publishedWorksRoutes);
 app.use('/api/affiliate-enquiries', affiliateEnquiriesRoutes);
 app.use('/api/careers', careersRoutes);

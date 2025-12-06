@@ -55,6 +55,26 @@ const RealEstateProfessionalDetail = () => {
     message: ''
   });
 
+  // Order form state
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+  const [orderFormData, setOrderFormData] = useState({
+    customer_name: '',
+    customer_email: '',
+    customer_whatsapp_country_code: '+91',
+    customer_whatsapp_number: '',
+    customer_calling_country_code: '+91',
+    customer_calling_number: '',
+    budget_range: '',
+    influencers_required: '',
+    gender_required: 'Both',
+    languages_required: [],
+    min_followers: '',
+    message: '',
+    captcha_token: '',
+    terms_accepted: false
+  });
+
   useEffect(() => {
     if (id) {
       fetchProfessionalDetails();
@@ -150,6 +170,70 @@ const RealEstateProfessionalDetail = () => {
       return;
     }
     setShowContactModal(true);
+  };
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      setShowAuth(true);
+      return;
+    }
+    setShowOrderModal(true);
+  };
+
+  const handleOrderSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmittingOrder(true);
+
+    try {
+      // Get reCAPTCHA token
+      const captchaToken = await window.grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', { action: 'order_submit' });
+
+      const orderData = {
+        ...orderFormData,
+        professional_id: parseInt(id),
+        captcha_token: captchaToken
+      };
+
+      const response = await api.post('/real-estate-orders', orderData);
+
+      if (response.data.success !== false) {
+        alert('Order submitted successfully! You will receive a confirmation email shortly.');
+        setShowOrderModal(false);
+        setOrderFormData({
+          customer_name: '',
+          customer_email: '',
+          customer_whatsapp_country_code: '+91',
+          customer_whatsapp_number: '',
+          customer_calling_country_code: '+91',
+          customer_calling_number: '',
+          budget_range: '',
+          influencers_required: '',
+          gender_required: 'Both',
+          languages_required: [],
+          min_followers: '',
+          message: '',
+          captcha_token: '',
+          terms_accepted: false
+        });
+      } else {
+        throw new Error(response.data.message || 'Failed to submit order');
+      }
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Error submitting order. Please try again.';
+      alert(errorMessage);
+    } finally {
+      setIsSubmittingOrder(false);
+    }
+  };
+
+  const handleLanguageToggle = (language) => {
+    setOrderFormData(prev => ({
+      ...prev,
+      languages_required: prev.languages_required.includes(language)
+        ? prev.languages_required.filter(lang => lang !== language)
+        : [...prev.languages_required, language]
+    }));
   };
 
   const handleContactSubmit = async (e) => {
@@ -559,11 +643,11 @@ const RealEstateProfessionalDetail = () => {
                   style={{ backgroundColor: theme.primary }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                   onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                  onClick={handleContact}
-                  disabled={isContacting}
+                  onClick={handleAddToCart}
+                  disabled={isSubmittingOrder}
                 >
                   <MessageCircle size={16} />
-                  {isContacting ? 'Sending...' : (isAuthenticated ? 'Add to Cart' : 'Sign In to Contact')}
+                  {isSubmittingOrder ? 'Processing...' : (isAuthenticated ? 'Add to Cart' : 'Sign In to Order')}
                 </button>
               </div>
 
@@ -661,6 +745,487 @@ const RealEstateProfessionalDetail = () => {
           onClose={handleCloseAuth}
           onLoginSuccess={handleCloseAuth}
         />
+      )}
+
+      {/* Order Modal */}
+      {showOrderModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '20px',
+          overflow: 'auto'
+        }} onClick={() => setShowOrderModal(false)}>
+          <div style={{
+            backgroundColor: theme.background,
+            borderRadius: '12px',
+            maxWidth: '700px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            display: 'flex',
+            flexDirection: 'column'
+          }} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '24px 24px 16px 24px',
+              borderBottom: `1px solid ${theme.borderLight}`,
+              flexShrink: 0
+            }}>
+              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.textPrimary }}>
+                Order Real Estate Influencers
+              </h2>
+              <button
+                onClick={() => setShowOrderModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: theme.textSecondary,
+                  padding: '4px',
+                  borderRadius: '4px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.backgroundSoft}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{
+              padding: '24px',
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              <div style={{
+                backgroundColor: theme.backgroundSoft,
+                padding: '16px',
+                borderRadius: '8px',
+                marginBottom: '20px'
+              }}>
+                <h4 style={{
+                  margin: '0 0 8px 0',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: theme.textPrimary
+                }}>
+                  {professional.first_name} {professional.last_name}
+                </h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: theme.textSecondary }}>Real Estate Influencer Order</span>
+                  <span style={{ fontSize: '16px', fontWeight: '600', color: theme.primary }}>
+                    Professional Services
+                  </span>
+                </div>
+              </div>
+
+              <form id="order-form" onSubmit={handleOrderSubmit}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                  {/* Name */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={orderFormData.customer_name}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, customer_name: e.target.value })}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: `1px solid ${theme.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        backgroundColor: theme.background
+                      }}
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={orderFormData.customer_email}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, customer_email: e.target.value })}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: `1px solid ${theme.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        backgroundColor: theme.background
+                      }}
+                    />
+                  </div>
+
+                  {/* WhatsApp Number */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      WhatsApp Number *
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <select
+                        value={orderFormData.customer_whatsapp_country_code}
+                        onChange={(e) => setOrderFormData({ ...orderFormData, customer_whatsapp_country_code: e.target.value })}
+                        style={{
+                          padding: '10px 8px',
+                          border: `1px solid ${theme.borderLight}`,
+                          borderRadius: '8px',
+                          backgroundColor: theme.background,
+                          minWidth: '80px'
+                        }}
+                      >
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+971">+971 (UAE)</option>
+                        <option value="+966">+966 (SA)</option>
+                      </select>
+                      <input
+                        type="tel"
+                        value={orderFormData.customer_whatsapp_number}
+                        onChange={(e) => setOrderFormData({ ...orderFormData, customer_whatsapp_number: e.target.value })}
+                        required
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          border: `1px solid ${theme.borderLight}`,
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          boxSizing: 'border-box',
+                          backgroundColor: theme.background
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Calling Number */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Calling Number
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <select
+                        value={orderFormData.customer_calling_country_code}
+                        onChange={(e) => setOrderFormData({ ...orderFormData, customer_calling_country_code: e.target.value })}
+                        style={{
+                          padding: '10px 8px',
+                          border: `1px solid ${theme.borderLight}`,
+                          borderRadius: '8px',
+                          backgroundColor: theme.background,
+                          minWidth: '80px'
+                        }}
+                      >
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+971">+971 (UAE)</option>
+                        <option value="+966">+966 (SA)</option>
+                      </select>
+                      <input
+                        type="tel"
+                        value={orderFormData.customer_calling_number}
+                        onChange={(e) => setOrderFormData({ ...orderFormData, customer_calling_number: e.target.value })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          border: `1px solid ${theme.borderLight}`,
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          boxSizing: 'border-box',
+                          backgroundColor: theme.background
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Budget Range */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Budget Range *
+                    </label>
+                    <select
+                      value={orderFormData.budget_range}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, budget_range: e.target.value })}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: `1px solid ${theme.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        backgroundColor: theme.background
+                      }}
+                    >
+                      <option value="">Select Budget Range</option>
+                      <option value="USD 15k-25k">USD 15k-25k</option>
+                      <option value="USD 26k-50k">USD 26k-50k</option>
+                      <option value="USD 51k-75k">USD 51k-75k</option>
+                      <option value="USD 76k-100k">USD 76k-100k</option>
+                      <option value="More than 100k">More than 100k</option>
+                    </select>
+                  </div>
+
+                  {/* Influencers Required */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      No. of Real Estate Influencers Required *
+                    </label>
+                    <select
+                      value={orderFormData.influencers_required}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, influencers_required: e.target.value })}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: `1px solid ${theme.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        backgroundColor: theme.background
+                      }}
+                    >
+                      <option value="">Select Range</option>
+                      <option value="1-10">1-10</option>
+                      <option value="11-25">11-25</option>
+                      <option value="26-50">26-50</option>
+                      <option value="51-100">51-100</option>
+                      <option value="More than 100">More than 100</option>
+                    </select>
+                  </div>
+
+                  {/* Gender Required */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Gender Required *
+                    </label>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      {['Male', 'Female', 'Both'].map(gender => (
+                        <label key={gender} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                          <input
+                            type="radio"
+                            name="gender_required"
+                            value={gender}
+                            checked={orderFormData.gender_required === gender}
+                            onChange={(e) => setOrderFormData({ ...orderFormData, gender_required: e.target.value })}
+                            required
+                          />
+                          <span style={{ fontSize: '14px', color: theme.textPrimary }}>{gender}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Min Followers */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: theme.textPrimary,
+                      marginBottom: '6px'
+                    }}>
+                      Min Followers for Each Influencer
+                    </label>
+                    <input
+                      type="number"
+                      value={orderFormData.min_followers}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, min_followers: e.target.value })}
+                      placeholder="e.g. 10000"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: `1px solid ${theme.borderLight}`,
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        backgroundColor: theme.background
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Languages Required */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: theme.textPrimary,
+                    marginBottom: '10px'
+                  }}>
+                    Languages Needed *
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px' }}>
+                    {['English', 'Hindi', 'Arabic', 'French', 'Spanish', 'Chinese', 'Russian', 'German', 'Japanese', 'Portuguese'].map(language => (
+                      <label key={language} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={orderFormData.languages_required.includes(language)}
+                          onChange={() => handleLanguageToggle(language)}
+                        />
+                        <span style={{ fontSize: '14px', color: theme.textPrimary }}>{language}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: theme.textPrimary,
+                    marginBottom: '6px'
+                  }}>
+                    Any Message
+                  </label>
+                  <textarea
+                    value={orderFormData.message}
+                    onChange={(e) => setOrderFormData({ ...orderFormData, message: e.target.value })}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      border: `1px solid ${theme.borderLight}`,
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                      backgroundColor: theme.background,
+                      resize: 'vertical'
+                    }}
+                    placeholder="Additional requirements or special instructions..."
+                  />
+                </div>
+
+                {/* Terms and Conditions */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={orderFormData.terms_accepted}
+                      onChange={(e) => setOrderFormData({ ...orderFormData, terms_accepted: e.target.checked })}
+                      required
+                      style={{ marginTop: '2px' }}
+                    />
+                    <span style={{ fontSize: '14px', color: theme.textPrimary, lineHeight: '1.4' }}>
+                      I agree to the <a href="#" style={{ color: theme.primary, textDecoration: 'underline' }}>Terms and Conditions</a> and <a href="#" style={{ color: theme.primary, textDecoration: 'underline' }}>Privacy Policy</a> *
+                    </span>
+                  </label>
+                </div>
+              </form>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '12px',
+              padding: '16px 24px 24px 24px',
+              borderTop: `1px solid ${theme.borderLight}`,
+              flexShrink: 0
+            }}>
+              <button
+                type="button"
+                onClick={() => setShowOrderModal(false)}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: theme.backgroundSoft,
+                  color: theme.textPrimary,
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+                disabled={isSubmittingOrder}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="order-form"
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: theme.primary,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+                disabled={isSubmittingOrder}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+              >
+                {isSubmittingOrder ? 'Submitting...' : 'Submit Order'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Contact Modal */}
