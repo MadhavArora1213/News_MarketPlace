@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS real_estate_orders (
     -- Additional Information
     message TEXT,
     captcha_token TEXT NOT NULL,
-    terms_accepted BOOLEAN NOT NULL DEFAULT false,
+    terms_accepted BOOLEAN DEFAULT false,
 
     -- Order Status and Workflow
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'completed')),
