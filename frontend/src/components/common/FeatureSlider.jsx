@@ -27,9 +27,9 @@ const FeatureSlider = () => {
   const easySetupText = useTranslatedText("Easy Setup");
   const supportText = useTranslatedText("24/7 Support");
   const instantResultsText = useTranslatedText("Instant Results");
-  const expertRecoveryText = useTranslatedText("Expert Recovery");
-  const reputationManagementText = useTranslatedText("Reputation Management");
-  const identityRestorationText = useTranslatedText("Identity Restoration");
+  const expertRecoveryText = useTranslatedText("Write Easy Access ");
+  const reputationManagementText = useTranslatedText("Fast Result ");
+  const identityRestorationText = useTranslatedText("Hassle Free");
   const revenueGenerationText = useTranslatedText("Revenue Generation");
   const smartAdvertisingText = useTranslatedText("Smart Advertising");
   const monetizationToolsText = useTranslatedText("Monetization Tools");
