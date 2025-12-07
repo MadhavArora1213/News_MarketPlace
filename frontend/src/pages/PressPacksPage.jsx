@@ -612,6 +612,25 @@ const PressPacksPage = () => {
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
                       }}
                     >
+                      {/* Pack Image */}
+                      <div className="relative h-48 overflow-hidden rounded-t-lg">
+                        <img
+                          src={pack.image_logo || '/logo.png'}
+                          alt={pack.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = '/logo.png';
+                          }}
+                        />
+                        <div className="absolute top-3 right-3">
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center bg-white/90 backdrop-blur-sm"
+                          >
+                            <Package size={20} className="text-[#1976D2]" />
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Enhanced Pack Header */}
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
@@ -627,12 +646,6 @@ const PressPacksPage = () => {
                               <Building size={14} className="mr-2" />
                               <span>{pack.niche}</span>
                             </div>
-                          </div>
-                          <div
-                            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: theme.primaryLight }}
-                          >
-                            <Package size={24} className="text-[#1976D2]" />
                           </div>
                         </div>
 
@@ -759,11 +772,15 @@ const PressPacksPage = () => {
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div
-                                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                  style={{ backgroundColor: theme.primaryLight }}
-                                >
-                                  <Package size={20} className="text-[#1976D2]" />
+                                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                                  <img
+                                    src={pack.image_logo || '/logo.png'}
+                                    alt={pack.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.src = '/logo.png';
+                                    }}
+                                  />
                                 </div>
                                 <div>
                                   <div className="font-semibold" style={{ color: theme.textPrimary }}>
