@@ -11,17 +11,17 @@ const FeatureSlider = () => {
   const socialMediaRecoverySubtitle = useTranslatedText("Digital Media Account Security, Protection, and Recovery Solutions");
   const socialMediaRecoveryDesc = useTranslatedText("Comprehensive security and recovery solutions for all your digital media accounts. We protect against breaches, restore compromised profiles, and ensure your online presence remains safe and uninterrupted.");
 
-  const classifiedAdsTitle = useTranslatedText("Classified Ads Space");
-  const classifiedAdsSubtitle = useTranslatedText("Monetize Your Platform");
-  const classifiedAdsDesc = useTranslatedText("Transform your platform into a revenue-generating powerhouse with our intelligent advertising solutions and monetization tools.");
+  const classifiedAdsTitle = useTranslatedText("Real Estate Marketing Solution");
+  const classifiedAdsSubtitle = useTranslatedText("Real Estate Virality Engine: Make Projects Go from 0 to Hero");
+  const classifiedAdsDesc = useTranslatedText("One place to access every visibility service needed to build hype, trust, and virality for any real estate project. The platform enables developers to get placements across verified news outlets, media channels, real estate influencers, power lists, awards, paparazzi buzz creators, and podcast/radio opportunities.");
 
-  const passiveIncomeTitle = useTranslatedText("Passive Income Opportunities");
-  const passiveIncomeSubtitle = useTranslatedText("Earn from Content Creation");
-  const passiveIncomeDesc = useTranslatedText("Unlock new income streams through our comprehensive content monetization and contributor reward system with automated payouts.");
+  const passiveIncomeTitle = useTranslatedText("Advanced writing tools");
+  const passiveIncomeSubtitle = useTranslatedText("AI-Enabled, GPT-Optimized Content Writing");
+  const passiveIncomeDesc = useTranslatedText("Write content without requiring professional writing skills, while adhering to each media platform’s guidelines to expedite publishing. The content will be optimized for generative AI engines like ChatGPT and for maximum search visibility (Search Everywhere Optimization).");
 
-  const advancedToolsTitle = useTranslatedText("Advanced Publishing Tools");
-  const advancedToolsSubtitle = useTranslatedText("Professional Content Creation");
-  const advancedToolsDesc = useTranslatedText("Elevate your content creation with cutting-edge tools designed for modern digital publishing and professional workflows.");
+  const advancedToolsTitle = useTranslatedText("Passive Income Opportunities");
+  const advancedToolsSubtitle = useTranslatedText("Passive Income Engine – Turn Connections into Cash");
+  const advancedToolsDesc = useTranslatedText("Unlock an additional income opportunity: simply refer VaaS Solutions to your network for visibility services. Share the lead details and earn a lifetime referral bonus each time your referral places an order with VaaS Solutions.");
 
   const learnMoreText = useTranslatedText("Learn More");
   const easySetupText = useTranslatedText("Easy Setup");
@@ -30,15 +30,15 @@ const FeatureSlider = () => {
   const expertRecoveryText = useTranslatedText("Write Easy Access ");
   const reputationManagementText = useTranslatedText("Fast Result ");
   const identityRestorationText = useTranslatedText("Hassle Free");
-  const revenueGenerationText = useTranslatedText("Revenue Generation");
-  const smartAdvertisingText = useTranslatedText("Smart Advertising");
-  const monetizationToolsText = useTranslatedText("Monetization Tools");
-  const automatedPayoutsText = useTranslatedText("Automated Payouts");
-  const contentMonetizationText = useTranslatedText("Content Monetization");
-  const incomeStreamsText = useTranslatedText("Income Streams");
-  const professionalWorkflowsText = useTranslatedText("Professional Workflows");
-  const cuttingEdgeToolsText = useTranslatedText("Cutting-edge Tools");
-  const contentCreationText = useTranslatedText("Content Creation");
+  const revenueGenerationText = useTranslatedText("Best Price");
+  const smartAdvertisingText = useTranslatedText("Quick Turnaround");
+  const monetizationToolsText = useTranslatedText("Omnichannel Visibility");
+  const automatedPayoutsText = useTranslatedText("Content Brief");
+  const contentMonetizationText = useTranslatedText("Fill Details");
+  const incomeStreamsText = useTranslatedText("Boom!");
+  const professionalWorkflowsText = useTranslatedText("Recurring Income");
+  const cuttingEdgeToolsText = useTranslatedText("Instant Payout");
+  const contentCreationText = useTranslatedText("Lifetime");
   const goToSlideText = useTranslatedText("Go to slide");
 
   const features = [
@@ -46,6 +46,7 @@ const FeatureSlider = () => {
       id: 1,
       title: socialMediaRecoveryTitle,
       subtitle: socialMediaRecoverySubtitle,
+      leftText: "Social Media",
       icon: "user-group",
       placeholderIcon: "user-group",
       color: "teal",
@@ -63,6 +64,7 @@ const FeatureSlider = () => {
       id: 2,
       title: classifiedAdsTitle,
       subtitle: classifiedAdsSubtitle,
+      leftText: "Real Estate Marketing Solution",
       icon: "megaphone",
       placeholderIcon: "megaphone",
       color: "blue",
@@ -80,6 +82,7 @@ const FeatureSlider = () => {
       id: 3,
       title: passiveIncomeTitle,
       subtitle: passiveIncomeSubtitle,
+      leftText: "Advanced writing tools",
       icon: "currency-dollar",
       placeholderIcon: "currency-dollar",
       color: "purple",
@@ -97,6 +100,7 @@ const FeatureSlider = () => {
       id: 4,
       title: advancedToolsTitle,
       subtitle: advancedToolsSubtitle,
+      leftText: "Passive Income Opportunities",
       icon: "pencil-square",
       placeholderIcon: "pencil-square",
       color: "orange",
@@ -158,7 +162,7 @@ const FeatureSlider = () => {
                             <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-gradient-to-br ${feature.iconBg} rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300`}>
                               <Icon name={feature.placeholderIcon} size="xl" className="text-white" />
                             </div>
-                            <p className="text-sm md:text-base text-white font-semibold px-4 drop-shadow-md">{feature.title}</p>
+                            <p className="text-sm md:text-base text-white font-semibold px-4 drop-shadow-md">{feature.leftText}</p>
                           </div>
                         </div>
                       </div>
