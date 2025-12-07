@@ -16,6 +16,8 @@ const UserHeader = () => {
   const [showPublicationForm, setShowPublicationForm] = useState(false);
   const [showArticleSubmissionPopup, setShowArticleSubmissionPopup] = useState(false);
   const [showVideoTutorialPopup, setShowVideoTutorialPopup] = useState(false);
+  const [showServicesPopup, setShowServicesPopup] = useState(false);
+  const [showOrdersDeliveredPopup, setShowOrdersDeliveredPopup] = useState(false);
   const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -285,6 +287,16 @@ const UserHeader = () => {
                             setShowVideoTutorialPopup(true);
                             return;
                           }
+                          if (item.text === "Services") {
+                            e.preventDefault();
+                            setShowServicesPopup(true);
+                            return;
+                          }
+                          if (item.text === "Orders Delivered") {
+                            e.preventDefault();
+                            setShowOrdersDeliveredPopup(true);
+                            return;
+                          }
                           if (item.hasAuthCheck && !isAuthenticated) {
                             e.preventDefault();
                             showAuthModal();
@@ -334,6 +346,16 @@ const UserHeader = () => {
                         if (item.name === "Video Tutorial") {
                           e.preventDefault();
                           setShowVideoTutorialPopup(true);
+                          return;
+                        }
+                        if (item.name === "Services") {
+                          e.preventDefault();
+                          setShowServicesPopup(true);
+                          return;
+                        }
+                        if (item.name === "Orders Delivered") {
+                          e.preventDefault();
+                          setShowOrdersDeliveredPopup(true);
                           return;
                         }
                         if (!isAuthenticated && !item.bypassAuth) {
@@ -602,6 +624,76 @@ const UserHeader = () => {
                   </h3>
                   <p className="text-sm text-gray-600">
                     Tutorials will go live soon after the platform is officially launched.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Services Popup */}
+        {showServicesPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowServicesPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowServicesPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Services Coming Soon
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Comprehensive list of visibility services will go live soon once the platform is officially launched.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Orders Delivered Popup */}
+        {showOrdersDeliveredPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowOrdersDeliveredPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowOrdersDeliveredPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Orders Delivered
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Oops! Hang tight… We're busy delivering happiness to our customers.
                   </p>
                 </div>
               </div>
