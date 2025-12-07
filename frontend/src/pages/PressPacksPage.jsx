@@ -612,42 +612,37 @@ const PressPacksPage = () => {
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
                       }}
                     >
-                      {/* Pack Image */}
-                      <div className="relative h-48 overflow-hidden rounded-t-lg">
-                        <img
-                          src={pack.image_logo || '/logo.png'}
-                          alt={pack.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            e.target.src = '/logo.png';
-                          }}
-                        />
-                        <div className="absolute top-3 right-3">
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center bg-white/90 backdrop-blur-sm"
-                          >
-                            <Package size={20} className="text-[#1976D2]" />
-                          </div>
-                        </div>
-                      </div>
-
                       {/* Enhanced Pack Header */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                              {pack.name}
-                            </h3>
-                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                              <MapPin size={14} className="mr-2" />
-                              <span>{pack.region}</span>
+                      <div className="p-6 flex items-start gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                                {pack.name}
+                              </h3>
+                              <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                                <MapPin size={14} className="mr-2" />
+                                <span>{pack.region}</span>
+                              </div>
+                              <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
+                                <Building size={14} className="mr-2" />
+                                <span>{pack.niche}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                              <Building size={14} className="mr-2" />
-                              <span>{pack.niche}</span>
+                            {/* Pack Image on the right */}
+                            <div className="flex-shrink-0 ml-4">
+                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                                <img
+                                  src={pack.image_logo || '/logo.png'}
+                                  alt={pack.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  onError={(e) => {
+                                    e.target.src = '/logo.png';
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
 
                         {/* Enhanced Press Release Metrics */}
                         <div className="grid grid-cols-3 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>

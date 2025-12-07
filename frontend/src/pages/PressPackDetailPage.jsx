@@ -360,32 +360,43 @@ const PressPackDetailPage = () => {
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Pack Header */}
                 <div className="flex items-start gap-6 mb-8">
-                  <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: themeColors.primaryLight }}
-                  >
-                    <Package size={32} style={{ color: themeColors.primary }} />
-                  </div>
                   <div className="flex-1">
-                    <h1 className="text-3xl font-bold mb-3" style={{ color: themeColors.textPrimary }}>
-                      {pressPack.name}
-                    </h1>
-                    <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: themeColors.textSecondary }}>
-                      <div className="flex items-center gap-2">
-                        <MapPin size={16} />
-                        <span>{pressPack.region}</span>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h1 className="text-3xl font-bold mb-3" style={{ color: themeColors.textPrimary }}>
+                          {pressPack.name}
+                        </h1>
+                        <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: themeColors.textSecondary }}>
+                          <div className="flex items-center gap-2">
+                            <MapPin size={16} />
+                            <span>{pressPack.region}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Building size={16} />
+                            <span>{pressPack.niche}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <DollarSign size={16} />
+                            <span>${pressPack.price}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar size={16} />
+                            <span>Added {new Date(pressPack.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Building size={16} />
-                        <span>{pressPack.niche}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign size={16} />
-                        <span>${pressPack.price}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar size={16} />
-                        <span>Added {new Date(pressPack.created_at).toLocaleDateString()}</span>
+                      {/* Pack Image on the right */}
+                      <div className="flex-shrink-0 ml-4">
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden">
+                          <img
+                            src={pressPack.image_logo || pressPack.image || '/logo.png'}
+                            alt={pressPack.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = '/logo.png';
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
