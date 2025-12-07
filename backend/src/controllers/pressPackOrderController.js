@@ -61,14 +61,25 @@ const create = async (req, res) => {
 
     // Terms accepted validation removed since column doesn't exist in remote DB
 
-    // Create order data (only include fields that exist in remote database)
+    // Create order data (include all fields)
     const orderData = {
       name: name,
+      whatsapp_country_code: whatsapp_country_code,
       whatsapp_number: whatsapp_number,
+      calling_country_code: calling_country_code,
+      calling_number: calling_number,
+      press_release_type: JSON.stringify(press_release_type),
       email: email,
-      press_pack_id: press_release_selection || 1, // Use press_release_selection or default to 1
-      package_selection: package_selection || 'Press Release Package', // Required press_pack_name
-      status: 'pending'
+      submitted_by_type: submitted_by_type,
+      press_release_selection: parsedPressReleaseSelection,
+      package_selection: package_selection,
+      message: message,
+      content_writing_assistance: parsedContentWritingAssistance,
+      status: 'pending',
+      company_registration_document: uploadedFiles.company_registration_document || null,
+      letter_of_authorisation: uploadedFiles.letter_of_authorisation || null,
+      image: uploadedFiles.image || null,
+      word_pdf_document: uploadedFiles.word_pdf_document || null
     };
 
     const order = await PressPackOrder.create(orderData);
@@ -229,18 +240,25 @@ const getAll = async (req, res) => {
       name: order.name,
       email: order.email,
       whatsapp_number: order.whatsapp_number,
-      whatsapp_country_code: '+91', // Default country code, could be enhanced
+      whatsapp_country_code: order.whatsapp_country_code || '+91',
       calling_number: order.calling_number,
-      calling_country_code: '+91', // Default country code, could be enhanced
+      calling_country_code: order.calling_country_code || '+91',
       company_project_type: order.press_release_type ? JSON.parse(order.press_release_type).join(', ') : '',
       submitted_by: order.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
-      press_release_name: 'Not specified',
+      press_release_name: 'Not specified', // Could be fetched from press releases table
       press_release_package: order.package_selection || 'Not specified',
       content_writing_assistance: order.content_writing_assistance ? 'Yes' : 'No',
       status: order.status,
       admin_notes: order.admin_notes || '',
       created_at: order.created_at,
       updated_at: order.updated_at,
+      // Additional fields
+      press_release_selection: order.press_release_selection,
+      message: order.message,
+      company_registration_document: order.company_registration_document,
+      letter_of_authorisation: order.letter_of_authorisation,
+      image: order.image,
+      word_pdf_document: order.word_pdf_document,
       // Legacy fields for backward compatibility
       press_pack_id: order.id,
       press_pack_name: order.package_selection || 'Press Release Package',
@@ -268,6 +286,13 @@ const getAll = async (req, res) => {
           admin_notes: this.admin_notes,
           created_at: this.created_at,
           updated_at: this.updated_at,
+          // Additional fields
+          press_release_selection: this.press_release_selection,
+          message: this.message,
+          company_registration_document: this.company_registration_document,
+          letter_of_authorisation: this.letter_of_authorisation,
+          image: this.image,
+          word_pdf_document: this.word_pdf_document,
           // Legacy fields
           press_pack_id: this.press_pack_id,
           press_pack_name: this.press_pack_name,
