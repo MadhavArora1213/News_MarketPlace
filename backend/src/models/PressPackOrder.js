@@ -82,28 +82,17 @@ class PressPackOrder {
       throw new Error(`Validation errors: ${validationErrors.join(', ')}`);
     }
 
-    // Map model field names to database column names
+    // Map model field names to database column names (legacy remote DB)
     const fieldMapping = {
-      name: 'name',
-      whatsapp_country_code: 'whatsapp_country_code',
-      whatsapp_number: 'whatsapp_number',
-      calling_country_code: 'calling_country_code',
-      calling_number: 'calling_number',
-      press_release_type: 'press_release_type',
-      email: 'email',
-      submitted_by_type: 'submitted_by_type',
-      press_release_selection: 'press_release_selection',
-      package_selection: 'package_selection',
-      message: 'message',
-      content_writing_assistance: 'content_writing_assistance',
-      status: 'status',
-      company_registration_document: 'company_registration_document',
-      letter_of_authorisation: 'letter_of_authorisation',
-      image: 'image',
-      word_pdf_document: 'word_pdf_document'
+      name: 'customer_name',
+      whatsapp_number: 'customer_phone',
+      email: 'customer_email',
+      press_release_selection: 'press_pack_id',
+      package_selection: 'press_pack_name',
+      status: 'status'
     };
 
-    // Only include fields that exist in the database
+    // Include all fields that should be saved
     const allowedFields = [
       'name', 'whatsapp_country_code', 'whatsapp_number', 'calling_country_code', 'calling_number',
       'press_release_type', 'email', 'submitted_by_type', 'press_release_selection', 'package_selection',
