@@ -2,9 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
 import useTranslatedText from '../../hooks/useTranslatedText';
+import { useAuth } from '../../context/AuthContext';
+import { useAuthModal } from '../../App';
 
 const PaparazziSimplified = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { showAuthModal } = useAuthModal();
 
   // Translated texts
   const paparazziTitle = useTranslatedText('Paparazzi Network');
@@ -49,7 +53,13 @@ const PaparazziSimplified = () => {
                 variant="small"
                 textColor="#ffffff"
                 className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
-                onClick={() => navigate('/paparazzi')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    showAuthModal();
+                  } else {
+                    navigate('/paparazzi');
+                  }
+                }}
               >
                 {viewPaparazziText}
               </CosmicButton>

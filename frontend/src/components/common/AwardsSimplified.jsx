@@ -2,9 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
 import useTranslatedText from '../../hooks/useTranslatedText';
+import { useAuth } from '../../context/AuthContext';
+import { useAuthModal } from '../../App';
 
 const AwardsSimplified = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { showAuthModal } = useAuthModal();
 
   // Translated strings
   const awardsTitle = useTranslatedText('Awards & Recognition');
@@ -49,7 +53,13 @@ const AwardsSimplified = () => {
                 variant="small"
                 textColor="#ffffff"
                 className="shadow-lg hover:shadow-xl hover:transform hover:translate-y-1 transition-all duration-500 text-sm md:text-base"
-                onClick={() => navigate('/awards')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    showAuthModal();
+                  } else {
+                    navigate('/awards');
+                  }
+                }}
               >
                 {viewAwardsText}
               </CosmicButton>
