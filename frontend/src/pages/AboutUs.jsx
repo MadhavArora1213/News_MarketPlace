@@ -79,37 +79,37 @@ const AboutUs = () => {
   const aboutSections = [
     {
       number: 1,
-      title: "Our Mission",
-      content: "To revolutionize digital publishing by connecting content creators, businesses, and media outlets through innovative, transparent, and efficient platforms. We bridge the gap between traditional media and modern digital needs, ensuring every voice gets heard and every story gets told."
+      title: "Vision",
+      content: "Our goal is to become the world’s most trusted media marketplace, where high-quality services meet the best pricing. We envision a future where publishing is democratized, accessible, and profitable for all stakeholders in the media ecosystem."
     },
     {
       number: 2,
       title: "Our Vision",
-      content: "To become the world's most trusted digital media marketplace, where quality content meets global audiences. We envision a future where publishing is democratized, accessible, and profitable for all stakeholders in the media ecosystem."
+      content: "To revolutionize visibility requirements by connecting creators, businesses, media outlets, brands, companies, influencers, and marketing professionals through innovative, transparent, and efficient platforms. VaaS Solutions bridge the gap between traditional media and modern digital needs, ensuring every voice is heard and every story is told."
     },
     {
       number: 3,
-      title: "What We Do",
-      content: "We provide comprehensive media solutions including article publishing, press releases, content distribution, and digital marketing services. Our platform connects clients with premium publications across the globe, ensuring maximum reach and impact for their content."
+      title: "What VaaS Solutions Do",
+      content: "VaaS Solutions provides comprehensive omnichannel media, corporate communication, marketing, and PR solutions, including article publishing, press releases, content distribution, and digital marketing services. The platform connects clients with credible visibility solutions, ensuring maximum reach and impact for their vision and objectives."
     },
     {
       number: 4,
-      title: "Our Expertise",
-      content: "With years of experience in the media industry, we understand the nuances of digital publishing. Our team consists of media professionals, content strategists, and technology experts who work together to deliver exceptional results for our clients."
+      title: "Why VaaS Solutions",
+      content: "With years of the founder’s experience across multiple industries, we understand the nuances of visibility. Our team comprises media professionals, content strategists, and technology experts who work together to deliver exceptional results for all the stakeholders."
     },
     {
       number: 5,
-      title: "Quality Standards",
-      content: "We maintain the highest standards in content publishing, ensuring all materials meet editorial guidelines and ethical standards. Our rigorous quality control process guarantees that only the best content reaches our partner publications."
+      title: "Stakeholder Commitment",
+      content: "We uphold the highest standards in service delivery, ensuring every requirement meets best-in-class benchmarks. Our commitment ensures that all partners—suppliers, clients, and collaborators—receive maximum value for their time and efforts."
     },
     {
       number: 6,
       title: "Global Network",
-      content: "Our extensive network spans across continents, connecting clients with top-tier publications in North America, Europe, Asia, and the Middle East. This global reach ensures your content gets the international exposure it deserves."
+      content: "VaaS Solutions’ network spans continents, connecting clients with top-tier media outlets and creators across the Middle East, North America, Europe, and Asia. This global reach ensures that our partners’ vision and mission receive the international and regional exposure they deserve."
     },
     {
       number: 7,
-      title: "Innovation & Technology",
+      title: "Innovation and Technology",
       content: "We leverage cutting-edge technology to streamline the publishing process, from content submission to publication tracking. Our platform features real-time analytics, automated workflows, and AI-powered content optimization tools."
     },
     {
@@ -148,8 +148,9 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <SEO
-        title="About Us"
-        description="Learn about News Marketplace - our mission to revolutionize digital publishing, connect content creators with global audiences, and provide comprehensive media solutions."
+        title="About Visibility as a Services (VaaS) Solutuions"
+        description="Discover the platform’s vision, mission, and the driving force behind the
+region’s first-of-its-kind MarTech platform for visibility services."
         keywords="about us, news marketplace, digital publishing, media solutions, content creators, global publications"
       />
       <UserHeader />
@@ -179,10 +180,11 @@ const AboutUs = () => {
             {/* Text block */}
             <div className="w-full md:flex-1 text-center md:text-left">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight" style={{ color: '#ffffff' }}>
-                About Us
+                About Visibility as a Services (VaaS) Solutuions
               </h1>
               <p className="mt-3 text-base md:text-lg text-white/90 max-w-2xl">
-                Discover our story, mission, and the team behind the most trusted digital media marketplace.
+                Discover the platform’s vision, mission, and the driving force behind the
+region’s first-of-its-kind MarTech platform for visibility services.
               </p>
 
               {/* badges */}

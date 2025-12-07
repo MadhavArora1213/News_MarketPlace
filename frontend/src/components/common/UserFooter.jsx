@@ -140,16 +140,10 @@ export default function UserFooter() {
 
         {/* Bottom Section */}
         <div className="border-t border-gray-200 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="body-small text-gray-600 mb-4 md:mb-0">
+          <div className="text-center">
+            <p className="body-small text-gray-600">
               {copyright}
             </p>
-            <div className="flex items-center space-x-6">
-              <Link to="/privacy-policy" className="body-small text-gray-600 hover:text-primary transition-colors">{privacy}</Link>
-              <Link to="/terms-and-conditions" className="body-small text-gray-600 hover:text-primary transition-colors">{terms}</Link>
-              <Link to="/cookie-policy" className="body-small text-gray-600 hover:text-primary transition-colors">{cookies}</Link>
-              <Link to="/refund-policy" className="body-small text-gray-600 hover:text-primary transition-colors">{refunds}</Link>
-            </div>
           </div>
         </div>
       </div>

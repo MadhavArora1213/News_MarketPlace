@@ -8,9 +8,9 @@ const AboutSimplified = () => {
 
   // Translated texts
   const aboutText = useTranslatedText('About');
-  const newsMarketPlaceText = useTranslatedText('News MarketPlace');
+  const newsMarketPlaceText = useTranslatedText('Visibility as a Services (VaaS) Solutuions');
   const heroDescription = useTranslatedText('We\'re revolutionizing digital publishing by connecting content creators with global audiences through innovative, transparent, and efficient platforms.');
-  const learnMoreButton = useTranslatedText('Learn More About Us');
+  const learnMoreButton = useTranslatedText('Click to read');
 
   return (
     <section className="py-16 md:py-20 lg:py-24 bg-[#E3F2FD] relative overflow-hidden">
@@ -44,8 +44,7 @@ const AboutSimplified = () => {
                 {learnMoreButton}
               </h3>
               <p className="text-white/90 leading-relaxed text-base md:text-lg mb-8">
-                Discover more about our platform, mission, and how we're revolutionizing digital publishing.
-              </p>
+                Discover the platform’s vision, mission, and the driving force behind the region’s first-of-its-kind MarTech platform for visibility services.              </p>
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"
