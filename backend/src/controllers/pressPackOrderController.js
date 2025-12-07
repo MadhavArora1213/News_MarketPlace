@@ -205,11 +205,17 @@ const getAll = async (req, res) => {
     // Calculate offset
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
-    // Build the main query
+    // Build the main query with press release join
     const mainQuery = `
-      SELECT * FROM press_pack_orders
+      SELECT
+        po.*,
+        pr.title as press_release_title,
+        pr.region as press_release_region,
+        pr.price as press_release_price
+      FROM press_pack_orders po
+      LEFT JOIN press_releases pr ON po.press_pack_id = pr.id
       ${whereClause}
-      ORDER BY created_at DESC
+      ORDER BY po.created_at DESC
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
 
@@ -274,7 +280,9 @@ const getAll = async (req, res) => {
         calling_country_code: additionalData.calling_country_code || '+91',
         company_project_type: pressReleaseType,
         submitted_by: additionalData.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
-        press_release_name: 'Not specified', // Could be fetched from press releases table
+        press_release_name: order.press_release_title ?
+          `${order.press_release_title} - ${order.press_release_region || 'N/A'} - $${order.press_release_price || '0.00'}` :
+          'Not specified',
         press_release_package: order.press_pack_name || 'Not specified',
         content_writing_assistance: additionalData.content_writing_assistance ? 'Yes' : 'No',
         status: order.status,
