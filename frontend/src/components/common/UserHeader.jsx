@@ -18,6 +18,12 @@ const UserHeader = () => {
   const [showVideoTutorialPopup, setShowVideoTutorialPopup] = useState(false);
   const [showServicesPopup, setShowServicesPopup] = useState(false);
   const [showOrdersDeliveredPopup, setShowOrdersDeliveredPopup] = useState(false);
+  const [showEventsPopup, setShowEventsPopup] = useState(false);
+  const [showHowItWorksPopup, setShowHowItWorksPopup] = useState(false);
+  const [showBlogPopup, setShowBlogPopup] = useState(false);
+  const [showMediaPartnershipsPopup, setShowMediaPartnershipsPopup] = useState(false);
+  const [showPRQuestionnairePopup, setShowPRQuestionnairePopup] = useState(false);
+  const [showHowToGuidePopup, setShowHowToGuidePopup] = useState(false);
   const [mobileShowAllItems, setMobileShowAllItems] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -297,6 +303,36 @@ const UserHeader = () => {
                             setShowOrdersDeliveredPopup(true);
                             return;
                           }
+                          if (item.text === "Events") {
+                            e.preventDefault();
+                            setShowEventsPopup(true);
+                            return;
+                          }
+                          if (item.text === "How It Works") {
+                            e.preventDefault();
+                            setShowHowItWorksPopup(true);
+                            return;
+                          }
+                          if (item.text === "Blog") {
+                            e.preventDefault();
+                            setShowBlogPopup(true);
+                            return;
+                          }
+                          if (item.text === "Media Partnerships") {
+                            e.preventDefault();
+                            setShowMediaPartnershipsPopup(true);
+                            return;
+                          }
+                          if (item.text === "PR Questionnaire") {
+                            e.preventDefault();
+                            setShowPRQuestionnairePopup(true);
+                            return;
+                          }
+                          if (item.text === "How-to Guide") {
+                            e.preventDefault();
+                            setShowHowToGuidePopup(true);
+                            return;
+                          }
                           if (item.hasAuthCheck && !isAuthenticated) {
                             e.preventDefault();
                             showAuthModal();
@@ -356,6 +392,36 @@ const UserHeader = () => {
                         if (item.name === "Orders Delivered") {
                           e.preventDefault();
                           setShowOrdersDeliveredPopup(true);
+                          return;
+                        }
+                        if (item.name === "Events") {
+                          e.preventDefault();
+                          setShowEventsPopup(true);
+                          return;
+                        }
+                        if (item.name === "How It Works") {
+                          e.preventDefault();
+                          setShowHowItWorksPopup(true);
+                          return;
+                        }
+                        if (item.name === "Blog") {
+                          e.preventDefault();
+                          setShowBlogPopup(true);
+                          return;
+                        }
+                        if (item.name === "Media Partnerships") {
+                          e.preventDefault();
+                          setShowMediaPartnershipsPopup(true);
+                          return;
+                        }
+                        if (item.name === "PR Questionnaire") {
+                          e.preventDefault();
+                          setShowPRQuestionnairePopup(true);
+                          return;
+                        }
+                        if (item.name === "How-to Guide") {
+                          e.preventDefault();
+                          setShowHowToGuidePopup(true);
                           return;
                         }
                         if (!isAuthenticated && !item.bypassAuth) {
@@ -694,6 +760,216 @@ const UserHeader = () => {
                   </h3>
                   <p className="text-sm text-gray-600">
                     Oops! Hang tight… We're busy delivering happiness to our customers.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Events Popup */}
+        {showEventsPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowEventsPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowEventsPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Events Coming Soon
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Exciting events and networking opportunities are being planned. Stay tuned for announcements on upcoming conferences, workshops, and industry gatherings.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* How It Works Popup */}
+        {showHowItWorksPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowHowItWorksPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowHowItWorksPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    How It Works
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Step-by-step guides and tutorials are being prepared to help you navigate our platform effectively. Comprehensive documentation will be available soon.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Blog Popup */}
+        {showBlogPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowBlogPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowBlogPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Blog Coming Soon
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Our blog is being curated with insightful articles, industry news, and expert opinions. Subscribe to stay updated with the latest in digital publishing and media.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Media Partnerships Popup */}
+        {showMediaPartnershipsPopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowMediaPartnershipsPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowMediaPartnershipsPopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Media Partnerships
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Strategic media partnerships and collaborations are in development. We're building relationships with leading publications and media outlets worldwide.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* PR Questionnaire Popup */}
+        {showPRQuestionnairePopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowPRQuestionnairePopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowPRQuestionnairePopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    PR Questionnaire
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Our comprehensive PR questionnaire template is being finalized. This tool will help you gather all necessary information for effective press release campaigns.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* How-to Guide Popup */}
+        {showHowToGuidePopup && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowHowToGuidePopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto relative border border-gray-200 my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowHowToGuidePopup(false)}
+                className="absolute -top-2 -right-2 z-10 bg-white text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full shadow-lg border hover:bg-gray-50"
+              >
+                <Icon name="x" size="sm" />
+              </button>
+
+              <div className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    How-to Guides
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Detailed step-by-step guides are being created to help you maximize the platform's potential. From submission to publication, we'll guide you through every step.
                   </p>
                 </div>
               </div>
