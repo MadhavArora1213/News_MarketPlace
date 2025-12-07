@@ -209,7 +209,7 @@ const getAll = async (req, res) => {
     const mainQuery = `
       SELECT
         po.*,
-        pr.title as press_release_title,
+        pr.name as press_release_title,
         pr.region as press_release_region,
         pr.price as press_release_price
       FROM press_pack_orders po
