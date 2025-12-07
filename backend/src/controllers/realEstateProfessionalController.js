@@ -193,7 +193,7 @@ class RealEstateProfessionalController {
       if (languages) {
         // Search for professionals who speak the specified language (case-insensitive)
         // languages field is stored as JSON string, so we need to parse it first
-        searchSql += ` AND LOWER($${searchParamCount}) = ANY(ARRAY(SELECT LOWER(unnest(rp.languages::json))))`;
+        searchSql += ` AND LOWER($${searchParamCount}) = ANY(ARRAY(SELECT LOWER(json_array_elements_text(rp.languages::json))))`;
         searchValues.push(languages);
         searchParamCount++;
       }
