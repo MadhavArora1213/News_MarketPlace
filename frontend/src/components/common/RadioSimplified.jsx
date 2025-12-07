@@ -12,7 +12,7 @@ const RadioSimplified = () => {
 
   // Translated texts
   const radioTitle = useTranslatedText('Radio');
-  const radioDesc = useTranslatedText('Explore our radio programs and connect with our broadcasting network.');
+  const radioDesc = useTranslatedText('Explore Advertisements and Interviews opportunities Across Radio Channels in Multiple Languages. Access RJs to cover your events, product launches, press conferences, and other corporate or lifestyle occasions. Amplify your visibility through our extensive, multi-language radio network.');
   const viewRadioText = useTranslatedText('View Radio Programs');
 
   return (
@@ -29,7 +29,7 @@ const RadioSimplified = () => {
             {radioTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Explore our radio programs and connect with broadcasting network. Access live shows, interviews, and discussions. Discover diverse content and entertainment options. Connect with hosts and participate in live broadcasts. Enhance your media presence through our radio network.
+            {radioDesc}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,10 +44,10 @@ const RadioSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Discover Our Radio Programs
+               Explore Our Radio Network.
               </h3>
               <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Tune in to live broadcasts and connect with our global radio network.
+                English, Arabic, Hindi, Russian, Urdu, Persian and many more language channels..
               </p>
               <CosmicButton
                 variant="small"

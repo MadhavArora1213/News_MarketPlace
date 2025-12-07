@@ -193,7 +193,7 @@ const RadioPage = () => {
               Radio Stations
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Discover radio stations across the UAE. Find your favorite frequencies, languages, and popular RJ hosts.
+             Explore Advertisements and Interviews opportunities Across Radio Channels in Multiple Languages. Access RJs to cover your events, product launches, press conferences, and other corporate or lifestyle occasions. Amplify your visibility through our extensive, multi-language radio network.
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
               The current page is for representation purpose only, the comprehensive list will be live soon

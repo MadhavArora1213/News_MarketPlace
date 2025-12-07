@@ -97,7 +97,7 @@ const PodcastersList = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         page: '1',
         limit: '50'
@@ -117,13 +117,13 @@ const PodcastersList = () => {
       console.log('Fetching podcasters with params:', params.toString());
 
       const response = await api.get(`/podcasters/approved?${params.toString()}`);
-      
+
       if (response.data && response.data.podcasters) {
         let podcastersData = response.data.podcasters;
 
         // Client-side filtering as backup
         if (selectedCategory && selectedCategory !== 'all') {
-          podcastersData = podcastersData.filter(podcaster => 
+          podcastersData = podcastersData.filter(podcaster =>
             podcaster.podcast_focus_industry === selectedCategory ||
             podcaster.podcast_region === selectedCategory
           );
@@ -149,15 +149,15 @@ const PodcastersList = () => {
       }
     } catch (err) {
       console.error('Error fetching podcasters:', err);
-      
+
       // More detailed error handling
       let errorMessage = 'Failed to load podcasters';
-      
+
       if (err.response) {
         // Server responded with error status
         const status = err.response.status;
         const message = err.response.data?.message || err.response.data?.error;
-        
+
         if (status === 500) {
           errorMessage = 'Server error occurred. Please try again later.';
         } else if (status === 404) {
@@ -174,7 +174,7 @@ const PodcastersList = () => {
         // Other error
         errorMessage = err.message || 'An unexpected error occurred.';
       }
-      
+
       setError(errorMessage);
       setPodcasters([]); // Clear podcasters on error
     } finally {
@@ -212,14 +212,14 @@ const PodcastersList = () => {
       ];
 
       industries.forEach(industry => {
-        const count = podcasters.filter(p => 
+        const count = podcasters.filter(p =>
           p.podcast_focus_industry === industry
         ).length;
         if (count > 0) {
-          cats.push({ 
-            id: industry, 
-            name: industry, 
-            count 
+          cats.push({
+            id: industry,
+            name: industry,
+            count
           });
         }
       });
@@ -244,18 +244,18 @@ const PodcastersList = () => {
 
       return podcasters.filter(podcaster => {
         if (!podcaster) return false;
-        
+
         const matchesCategory = selectedCategory === 'all' ||
           podcaster.podcast_focus_industry === selectedCategory ||
           podcaster.podcast_region === selectedCategory;
-          
+
         const matchesSearch = !searchQuery ||
           podcaster.podcast_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           podcaster.podcast_host?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           podcaster.podcast_focus_industry?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           podcaster.podcast_region?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           podcaster.podcast_target_audience?.toLowerCase().includes(searchQuery.toLowerCase());
-          
+
         return matchesCategory && matchesSearch;
       });
     } catch (error) {
@@ -299,10 +299,13 @@ const PodcastersList = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Discover Amazing Podcasters
+              Discover Leading Podcasters
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Connect with top podcasters and discover new voices in your industry. Find the perfect podcast host for your next collaboration.
+              Connect with top podcasters and uncover credible voices across multiple industries. Find the perfect podcast host for your next collaboration or campaign.
+            </p>
+  <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
+              The current page is for representation purpose only, the comprehensive list will be live soon
             </p>
 
             {/* Search Bar */}
@@ -424,21 +427,19 @@ const PodcastersList = () => {
                   <div className="space-y-2">
                     <button
                       onClick={() => setActiveTab('approved')}
-                      className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${
-                        activeTab === 'approved'
+                      className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${activeTab === 'approved'
                           ? 'bg-white text-[#1976D2] shadow-sm'
                           : 'text-[#757575] hover:text-[#212121] hover:bg-white'
-                      }`}
+                        }`}
                     >
                       Approved Podcasters
                     </button>
                     <button
                       onClick={() => setActiveTab('my-submissions')}
-                      className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${
-                        activeTab === 'my-submissions'
+                      className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${activeTab === 'my-submissions'
                           ? 'bg-white text-[#1976D2] shadow-sm'
                           : 'text-[#757575] hover:text-[#212121] hover:bg-white'
-                      }`}
+                        }`}
                     >
                       My Submissions
                     </button>

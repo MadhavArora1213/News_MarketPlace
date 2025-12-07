@@ -12,7 +12,7 @@ const RealEstateSimplified = () => {
 
   // Translated texts
   const realEstateTitle = useTranslatedText('Real Estate');
-  const realEstateDesc = useTranslatedText('Explore our real estate listings and property management services.');
+  const realEstateDesc = useTranslatedText('Explore a wide range of real estate agency owners, agents, and marketing experts from different countries, languages, genders, and age groups. Partner with professionals who not only enhance your brand equity and amplify organic marketing but also drive substantial sales.');
   const viewRealEstateText = useTranslatedText('View Real Estate Listings');
 
   return (
@@ -29,7 +29,7 @@ const RealEstateSimplified = () => {
             {realEstateTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Explore our real estate listings and property management services. Find your perfect property solution. Access exclusive listings and investment opportunities. Connect with professional agents and property experts. Discover residential and commercial properties worldwide.
+            {realEstateDesc}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,11 +44,10 @@ const RealEstateSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Find Your Perfect Property
+            Discover the Perfect Real Estate Influencer for Your Project
+
               </h3>
-              <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Explore our exclusive real estate listings and investment opportunities.
-              </p>
+              
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"

@@ -312,10 +312,14 @@ const RealEstateList = () => {
             className="text-center"
           >
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4 tracking-tight">
-              Real Estate Professionals
+              Connect with a Diverse Network of Real Estate Professional Influencers
             </h1>
             <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
-              Connect with verified real estate professionals and find the perfect partner for your property needs.
+
+              Explore a wide range of real estate agency owners, agents, and marketing experts from different countries, languages, genders, and age groups. Partner with professionals who not only enhance your brand equity and amplify organic marketing but also drive substantial sales.
+            </p>
+            <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
+              The current page is for representation purpose only, the comprehensive list will be live soon
             </p>
 
             {/* Search Bar */}
@@ -504,21 +508,19 @@ const RealEstateList = () => {
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <List size={16} />
                   </button>
