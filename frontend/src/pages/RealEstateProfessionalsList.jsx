@@ -61,6 +61,7 @@ const RealEstateProfessionalsList = () => {
   // Filter states
   const [professionTypeFilter, setProfessionTypeFilter] = useState('');
   const [nationalityFilter, setNationalityFilter] = useState('');
+  const [genderFilter, setGenderFilter] = useState('');
   const [languagesFilter, setLanguagesFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
 
@@ -86,7 +87,7 @@ const RealEstateProfessionalsList = () => {
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, nationalityFilter, languagesFilter, locationFilter]);
+  }, [searchTerm, nationalityFilter, genderFilter, languagesFilter, locationFilter]);
 
   const fetchProfessionals = async () => {
     try {
@@ -103,6 +104,7 @@ const RealEstateProfessionalsList = () => {
       }
 
       if (nationalityFilter) params.append('nationality', nationalityFilter);
+      if (genderFilter) params.append('gender', genderFilter);
       if (locationFilter) params.append('current_residence_city', locationFilter);
       if (languagesFilter) params.append('languages', languagesFilter);
 
@@ -116,7 +118,8 @@ const RealEstateProfessionalsList = () => {
           pro.first_name?.toLowerCase().includes(searchLower) ||
           pro.last_name?.toLowerCase().includes(searchLower) ||
           pro.nationality?.toLowerCase().includes(searchLower) ||
-          pro.current_residence_city?.toLowerCase().includes(searchLower)
+          pro.current_residence_city?.toLowerCase().includes(searchLower) ||
+          pro.gender?.toLowerCase().includes(searchLower)
         );
       }
 
@@ -198,12 +201,13 @@ const RealEstateProfessionalsList = () => {
   const clearAllFilters = () => {
     setProfessionTypeFilter('');
     setNationalityFilter('');
+    setGenderFilter('');
     setLanguagesFilter('');
     setLocationFilter('');
   };
 
   const hasActiveFilters = () => {
-    return professionTypeFilter || nationalityFilter || languagesFilter || locationFilter;
+    return professionTypeFilter || nationalityFilter || genderFilter || languagesFilter || locationFilter;
   };
 
   const handleShowAuth = () => {
@@ -385,6 +389,23 @@ const RealEstateProfessionalsList = () => {
                     </select>
                   </div>
 
+                  {/* Gender Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Gender
+                    </label>
+                    <select
+                      value={genderFilter}
+                      onChange={(e) => setGenderFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
+                    >
+                      <option value="">All Genders</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
                   {/* Languages Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
@@ -505,6 +526,7 @@ const RealEstateProfessionalsList = () => {
                   <option value="no_of_followers-desc">Followers (High to Low)</option>
                   <option value="no_of_followers-asc">Followers (Low to High)</option>
                   <option value="nationality-asc">Nationality (A-Z)</option>
+                  <option value="gender-asc">Gender (A-Z)</option>
                   <option value="current_residence_city-asc">Location (A-Z)</option>
                 </select>
               </div>
@@ -540,6 +562,10 @@ const RealEstateProfessionalsList = () => {
                             <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
                               {getProfessionTypeIcon(professional)}
                               <span className="ml-2">{getProfessionTypeLabel(professional)}</span>
+                            </div>
+                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                              <User size={14} className="mr-2" />
+                              <span>{professional.gender || 'Gender not specified'}</span>
                             </div>
                             <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
                               <MapPin size={14} className="mr-2" />
@@ -652,6 +678,9 @@ const RealEstateProfessionalsList = () => {
                               Nationality {getSortIcon('nationality')}
                             </div>
                           </th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                            Gender
+                          </th>
                           <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
@@ -723,6 +752,11 @@ const RealEstateProfessionalsList = () => {
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
                                 {professional.nationality || 'Not specified'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                {professional.gender || 'Not specified'}
                               </span>
                             </td>
                             <td className="px-6 py-4">
