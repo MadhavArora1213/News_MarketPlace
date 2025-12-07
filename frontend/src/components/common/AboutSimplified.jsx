@@ -13,22 +13,22 @@ const AboutSimplified = () => {
   const learnMoreButton = useTranslatedText('Click to read');
 
   return (
-    <section className="py-16 md:py-20 lg:py-24 bg-[#E3F2FD] relative overflow-hidden">
+    <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-10 left-10 w-32 h-32 md:w-40 md:h-40 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
-      <div className="absolute bottom-10 right-10 w-40 h-40 md:w-48 md:h-48 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
-      <div className="absolute top-1/3 right-1/4 w-20 h-20 md:w-28 md:h-28 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
+      <div className="absolute top-5 left-5 w-16 h-16 md:w-20 md:h-20 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
+      <div className="absolute bottom-5 right-5 w-20 h-20 md:w-24 md:h-24 bg-[#1976D2]/10 rounded-full blur-3xl opacity-60"></div>
+      <div className="absolute top-1/3 right-1/4 w-10 h-10 md:w-14 md:h-14 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-8 md:mb-12 lg:mb-16">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight tracking-tight">
+        <div className="text-center mb-4 md:mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#212121] mb-3 md:mb-4 leading-tight tracking-tight">
             {aboutText} <span className="text-[#1976D2]">{newsMarketPlaceText}</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
+          <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
             {heroDescription}
           </p>
-          <div className="mt-8 md:mt-10 flex justify-center space-x-4 md:space-x-6">
+          <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
             <div className="w-8 h-1.5 md:w-10 bg-gradient-to-r from-[#42A5F5] to-[#90CAF9] rounded-full"></div>
             <div className="w-4 h-1.5 md:w-6 bg-gradient-to-r from-[#90CAF9] to-[#E3F2FD] rounded-full"></div>
@@ -36,14 +36,14 @@ const AboutSimplified = () => {
         </div>
 
         {/* Enhanced Action Button with Card */}
-        <div className="text-center mb-12">
-          <div className="bg-gradient-to-br from-[#1976D2] to-[#0D47A1] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-white/30 relative overflow-hidden w-full">
+        <div className="text-center mb-6">
+          <div className="bg-gradient-to-br from-[#1976D2] to-[#0D47A1] rounded-3xl p-4 md:p-6 lg:p-8 shadow-2xl border border-white/30 relative overflow-hidden w-full">
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 transition-colors duration-500">
+              <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
                 {learnMoreButton}
               </h3>
-              <p className="text-white/90 leading-relaxed text-base md:text-lg mb-8">
+              <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
                 Discover the platform’s vision, mission, and the driving force behind the region’s first-of-its-kind MarTech platform for visibility services.              </p>
               <CosmicButton
                 variant="small"

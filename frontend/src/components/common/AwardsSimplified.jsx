@@ -12,22 +12,22 @@ const AwardsSimplified = () => {
   const viewAwardsText = useTranslatedText('View Awards');
 
   return (
-    <section className="py-4 bg-[#E3F2FD] relative overflow-hidden">
+    <section className="py-2 md:py-4 lg:py-6 bg-[#E3F2FD] relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-[#1976D2]/10 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
-      <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-[#1976D2]/5 rounded-full blur-xl"></div>
+      <div className="absolute top-10 left-5 w-16 h-16 bg-[#1976D2]/10 rounded-full blur-2xl"></div>
+      <div className="absolute bottom-10 right-5 w-20 h-20 bg-[#FFFFFF]/20 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-[#1976D2]/5 rounded-full blur-xl"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-8 md:mb-12 lg:mb-16">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#212121] mb-6 md:mb-8 leading-tight tracking-tight">
+        <div className="text-center mb-4 md:mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#212121] mb-3 md:mb-4 leading-tight tracking-tight">
             {awardsTitle}
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
+          <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
             Celebrating our achievements and recognition in digital publishing and media innovation worldwide. Honoring excellence in journalism and content creation. Connecting with industry leaders and visionaries. Showcasing our commitment to quality and innovation.
           </p>
-          <div className="mt-8 md:mt-10 flex justify-center space-x-4 md:space-x-6">
+          <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
             <div className="w-8 h-1.5 md:w-10 bg-gradient-to-r from-[#42A5F5] to-[#90CAF9] rounded-full"></div>
             <div className="w-4 h-1.5 md:w-6 bg-gradient-to-r from-[#90CAF9] to-[#E3F2FD] rounded-full"></div>
@@ -35,14 +35,14 @@ const AwardsSimplified = () => {
         </div>
 
         {/* Different Card with Button */}
-        <div className="text-center mb-12">
-          <div className="bg-gradient-to-br from-[#00796B] to-[#004D40] rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-white/30 relative overflow-hidden w-full">
+        <div className="text-center mb-6">
+          <div className="bg-gradient-to-br from-[#00796B] to-[#004D40] rounded-3xl p-4 md:p-6 lg:p-8 shadow-2xl border border-white/30 relative overflow-hidden w-full">
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 transition-colors duration-500">
+              <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
                 Explore Our Awards and Recognition
               </h3>
-              <p className="text-white/90 leading-relaxed text-base md:text-lg mb-8">
+              <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
                 Discover our achievements and commitment to excellence in digital publishing.
               </p>
               <CosmicButton
