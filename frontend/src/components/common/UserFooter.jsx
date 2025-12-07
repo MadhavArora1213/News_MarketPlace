@@ -35,7 +35,7 @@ export default function UserFooter() {
   const faq = useTranslatedText('FAQ');
   const servicesPartnershipsTitle = useTranslatedText('Services & Partnerships');
   const agencyRegistration = useTranslatedText('Agency Registration');
-  const submitPublication = useTranslatedText('Submit your Publication');
+  // const submitPublication = useTranslatedText('Submit your Publication');
   const reporterRegistration = useTranslatedText('Editor/Contributor Registration');
   const mediaPartnershipsEvents = useTranslatedText('Media Partnerships for Events');
   const pressGuidelines = useTranslatedText('Press Release Distribution Guidelines');
@@ -128,7 +128,7 @@ export default function UserFooter() {
             <h4 className="heading-4 text-gray-900 mb-4">{servicesPartnershipsTitle}</h4>
             <ul className="space-y-2">
               <li><Link to="/agency-registration" className="body-small text-gray-600 hover:text-primary transition-colors">{agencyRegistration}</Link></li>
-              <li><Link to="/submit-article" className="body-small text-gray-600 hover:text-primary transition-colors">{submitPublication}</Link></li>
+              {/* <li><Link to="/submit-article" className="body-small text-gray-600 hover:text-primary transition-colors">{submitPublication}</Link></li> */}
               <li><Link to="/reporter-registration" className="body-small text-gray-600 hover:text-primary transition-colors">{reporterRegistration}</Link></li>
               <li><Link to="/event-enquiry" className="body-small text-gray-600 hover:text-primary transition-colors">{mediaPartnershipsEvents}</Link></li>
               <li><Link to="/press-guidelines" className="body-small text-gray-600 hover:text-primary transition-colors">{pressGuidelines}</Link></li>

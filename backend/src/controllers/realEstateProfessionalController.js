@@ -161,19 +161,19 @@ class RealEstateProfessionalController {
       }
 
       if (nationality) {
-        searchSql += ` AND rp.nationality = $${searchParamCount}`;
+        searchSql += ` AND LOWER(rp.nationality) = LOWER($${searchParamCount})`;
         searchValues.push(nationality);
         searchParamCount++;
       }
 
       if (current_residence_city) {
-        searchSql += ` AND rp.current_residence_city = $${searchParamCount}`;
+        searchSql += ` AND LOWER(rp.current_residence_city) = LOWER($${searchParamCount})`;
         searchValues.push(current_residence_city);
         searchParamCount++;
       }
 
       if (gender) {
-        searchSql += ` AND rp.gender = $${searchParamCount}`;
+        searchSql += ` AND LOWER(rp.gender) = LOWER($${searchParamCount})`;
         searchValues.push(gender);
         searchParamCount++;
       }
@@ -196,8 +196,8 @@ class RealEstateProfessionalController {
       }
 
       if (languages) {
-        // Search for professionals who speak the specified language
-        searchSql += ` AND $${searchParamCount} = ANY(rp.languages)`;
+        // Search for professionals who speak the specified language (case-insensitive)
+        searchSql += ` AND EXISTS (SELECT 1 FROM unnest(rp.languages) AS lang WHERE LOWER(lang) = LOWER($${searchParamCount}))`;
         searchValues.push(languages);
         searchParamCount++;
       }
