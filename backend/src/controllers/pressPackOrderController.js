@@ -665,7 +665,6 @@ const sendOrderStatusUpdateEmail = async (order) => {
           <p><strong>Order ID:</strong> ${order.id}</p>
           <p><strong>Press Pack:</strong> ${order.press_pack_name}</p>
           <p><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${order.status.toUpperCase()}</span></p>
-          <p><strong>Price:</strong> $${order.price}</p>
         </div>
 
         ${order.admin_notes ? `

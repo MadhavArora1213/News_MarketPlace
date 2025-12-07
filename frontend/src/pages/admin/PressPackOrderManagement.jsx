@@ -151,7 +151,14 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
 
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>Selected Press Release</label>
-              <div style={valueStyle}>{order.press_release_name}</div>
+              <div style={valueStyle}>
+                {order.company_project_type ?
+                  (Array.isArray(order.company_project_type) ?
+                    order.company_project_type.join(', ') :
+                    order.company_project_type) :
+                  (order.press_release_selection || 'Not specified')
+                }
+              </div>
             </div>
 
             <div style={{ marginBottom: '12px' }}>
