@@ -26,9 +26,9 @@ const ContactUs = () => {
     termsAccepted: false
   });
 
-  const [otpSent, setOtpSent] = useState({ email: false, whatsapp: false });
-  const [otpVerified, setOtpVerified] = useState({ email: false, whatsapp: false });
-  const [otpValues, setOtpValues] = useState({ email: '', whatsapp: '' });
+  const [otpSent, setOtpSent] = useState({ email: false });
+  const [otpVerified, setOtpVerified] = useState({ email: false });
+  const [otpValues, setOtpValues] = useState({ email: '' });
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -55,17 +55,17 @@ const ContactUs = () => {
     }
   };
 
-  const handleOtpChange = (type, value) => {
-    setOtpValues(prev => ({ ...prev, [type]: value }));
+  const handleOtpChange = (value) => {
+    setOtpValues(prev => ({ ...prev, email: value }));
   };
 
   const handleRecaptchaChange = (token) => {
     setRecaptchaToken(token);
   };
 
-  const sendOtp = async (type) => {
-    if (!formData[type]) {
-      setErrors(prev => ({ ...prev, [type]: `${type} is required` }));
+  const sendOtp = async () => {
+    if (!formData.email) {
+      setErrors(prev => ({ ...prev, email: 'Email is required' }));
       return;
     }
 
@@ -74,12 +74,12 @@ const ContactUs = () => {
       const response = await fetch('/api/contact/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, value: formData[type] })
+        body: JSON.stringify({ type: 'email', value: formData.email })
       });
 
       if (response.ok) {
-        setOtpSent(prev => ({ ...prev, [type]: true }));
-        toast.success(`OTP sent to your ${type}!`, {
+        setOtpSent(prev => ({ ...prev, email: true }));
+        toast.success('OTP sent to your email!', {
           duration: 4000,
           position: 'top-right',
           style: {
@@ -89,8 +89,8 @@ const ContactUs = () => {
         });
       } else {
         const error = await response.json();
-        setErrors(prev => ({ ...prev, [type]: error.message }));
-        toast.error(`Failed to send OTP to ${type}`, {
+        setErrors(prev => ({ ...prev, email: error.message }));
+        toast.error('Failed to send OTP to email', {
           duration: 4000,
           position: 'top-right',
           style: {
@@ -100,7 +100,7 @@ const ContactUs = () => {
         });
       }
     } catch (error) {
-      setErrors(prev => ({ ...prev, [type]: 'Failed to send OTP' }));
+      setErrors(prev => ({ ...prev, email: 'Failed to send OTP' }));
       toast.error('Failed to send OTP. Please try again.', {
         duration: 4000,
         position: 'top-right',
@@ -113,9 +113,9 @@ const ContactUs = () => {
     setLoading(false);
   };
 
-  const verifyOtp = async (type) => {
-    if (!otpValues[type]) {
-      setErrors(prev => ({ ...prev, [`${type}Otp`]: 'OTP is required' }));
+  const verifyOtp = async () => {
+    if (!otpValues.email) {
+      setErrors(prev => ({ ...prev, emailOtp: 'OTP is required' }));
       return;
     }
 
@@ -124,13 +124,13 @@ const ContactUs = () => {
       const response = await fetch('/api/contact/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, value: formData[type], otp: otpValues[type] })
+        body: JSON.stringify({ type: 'email', value: formData.email, otp: otpValues.email })
       });
 
       if (response.ok) {
-        setOtpVerified(prev => ({ ...prev, [type]: true }));
-        setErrors(prev => ({ ...prev, [`${type}Otp`]: '' }));
-        toast.success(`${type} verified successfully!`, {
+        setOtpVerified(prev => ({ ...prev, email: true }));
+        setErrors(prev => ({ ...prev, emailOtp: '' }));
+        toast.success('Email verified successfully!', {
           duration: 4000,
           position: 'top-right',
           style: {
@@ -140,8 +140,8 @@ const ContactUs = () => {
         });
       } else {
         const error = await response.json();
-        setErrors(prev => ({ ...prev, [`${type}Otp`]: error.message }));
-        toast.error(`Failed to verify ${type}`, {
+        setErrors(prev => ({ ...prev, emailOtp: error.message }));
+        toast.error('Failed to verify email', {
           duration: 4000,
           position: 'top-right',
           style: {
@@ -151,7 +151,7 @@ const ContactUs = () => {
         });
       }
     } catch (error) {
-      setErrors(prev => ({ ...prev, [`${type}Otp`]: 'Failed to verify OTP' }));
+      setErrors(prev => ({ ...prev, emailOtp: 'Failed to verify OTP' }));
       toast.error('Failed to verify OTP. Please try again.', {
         duration: 4000,
         position: 'top-right',
@@ -177,7 +177,6 @@ const ContactUs = () => {
     if (!formData.message.trim()) newErrors.message = 'Message is required';
     if (!formData.termsAccepted) newErrors.termsAccepted = 'You must accept the terms and conditions';
     if (!otpVerified.email) newErrors.emailOtp = 'Email must be verified';
-    if (!otpVerified.whatsapp) newErrors.whatsappOtp = 'WhatsApp must be verified';
     if (!recaptchaToken) newErrors.captcha = 'Please complete the captcha';
 
     setErrors(newErrors);
@@ -214,9 +213,9 @@ const ContactUs = () => {
           individualLinkedin: '', individualInstagram: '', howDidYouHear: '',
           message: '', termsAccepted: false
         });
-        setOtpSent({ email: false, whatsapp: false });
-        setOtpVerified({ email: false, whatsapp: false });
-        setOtpValues({ email: '', whatsapp: '' });
+        setOtpSent({ email: false });
+        setOtpVerified({ email: false });
+        setOtpValues({ email: '' });
         setRecaptchaToken(null);
         if (recaptchaRef.current) {
           recaptchaRef.current.reset();
@@ -350,7 +349,7 @@ const ContactUs = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => sendOtp('email')}
+                    onClick={() => sendOtp()}
                     disabled={otpSent.email || loading}
                     className="px-4 py-2.5 sm:py-3 bg-[#1976D2] text-[#FFFFFF] rounded-lg hover:bg-[#0D47A1] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
                   >
@@ -363,14 +362,14 @@ const ContactUs = () => {
                       <input
                         type="text"
                         value={otpValues.email}
-                        onChange={(e) => handleOtpChange('email', e.target.value)}
+                        onChange={(e) => handleOtpChange(e.target.value)}
                         className="flex-1 px-3 py-2.5 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
                         placeholder="Enter OTP"
                         maxLength="6"
                       />
                       <button
                         type="button"
-                        onClick={() => verifyOtp('email')}
+                        onClick={() => verifyOtp()}
                         disabled={loading}
                         className="px-4 py-2.5 bg-[#4CAF50] text-[#FFFFFF] rounded-lg hover:bg-[#388E3C] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
                       >
@@ -406,63 +405,17 @@ const ContactUs = () => {
                 <Icon name="whatsapp" size="sm" style={{ color: '#25D366', marginRight: '8px' }} />
                 WhatsApp *
               </label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="tel"
-                  name="whatsapp"
-                  value={formData.whatsapp}
-                  onChange={handleInputChange}
-                  className="flex-1 px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                  placeholder="Enter WhatsApp number"
-                />
-                <button
-                  type="button"
-                  onClick={() => sendOtp('whatsapp')}
-                  disabled={otpSent.whatsapp || loading}
-                  className="px-4 py-2.5 sm:py-3 bg-[#1976D2] text-[#FFFFFF] rounded-lg hover:bg-[#0D47A1] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
-                >
-                  {otpSent.whatsapp ? 'Sent' : 'Send OTP'}
-                </button>
-              </div>
-              {otpSent.whatsapp && !otpVerified.whatsapp && (
-                <div className="mt-3 space-y-2">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      value={otpValues.whatsapp}
-                      onChange={(e) => handleOtpChange('whatsapp', e.target.value)}
-                      className="flex-1 px-3 py-2.5 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                      placeholder="Enter OTP"
-                      maxLength="6"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => verifyOtp('whatsapp')}
-                      disabled={loading}
-                      className="px-4 py-2.5 bg-[#4CAF50] text-[#FFFFFF] rounded-lg hover:bg-[#388E3C] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
-                    >
-                      Verify
-                    </button>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#1976D2] flex items-start">
-                    <Icon name="information-circle" size="xs" style={{ color: '#1976D2', marginRight: '4px', marginTop: '2px', flexShrink: 0 }} />
-                    Check your WhatsApp for the OTP code. It may take a few minutes to arrive.
-                  </p>
-                </div>
-              )}
-              {otpVerified.whatsapp && (
-                <div className="mt-2 flex items-center text-[#4CAF50]">
-                  <Icon name="check-circle" size="sm" style={{ color: '#4CAF50', marginRight: '6px' }} />
-                  <span className="text-sm">WhatsApp verified successfully!</span>
-                </div>
-              )}
+              <input
+                type="tel"
+                name="whatsapp"
+                value={formData.whatsapp}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
+                placeholder="Enter WhatsApp number"
+              />
               {errors.whatsapp && <p className="text-[#F44336] text-sm mt-1 flex items-center">
                 <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
                 {errors.whatsapp}
-              </p>}
-              {errors.whatsappOtp && <p className="text-[#F44336] text-sm mt-1 flex items-center">
-                <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
-                {errors.whatsappOtp}
               </p>}
             </div>
 
