@@ -240,37 +240,49 @@ const getAll = async (req, res) => {
     const formattedOrders = orders.map(order => {
       // Parse additional data from message field
       let additionalData = {};
-      let cleanMessage = order.message || '';
+      let cleanMessage = order.customer_message || '';
       if (cleanMessage.includes('ADDITIONAL_DATA:')) {
         const parts = cleanMessage.split('ADDITIONAL_DATA:');
         cleanMessage = parts[0].trim();
         try {
           additionalData = JSON.parse(parts[1]);
+          console.log('Parsed additional data:', additionalData); // Debug log
         } catch (e) {
+          console.error('Error parsing additional data:', e);
           additionalData = {};
+        }
+      }
+
+      // Handle press_release_type - could be string or array
+      let pressReleaseType = '';
+      if (additionalData.press_release_type) {
+        if (Array.isArray(additionalData.press_release_type)) {
+          pressReleaseType = additionalData.press_release_type.join(', ');
+        } else {
+          pressReleaseType = additionalData.press_release_type;
         }
       }
 
       return {
         id: order.id,
         // Map database fields to admin panel expected fields
-        name: order.name,
-        email: order.email,
-        whatsapp_number: order.whatsapp_number,
+        name: order.customer_name,
+        email: order.customer_email,
+        whatsapp_number: order.customer_phone,
         whatsapp_country_code: additionalData.whatsapp_country_code || '+91',
         calling_number: additionalData.calling_number || 'Not provided',
         calling_country_code: additionalData.calling_country_code || '+91',
-        company_project_type: additionalData.press_release_type ? additionalData.press_release_type.join(', ') : '',
+        company_project_type: pressReleaseType,
         submitted_by: additionalData.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
         press_release_name: 'Not specified', // Could be fetched from press releases table
-        press_release_package: order.package_selection || 'Not specified',
+        press_release_package: order.press_pack_name || 'Not specified',
         content_writing_assistance: additionalData.content_writing_assistance ? 'Yes' : 'No',
         status: order.status,
         admin_notes: order.admin_notes || '',
         created_at: order.created_at,
         updated_at: order.updated_at,
         // Additional fields
-        press_release_selection: order.press_release_selection,
+        press_release_selection: order.press_pack_id,
         message: cleanMessage,
         company_registration_document: additionalData.company_registration_document,
         letter_of_authorisation: additionalData.letter_of_authorisation,
