@@ -185,11 +185,11 @@ const FeatureSlider = () => {
 
                         <div className="space-y-4">
                           {/* Feature Highlights */}
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
                             {feature.highlights.map((highlight, index) => (
-                              <div key={index} className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                              <div key={index} className="flex items-center justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
                                 <Icon name={highlight.icon} size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                                <span className="whitespace-nowrap font-medium">{highlight.text}</span>
+                                <span className="font-medium break-words">{highlight.text}</span>
                               </div>
                             ))}
                           </div>
