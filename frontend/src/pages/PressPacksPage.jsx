@@ -613,36 +613,35 @@ const PressPacksPage = () => {
                       }}
                     >
                       {/* Enhanced Pack Header */}
-                      <div className="p-6 flex items-start gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex-1">
-                              <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
-                                {pack.name}
-                              </h3>
-                              <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
-                                <MapPin size={14} className="mr-2" />
-                                <span>{pack.region}</span>
-                              </div>
-                              <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
-                                <Building size={14} className="mr-2" />
-                                <span>{pack.niche}</span>
-                              </div>
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-[#1976D2] transition-colors" style={{ color: theme.textPrimary }}>
+                              {pack.name}
+                            </h3>
+                            <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
+                              <MapPin size={14} className="mr-2" />
+                              <span>{pack.region}</span>
                             </div>
-                            {/* Pack Image on the right */}
-                            <div className="flex-shrink-0 ml-4">
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
-                                <img
-                                  src={pack.image_logo || '/logo.png'}
-                                  alt={pack.name}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                  onError={(e) => {
-                                    e.target.src = '/logo.png';
-                                  }}
-                                />
-                              </div>
+                            <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
+                              <Building size={14} className="mr-2" />
+                              <span>{pack.niche}</span>
                             </div>
                           </div>
+                          {/* Pack Image on the right */}
+                          <div className="flex-shrink-0 ml-4">
+                            <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <img
+                                src={pack.image_logo || '/logo.png'}
+                                alt={pack.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.target.src = '/logo.png';
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
 
                         {/* Enhanced Press Release Metrics */}
                         <div className="grid grid-cols-3 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
