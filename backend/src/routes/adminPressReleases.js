@@ -4,6 +4,7 @@ console.log('Loading AdminPressReleaseController module');
 const AdminPressReleaseController = require("../controllers/adminPressReleaseController");
 console.log('AdminPressReleaseController loaded:', typeof AdminPressReleaseController);
 const {
+  verifyToken,
   verifyAdminToken,
   requireAdminPanelAccess,
   requireAdminPermission,
@@ -12,20 +13,18 @@ const {
 console.log("Creating AdminPressReleaseController instance");
 const adminPressReleaseController = new AdminPressReleaseController();
 
-// All routes require admin authentication and panel access
-router.use(verifyAdminToken);
-router.use(requireAdminPanelAccess);
-router.use(requireAdminPermission("manage_publications"));
-
-// Get all press releases (admin management)
-router.get("/", adminPressReleaseController.getAll);
+// Get all press releases (authenticated users can view)
+router.get("/", verifyToken, adminPressReleaseController.getAll);
 
 // Get press release by ID
-router.get("/:id", adminPressReleaseController.getById);
+router.get("/:id", verifyToken, adminPressReleaseController.getById);
 
 // Create a new press release
 router.post(
   "/",
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  requireAdminPermission("manage_publications"),
   adminPressReleaseController.upload.single("image_logo"),
   adminPressReleaseController.createValidation,
   adminPressReleaseController.create
@@ -34,18 +33,21 @@ router.post(
 // Update press release
 router.put(
   "/:id",
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  requireAdminPermission("manage_publications"),
   adminPressReleaseController.upload.single("image_logo"),
   adminPressReleaseController.updateValidation,
   adminPressReleaseController.update
 );
 
 // Approve press release
-router.put("/:id/approve", adminPressReleaseController.approve);
+router.put("/:id/approve", verifyAdminToken, requireAdminPanelAccess, requireAdminPermission("manage_publications"), adminPressReleaseController.approve);
 
 // Reject press release
-router.put("/:id/reject", adminPressReleaseController.reject);
+router.put("/:id/reject", verifyAdminToken, requireAdminPanelAccess, requireAdminPermission("manage_publications"), adminPressReleaseController.reject);
 
 // Delete press release
-router.delete("/:id", adminPressReleaseController.delete);
+router.delete("/:id", verifyAdminToken, requireAdminPanelAccess, requireAdminPermission("manage_publications"), adminPressReleaseController.delete);
 
 module.exports = router;

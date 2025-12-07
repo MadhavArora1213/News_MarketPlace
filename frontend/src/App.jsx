@@ -400,7 +400,14 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/press-packs" element={<PressPacksPage />} />
+                  <Route
+                    path="/press-packs"
+                    element={
+                      <ProtectedRoute>
+                        <PressPacksPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/press-packs/:id" element={<PressPackDetailPage />} />
                   <Route path="/event-enquiry" element={<EventEnquiryPage />} />
                   <Route
