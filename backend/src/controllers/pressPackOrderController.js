@@ -64,6 +64,7 @@ const create = async (req, res) => {
     // Create order data (save additional data in message as JSON since remote DB has limited columns)
     const additionalData = {
       whatsapp_country_code: whatsapp_country_code,
+      calling_number: calling_number,
       calling_country_code: calling_country_code,
       press_release_type: press_release_type,
       submitted_by_type: submitted_by_type,
@@ -77,7 +78,6 @@ const create = async (req, res) => {
     const orderData = {
       name: name,
       whatsapp_number: whatsapp_number,
-      calling_number: calling_number,
       email: email,
       press_release_selection: parsedPressReleaseSelection,
       package_selection: package_selection,
@@ -258,7 +258,7 @@ const getAll = async (req, res) => {
         email: order.email,
         whatsapp_number: order.whatsapp_number,
         whatsapp_country_code: additionalData.whatsapp_country_code || '+91',
-        calling_number: order.calling_number,
+        calling_number: additionalData.calling_number || 'Not provided',
         calling_country_code: additionalData.calling_country_code || '+91',
         company_project_type: additionalData.press_release_type ? additionalData.press_release_type.join(', ') : '',
         submitted_by: additionalData.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',

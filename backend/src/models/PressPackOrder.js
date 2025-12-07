@@ -86,7 +86,6 @@ class PressPackOrder {
     const fieldMapping = {
       name: 'customer_name',
       whatsapp_number: 'customer_phone',
-      calling_number: 'customer_phone', // Note: remote DB may not have separate calling_number
       email: 'customer_email',
       press_release_selection: 'press_pack_id',
       package_selection: 'press_pack_name',
