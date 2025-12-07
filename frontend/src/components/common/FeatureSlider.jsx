@@ -7,9 +7,9 @@ const FeatureSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Translated texts
-  const socialMediaRecoveryTitle = useTranslatedText("Social Media Recovery");
-  const socialMediaRecoverySubtitle = useTranslatedText("Restore Your Online Presence");
-  const socialMediaRecoveryDesc = useTranslatedText("Restore your online presence and reputation with our expert social media recovery services. We help you reclaim your digital identity.");
+  const socialMediaRecoveryTitle = useTranslatedText("Social Media");
+  const socialMediaRecoverySubtitle = useTranslatedText("Digital Media Account Security, Protection, and Recovery Solutions");
+  const socialMediaRecoveryDesc = useTranslatedText("Comprehensive security and recovery solutions for all your digital media accounts. We protect against breaches, restore compromised profiles, and ensure your online presence remains safe and uninterrupted.");
 
   const classifiedAdsTitle = useTranslatedText("Classified Ads Space");
   const classifiedAdsSubtitle = useTranslatedText("Monetize Your Platform");
@@ -27,6 +27,18 @@ const FeatureSlider = () => {
   const easySetupText = useTranslatedText("Easy Setup");
   const supportText = useTranslatedText("24/7 Support");
   const instantResultsText = useTranslatedText("Instant Results");
+  const expertRecoveryText = useTranslatedText("Expert Recovery");
+  const reputationManagementText = useTranslatedText("Reputation Management");
+  const identityRestorationText = useTranslatedText("Identity Restoration");
+  const revenueGenerationText = useTranslatedText("Revenue Generation");
+  const smartAdvertisingText = useTranslatedText("Smart Advertising");
+  const monetizationToolsText = useTranslatedText("Monetization Tools");
+  const automatedPayoutsText = useTranslatedText("Automated Payouts");
+  const contentMonetizationText = useTranslatedText("Content Monetization");
+  const incomeStreamsText = useTranslatedText("Income Streams");
+  const professionalWorkflowsText = useTranslatedText("Professional Workflows");
+  const cuttingEdgeToolsText = useTranslatedText("Cutting-edge Tools");
+  const contentCreationText = useTranslatedText("Content Creation");
   const goToSlideText = useTranslatedText("Go to slide");
 
   const features = [
@@ -41,6 +53,11 @@ const FeatureSlider = () => {
       iconBg: "from-[#00796B] to-[#004D40]",
       image: "",
       description: socialMediaRecoveryDesc,
+      highlights: [
+        { text: expertRecoveryText, icon: "check-circle" },
+        { text: reputationManagementText, icon: "check-circle" },
+        { text: identityRestorationText, icon: "check-circle" }
+      ]
     },
     {
       id: 2,
@@ -53,6 +70,11 @@ const FeatureSlider = () => {
       iconBg: "from-[#1976D2] to-[#0D47A1]",
       image: "",
       description: classifiedAdsDesc,
+      highlights: [
+        { text: revenueGenerationText, icon: "check-circle" },
+        { text: smartAdvertisingText, icon: "check-circle" },
+        { text: monetizationToolsText, icon: "check-circle" }
+      ]
     },
     {
       id: 3,
@@ -65,6 +87,11 @@ const FeatureSlider = () => {
       iconBg: "from-[#9C27B0] to-[#7B1FA2]",
       image: "",
       description: passiveIncomeDesc,
+      highlights: [
+        { text: automatedPayoutsText, icon: "check-circle" },
+        { text: contentMonetizationText, icon: "check-circle" },
+        { text: incomeStreamsText, icon: "check-circle" }
+      ]
     },
     {
       id: 4,
@@ -77,6 +104,11 @@ const FeatureSlider = () => {
       iconBg: "from-[#FF9800] to-[#F57C00]",
       image: "",
       description: advancedToolsDesc,
+      highlights: [
+        { text: professionalWorkflowsText, icon: "check-circle" },
+        { text: cuttingEdgeToolsText, icon: "check-circle" },
+        { text: contentCreationText, icon: "check-circle" }
+      ]
     }
   ];
 
@@ -148,24 +180,14 @@ const FeatureSlider = () => {
                         </p>
 
                         <div className="space-y-4">
-                           <CosmicButton variant="small" textColor="#ffffff">
-                             {learnMoreText}
-                           </CosmicButton>
-
                           {/* Feature Highlights */}
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 text-sm md:text-base text-white/90 mt-6">
-                            <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                              <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{easySetupText}</span>
-                            </div>
-                            <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                              <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{supportText}</span>
-                            </div>
-                            <div className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                              <Icon name="check-circle" size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap font-medium">{instantResultsText}</span>
-                            </div>
+                            {feature.highlights.map((highlight, index) => (
+                              <div key={index} className="flex items-center justify-center sm:justify-start bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                                <Icon name={highlight.icon} size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
+                                <span className="whitespace-nowrap font-medium">{highlight.text}</span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
