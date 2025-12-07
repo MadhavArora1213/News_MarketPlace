@@ -82,22 +82,16 @@ class PressPackOrder {
       throw new Error(`Validation errors: ${validationErrors.join(', ')}`);
     }
 
-    // Map model field names to database column names (from migration 075)
+    // Map model field names to database column names (legacy remote DB)
     const fieldMapping = {
-      name: 'name',
-      whatsapp_number: 'whatsapp_number',
-      calling_number: 'calling_number',
-      press_release_selection: 'press_release_selection',
-      email: 'email',
-      submitted_by_type: 'submitted_by_type',
-      package_selection: 'package_selection',
-      message: 'message',
-      content_writing_assistance: 'content_writing_assistance',
-      status: 'status',
-      company_registration_document: 'company_registration_document',
-      letter_of_authorisation: 'letter_of_authorisation',
-      image: 'image',
-      word_pdf_document: 'word_pdf_document'
+      name: 'customer_name',
+      whatsapp_number: 'customer_phone',
+      calling_number: 'customer_phone', // Note: remote DB may not have separate calling_number
+      email: 'customer_email',
+      press_release_selection: 'press_pack_id',
+      package_selection: 'press_pack_name',
+      message: 'customer_message',
+      status: 'status'
     };
 
     // Only include fields that have mappings in the current remote DB
