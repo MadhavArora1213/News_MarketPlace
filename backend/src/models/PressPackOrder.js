@@ -9,7 +9,7 @@ class PressPackOrder {
     this.calling_number = data.calling_number;
     this.press_release_selection = data.press_release_selection;
     this.email = data.email || data.customer_email;
-    this.press_pack_id = data.press_pack_id;
+    this.press_pack_id = data.press_release_selection; // For backward compatibility
     // File fields don't exist in remote DB
     this.company_registration_document = data.company_registration_document || null;
     this.letter_of_authorisation = data.letter_of_authorisation || null;
@@ -82,17 +82,34 @@ class PressPackOrder {
       throw new Error(`Validation errors: ${validationErrors.join(', ')}`);
     }
 
-    // Map model field names to database column names (support legacy column names in remote DB)
+    // Map model field names to database column names
     const fieldMapping = {
-      name: 'customer_name',
-      whatsapp_number: 'customer_phone',
-      email: 'customer_email',
-      press_pack_id: 'press_pack_id',
-      package_selection: 'press_pack_name',
-      status: 'status'
+      name: 'name',
+      whatsapp_country_code: 'whatsapp_country_code',
+      whatsapp_number: 'whatsapp_number',
+      calling_country_code: 'calling_country_code',
+      calling_number: 'calling_number',
+      press_release_type: 'press_release_type',
+      email: 'email',
+      submitted_by_type: 'submitted_by_type',
+      press_release_selection: 'press_release_selection',
+      package_selection: 'package_selection',
+      message: 'message',
+      content_writing_assistance: 'content_writing_assistance',
+      status: 'status',
+      company_registration_document: 'company_registration_document',
+      letter_of_authorisation: 'letter_of_authorisation',
+      image: 'image',
+      word_pdf_document: 'word_pdf_document'
     };
 
-    const allowedFields = Object.keys(fieldMapping);
+    // Only include fields that exist in the database
+    const allowedFields = [
+      'name', 'whatsapp_country_code', 'whatsapp_number', 'calling_country_code', 'calling_number',
+      'press_release_type', 'email', 'submitted_by_type', 'press_release_selection', 'package_selection',
+      'message', 'content_writing_assistance', 'status', 'company_registration_document',
+      'letter_of_authorisation', 'image', 'word_pdf_document'
+    ];
 
     const filteredData = {};
     const dbFields = [];

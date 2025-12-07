@@ -24,7 +24,7 @@ const create = async (req, res) => {
     } = req.body;
 
     // Convert string values to proper types
-    const parsedPressReleaseSelection = press_release_selection ? parseInt(press_release_selection) : null;
+    const parsedPressReleaseSelection = press_release_selection ? parseInt(press_release_selection) : 1; // Default to 1 if not provided
     const parsedTermsAccepted = terms_accepted === 'true';
     const parsedContentWritingAssistance = content_writing_assistance === 'required';
 
