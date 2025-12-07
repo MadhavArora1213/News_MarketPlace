@@ -12,7 +12,7 @@ const EventsSimplified = () => {
 
   // Translated texts
   const eventsTitle = useTranslatedText('Events');
-  const eventsDesc = useTranslatedText('Discover and register for upcoming events in the news and media industry.');
+  const eventsDesc = useTranslatedText('Unlock sponsorships, guest appearances, and speaking opportunities at top business, lifestyle, real estate, tech, finance, Web3, hospitality, government, and other industry events — including summits, conferences, exhibitions, congresses, and expos. Connect with the top 1% of professionals, build long-term relationships, and gain credible visibility.');
   const viewEventsText = useTranslatedText('View All Events');
 
   return (
@@ -29,7 +29,7 @@ const EventsSimplified = () => {
             {eventsTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Discover and register for upcoming events in the news and media industry. Explore summits, conferences, and workshops. Network with professionals and thought leaders. Connect with media professionals and expand your network through our events.
+            {eventsDesc}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,11 +44,10 @@ const EventsSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Join Industry Events and Networking
+            Explore upcoming events, summits, conferences, exhibitions, congresses, expos, seminars and more..
+
               </h3>
-              <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Connect with media professionals and expand your network through our events.
-              </p>
+              
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"

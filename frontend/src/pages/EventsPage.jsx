@@ -137,7 +137,7 @@ const EventsPage = () => {
               Events
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Discover and register for upcoming events in the news and media industry.
+             Unlock sponsorships, guest appearances, and speaking opportunities at top business, lifestyle, real estate, tech, finance, Web3, hospitality, government, and other industry events — including summits, conferences, exhibitions, congresses, and expos. Connect with the top 1% of professionals, build long-term relationships, and gain credible visibility.
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
               The current page is for representation purpose only, the comprehensive list will be live soon

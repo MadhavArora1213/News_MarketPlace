@@ -12,7 +12,7 @@ const PaparazziSimplified = () => {
 
   // Translated texts
   const paparazziTitle = useTranslatedText('Paparazzi Network');
-  const paparazziDesc = useTranslatedText('Connect with professional paparazzi across social media platforms. Find the perfect photographer for your content needs.');
+  const paparazziDesc = useTranslatedText('Showcase your product launch, celebrity endorsements, gala dinners, corporate events, or real estate project announcements across global lifestyle and paparazzi outlets — including top Instagram pages, TikTok accounts, and YouTube channels. Gain billions of organic, multi-country views at a fraction of traditional performance-marketing costs.');
   const viewPaparazziText = useTranslatedText('View Paparazzi Network');
 
   return (
@@ -29,7 +29,7 @@ const PaparazziSimplified = () => {
             {paparazziTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Connect with professional paparazzi across social media platforms. Find the perfect photographer for your content needs. Access high-quality visual content and photography services. Connect with influencers and content creators worldwide. Enhance your brand with professional media coverage.
+            {paparazziDesc}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,11 +44,9 @@ const PaparazziSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Connect with Professional Photographers
+                Choose the right paparazzi pages tailored to your target audience.
               </h3>
-              <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Build your visual content strategy with our global paparazzi network.
-              </p>
+              
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"
