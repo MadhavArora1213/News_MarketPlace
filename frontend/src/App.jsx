@@ -130,6 +130,12 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const { showAuthModal } = useAuthModal();
 
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      showAuthModal();
+    }
+  }, [isAuthenticated, loading, showAuthModal]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -146,8 +152,6 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    // Show login modal instead of redirecting
-    showAuthModal();
     return (
       <div className="min-h-screen flex flex-col">
         <UserHeader />
