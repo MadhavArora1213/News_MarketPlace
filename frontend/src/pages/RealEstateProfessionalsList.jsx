@@ -264,7 +264,7 @@ const RealEstateProfessionalsList = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading real estate professionals...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading Creators...</p>
           </div>
         </div>
         <UserFooter />
@@ -286,10 +286,10 @@ const RealEstateProfessionalsList = () => {
             className="text-center"
           >
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4 tracking-tight">
-              Real Estate Professionals
+              Creators
             </h1>
             <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
-              Connect with trusted real estate professionals and experts in your area.
+              Connect with trusted Creators and experts in your area.
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4 mb-6">
               The current page is for representation purpose only, the comprehensive list will be live soon
@@ -465,28 +465,26 @@ const RealEstateProfessionalsList = () => {
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <List size={16} />
                   </button>
                 </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {sortedProfessionals.length} professionals found
+                  {sortedProfessionals.length} Creators found
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
                       for "{searchTerm}"
@@ -791,10 +789,10 @@ const RealEstateProfessionalsList = () => {
                 <User size={48} style={{ color: theme.textDisabled }} />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                No professionals found
+                No Creators found
               </h3>
               <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-                We couldn't find any real estate professionals matching your search criteria.
+                We couldn't find any Creators matching your search criteria.
               </p>
               <button
                 onClick={() => {

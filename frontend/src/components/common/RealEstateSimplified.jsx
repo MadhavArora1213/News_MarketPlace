@@ -11,8 +11,8 @@ const RealEstateSimplified = () => {
   const { showAuthModal } = useAuthModal();
 
   // Translated texts
-  const realEstateTitle = useTranslatedText('Real Estate');
-  const realEstateDesc = useTranslatedText('Explore a wide range of real estate agency owners, agents, and marketing experts from different countries, languages, genders, and age groups. Partner with professionals who not only enhance your brand equity and amplify organic marketing but also drive substantial sales.');
+  const realEstateTitle = 'Creators';
+  const realEstateDesc = useTranslatedText('Explore a wide range of Creators from different countries, languages, genders, and age groups. Partner with professionals who not only enhance your brand equity and amplify organic marketing but also drive substantial sales.');
   const viewRealEstateText = useTranslatedText('View');
 
   return (
@@ -44,10 +44,10 @@ const RealEstateSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-            Discover the Perfect Real Estate Influencer for Your Project
+                Discover the Perfect Creator for Your Project
 
               </h3>
-              
+
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"

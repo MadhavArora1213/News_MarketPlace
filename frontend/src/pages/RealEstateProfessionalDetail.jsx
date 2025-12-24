@@ -148,7 +148,7 @@ const RealEstateProfessionalDetail = () => {
   const handleShare = () => {
     const shareData = {
       title: `${professional.first_name} ${professional.last_name}`,
-      text: `Check out this real estate professional: ${professional.first_name} ${professional.last_name}`,
+      text: `Check out this Creator: ${professional.first_name} ${professional.last_name}`,
       url: window.location.href
     };
 
@@ -339,7 +339,7 @@ const RealEstateProfessionalDetail = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading professional details...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading Creator details...</p>
           </div>
         </div>
         <UserFooter />
@@ -404,7 +404,7 @@ const RealEstateProfessionalDetail = () => {
               Back to Professionals
             </button>
             <span>/</span>
-            <span>Professional Details</span>
+            <span>Creator Details</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -437,7 +437,7 @@ const RealEstateProfessionalDetail = () => {
                         {professional.first_name} {professional.last_name}
                       </h1>
                       {professional.verified_tick && (
-                        <CheckCircle size={24} style={{ color: theme.success }} title="Verified Professional" />
+                        <CheckCircle size={24} style={{ color: theme.success }} title="Verified Creator" />
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
@@ -481,11 +481,11 @@ const RealEstateProfessionalDetail = () => {
                 {/* About Section */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    About This Professional
+                    About This Creator
                   </h3>
                   <div className="prose max-w-none" style={{ color: theme.textSecondary }}>
                     <p>
-                      {professional.first_name} is a verified real estate professional with expertise in the industry.
+                      {professional.first_name} is a verified Creator with expertise in the industry.
                       {professional.nationality && ` Originally from ${professional.nationality},`}
                       {professional.current_residence_city && ` currently based in ${professional.current_residence_city}.`}
                       {professional.languages?.length > 0 && ` Fluent in ${professional.languages.join(', ')}.`}
@@ -501,7 +501,7 @@ const RealEstateProfessionalDetail = () => {
                 {/* Professional Information */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Professional Information
+                    Creator Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -667,10 +667,10 @@ const RealEstateProfessionalDetail = () => {
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center mb-6">
                   <div className="text-2xl font-bold mb-2" style={{ color: theme.success }}>
-                    Contact Professional
+                    Contact Creator
                   </div>
                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                    Get in touch for real estate services
+                    Get in touch for Creator services
                   </div>
                 </div>
 
@@ -711,7 +711,7 @@ const RealEstateProfessionalDetail = () => {
               {/* Professional Stats */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Professional Stats
+                  Creator Stats
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
