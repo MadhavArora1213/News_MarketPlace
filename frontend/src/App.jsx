@@ -316,10 +316,38 @@ function App() {
                   <Route path="/media-partnerships" element={<MediaPartnerships />} />
                   <Route path="/otp" element={<OTPTest />} />
                   <Route path="/services-overview" element={<ServicesOverview />} />
-                  <Route path="/podcasters" element={<PodcastersList />} />
-                  <Route path="/podcasters/:id" element={<PodcasterDetail />} />
-                  <Route path="/real-estate-professionals" element={<RealEstateProfessionalsList />} />
-                  <Route path="/real-estate-professionals/:id" element={<RealEstateProfessionalDetail />} />
+                  <Route
+                    path="/podcasters"
+                    element={
+                      <ProtectedRoute>
+                        <PodcastersList />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/podcasters/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PodcasterDetail />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/real-estate-professionals"
+                    element={
+                      <ProtectedRoute>
+                        <RealEstateProfessionalsList />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/real-estate-professionals/:id"
+                    element={
+                      <ProtectedRoute>
+                        <RealEstateProfessionalDetail />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route
                     path="/dashboard"
@@ -361,21 +389,110 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/careers/:id" element={<CareerDetailPage />} />
-                  <Route path="/blogs" element={<BlogListingPage />} />
-                  <Route path="/blog/:id" element={<BlogDetailPage />} />
-                  <Route path="/radio" element={<Radio />} />
-                  <Route path="/publications" element={<PublicationsPage />} />
-                  <Route path="/publications/:id" element={<PublicationDetailPage />} />
-                  <Route path="/published-works" element={<PublishedWorksPage />} />
-                  <Route path="/published-works/:id" element={<PublishedWorkDetailPage />} />
-                  <Route path="/orders-delivered" element={<OrdersDeliveredPage />} />
-                  <Route path="/careers" element={<CareersPage />} />
-                  <Route path="/careers/:id" element={<CareerDetailPage />} />
-                  <Route path="/radio" element={<Radio />} />
-                  <Route path="/radio/:id" element={<RadioDetails />} />
-                  <Route path="/paparazzi" element={<Paparazzi />} />
-                  <Route path="/paparazzi/:id" element={<PaparazziDetailPage />} />
+                  <Route
+                    path="/blogs"
+                    element={
+                      <ProtectedRoute>
+                        <BlogListingPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/blog/:id"
+                    element={
+                      <ProtectedRoute>
+                        <BlogDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/radio"
+                    element={
+                      <ProtectedRoute>
+                        <Radio />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/publications"
+                    element={
+                      <ProtectedRoute>
+                        <PublicationsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/publications/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PublicationDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/published-works"
+                    element={
+                      <ProtectedRoute>
+                        <PublishedWorksPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/published-works/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PublishedWorkDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/orders-delivered"
+                    element={
+                      <ProtectedRoute>
+                        <OrdersDeliveredPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/careers"
+                    element={
+                      <ProtectedRoute>
+                        <CareersPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/careers/:id"
+                    element={
+                      <ProtectedRoute>
+                        <CareerDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/radio/:id"
+                    element={
+                      <ProtectedRoute>
+                        <RadioDetails />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/paparazzi"
+                    element={
+                      <ProtectedRoute>
+                        <Paparazzi />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/paparazzi/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PaparazziDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   <Route
                     path="/paparazzi/submit"
@@ -385,13 +502,62 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/power-lists" element={<PowerlistPage />} />
-                  <Route path="/power-lists/:id" element={<PowerlistDetailPage />} />
-                  <Route path="/awards" element={<AwardsPage />} />
-                  <Route path="/awards/:id" element={<AwardDetailPage />} />
-                  <Route path="/events" element={<EventsPage />} />
-                  <Route path="/themes" element={<ThemesPage />} />
-                  <Route path="/themes/:id" element={<ThemeDetailPage />} />
+                  <Route
+                    path="/power-lists"
+                    element={
+                      <ProtectedRoute>
+                        <PowerlistPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/power-lists/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PowerlistDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/awards"
+                    element={
+                      <ProtectedRoute>
+                        <AwardsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/awards/:id"
+                    element={
+                      <ProtectedRoute>
+                        <AwardDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/events"
+                    element={
+                      <ProtectedRoute>
+                        <EventsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/themes"
+                    element={
+                      <ProtectedRoute>
+                        <ThemesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/themes/:id"
+                    element={
+                      <ProtectedRoute>
+                        <ThemeDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/themes/submit"
                     element={
@@ -408,7 +574,14 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/press-packs/:id" element={<PressPackDetailPage />} />
+                  <Route
+                    path="/press-packs/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PressPackDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/event-enquiry" element={<EventEnquiryPage />} />
                   <Route
                     path="/affiliate-program"
