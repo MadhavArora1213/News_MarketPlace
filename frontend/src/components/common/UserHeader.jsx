@@ -269,7 +269,7 @@ const UserHeader = () => {
                 <span className="whitespace-nowrap">More</span>
                 <Icon name="chevron-down" size="xs" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
               </button>
-              <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30">
+              <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30 max-h-[450px] overflow-y-auto custom-scrollbar">
                 <div className="p-4">
                   <h4 className="text-sm font-semibold text-gray-900 mb-3">Resources</h4>
                   <div className="grid grid-cols-1 gap-2">
