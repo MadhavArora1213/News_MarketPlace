@@ -945,6 +945,7 @@ const RealEstateSubmissionForm = ({ onClose, onSuccess }) => {
               </div>
             </div>
           </div>
+          </div>
 
           {/* reCAPTCHA */}
           <div style={{ marginTop: '24px', marginBottom: '24px' }}>
