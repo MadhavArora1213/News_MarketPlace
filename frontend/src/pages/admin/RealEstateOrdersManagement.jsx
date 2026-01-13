@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
+import Icon from '../../components/common/Icon';
+import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 import {
   Search, Filter, Eye, Edit, CheckCircle, XCircle, Clock,
@@ -34,11 +36,15 @@ const theme = {
 };
 
 const RealEstateOrdersManagement = () => {
-  const { isAuthenticated, hasRole, hasAnyRole } = useAdminAuth();
+  const { admin, logout, isAuthenticated, hasRole, hasAnyRole } = useAdminAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Layout states
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Filter states
   const [statusFilter, setStatusFilter] = useState('');
@@ -57,6 +63,68 @@ const RealEstateOrdersManagement = () => {
     admin_comments: '',
     rejection_reason: ''
   });
+
+  // Layout constants
+  const headerZ = 1000;
+  const mobileOverlayZ = 500;
+  const sidebarZ = 200;
+  const headerHeight = 64;
+  const mainPaddingTop = headerHeight + 18;
+  const sidebarWidth = 240;
+  const leftGap = 24;
+
+  const sidebarStyles = {
+    width: sidebarWidth,
+    backgroundColor: theme.background,
+    borderRight: `1px solid ${theme.borderLight}`,
+    padding: 16,
+    boxSizing: 'border-box',
+    borderRadius: 8
+  };
+
+  const mobileSidebarOverlay = {
+    position: 'fixed',
+    top: headerHeight,
+    left: 0,
+    height: `calc(100vh - ${headerHeight}px)`,
+    zIndex: mobileOverlayZ,
+    backgroundColor: '#fff',
+    padding: 16,
+    boxSizing: 'border-box',
+    width: sidebarWidth,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
+  };
+
+  const btnPrimary = {
+    backgroundColor: theme.primary,
+    color: '#fff',
+    padding: '0.625rem 1rem',
+    borderRadius: '0.5rem',
+    fontWeight: 600,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    cursor: 'pointer',
+    border: 'none',
+    boxShadow: `0 6px 18px rgba(25,118,210,0.14)`
+  };
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    onResize();
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    if (sidebarOpen && isMobile) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+    return undefined;
+  }, [sidebarOpen, isMobile]);
 
   useEffect(() => {
     if (!isAuthenticated || !hasAnyRole(['super_admin', 'content_manager'])) {
@@ -208,17 +276,36 @@ const RealEstateOrdersManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading orders...</p>
+      <div className="min-h-screen" style={{ backgroundColor: theme.backgroundSoft, color: theme.textPrimary, paddingBottom: '3rem' }}>
+        {/* Header */}
+        <header
+          className="shadow-sm"
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: headerZ,
+            backgroundColor: theme.background,
+            boxShadow: '0 6px 20px rgba(2,6,23,0.06)',
+            borderBottom: `1px solid ${theme.borderLight}`
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10" style={{ minHeight: 64 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <span style={{ fontWeight: 700, fontSize: 18 }}>Loading...</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10">
+          <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+            <main style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 8px 20px rgba(2,6,23,0.06)', overflow: 'hidden' }}>
+                <div style={{ padding: '80px', textAlign: 'center', color: theme.textSecondary }}>
+                  Loading real estate orders...
+                </div>
+              </div>
+            </main>
           </div>
         </div>
       </div>
@@ -226,247 +313,334 @@ const RealEstateOrdersManagement = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundSoft, color: theme.textPrimary, paddingBottom: '3rem' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b" style={{ borderColor: theme.borderLight }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
-                Real Estate Orders Management
-              </h1>
-              <p className="mt-2" style={{ color: theme.textSecondary }}>
-                Manage and process real estate influencer orders
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-2xl font-bold" style={{ color: theme.primary }}>
-                  {sortedOrders.length}
-                </div>
-                <div className="text-sm" style={{ color: theme.textSecondary }}>
-                  Total Orders
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6" style={{ borderColor: theme.borderLight }}>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            {/* Search */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Search by Email
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="customer@example.com"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  style={{ borderColor: theme.borderLight }}
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={16} style={{ color: theme.textSecondary }} />
-              </div>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Status
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ borderColor: theme.borderLight }}
-              >
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
-
-            {/* Date Filter */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Date
-              </label>
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ borderColor: theme.borderLight }}
-              />
-            </div>
-
-            {/* Clear Filters */}
-            <div className="flex items-end">
+      <header
+        className="shadow-sm"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: headerZ,
+          backgroundColor: theme.background,
+          boxShadow: '0 6px 20px rgba(2,6,23,0.06)',
+          borderBottom: `1px solid ${theme.borderLight}`
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10" style={{ minHeight: 64 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '64px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <button
-                onClick={clearFilters}
-                className="w-full px-4 py-2 text-white rounded-lg font-medium transition-colors"
-                style={{ backgroundColor: theme.secondary }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = theme.secondaryDark}
-                onMouseLeave={(e) => e.target.style.backgroundColor = theme.secondary}
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="mr-3 md:hidden"
+                aria-label="Toggle sidebar"
+                style={{ background: 'transparent', border: 'none', padding: 6, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
               >
-                Clear Filters
+                <Icon name="bars-3" size="sm" />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Icon name="shopping-bag" size="lg" style={{ color: '#1976D2' }} />
+                <span style={{ fontWeight: 700, fontSize: 18 }}>News Marketplace Admin</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontWeight: 700 }}>{admin?.first_name ? `${admin.first_name} ${admin.last_name}` : 'Master Admin'}</div>
+              </div>
+
+              <button onClick={logout} style={{ ...btnPrimary, padding: '0.45rem 0.75rem' }}>
+                <Icon name="arrow-right-on-rectangle" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                Logout
               </button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden" style={{ borderColor: theme.borderLight }}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead style={{ backgroundColor: theme.backgroundSoft }}>
-                <tr>
-                  <th
-                    className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                    style={{ color: theme.textPrimary }}
-                    onClick={() => handleSort('customer_name')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Customer {getSortIcon('customer_name')}
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                    Professional
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                    Requirements
-                  </th>
-                  <th
-                    className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                    style={{ color: theme.textPrimary }}
-                    onClick={() => handleSort('status')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Status {getSortIcon('status')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
-                    style={{ color: theme.textPrimary }}
-                    onClick={() => handleSort('created_at')}
-                  >
-                    <div className="flex items-center gap-2">
-                      Date {getSortIcon('created_at')}
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedOrders.map((order, index) => (
-                  <tr
-                    key={order.id}
-                    className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
-                    style={{ borderColor: theme.borderLight }}
-                  >
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="font-semibold" style={{ color: theme.textPrimary }}>
-                          {order.customer_name}
-                        </div>
-                        <div className="text-sm" style={{ color: theme.textSecondary }}>
-                          {order.customer_email}
-                        </div>
-                        <div className="text-sm" style={{ color: theme.textSecondary }}>
-                          {order.customer_whatsapp_country_code} {order.customer_whatsapp_number}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm" style={{ color: theme.textPrimary }}>
-                        Professional #{order.professional_id}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm" style={{ color: theme.textPrimary }}>
-                        <div>Budget: {order.budget_range}</div>
-                        <div>Influencers: {order.influencers_required}</div>
-                        <div>Gender: {order.gender_required}</div>
-                        {order.min_followers && <div>Min Followers: {order.min_followers.toLocaleString()}</div>}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span style={{ color: getStatusColor(order.status) }}>
-                          {getStatusIcon(order.status)}
-                        </span>
-                        <span
-                          className="px-2 py-1 rounded-full text-xs font-medium capitalize"
-                          style={{
-                            backgroundColor: getStatusColor(order.status) + '20',
-                            color: getStatusColor(order.status)
-                          }}
-                        >
-                          {order.status}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm" style={{ color: theme.textPrimary }}>
-                        {formatDate(order.created_at)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewOrder(order);
-                          }}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateOrder(order);
-                          }}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Update Status"
-                        >
-                          <Edit size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {sortedOrders.length === 0 && (
-            <div className="text-center py-20">
-              <div
-                className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
-                style={{ backgroundColor: theme.backgroundSoft }}
-              >
-                <FileText size={48} style={{ color: theme.textDisabled }} />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                No orders found
-              </h3>
-              <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-                No orders match your current filters. Try adjusting your search criteria.
-              </p>
-            </div>
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <>
+          {isMobile && (
+            <div
+              style={mobileSidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
           )}
+          <aside style={{
+            position: 'fixed',
+            top: headerHeight,
+            left: 0,
+            width: sidebarWidth,
+            height: `calc(100vh - ${headerHeight}px)`,
+            zIndex: sidebarZ,
+            ...sidebarStyles
+          }}>
+            <Sidebar
+              admin={admin}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarStyles={sidebarStyles}
+              mobileSidebarOverlay={mobileSidebarOverlay}
+              isMobile={isMobile}
+              headerHeight={headerHeight}
+              sidebarWidth={sidebarWidth}
+              sidebarZ={sidebarZ}
+              mobileOverlayZ={mobileOverlayZ}
+            />
+          </aside>
+        </>
+      )}
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10" style={{
+        paddingTop: mainPaddingTop,
+        marginLeft: !isMobile && sidebarOpen ? (sidebarWidth + leftGap) : 0,
+        transition: 'margin-left 0.28s ease-in-out'
+      }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+          <main style={{ flex: 1, minWidth: 0 }}>
+            {/* Page Header */}
+            <div style={{ background: '#fff', borderRadius: 12, padding: 28, border: `4px solid #000`, display: 'flex', justifyContent: 'space-between', gap: '16px', marginBottom: 24, alignItems: 'center' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: '#e6f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="shopping-bag" size="sm" style={{ color: '#1976D2' }} />
+                  </div>
+                  <h1 style={{ margin: 0, fontSize: 34, fontWeight: 800 }}>Real Estate Orders Management</h1>
+                </div>
+                <p style={{ marginTop: 8, color: '#757575' }}>Manage and process real estate influencer orders</p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-2xl font-bold" style={{ color: theme.primary }}>
+                    {sortedOrders.length}
+                  </div>
+                  <div className="text-sm" style={{ color: theme.textSecondary }}>
+                    Total Orders
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Filters and Search */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="bg-white rounded-lg shadow-sm border p-6 mb-6" style={{ borderColor: theme.borderLight }}>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  {/* Search */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Search by Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="customer@example.com"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        style={{ borderColor: theme.borderLight }}
+                      />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={16} style={{ color: theme.textSecondary }} />
+                    </div>
+                  </div>
+
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Status
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ borderColor: theme.borderLight }}
+                    >
+                      <option value="">All Statuses</option>
+                      <option value="pending">Pending</option>
+                      <option value="approved">Approved</option>
+                      <option value="rejected">Rejected</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+
+                  {/* Date Filter */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ borderColor: theme.borderLight }}
+                    />
+                  </div>
+
+                  {/* Clear Filters */}
+                  <div className="flex items-end">
+                    <button
+                      onClick={clearFilters}
+                      className="w-full px-4 py-2 text-white rounded-lg font-medium transition-colors"
+                      style={{ backgroundColor: theme.secondary }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = theme.secondaryDark}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = theme.secondary}
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Orders Table */}
+              <div className="bg-white rounded-lg shadow-sm border overflow-hidden" style={{ borderColor: theme.borderLight }}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead style={{ backgroundColor: theme.backgroundSoft }}>
+                      <tr>
+                        <th
+                          className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                          style={{ color: theme.textPrimary }}
+                          onClick={() => handleSort('customer_name')}
+                        >
+                          <div className="flex items-center gap-2">
+                            Customer {getSortIcon('customer_name')}
+                          </div>
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                          Professional
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                          Requirements
+                        </th>
+                        <th
+                          className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                          style={{ color: theme.textPrimary }}
+                          onClick={() => handleSort('status')}
+                        >
+                          <div className="flex items-center gap-2">
+                            Status {getSortIcon('status')}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
+                          style={{ color: theme.textPrimary }}
+                          onClick={() => handleSort('created_at')}
+                        >
+                          <div className="flex items-center gap-2">
+                            Date {getSortIcon('created_at')}
+                          </div>
+                        </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedOrders.map((order, index) => (
+                        <tr
+                          key={order.id}
+                          className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                          style={{ borderColor: theme.borderLight }}
+                        >
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="font-semibold" style={{ color: theme.textPrimary }}>
+                                {order.customer_name}
+                              </div>
+                              <div className="text-sm" style={{ color: theme.textSecondary }}>
+                                {order.customer_email}
+                              </div>
+                              <div className="text-sm" style={{ color: theme.textSecondary }}>
+                                {order.customer_whatsapp_country_code} {order.customer_whatsapp_number}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm" style={{ color: theme.textPrimary }}>
+                              Professional #{order.professional_id}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm" style={{ color: theme.textPrimary }}>
+                              <div>Budget: {order.budget_range}</div>
+                              <div>Influencers: {order.influencers_required}</div>
+                              <div>Gender: {order.gender_required}</div>
+                              {order.min_followers && <div>Min Followers: {order.min_followers.toLocaleString()}</div>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <span style={{ color: getStatusColor(order.status) }}>
+                                {getStatusIcon(order.status)}
+                              </span>
+                              <span
+                                className="px-2 py-1 rounded-full text-xs font-medium capitalize"
+                                style={{
+                                  backgroundColor: getStatusColor(order.status) + '20',
+                                  color: getStatusColor(order.status)
+                                }}
+                              >
+                                {order.status}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm" style={{ color: theme.textPrimary }}>
+                              {formatDate(order.created_at)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewOrder(order);
+                                }}
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="View Details"
+                              >
+                                <Eye size={16} />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateOrder(order);
+                                }}
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Update Status"
+                              >
+                                <Edit size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {sortedOrders.length === 0 && (
+                  <div className="text-center py-20">
+                    <div
+                      className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                      style={{ backgroundColor: theme.backgroundSoft }}
+                    >
+                      <FileText size={48} style={{ color: theme.textDisabled }} />
+                    </div>
+                    <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
+                      No orders found
+                    </h3>
+                    <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
+                      No orders match your current filters. Try adjusting your search criteria.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </main>
         </div>
       </div>
 
