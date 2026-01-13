@@ -64,6 +64,12 @@ const PUBLICATIONS_DATA = [
 async function populatePublications() {
   try {
     console.log('Starting publication population...');
+
+    // Wipe existing records first
+    console.log('Deleting all existing publication management records...');
+    await db.query('TRUNCATE publication_managements RESTART IDENTITY CASCADE');
+    console.log('Existing records deleted.');
+
     let successCount = 0;
     let errorCount = 0;
 

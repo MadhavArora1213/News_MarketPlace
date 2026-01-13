@@ -87,6 +87,12 @@ async function findOrCreateGroup(groupName) {
 async function populateMarketplace() {
     try {
         console.log('Starting marketplace (publications) population...');
+
+        // Wipe existing publications first
+        console.log('Deleting all existing publications...');
+        await db.query('TRUNCATE publications RESTART IDENTITY CASCADE');
+        console.log('Existing publications deleted.');
+
         let successCount = 0;
         let errorCount = 0;
 
