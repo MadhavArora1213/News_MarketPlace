@@ -30,39 +30,39 @@ class AdminPaparazziCreationsController {
         limit = 10,
         category,
         region_focused,
-        instagram_page_name
+        instagram_page_name,
+        search,
+        sortBy = 'created_at',
+        sortOrder = 'DESC'
       } = req.query;
 
-      const filters = {};
-      if (category) filters.category = category;
-      if (region_focused) filters.region_focused = region_focused;
+      const whereClause = {};
 
-      // Add search filters
-      let searchSql = '';
-      const searchValues = [];
-      let searchParamCount = Object.keys(filters).length + 1;
-
-      if (instagram_page_name) {
-        searchSql += ` AND instagram_page_name ILIKE $${searchParamCount}`;
-        searchValues.push(`%${instagram_page_name}%`);
-        searchParamCount++;
+      if (search) {
+        whereClause.search = { val: search };
+      } else {
+        if (category) whereClause.category = category;
+        if (region_focused) whereClause.region_focused = region_focused;
+        if (instagram_page_name) whereClause.instagram_page_name = instagram_page_name;
       }
 
-      const offset = (page - 1) * limit;
-      const paparazziCreations = await PaparazziCreation.findAll(limit, offset);
+      const limitNum = parseInt(limit);
+      const offset = (page - 1) * limitNum;
 
-      // For simplicity, get total count by getting all and counting
-      // In production, you'd want a separate count method
-      const allPaparazziCreations = await PaparazziCreation.findAll();
-      const totalCount = allPaparazziCreations.length;
+      const { count, rows } = await PaparazziCreation.findAndCountAll({
+        where: whereClause,
+        limit: limitNum,
+        offset: offset,
+        order: [[sortBy, sortOrder.toUpperCase()]]
+      });
 
       res.json({
-        paparazziCreations: paparazziCreations.map(pc => pc.toJSON()),
+        paparazziCreations: rows.map(pc => pc.toJSON()),
         pagination: {
           page: parseInt(page),
-          limit: parseInt(limit),
-          total: totalCount,
-          pages: Math.ceil(totalCount / limit)
+          limit: limitNum,
+          total: count,
+          pages: Math.ceil(count / limitNum)
         }
       });
     } catch (error) {
