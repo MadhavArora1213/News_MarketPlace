@@ -150,7 +150,7 @@ class RealEstateOrder {
     const params = [];
     let paramCount = 1;
 
-    const filterFields = ['status', 'professional_id', 'submitted_by', 'approved_by', 'rejected_by'];
+    const filterFields = ['status', 'professional_id', 'submitted_by', 'approved_by', 'rejected_by', 'customer_email'];
     const conditions = [];
 
     filterFields.forEach(field => {
@@ -193,7 +193,7 @@ class RealEstateOrder {
     let whereClause = '';
     const params = [];
 
-    const filterFields = ['status', 'professional_id', 'submitted_by', 'approved_by', 'rejected_by'];
+    const filterFields = ['status', 'professional_id', 'submitted_by', 'approved_by', 'rejected_by', 'customer_email'];
     const conditions = [];
 
     filterFields.forEach(field => {
