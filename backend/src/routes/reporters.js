@@ -20,6 +20,14 @@ router.get('/admin/template', verifyAdminToken, requireAdminPanelAccess, reporte
 router.post('/admin/bulk-upload', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_reporters'), reporterController.csvUpload.single('file'), reporterController.bulkUpload);
 router.get('/admin/export', verifyAdminToken, requireAdminPanelAccess, reporterController.downloadCSV);
 
+// Bulk operations routes (admin only) - Must be defined BEFORE /admin/:id routes
+router.put('/admin/bulk-approve', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('approve_reporters'), reporterController.bulkApprove);
+router.put('/admin/bulk-reject', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('approve_reporters'), reporterController.bulkReject);
+router.delete('/admin/bulk', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_reporters'), (req, res) => {
+  // Bulk delete implementation would go here
+  res.status(501).json({ error: 'Bulk delete not implemented yet' });
+});
+
 // Admin routes (admins can manage all reporter submissions)
 router.get('/admin', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_reporters'), reporterController.getAll);
 router.post('/admin', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_reporters'), reporterController.createValidation, reporterController.create);
@@ -33,14 +41,6 @@ router.delete('/admin/:id', verifyAdminToken, requireAdminPanelAccess, requireAd
 router.get('/:id', verifyToken, reporterController.getById);
 router.put('/:id', verifyToken, requireOwnership('reporter'), reporterController.updateValidation, reporterController.update);
 router.delete('/:id', verifyToken, requireOwnership('reporter'), reporterController.delete);
-
-// Bulk operations routes (admin only)
-router.put('/admin/bulk-approve', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('approve_reporters'), reporterController.bulkApprove);
-router.put('/admin/bulk-reject', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('approve_reporters'), reporterController.bulkReject);
-router.delete('/admin/bulk', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_reporters'), (req, res) => {
-  // Bulk delete implementation would go here
-  res.status(501).json({ error: 'Bulk delete not implemented yet' });
-});
 
 // Status management (admin only)
 router.patch('/:id/status', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('approve_reporters'), (req, res) => {
