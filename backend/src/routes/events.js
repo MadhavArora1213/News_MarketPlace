@@ -24,6 +24,11 @@ router.get('/disclaimers/:id', verifyAdminToken, requireAdminPanelAccess, requir
 router.put('/disclaimers/:id', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_events'), eventDisclaimerController.updateValidation, eventDisclaimerController.update);
 router.delete('/disclaimers/:id', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_events'), eventDisclaimerController.delete);
 
+// Admin bulk operations
+router.get('/download-template', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_events'), eventController.downloadTemplate);
+router.post('/bulk-upload', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_events'), eventController.csvUpload.single('file'), eventController.bulkUpload);
+router.get('/download-csv', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_events'), eventController.downloadCSV);
+
 // Event routes
 // Public routes
 router.get('/', eventController.getAll);

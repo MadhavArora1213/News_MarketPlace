@@ -7,7 +7,8 @@ import api from '../../services/api';
 import {
   Plus, Eye, Edit, Trash2, Search, Filter, CheckCircle2, XCircle,
   AlertCircle, Info, Calendar, MapPin, Users, Ticket, FileText, User,
-  ToggleLeft, ToggleRight, CheckSquare, Square
+  AlertCircle, Info, Calendar, MapPin, Users, Ticket, FileText, User,
+  ToggleLeft, ToggleRight, CheckSquare, Square, Download, Upload, FileDown
 } from 'lucide-react';
 
 // Event View Modal Component
@@ -74,9 +75,9 @@ const EventViewModal = ({ isOpen, onClose, event }) => {
               fontSize: '12px',
               fontWeight: 'bold',
               color: event.status === 'active' ? '#4CAF50' :
-                    event.status === 'cancelled' ? '#F44336' : '#FF9800',
+                event.status === 'cancelled' ? '#F44336' : '#FF9800',
               backgroundColor: event.status === 'active' ? '#E8F5E8' :
-                              event.status === 'cancelled' ? '#FFEBEE' : '#FFF3E0'
+                event.status === 'cancelled' ? '#FFEBEE' : '#FFF3E0'
             }}>
               {event.status ? event.status.toUpperCase() : 'N/A'}
             </span>
@@ -684,10 +685,10 @@ const EventFormModal = ({ isOpen, onClose, event, onSave }) => {
         // Convert JSON object to array format for easier editing
         const customFieldsArray = event.custom_form_fields ?
           (Array.isArray(event.custom_form_fields) ? event.custom_form_fields :
-           Object.entries(event.custom_form_fields).map(([key, value]) => ({
-             name: key,
-             ...value
-           }))) : [];
+            Object.entries(event.custom_form_fields).map(([key, value]) => ({
+              name: key,
+              ...value
+            }))) : [];
 
         setFormData({
           title: event.title || '',
@@ -1349,6 +1350,126 @@ const btnPrimary = {
   boxShadow: `0 6px 18px rgba(25,118,210,0.14)`
 };
 
+
+// Bulk Upload Modal
+const BulkUploadModal = ({ isOpen, onClose, onUpload, loading }) => {
+  const [file, setFile] = useState(null);
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px', width: '100%', maxWidth: '500px'
+      }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ marginTop: 0 }}>Bulk Upload Events</h2>
+        <p style={{ color: '#666', marginBottom: '20px' }}>Upload a CSV file to create multiple events at once.</p>
+
+        <div style={{ border: '2px dashed #ccc', padding: '30px', textAlign: 'center', borderRadius: '8px', marginBottom: '20px' }}>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={(e) => setFile(e.target.files[0])}
+            style={{ display: 'none' }}
+            id="csv-upload"
+          />
+          <label htmlFor="csv-upload" style={{ cursor: 'pointer', display: 'block' }}>
+            {file ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#1976D2' }}>
+                <FileText size={24} />
+                <span>{file.name}</span>
+              </div>
+            ) : (
+              <div style={{ color: '#666' }}>
+                <Upload size={40} style={{ color: '#ccc', marginBottom: '10px' }} />
+                <div>Click to select CSV file</div>
+              </div>
+            )}
+          </label>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>Cancel</button>
+          <button
+            onClick={() => onUpload(file)}
+            disabled={!file || loading}
+            style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: '#1976D2', color: '#fff', cursor: 'pointer', opacity: (!file || loading) ? 0.7 : 1 }}
+          >
+            {loading ? 'Uploading...' : 'Upload'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Download Options Modal
+const DownloadOptionsModal = ({ isOpen, onClose, onDownload, onDownloadTemplate }) => {
+  if (!isOpen) return null;
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px', width: '100%', maxWidth: '400px'
+      }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ marginTop: 0, marginBottom: '24px' }}>Download Options</h2>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onDownload(true)}
+            style={{ padding: '12px', borderRadius: '8px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}
+          >
+            <div style={{ background: '#E3F2FD', padding: '8px', borderRadius: '6px' }}>
+              <Filter size={20} color="#1976D2" />
+            </div>
+            <div>
+              <div style={{ fontWeight: '600' }}>Download Filtered Data</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>Export currently visible events</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onDownload(false)}
+            style={{ padding: '12px', borderRadius: '8px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}
+          >
+            <div style={{ background: '#E8F5E9', padding: '8px', borderRadius: '6px' }}>
+              <FileText size={20} color="#2E7D32" />
+            </div>
+            <div>
+              <div style={{ fontWeight: '600' }}>Download All Data</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>Export complete database</div>
+            </div>
+          </button>
+
+          <div style={{ height: '1px', background: '#eee', margin: '4px 0' }}></div>
+
+          <button
+            onClick={onDownloadTemplate}
+            style={{ padding: '12px', borderRadius: '8px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}
+          >
+            <div style={{ background: '#FFF3E0', padding: '8px', borderRadius: '6px' }}>
+              <FileDown size={20} color="#EF6C00" />
+            </div>
+            <div>
+              <div style={{ fontWeight: '600' }}>Download Template</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>CSV template for bulk upload</div>
+            </div>
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const EventManagement = () => {
   const { admin, logout, hasRole } = useAdminAuth();
 
@@ -1397,6 +1518,11 @@ const EventManagement = () => {
   const [eventCurrentPage, setEventCurrentPage] = useState(1);
   const [eventPageSize, setEventPageSize] = useState(10);
   const [eventTotalPages, setEventTotalPages] = useState(1);
+
+  // Bulk/CSV states
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // Pagination states for different tabs
   const [ticketsCurrentPage, setTicketsCurrentPage] = useState(1);
@@ -1681,6 +1807,73 @@ const EventManagement = () => {
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Error deleting event. Please try again.');
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/events/download-template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'event_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setDownloadModalOpen(false);
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template');
+    }
+  };
+
+  const handleDownloadCSV = async (filtered = false) => {
+    try {
+      const params = filtered ? new URLSearchParams({
+        ...(eventSearchQuery && { search: eventSearchQuery }),
+        ...(eventStatusFilter && { status: eventStatusFilter })
+      }) : new URLSearchParams();
+
+      const response = await api.get(`/events/download-csv?${params}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filtered ? 'events_filtered.csv' : 'events_all.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setDownloadModalOpen(false);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV');
+    }
+  };
+
+  const handleBulkUpload = async (file) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await api.post('/events/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      alert(response.data.message);
+      if (response.data.errors) {
+        console.error('Upload errors:', response.data.errors);
+        alert('Some records failed. Check console for details.');
+      }
+      fetchEvents();
+      setUploadModalOpen(false);
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      alert('Failed to upload events');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -2028,11 +2221,10 @@ const EventManagement = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                      activeTab === tab.id
-                        ? 'bg-[#1976D2] text-white'
-                        : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                    }`}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
+                      ? 'bg-[#1976D2] text-white'
+                      : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                      }`}
                   >
                     <IconComponent className="w-5 h-5" />
                     {tab.label}
@@ -2085,6 +2277,24 @@ const EventManagement = () => {
                     <Search className="w-5 h-5" />
                     Search
                   </button>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => setUploadModalOpen(true)}
+                      title="Bulk Upload Events"
+                      className="bg-white border border-[#E0E0E0] hover:bg-[#F5F5F5] text-[#212121] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+                    >
+                      <Upload className="w-5 h-5" />
+                    </button>
+
+                    <button
+                      onClick={() => setDownloadModalOpen(true)}
+                      title="Download Events CSV"
+                      className="bg-white border border-[#E0E0E0] hover:bg-[#F5F5F5] text-[#212121] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
+                  </div>
 
                   <button
                     onClick={() => setShowEventFormModal(true)}
@@ -2429,11 +2639,10 @@ const EventManagement = () => {
                               <td className="px-6 py-4">
                                 <button
                                   onClick={() => handleToggleDisclaimerStatus(disclaimer)}
-                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                    disclaimer.is_active
-                                      ? 'bg-[#E8F5E8] text-[#4CAF50] hover:bg-[#C8E6C9]'
-                                      : 'bg-[#FFEBEE] text-[#F44336] hover:bg-[#FFCDD2]'
-                                  }`}
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors ${disclaimer.is_active
+                                    ? 'bg-[#E8F5E8] text-[#4CAF50] hover:bg-[#C8E6C9]'
+                                    : 'bg-[#FFEBEE] text-[#F44336] hover:bg-[#FFCDD2]'
+                                    }`}
                                 >
                                   {disclaimer.is_active ? (
                                     <ToggleRight className="w-4 h-4 mr-1" />
@@ -2575,9 +2784,9 @@ const EventManagement = () => {
                                 fontSize: '12px',
                                 fontWeight: 'bold',
                                 color: registration.status === 'confirmed' ? '#4CAF50' :
-                                      registration.status === 'pending' ? '#FF9800' : '#F44336',
+                                  registration.status === 'pending' ? '#FF9800' : '#F44336',
                                 backgroundColor: registration.status === 'confirmed' ? '#E8F5E8' :
-                                                registration.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
+                                  registration.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
                               }}>
                                 {registration.status.toUpperCase()}
                               </span>
@@ -2714,9 +2923,9 @@ const EventManagement = () => {
                                 fontSize: '12px',
                                 fontWeight: 'bold',
                                 color: sponsor.status === 'approved' ? '#4CAF50' :
-                                      sponsor.status === 'pending' ? '#FF9800' : '#F44336',
+                                  sponsor.status === 'pending' ? '#FF9800' : '#F44336',
                                 backgroundColor: sponsor.status === 'approved' ? '#E8F5E8' :
-                                                sponsor.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
+                                  sponsor.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
                               }}>
                                 {sponsor.status.toUpperCase()}
                               </span>
@@ -2843,9 +3052,9 @@ const EventManagement = () => {
                                 fontSize: '12px',
                                 fontWeight: 'bold',
                                 color: partner.status === 'approved' ? '#4CAF50' :
-                                      partner.status === 'pending' ? '#FF9800' : '#F44336',
+                                  partner.status === 'pending' ? '#FF9800' : '#F44336',
                                 backgroundColor: partner.status === 'approved' ? '#E8F5E8' :
-                                                partner.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
+                                  partner.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
                               }}>
                                 {partner.status.toUpperCase()}
                               </span>
@@ -2972,9 +3181,9 @@ const EventManagement = () => {
                                 fontSize: '12px',
                                 fontWeight: 'bold',
                                 color: speaker.status === 'approved' ? '#4CAF50' :
-                                      speaker.status === 'pending' ? '#FF9800' : '#F44336',
+                                  speaker.status === 'pending' ? '#FF9800' : '#F44336',
                                 backgroundColor: speaker.status === 'approved' ? '#E8F5E8' :
-                                                speaker.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
+                                  speaker.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
                               }}>
                                 {speaker.status.toUpperCase()}
                               </span>
@@ -3101,9 +3310,9 @@ const EventManagement = () => {
                                 fontSize: '12px',
                                 fontWeight: 'bold',
                                 color: guest.status === 'approved' ? '#4CAF50' :
-                                      guest.status === 'pending' ? '#FF9800' : '#F44336',
+                                  guest.status === 'pending' ? '#FF9800' : '#F44336',
                                 backgroundColor: guest.status === 'approved' ? '#E8F5E8' :
-                                                guest.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
+                                  guest.status === 'pending' ? '#FFF3E0' : '#FFEBEE'
                               }}>
                                 {guest.status.toUpperCase()}
                               </span>
@@ -3173,10 +3382,7 @@ const EventManagement = () => {
       {/* Event Form Modal */}
       <EventFormModal
         isOpen={showEventFormModal}
-        onClose={() => {
-          setShowEventFormModal(false);
-          setSelectedEvent(null);
-        }}
+        onClose={() => setShowEventFormModal(false)}
         event={selectedEvent}
         onSave={handleEventFormSave}
       />
@@ -3184,11 +3390,7 @@ const EventManagement = () => {
       {/* Ticket Form Modal */}
       <TicketFormModal
         isOpen={showTicketFormModal}
-        onClose={() => {
-          setShowTicketFormModal(false);
-          setSelectedTicket(null);
-          setSelectedEventId(null);
-        }}
+        onClose={() => setShowTicketFormModal(false)}
         ticket={selectedTicket}
         eventId={selectedEventId}
         onSave={handleTicketFormSave}
@@ -3199,12 +3401,25 @@ const EventManagement = () => {
         isOpen={showDisclaimerFormModal}
         onClose={() => {
           setShowDisclaimerFormModal(false);
-          setSelectedDisclaimer(null);
           setSelectedEventId(null);
         }}
         disclaimer={selectedDisclaimer}
         eventId={selectedEventId}
         onSave={handleDisclaimerFormSave}
+      />
+
+      <DownloadOptionsModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+        onDownload={handleDownloadCSV}
+        onDownloadTemplate={handleDownloadTemplate}
+      />
+
+      <BulkUploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleBulkUpload}
+        loading={uploading}
       />
     </div>
   );
