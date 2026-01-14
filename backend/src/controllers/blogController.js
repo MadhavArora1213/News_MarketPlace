@@ -259,9 +259,11 @@ class BlogController {
               try {
                 const title = row['Title'] || row['title'];
                 const content = row['Content'] || row['content'];
-                const image = row['Image URL'] || row['image'];
+                const image = row['Image URL'] || row['image'] || row['Image'];
                 const category = row['Category'] || row['category'];
-                const publishDate = row['Publish Date'] || row['publishDate'];
+                // Check all possible headers for publish date, default to now if missing
+                const publishDateRaw = row['Publish Date'] || row['publishDate'] || row['Publish Date (YYYY-MM-DD)'];
+                const publishDate = publishDateRaw ? new Date(publishDateRaw) : new Date();
 
                 if (!title || !content) {
                   throw new Error('Title and Content are required');
@@ -272,7 +274,7 @@ class BlogController {
                   content,
                   image,
                   category,
-                  publishDate: publishDate ? new Date(publishDate) : undefined
+                  publishDate
                 });
                 createdRecords.push(record);
               } catch (err) {
