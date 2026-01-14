@@ -324,6 +324,11 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
     const order = await PressPackOrder.findById(id);
 
     if (!order) {

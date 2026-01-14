@@ -25,11 +25,11 @@ const uploadFields = upload.fields([
   { name: 'word_pdf_document', maxCount: 1 }
 ]);
 
+// Download CSV (admin only) - Must be defined before /:id route
+router.get('/export-csv', verifyAdminToken, requireAdminPanelAccess, pressPackOrderController.downloadCSV);
+
 // Create a new press pack order (public route for users)
 router.post('/', uploadFields, pressPackOrderController.create);
-
-// Download CSV (admin only)
-router.get('/export-csv', verifyAdminToken, requireAdminPanelAccess, pressPackOrderController.downloadCSV);
 
 // Get all press pack orders (admin only)
 router.get('/', verifyAdminToken, requireAdminPanelAccess, pressPackOrderController.getAll);
