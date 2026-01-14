@@ -3,6 +3,8 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from '../../components/common/Icon';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
+import { Download } from 'lucide-react';
+
 
 // Award Creation Form Modal Component
 const AwardCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
@@ -419,6 +421,95 @@ const AwardCreationFormModal = ({ isOpen, onClose, record, onSave }) => {
   );
 };
 
+// Download Options Modal
+const DownloadOptionsModal = ({ isOpen, onClose, onDownload }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10000,
+      padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '12px',
+        padding: '24px',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>Download Options</h3>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#6b7280' }}>×</button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onDownload(false)}
+            style={{
+              padding: '12px',
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '8px',
+              color: '#1d4ed8',
+              fontWeight: '600',
+              cursor: 'pointer',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              fontSize: '14px'
+            }}
+          >
+            <div style={{ padding: '8px', backgroundColor: '#fff', borderRadius: '6px' }}>
+              <Download size={16} />
+            </div>
+            <div>
+              <div style={{ fontWeight: '700' }}>Filtered Data</div>
+              <div style={{ fontSize: '12px', fontWeight: '400', marginTop: '2px' }}>Download only currently visible records</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onDownload(true)}
+            style={{
+              padding: '12px',
+              backgroundColor: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: '8px',
+              color: '#15803d',
+              fontWeight: '600',
+              cursor: 'pointer',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              fontSize: '14px'
+            }}
+          >
+            <div style={{ padding: '8px', backgroundColor: '#fff', borderRadius: '6px' }}>
+              <Download size={16} />
+            </div>
+            <div>
+              <div style={{ fontWeight: '700' }}>All Data</div>
+              <div style={{ fontSize: '12px', fontWeight: '400', marginTop: '2px' }}>Download all records in database</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Brand colors from Color palette
 const theme = {
   primary: '#1976D2',
@@ -479,6 +570,8 @@ const AwardCreationPage = () => {
   const [message, setMessage] = useState(null);
   const fileInputRef = React.useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   // Search and Filter State
   const [search, setSearch] = useState('');
@@ -649,7 +742,43 @@ const AwardCreationPage = () => {
     }
   };
 
+  const handleDownloadCSV = async (downloadAll = false) => {
+    try {
+      setDownloading(true);
+      const params = new URLSearchParams();
+
+      // If NOT downloading all, append current filters
+      if (!downloadAll) {
+        if (search) params.append('search', search);
+        if (industryFilter) params.append('industry', industryFilter);
+        if (regionalFilter) params.append('regional_focused', regionalFilter);
+        if (countryFilter) params.append('award_country', countryFilter);
+      }
+
+      const response = await api.get(`/admin/award-creations/download-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `award_creations_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const handleBulkUpload = async (e) => {
+
     const file = e.target.files[0];
     if (!file) return;
 
@@ -848,6 +977,14 @@ const AwardCreationPage = () => {
                 >
                   <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
                   {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={() => setShowDownloadModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#00897B' }}
+                  disabled={downloading}
+                >
+                  <Download size={18} />
+                  {downloading ? 'Downloading...' : 'Download CSV'}
                 </button>
                 <button
                   onClick={handleCreateRecord}
@@ -1260,6 +1397,13 @@ const AwardCreationPage = () => {
         onClose={() => setShowFormModal(false)}
         record={editingRecord}
         onSave={handleFormSave}
+      />
+
+      {/* Download Options Modal */}
+      <DownloadOptionsModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        onDownload={handleDownloadCSV}
       />
     </div>
   );

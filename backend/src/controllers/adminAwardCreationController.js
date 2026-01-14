@@ -125,6 +125,90 @@ class AdminAwardCreationController {
     }
   }
 
+  // Download Award Creations CSV
+  async downloadCSV(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const {
+        industry,
+        regional_focused,
+        award_country,
+        award_name,
+        search,
+        sortBy = 'createdAt',
+        sortOrder = 'DESC'
+      } = req.query;
+
+      const { Op } = require('sequelize');
+      const whereClause = {};
+
+      if (search) {
+        whereClause[Op.or] = [
+          { award_name: { [Op.iLike]: `%${search}%` } },
+          { award_organiser_name: { [Op.iLike]: `%${search}%` } },
+          { industry: { [Op.iLike]: `%${search}%` } },
+          { award_country: { [Op.iLike]: `%${search}%` } },
+          { award_city: { [Op.iLike]: `%${search}%` } }
+        ];
+      } else {
+        if (industry) whereClause.industry = industry;
+        if (regional_focused) whereClause.regional_focused = regional_focused;
+        if (award_country) whereClause.award_country = award_country;
+        if (award_name) whereClause.award_name = { [Op.iLike]: `%${award_name}%` };
+      }
+
+      const awardCreations = await AwardCreation.findAll({
+        where: whereClause,
+        order: [[sortBy, sortOrder.toUpperCase()]]
+      });
+
+      const headers = [
+        'ID',
+        'Award Name',
+        'Organiser Name',
+        'URL',
+        'Tentative Month',
+        'Industry',
+        'Regional Focused',
+        'Country',
+        'City',
+        'Focus',
+        'Created At'
+      ];
+
+      let csv = headers.join(',') + '\n';
+
+      awardCreations.forEach(ac => {
+        const row = [
+          ac.id,
+          `"${(ac.award_name || '').replace(/"/g, '""')}"`,
+          `"${(ac.award_organiser_name || '').replace(/"/g, '""')}"`,
+          `"${(ac.url || '').replace(/"/g, '""')}"`,
+          `"${(ac.tentative_month || '').replace(/"/g, '""')}"`,
+          `"${(ac.industry || '').replace(/"/g, '""')}"`,
+          `"${(ac.regional_focused || '').replace(/"/g, '""')}"`,
+          `"${(ac.award_country || '').replace(/"/g, '""')}"`,
+          `"${(ac.award_city || '').replace(/"/g, '""')}"`,
+          `"${(ac.company_focused_individual_focused || '').replace(/"/g, '""')}"`,
+          ac.createdAt ? new Date(ac.createdAt).toISOString() : ''
+        ];
+        csv += row.join(',') + '\n';
+      });
+
+      const filename = `award_creations_${new Date().toISOString().split('T')[0]}.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.status(200).send(csv);
+
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Create a new award creation (admin only)
   async createAwardCreation(req, res) {
     try {

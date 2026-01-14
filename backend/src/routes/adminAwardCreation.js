@@ -47,6 +47,13 @@ router.post('/bulk-upload',
   adminAwardCreationController.bulkUpload
 );
 
+// Download CSV
+router.get('/download-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  adminAwardCreationController.downloadCSV
+);
+
 // Get all award creations
 router.get('/',
   verifyAdminToken,
