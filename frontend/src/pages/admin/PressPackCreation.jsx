@@ -752,6 +752,12 @@ const PressPackCreationPage = () => {
   const [pageSize, setPageSize] = useState(25);
   const [message, setMessage] = useState(null);
 
+  // CSV Import/Export State
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   // Layout constants
   const headerZ = 1000;
   const mobileOverlayZ = 500;
@@ -842,6 +848,87 @@ const PressPackCreationPage = () => {
   const handleFormSave = () => {
     fetchRecords();
     setMessage({ type: 'success', text: 'Record saved successfully!' });
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/admin/press-releases/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'press_release_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Error downloading template');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    e.preventDefault();
+    if (!uploadFile) {
+      alert('Please select a file');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+
+    try {
+      setIsUploading(true);
+      setUploadStatus(null);
+      const response = await api.post('/admin/press-releases/bulk-upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setUploadStatus({
+        type: 'success',
+        message: response.data.message,
+        errors: response.data.errors,
+        created: response.data.created
+      });
+
+      fetchRecords();
+
+      if (!response.data.errors || response.data.errors.length === 0) {
+        setTimeout(() => {
+          setIsUploadModalOpen(false);
+          setUploadFile(null);
+          setUploadStatus(null);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setUploadStatus({
+        type: 'error',
+        message: error.response?.data?.error || 'Error uploading file'
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const params = new URLSearchParams();
+      // Add filters if easy, else just download all
+      // Currently state variables for filters are not obvious in this component apart from pagination
+      // Assuming download all for now as requested functionality.
+
+      const response = await api.get(`/admin/press-releases/export?${params.toString()}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `press_releases_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Error downloading CSV');
+    }
   };
 
   const handleCreateRecord = () => {
@@ -1017,13 +1104,36 @@ const PressPackCreationPage = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage press pack records</p>
               </div>
 
-              <button
-                onClick={handleCreateRecord}
-                style={btnPrimary}
-              >
-                <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
-                Add Record
-              </button>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: '#fff', color: theme.primary, border: `1px solid ${theme.primary}`, boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: theme.primary }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => setIsUploadModalOpen(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#fff', color: theme.primary, border: `1px solid ${theme.primary}`, boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-up-tray" size="sm" style={{ color: theme.primary }} />
+                  Bulk Upload
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  style={{ ...btnPrimary, backgroundColor: '#fff', color: theme.primary, border: `1px solid ${theme.primary}`, boxShadow: 'none' }}
+                >
+                  <Icon name="document-text" size="sm" style={{ color: theme.primary }} />
+                  Export
+                </button>
+                <button
+                  onClick={handleCreateRecord}
+                  style={btnPrimary}
+                >
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
+                  Add Record
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}
@@ -1254,6 +1364,70 @@ const PressPackCreationPage = () => {
           </main>
         </div>
       </div>
+
+      {/* Upload Modal */}
+      {isUploadModalOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 10000, padding: '20px'
+        }} onClick={() => setIsUploadModalOpen(false)}>
+          <div style={{
+            background: '#fff', borderRadius: '12px', padding: '24px', maxWidth: '500px', width: '100%',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Bulk Upload Press Packs</h3>
+              <button onClick={() => setIsUploadModalOpen(false)} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+            </div>
+
+            <form onSubmit={handleBulkUpload}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Select CSV File</label>
+                <div style={{ border: '2px dashed #e2e8f0', borderRadius: '8px', padding: '20px', textAlign: 'center' }}>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => setUploadFile(e.target.files[0])}
+                    style={{ display: 'none' }}
+                    id="csv-upload"
+                  />
+                  <label htmlFor="csv-upload" style={{ cursor: 'pointer', color: theme.primary, fontWeight: '600' }}>
+                    {uploadFile ? uploadFile.name : 'Click to select CSV file'}
+                  </label>
+                </div>
+              </div>
+
+              {uploadStatus && (
+                <div style={{
+                  padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '14px',
+                  backgroundColor: uploadStatus.type === 'success' ? '#dcfce7' : '#fee2e2',
+                  color: uploadStatus.type === 'success' ? '#166534' : '#991b1b'
+                }}>
+                  <div style={{ fontWeight: '600' }}>{uploadStatus.message}</div>
+                  {uploadStatus.errors && uploadStatus.errors.length > 0 && (
+                    <ul style={{ marginTop: '8px', paddingLeft: '20px', maxHeight: '100px', overflowY: 'auto' }}>
+                      {uploadStatus.errors.map((err, i) => (
+                        <li key={i}>Row {err.row}: {err.error}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <button type="button" onClick={() => setIsUploadModalOpen(false)} style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={isUploading || !uploadFile} style={{
+                  padding: '8px 16px', borderRadius: '6px', border: 'none', background: theme.primary, color: '#fff',
+                  cursor: (isUploading || !uploadFile) ? 'not-allowed' : 'pointer', opacity: (isUploading || !uploadFile) ? 0.7 : 1
+                }}>
+                  {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Form Modal */}
       <PressPackCreationFormModal

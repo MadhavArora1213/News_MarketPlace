@@ -18,6 +18,18 @@ class AdminPressReleaseController {
       }
     });
 
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || file.mimetype === 'application/vnd.ms-excel') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+
+
     // Bind methods to preserve 'this' context
     this.getAll = this.getAll.bind(this);
     this.getById = this.getById.bind(this);
@@ -29,6 +41,9 @@ class AdminPressReleaseController {
     this.findAllWithFilters = this.findAllWithFilters.bind(this);
     this.getCount = this.getCount.bind(this);
     this.sanitizePressReleaseData = this.sanitizePressReleaseData.bind(this);
+    this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.bulkUpload = this.bulkUpload.bind(this);
+    this.downloadCSV = this.downloadCSV.bind(this);
   }
 
   // Sanitize press release data types
@@ -636,6 +651,139 @@ class AdminPressReleaseController {
     const sql = `SELECT COUNT(*) as total FROM press_releases pr ${whereClause} ${searchSql}`;
     const result = await query(sql, params);
     return parseInt(result.rows[0].total);
+  }
+  // Download CSV Template
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'name', 'region', 'niche', 'distribution_media_websites', 'guaranteed_media_placements',
+        'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised_status',
+        'google_search_optimised_publications', 'google_news_index_status', 'google_news_index_publications',
+        'images_allowed', 'word_limit', 'package_options', 'price', 'turnaround_time',
+        'customer_info_needed', 'description', 'image_logo', 'best_seller', 'content_writing_assistance', 'is_active'
+      ];
+      const csvContent = headers.join(',') + '\n';
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=press_release_template.csv');
+      res.send(csvContent);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk Upload via CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+      if (!req.admin) return res.status(403).json({ error: 'Admin access required' });
+
+      const results = [];
+      const errors = [];
+      const stream = require('stream');
+      const csv = require('csv-parser');
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(req.file.buffer);
+
+      bufferStream.pipe(csv()).on('data', (data) => results.push(data)).on('end', async () => {
+        const createdRecords = [];
+        for (let i = 0; i < results.length; i++) {
+          try {
+            const row = results[i];
+            let data = {
+              name: row.name,
+              region: row.region,
+              niche: row.niche,
+              distribution_media_websites: row.distribution_media_websites,
+              guaranteed_media_placements: row.guaranteed_media_placements,
+              end_client_media_details: row.end_client_media_details,
+              middlemen_contact_details: row.middlemen_contact_details,
+              google_search_optimised_status: row.google_search_optimised_status,
+              google_search_optimised_publications: row.google_search_optimised_publications,
+              google_news_index_status: row.google_news_index_status,
+              google_news_index_publications: row.google_news_index_publications,
+              images_allowed: row.images_allowed,
+              word_limit: row.word_limit,
+              package_options: row.package_options,
+              price: row.price,
+              turnaround_time: row.turnaround_time,
+              customer_info_needed: row.customer_info_needed,
+              description: row.description,
+              image_logo: row.image_logo,
+              best_seller: row.best_seller,
+              content_writing_assistance: row.content_writing_assistance,
+              is_active: row.is_active
+            };
+
+            data = this.sanitizePressReleaseData(data);
+            // Set admin defaults
+            data.submitted_by_admin = req.admin.adminId;
+            data.status = 'active';
+
+            const record = await PressRelease.create(data);
+            createdRecords.push(record);
+          } catch (err) {
+            errors.push({ row: i + 1, error: err.message });
+          }
+        }
+        res.json({ message: `Processed ${results.length} rows. Created ${createdRecords.length} records.`, created: createdRecords.length, errors: errors, createdRecords });
+      }).on('error', (err) => res.status(500).json({ error: 'Failed to process CSV' }));
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download All Data as CSV
+  async downloadCSV(req, res) {
+    try {
+      const { name, region, niche, best_seller, google_search_optimised_status, google_news_index_status, status, is_active } = req.query;
+
+      const filters = {};
+      if (status) filters.status = status;
+      if (is_active !== undefined) filters.is_active = is_active === 'true';
+      if (best_seller !== undefined) filters.best_seller = best_seller === 'true';
+      if (google_search_optimised_status) filters.google_search_optimised_status = google_search_optimised_status;
+      if (google_news_index_status) filters.google_news_index_status = google_news_index_status;
+
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (name) { searchSql += ` AND pr.name ILIKE $${searchParamCount}`; searchValues.push(`%${name}%`); searchParamCount++; }
+      if (region) { searchSql += ` AND pr.region ILIKE $${searchParamCount}`; searchValues.push(`%${region}%`); searchParamCount++; }
+      if (niche) { searchSql += ` AND pr.niche ILIKE $${searchParamCount}`; searchValues.push(`%${niche}%`); searchParamCount++; }
+
+      const records = await this.findAllWithFilters(filters, searchSql, searchValues, 100000, 0);
+
+      const headers = [
+        'id', 'name', 'region', 'niche', 'distribution_media_websites', 'guaranteed_media_placements',
+        'end_client_media_details', 'middlemen_contact_details', 'google_search_optimised_status',
+        'google_search_optimised_publications', 'google_news_index_status', 'google_news_index_publications',
+        'images_allowed', 'word_limit', 'package_options', 'price', 'turnaround_time',
+        'customer_info_needed', 'description', 'image_logo', 'best_seller', 'content_writing_assistance',
+        'status', 'created_at', 'updated_at', 'is_active'
+      ];
+
+      const csvRows = [headers.join(',')];
+      records.forEach(r => {
+        const row = headers.map(header => {
+          let val = r[header];
+          if (val === null || val === undefined) return '';
+          if (typeof val === 'object') val = JSON.stringify(val);
+          return `"${String(val).replace(/"/g, '""')}"`;
+        });
+        csvRows.push(row.join(','));
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=press_releases_export_${new Date().toISOString().split('T')[0]}.csv`);
+      res.send(csvRows.join('\n'));
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 

@@ -13,6 +13,11 @@ const {
 console.log("Creating AdminPressReleaseController instance");
 const adminPressReleaseController = new AdminPressReleaseController();
 
+// Bulk operations & export
+router.get("/template", verifyAdminToken, requireAdminPanelAccess, adminPressReleaseController.downloadTemplate);
+router.post("/bulk-upload", verifyAdminToken, requireAdminPanelAccess, requireAdminPermission("manage_publications"), adminPressReleaseController.csvUpload.single("file"), adminPressReleaseController.bulkUpload);
+router.get("/export", verifyAdminToken, requireAdminPanelAccess, adminPressReleaseController.downloadCSV);
+
 // Get all press releases (authenticated users can view)
 router.get("/", verifyToken, adminPressReleaseController.getAll);
 
