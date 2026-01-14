@@ -546,9 +546,9 @@ class ReporterController {
         return res.status(403).json({ error: 'Admin authentication required for bulk operations' });
       }
 
-      const adminId = req.admin?.adminId;
+      const adminId = req.admin?.adminId || req.admin?.id;
       if (!adminId) {
-        return res.status(403).json({ error: 'Admin authentication required' });
+        return res.status(403).json({ error: 'Admin authentication required (ID missing)' });
       }
 
       const approvedReporters = [];
@@ -606,7 +606,7 @@ class ReporterController {
       });
     } catch (error) {
       console.error('Bulk approve reporters error:', error);
-      res.status(500).json({ error: `Bulk approve failed: ${error.message}` });
+      res.status(500).json({ error: `Bulk approve failed: ${error.message} | AdminID: ${req.admin?.adminId || req.admin?.id} | IDs: ${req.body?.ids?.length}` });
     }
   }
 
@@ -628,9 +628,9 @@ class ReporterController {
         return res.status(403).json({ error: 'Admin authentication required for bulk operations' });
       }
 
-      const adminId = req.admin?.adminId;
+      const adminId = req.admin?.adminId || req.admin?.id;
       if (!adminId) {
-        return res.status(403).json({ error: 'Admin authentication required' });
+        return res.status(403).json({ error: 'Admin authentication required (ID missing)' });
       }
 
       const rejectedReporters = [];
@@ -689,7 +689,7 @@ class ReporterController {
       });
     } catch (error) {
       console.error('Bulk reject reporters error:', error);
-      res.status(500).json({ error: `Bulk reject failed: ${error.message}` });
+      res.status(500).json({ error: `Bulk reject failed: ${error.message} | AdminID: ${req.admin?.adminId || req.admin?.id} | IDs: ${req.body?.ids?.length}` });
     }
   }
 
