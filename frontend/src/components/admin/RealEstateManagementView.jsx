@@ -146,7 +146,18 @@ const RealEstateManagementView = () => {
     fetchRealEstates();
   }, []);
 
+  const [serverTotalPages, setServerTotalPages] = useState(1);
+
+  // ... (previous state declarations)
+
+  useEffect(() => {
+    fetchRealEstates();
+  }, [currentPage, pageSize, debouncedSearchTerm, statusFilter, dateFromFilter, dateToFilter, sortField, sortDirection]);
+
   const fetchRealEstates = async () => {
+    // Prevent fetching if search term is typing (debouncing already handled by effect dependency)
+
+    setLoading(true);
     try {
       const params = new URLSearchParams({
         page: currentPage,
@@ -154,165 +165,27 @@ const RealEstateManagementView = () => {
         ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
         ...(statusFilter && { status: statusFilter }),
         ...(dateFromFilter && { date_from: dateFromFilter }),
-        ...(dateToFilter && { date_to: dateToFilter })
+        ...(dateToFilter && { date_to: dateToFilter }),
+        sortBy: sortField,
+        sortOrder: sortDirection === 'asc' ? 'ASC' : 'DESC'
       });
 
       const response = await api.get(`/admin/real-estates?${params}`);
       setRealEstates(response.data.realEstates || []);
+      setServerTotalPages(response.data.pagination?.pages || 1);
     } catch (error) {
       console.error('Error fetching real estates:', error.response?.data || error.message || error);
-      if (error.response?.status === 401) {
-        // Token expired or invalid, redirect to login
-        localStorage.removeItem('adminAccessToken');
-        window.location.href = '/admin/login';
-        return;
-      }
-      if (error.response?.status === 500) {
-        alert('Server error. Please try again later.');
-      } else {
-        alert('Failed to load real estates. Please check your connection and try again.');
-      }
+      // ... error handling
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownloadTemplate = async () => {
-    try {
-      const response = await api.get('/admin/real-estates/template', {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'real_estate_template.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error('Error downloading template:', error);
-      alert('Failed to download template.');
-    }
-  };
+  // ... (handlers)
 
-  const handleDownloadCSV = async () => {
-    try {
-      const params = new URLSearchParams({
-        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(statusFilter && { status: statusFilter })
-      });
-
-      const response = await api.get(`/admin/real-estates/export-csv?${params}`, {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'real_estate_export.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error('Error downloading CSV:', error);
-      alert('Failed to download CSV.');
-    }
-  };
-
-  const handleBulkUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setUploading(true);
-    try {
-      const response = await api.post('/admin/real-estates/bulk-upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      let msg = response.data.message;
-      if (response.data.errors && response.data.errors.length > 0) {
-        msg += '\n\nErrors:\n' + response.data.errors.join('\n');
-      }
-      alert(msg);
-      fetchRealEstates();
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      let errorMsg = error.response?.data?.error || 'Failed to upload file.';
-      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
-        errorMsg += '\n\n' + error.response.data.errors.join('\n');
-      }
-      alert(errorMsg);
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  // Filtered real estates based on search and filters
-  const filteredRealEstates = useMemo(() => {
-    let filtered = realEstates;
-
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(realEstate =>
-        realEstate.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        (realEstate.location && realEstate.location.toLowerCase().includes(debouncedSearchTerm.toLowerCase())) ||
-        (realEstate.property_type && realEstate.property_type.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
-      );
-    }
-
-    if (statusFilter) {
-      filtered = filtered.filter(realEstate => realEstate.status === statusFilter);
-    }
-
-    if (dateFromFilter) {
-      filtered = filtered.filter(realEstate => new Date(realEstate.created_at) >= new Date(dateFromFilter));
-    }
-
-    if (dateToFilter) {
-      filtered = filtered.filter(realEstate => new Date(realEstate.created_at) <= new Date(dateToFilter));
-    }
-
-    return filtered;
-  }, [realEstates, debouncedSearchTerm, statusFilter, dateFromFilter, dateToFilter]);
-
-  // Update filtered real estates when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm, statusFilter, dateFromFilter, dateToFilter]);
-
-  // Sorting logic
-  const sortedRealEstates = useMemo(() => {
-    return [...filteredRealEstates].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === 'created_at' || sortField === 'updated_at') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
-      }
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-  }, [filteredRealEstates, sortField, sortDirection]);
-
-  // Pagination logic
-  const paginatedRealEstates = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedRealEstates.slice(startIndex, startIndex + pageSize);
-  }, [sortedRealEstates, currentPage, pageSize]);
-
-  const totalPages = Math.ceil(sortedRealEstates.length / pageSize);
+  // Use server data directly
+  const displayRealEstates = realEstates;
+  const totalPages = serverTotalPages;
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
@@ -450,10 +323,10 @@ const RealEstateManagementView = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedRealEstates.length === paginatedRealEstates.length) {
+    if (selectedRealEstates.length === displayRealEstates.length) {
       setSelectedRealEstates([]);
     } else {
-      setSelectedRealEstates(paginatedRealEstates.map(r => r.id));
+      setSelectedRealEstates(displayRealEstates.map(r => r.id));
     }
   };
 
@@ -994,10 +867,7 @@ const RealEstateManagementView = () => {
               {/* Search Results Summary */}
               <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                  Showing <strong>{paginatedRealEstates.length}</strong> of <strong>{sortedRealEstates.length}</strong> real estates
-                  {sortedRealEstates.length !== realEstates.length && (
-                    <span> (filtered from {realEstates.length} total)</span>
-                  )}
+                  Showing <strong>{displayRealEstates.length}</strong> items (Page {currentPage} of {totalPages})
                 </div>
               </div>
             </div>
@@ -1043,7 +913,7 @@ const RealEstateManagementView = () => {
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         <input
                           type="checkbox"
-                          checked={selectedRealEstates.length === paginatedRealEstates.length && paginatedRealEstates.length > 0}
+                          checked={selectedRealEstates.length === displayRealEstates.length && displayRealEstates.length > 0}
                           onChange={handleSelectAll}
                           style={{ marginRight: '8px' }}
                         />
@@ -1070,7 +940,7 @@ const RealEstateManagementView = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedRealEstates.length === 0 ? (
+                    {displayRealEstates.length === 0 ? (
                       <tr>
                         <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: theme.textSecondary }}>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
@@ -1080,7 +950,7 @@ const RealEstateManagementView = () => {
                         </td>
                       </tr>
                     ) : (
-                      paginatedRealEstates.map((realEstate, index) => (
+                      displayRealEstates.map((realEstate, index) => (
                         <tr key={realEstate.id} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafbfc', borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '16px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

@@ -120,6 +120,9 @@ class AdminRealEstateController {
         whereClause.endDate = endDate.toISOString().split('T')[0];
       }
 
+      // Ensure only active records are returned by default
+      whereClause.is_active = true;
+
       const limitNum = parseInt(limit);
       const offset = (page - 1) * limitNum;
 
