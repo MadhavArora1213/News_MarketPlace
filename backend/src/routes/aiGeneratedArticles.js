@@ -60,6 +60,12 @@ router.get('/my',
   aiGeneratedArticleController.getMyArticles
 );
 
+router.get('/download-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  (req, res) => aiGeneratedArticleController.downloadCSV(req, res)
+);
+
 router.get('/:id',
   verifyToken,
   aiGeneratedArticleController.getArticleById
@@ -85,12 +91,6 @@ router.get('/',
   verifyAdminToken,
   requireAdminPanelAccess,
   aiGeneratedArticleController.getAllArticles
-);
-
-router.get('/download-csv',
-  verifyAdminToken,
-  requireAdminPanelAccess,
-  (req, res) => aiGeneratedArticleController.downloadCSV(req, res)
 );
 
 router.patch('/:id/status',
