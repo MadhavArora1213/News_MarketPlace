@@ -602,6 +602,84 @@ class ThemeController {
     }
   }
 
+  // Reject theme
+  async rejectTheme(req, res) {
+    try {
+      const { id } = req.params;
+      const { rejection_reason, admin_comments } = req.body;
+
+      if (!rejection_reason || rejection_reason.trim().length === 0) {
+        return res.status(400).json({ error: 'Rejection reason is required' });
+      }
+
+      const theme = await Theme.findById(id);
+      if (!theme) {
+        return res.status(404).json({ error: 'Theme not found' });
+      }
+
+      if (theme.status === 'rejected') {
+        return res.status(400).json({ error: 'Theme is already rejected' });
+      }
+
+      const adminId = req.admin?.adminId;
+      if (!adminId) {
+        return res.status(403).json({ error: 'Admin authentication required' });
+      }
+
+      const updateData = {
+        status: 'rejected',
+        rejected_at: new Date(),
+        rejected_by: adminId,
+        rejection_reason: rejection_reason.trim(),
+        approved_at: null,
+        approved_by: null,
+        admin_comments: admin_comments || null
+      };
+
+      const updatedTheme = await theme.update(updateData);
+
+      // Create in-app notification
+      try {
+        await UserNotification.create({
+          user_id: theme.submitted_by,
+          type: 'theme_rejected',
+          title: 'Theme Review Update',
+          message: `Your theme "${theme.page_name}" has been reviewed. Please check your email for details.`,
+          related_id: theme.id
+        });
+      } catch (notificationError) {
+        console.error('Failed to create rejection notification:', notificationError);
+      }
+
+      // Send rejection email notification
+      try {
+        await this.sendRejectionNotification(updatedTheme);
+      } catch (emailError) {
+        console.error('Failed to send rejection email:', emailError);
+        // Log email failure but don't fail the rejection process
+        try {
+          await UserNotification.create({
+            user_id: theme.submitted_by,
+            type: 'system',
+            title: 'Email Delivery Issue',
+            message: 'We were unable to send you an email about your theme review. Please check your notifications for the rejection details.',
+            related_id: theme.id
+          });
+        } catch (notificationError) {
+          console.error('Failed to create email failure notification:', notificationError);
+        }
+      }
+
+      res.json({
+        message: 'Theme rejected successfully',
+        theme: updatedTheme.toJSON()
+      });
+    } catch (error) {
+      console.error('Reject theme error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
 
   // Bulk Upload
   async bulkUpload(req, res) {
