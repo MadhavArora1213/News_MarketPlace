@@ -877,7 +877,7 @@ const ThemeManagement = () => {
                   }}
                 >
                   <Icon name="arrow-down-tray" size="sm" />
-                  Export CSV
+                  Download CSV
                 </button>
                 <button
                   onClick={handleCreateTheme}
