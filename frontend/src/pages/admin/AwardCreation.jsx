@@ -477,6 +477,8 @@ const AwardCreationPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [message, setMessage] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   // Search and Filter State
   const [search, setSearch] = useState('');
@@ -629,6 +631,57 @@ const AwardCreationPage = () => {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/admin/award-creations/template', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'award_creation_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/admin/award-creations/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage({
+        type: 'success',
+        text: response.data.message,
+        errors: response.data.errors
+      });
+      fetchRecords();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || 'Failed to upload file.',
+        errors: error.response?.data?.errors
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -773,13 +826,37 @@ const AwardCreationPage = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage award creation records</p>
               </div>
 
-              <button
-                onClick={handleCreateRecord}
-                style={btnPrimary}
-              >
-                <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
-                Add Record
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ ...btnPrimary, backgroundColor: theme.info }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={handleCreateRecord}
+                  style={btnPrimary}
+                >
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
+                  Add Record
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}

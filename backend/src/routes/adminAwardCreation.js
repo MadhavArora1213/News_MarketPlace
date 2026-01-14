@@ -32,6 +32,21 @@ const upload = multer({
   }
 });
 
+// Download template (admin only)
+router.get('/template',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  adminAwardCreationController.downloadTemplate
+);
+
+// Bulk upload (admin only)
+router.post('/bulk-upload',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  adminAwardCreationController.csvUpload.single('file'),
+  adminAwardCreationController.bulkUpload
+);
+
 // Get all award creations
 router.get('/',
   verifyAdminToken,

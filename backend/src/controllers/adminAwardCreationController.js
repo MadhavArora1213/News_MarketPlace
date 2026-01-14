@@ -4,8 +4,24 @@ const { s3Service } = require('../services/s3Service');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const multer = require('multer');
 
 class AdminAwardCreationController {
+  constructor() {
+    this.storage = multer.memoryStorage();
+
+    // Multer for CSV bulk upload
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+  }
   // Validation rules for create
   createValidation = [
     body('award_name').trim().isLength({ min: 1 }).withMessage('Award name is required'),
@@ -314,6 +330,108 @@ class AdminAwardCreationController {
       res.json({ message: 'Award creation deleted successfully' });
     } catch (error) {
       console.error('Delete award creation error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'award_name',
+        'award_organiser_name',
+        'url',
+        'tentative_month',
+        'industry',
+        'regional_focused',
+        'award_country',
+        'award_city',
+        'company_focused_individual_focused'
+      ];
+
+      const dummyData = [
+        ['Global Tech Awards', 'Tech World Org', 'https://techworldawards.com', 'October 2025', 'Technology', 'Global', 'USA', 'San Francisco', 'Company Focused'],
+        ['Rising Star Awards', 'Innovation Collective', 'https://innovationcollective.org', 'March 2025', 'Innovation', 'Regional', 'UK', 'London', 'Individual Focused']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=award_creation_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload award creations from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                // Basic mapping and cleaning
+                const awardData = {
+                  award_name: row.award_name || '',
+                  award_organiser_name: row.award_organiser_name || '',
+                  url: row.url || '',
+                  tentative_month: row.tentative_month || '',
+                  industry: row.industry || '',
+                  regional_focused: row.regional_focused || '',
+                  award_country: row.award_country || '',
+                  award_city: row.award_city || '',
+                  company_focused_individual_focused: row.company_focused_individual_focused || ''
+                };
+
+                if (!awardData.award_name || !awardData.award_organiser_name) {
+                  errors.push(`Row ${index + 1}: Award name and Award organiser name are required.`);
+                  continue;
+                }
+
+                const record = await AwardCreation.create(awardData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
