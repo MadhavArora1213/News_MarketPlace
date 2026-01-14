@@ -83,9 +83,9 @@ const ArticleSubmissionViewModal = ({ isOpen, onClose, submission }) => {
               fontSize: '12px',
               fontWeight: 'bold',
               color: submission.status === 'approved' ? '#4CAF50' :
-                     submission.status === 'rejected' ? '#F44336' : '#FF9800',
+                submission.status === 'rejected' ? '#F44336' : '#FF9800',
               backgroundColor: submission.status === 'approved' ? '#E8F5E8' :
-                              submission.status === 'rejected' ? '#FFEBEE' : '#FFF3E0'
+                submission.status === 'rejected' ? '#FFEBEE' : '#FFF3E0'
             }}>
               {submission.status.toUpperCase()}
             </span>
@@ -257,7 +257,7 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
 
   const fetchPublications = async () => {
     try {
-      const response = await api.get('/admin/publication-managements');
+      const response = await api.get('/admin/publication-management?limit=1000');
       setPublications(response.data.publications || []);
     } catch (error) {
       console.error('Error fetching publications:', error);
@@ -811,31 +811,31 @@ const ArticleSubmissionCreateModal = ({ isOpen, onClose, onSave }) => {
 
 // Article Submission Edit Modal Component
 const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => {
-      const [formData, setFormData] = useState({
-        publication_id: '',
-        title: '',
-        sub_title: '',
-        by_line: '',
-        tentative_publish_date: '',
-        article_text: '',
-        website_link: '',
-        instagram_link: '',
-        facebook_link: '',
-        delete_image1: false,
-        delete_image2: false
-      });
-      const [publications, setPublications] = useState([]);
-      const [publicationSearch, setPublicationSearch] = useState('');
-      const [filteredPublications, setFilteredPublications] = useState([]);
-      const [loading, setLoading] = useState(false);
-      const [image1File, setImage1File] = useState(null);
-      const [image2File, setImage2File] = useState(null);
-      const [image1Preview, setImage1Preview] = useState(null);
-      const [image2Preview, setImage2Preview] = useState(null);
-      const [publicationImageRequirements, setPublicationImageRequirements] = useState({
-        needs_images: false,
-        image_count: 0
-      });
+  const [formData, setFormData] = useState({
+    publication_id: '',
+    title: '',
+    sub_title: '',
+    by_line: '',
+    tentative_publish_date: '',
+    article_text: '',
+    website_link: '',
+    instagram_link: '',
+    facebook_link: '',
+    delete_image1: false,
+    delete_image2: false
+  });
+  const [publications, setPublications] = useState([]);
+  const [publicationSearch, setPublicationSearch] = useState('');
+  const [filteredPublications, setFilteredPublications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [image1File, setImage1File] = useState(null);
+  const [image2File, setImage2File] = useState(null);
+  const [image1Preview, setImage1Preview] = useState(null);
+  const [image2Preview, setImage2Preview] = useState(null);
+  const [publicationImageRequirements, setPublicationImageRequirements] = useState({
+    needs_images: false,
+    image_count: 0
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -1071,61 +1071,61 @@ const ArticleSubmissionEditModal = ({ isOpen, onClose, submission, onSave }) => 
         </div>
 
         <form onSubmit={handleSubmit}>
-           {/* Publication Selection with Search */}
-           <div style={formGroupStyle}>
-             <label style={labelStyle}>Publication Name</label>
-             <div style={{ position: 'relative' }}>
-               <input
-                 type="text"
-                 placeholder="Search publications..."
-                 value={publicationSearch}
-                 onChange={(e) => setPublicationSearch(e.target.value)}
-                 style={{
-                   ...inputStyle,
-                   paddingRight: '40px',
-                   marginBottom: '8px'
-                 }}
-               />
-               <div style={{
-                 position: 'absolute',
-                 right: '12px',
-                 top: '50%',
-                 transform: 'translateY(-50%)',
-                 color: '#757575'
-               }}>
-                 <Search className="w-5 h-5" />
-               </div>
-             </div>
-             <select
-               value={formData.publication_id || ''}
-               onChange={(e) => handlePublicationChange(e.target.value)}
-               style={selectStyle}
-             >
-               <option value="">Select a publication</option>
-               {filteredPublications.map(pub => (
-                 <option key={pub.id} value={pub.id}>
-                   {pub.publication_name} (Word limit: {pub.word_limit || 500})
-                 </option>
-               ))}
-             </select>
-             {submission.publication && (
-               <small style={{ color: '#757575', fontSize: '12px' }}>
-                 Current: {submission.publication.publication_name}
-               </small>
-             )}
-           </div>
+          {/* Publication Selection with Search */}
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Publication Name</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="Search publications..."
+                value={publicationSearch}
+                onChange={(e) => setPublicationSearch(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  paddingRight: '40px',
+                  marginBottom: '8px'
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#757575'
+              }}>
+                <Search className="w-5 h-5" />
+              </div>
+            </div>
+            <select
+              value={formData.publication_id || ''}
+              onChange={(e) => handlePublicationChange(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="">Select a publication</option>
+              {filteredPublications.map(pub => (
+                <option key={pub.id} value={pub.id}>
+                  {pub.publication_name} (Word limit: {pub.word_limit || 500})
+                </option>
+              ))}
+            </select>
+            {submission.publication && (
+              <small style={{ color: '#757575', fontSize: '12px' }}>
+                Current: {submission.publication.publication_name}
+              </small>
+            )}
+          </div>
 
-           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-             <div style={formGroupStyle}>
-               <label style={labelStyle}>Title *</label>
-               <input
-                 type="text"
-                 value={formData.title}
-                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                 style={inputStyle}
-                 required
-               />
-             </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Title *</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                style={inputStyle}
+                required
+              />
+            </div>
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Subtitle</label>

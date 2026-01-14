@@ -98,7 +98,7 @@ const ArticleSubmissionPage = () => {
   const fetchPublications = async () => {
     try {
       // Fetch publications from admin publication management
-      const response = await api.get('/admin/publication-management');
+      const response = await api.get('/admin/publication-management?limit=1000');
       // All publication managements are available for selection
       setPublications(response.data.publications || []);
     } catch (error) {
@@ -428,21 +428,19 @@ const ArticleSubmissionPage = () => {
             <div className="flex border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('submit')}
-                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-                  activeTab === 'submit'
+                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'submit'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Submit Article
               </button>
               <button
                 onClick={() => setActiveTab('my-submissions')}
-                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-                  activeTab === 'my-submissions'
+                className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'my-submissions'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 My Submissions
               </button>
@@ -461,331 +459,331 @@ const ArticleSubmissionPage = () => {
               </div>
 
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Publication Selection */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Publication <span style={{ color: theme.danger }}>*</span>
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Select the publication you want to submit to" />
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search and select a publication..."
-                  value={selectedPublication ? selectedPublication.publication_name : searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    if (selectedPublication) {
-                      setSelectedPublication(null);
-                      setFormData(prev => ({ ...prev, publication_id: '' }));
-                    }
-                  }}
-                  onFocus={() => setShowDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                  style={{ borderColor: errors.publication_id ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                />
-                {showDropdown && !selectedPublication && filteredPublications.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredPublications.map(pub => (
-                      <div
-                        key={pub.id}
-                        className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          handlePublicationSelect(pub.id.toString());
-                          setShowDropdown(false);
-                        }}
-                      >
-                        <div className="font-medium">{pub.publication_name}</div>
-                        <div className="text-sm text-gray-500">Word limit: {pub.word_limit || 500}</div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Publication Selection */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Publication <span style={{ color: theme.danger }}>*</span>
+                    <Icon name="information-circle" size="sm" className="ml-1 inline" title="Select the publication you want to submit to" />
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search and select a publication..."
+                      value={selectedPublication ? selectedPublication.publication_name : searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        if (selectedPublication) {
+                          setSelectedPublication(null);
+                          setFormData(prev => ({ ...prev, publication_id: '' }));
+                        }
+                      }}
+                      onFocus={() => setShowDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                      style={{ borderColor: errors.publication_id ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    />
+                    {showDropdown && !selectedPublication && filteredPublications.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {filteredPublications.map(pub => (
+                          <div
+                            key={pub.id}
+                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => {
+                              handlePublicationSelect(pub.id.toString());
+                              setShowDropdown(false);
+                            }}
+                          >
+                            <div className="font-medium">{pub.publication_name}</div>
+                            <div className="text-sm text-gray-500">Word limit: {pub.word_limit || 500}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
-              {errors.publication_id && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_id}</div>}
-            </div>
-
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Title <span style={{ color: theme.danger }}>*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.title ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                placeholder="Enter article title (max 12 words)"
-              />
-              {errors.title && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.title}</div>}
-            </div>
-
-            {/* Slug (Auto-generated) */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                URL Slug (Auto-generated)
-              </label>
-              <input
-                type="text"
-                value={generatedSlug}
-                readOnly
-                className="w-full px-4 py-3 border rounded-lg bg-gray-50"
-                style={{ borderColor: theme.borderLight, backgroundColor: '#f9f9f9', color: theme.textSecondary }}
-                placeholder="Slug will be generated from title"
-              />
-              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                This will be used in the article URL
-              </div>
-            </div>
-
-            {/* Subtitle */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Subtitle
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
-              </label>
-              <input
-                type="text"
-                name="sub_title"
-                value={formData.sub_title}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
-                placeholder="Enter article subtitle"
-              />
-            </div>
-
-            {/* By Line */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                By Line
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
-              </label>
-              <input
-                type="text"
-                name="by_line"
-                value={formData.by_line}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
-                placeholder="Enter author name"
-              />
-            </div>
-
-            {/* Tentative Publish Date */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Tentative Publish Date
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
-              </label>
-              <input
-                type="date"
-                name="tentative_publish_date"
-                value={formData.tentative_publish_date}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
-              />
-            </div>
-
-            {/* Article Text */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Article Text <span style={{ color: theme.danger }}>*</span>
-              </label>
-              <textarea
-                name="article_text"
-                value={formData.article_text}
-                onChange={handleInputChange}
-                rows={10}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.article_text ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                placeholder="Enter your article content"
-              />
-              <div className="flex justify-between mt-2">
-                <div style={{ fontSize: '12px', color: theme.textSecondary }}>
-                  Word count: {wordCount} / {wordLimit}
+                  {errors.publication_id && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_id}</div>}
                 </div>
-                {wordCount > wordLimit && (
-                  <div style={{ color: theme.danger, fontSize: '12px' }}>
-                    Exceeds limit by {wordCount - wordLimit} words
+
+                {/* Title */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Title <span style={{ color: theme.danger }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.title ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="Enter article title (max 12 words)"
+                  />
+                  {errors.title && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.title}</div>}
+                </div>
+
+                {/* Slug (Auto-generated) */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    URL Slug (Auto-generated)
+                  </label>
+                  <input
+                    type="text"
+                    value={generatedSlug}
+                    readOnly
+                    className="w-full px-4 py-3 border rounded-lg bg-gray-50"
+                    style={{ borderColor: theme.borderLight, backgroundColor: '#f9f9f9', color: theme.textSecondary }}
+                    placeholder="Slug will be generated from title"
+                  />
+                  <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                    This will be used in the article URL
                   </div>
-                )}
-              </div>
-              {errors.article_text && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.article_text}</div>}
-            </div>
+                </div>
 
-            {/* Image Upload Section - Dynamic based on publication requirements */}
-            {imageCount > 0 && (
-              <>
-                {Array.from({ length: imageCount }, (_, index) => {
-                  const imageNum = index + 1;
-                  const imageKey = `image${imageNum}`;
-                  return (
-                    <div key={imageKey}>
-                      <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                        Image {imageNum} <span style={{ color: theme.danger }}>*</span>
-                        <Icon name="information-circle" size="sm" className="ml-1 inline" title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB" />
-                      </label>
-                      <input
-                        type="file"
-                        name={imageKey}
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                        style={{ borderColor: errors[imageKey] ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                      />
-                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                        Must be landscape orientation (width greater than height), high resolution recommended. Size limit: 10 MB. No logos, thumbnails, icons, or text in image.
-                      </div>
-                      {errors[imageKey] && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors[imageKey]}</div>}
+                {/* Subtitle */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Subtitle
+                    <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
+                  </label>
+                  <input
+                    type="text"
+                    name="sub_title"
+                    value={formData.sub_title}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="Enter article subtitle"
+                  />
+                </div>
+
+                {/* By Line */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    By Line
+                    <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
+                  </label>
+                  <input
+                    type="text"
+                    name="by_line"
+                    value={formData.by_line}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="Enter author name"
+                  />
+                </div>
+
+                {/* Tentative Publish Date */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Tentative Publish Date
+                    <Icon name="information-circle" size="sm" className="ml-1 inline" title="Not guaranteed" />
+                  </label>
+                  <input
+                    type="date"
+                    name="tentative_publish_date"
+                    value={formData.tentative_publish_date}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
+                  />
+                </div>
+
+                {/* Article Text */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Article Text <span style={{ color: theme.danger }}>*</span>
+                  </label>
+                  <textarea
+                    name="article_text"
+                    value={formData.article_text}
+                    onChange={handleInputChange}
+                    rows={10}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.article_text ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="Enter your article content"
+                  />
+                  <div className="flex justify-between mt-2">
+                    <div style={{ fontSize: '12px', color: theme.textSecondary }}>
+                      Word count: {wordCount} / {wordLimit}
                     </div>
-                  );
-                })}
-              </>
-            )}
+                    {wordCount > wordLimit && (
+                      <div style={{ color: theme.danger, fontSize: '12px' }}>
+                        Exceeds limit by {wordCount - wordLimit} words
+                      </div>
+                    )}
+                  </div>
+                  {errors.article_text && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.article_text}</div>}
+                </div>
+
+                {/* Image Upload Section - Dynamic based on publication requirements */}
+                {imageCount > 0 && (
+                  <>
+                    {Array.from({ length: imageCount }, (_, index) => {
+                      const imageNum = index + 1;
+                      const imageKey = `image${imageNum}`;
+                      return (
+                        <div key={imageKey}>
+                          <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                            Image {imageNum} <span style={{ color: theme.danger }}>*</span>
+                            <Icon name="information-circle" size="sm" className="ml-1 inline" title="only landscape mode - portrait mode not allowed. Logos, thumbnail, icons and text in image not allowed. Restrict the size limit to 10 MB" />
+                          </label>
+                          <input
+                            type="file"
+                            name={imageKey}
+                            onChange={handleFileChange}
+                            accept="image/*"
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                            style={{ borderColor: errors[imageKey] ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                          />
+                          <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                            Must be landscape orientation (width greater than height), high resolution recommended. Size limit: 10 MB. No logos, thumbnails, icons, or text in image.
+                          </div>
+                          {errors[imageKey] && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors[imageKey]}</div>}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
 
 
-            {/* Website Link */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Website Link <span style={{ color: theme.danger }}>*</span>
-                <Icon name="information-circle" size="sm" className="ml-1 inline" title="Required website link" />
-              </label>
-              <input
-                type="url"
-                name="website_link"
-                value={formData.website_link}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.website_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                placeholder="https://example.com"
-              />
-              {errors.website_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_link}</div>}
-            </div>
+                {/* Website Link */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Website Link <span style={{ color: theme.danger }}>*</span>
+                    <Icon name="information-circle" size="sm" className="ml-1 inline" title="Required website link" />
+                  </label>
+                  <input
+                    type="url"
+                    name="website_link"
+                    value={formData.website_link}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.website_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="https://example.com"
+                  />
+                  {errors.website_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_link}</div>}
+                </div>
 
-            {/* Instagram Link */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Instagram Link <span style={{ color: theme.danger }}>*</span>
-              </label>
-              <input
-                type="url"
-                name="instagram_link"
-                value={formData.instagram_link}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.instagram_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                placeholder="https://instagram.com/username"
-              />
-              {errors.instagram_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.instagram_link}</div>}
-            </div>
+                {/* Instagram Link */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Instagram Link <span style={{ color: theme.danger }}>*</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="instagram_link"
+                    value={formData.instagram_link}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.instagram_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="https://instagram.com/username"
+                  />
+                  {errors.instagram_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.instagram_link}</div>}
+                </div>
 
-            {/* Facebook Link */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Facebook Link <span style={{ color: theme.danger }}>*</span>
-              </label>
-              <input
-                type="url"
-                name="facebook_link"
-                value={formData.facebook_link}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.facebook_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-                placeholder="https://facebook.com/username"
-              />
-              {errors.facebook_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.facebook_link}</div>}
-            </div>
+                {/* Facebook Link */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Facebook Link <span style={{ color: theme.danger }}>*</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="facebook_link"
+                    value={formData.facebook_link}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.facebook_link ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                    placeholder="https://facebook.com/username"
+                  />
+                  {errors.facebook_link && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.facebook_link}</div>}
+                </div>
 
-            {/* Upload Document */}
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                Upload Document
-              </label>
-              <input
-                type="file"
-                name="document"
-                onChange={handleFileChange}
-                accept=".pdf,.doc,.docx"
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                style={{ borderColor: errors.document ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
-              />
-              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                Optional: Upload a PDF or Word document
-              </div>
-              {errors.document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.document}</div>}
-            </div>
+                {/* Upload Document */}
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
+                    Upload Document
+                  </label>
+                  <input
+                    type="file"
+                    name="document"
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    style={{ borderColor: errors.document ? theme.danger : theme.borderLight, backgroundColor: theme.background }}
+                  />
+                  <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                    Optional: Upload a PDF or Word document
+                  </div>
+                  {errors.document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.document}</div>}
+                </div>
 
-            {/* Terms Checkbox */}
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="terms_agreed"
-                  checked={formData.terms_agreed}
-                  onChange={handleInputChange}
-                  className="mr-2"
-                />
-                <span style={{ color: theme.textPrimary, fontSize: '14px' }}>
-                  I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: theme.primary }}>Terms and Conditions</a> <span style={{ color: theme.danger }}>*</span>
-                </span>
-              </label>
-              {errors.terms_agreed && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.terms_agreed}</div>}
-            </div>
+                {/* Terms Checkbox */}
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="terms_agreed"
+                      checked={formData.terms_agreed}
+                      onChange={handleInputChange}
+                      className="mr-2"
+                    />
+                    <span style={{ color: theme.textPrimary, fontSize: '14px' }}>
+                      I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: theme.primary }}>Terms and Conditions</a> <span style={{ color: theme.danger }}>*</span>
+                    </span>
+                  </label>
+                  {errors.terms_agreed && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.terms_agreed}</div>}
+                </div>
 
-            {/* reCAPTCHA */}
-            <div>
-              <ReCAPTCHA
-                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LdNzrErAAAAAB1EB7ETPEhUrynf0wSQftMt-COT"}
-                onChange={(token) => {
-                  setRecaptchaToken(token);
-                  if (errors.recaptcha) {
-                    setErrors(prev => ({ ...prev, recaptcha: '' }));
-                  }
-                }}
-                onExpired={() => {
-                  setRecaptchaToken('');
-                  setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please try again.' }));
-                }}
-                onError={() => {
-                  setRecaptchaToken('');
-                  setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA error. Please try again.' }));
-                }}
-              />
-              {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
-            </div>
+                {/* reCAPTCHA */}
+                <div>
+                  <ReCAPTCHA
+                    sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LdNzrErAAAAAB1EB7ETPEhUrynf0wSQftMt-COT"}
+                    onChange={(token) => {
+                      setRecaptchaToken(token);
+                      if (errors.recaptcha) {
+                        setErrors(prev => ({ ...prev, recaptcha: '' }));
+                      }
+                    }}
+                    onExpired={() => {
+                      setRecaptchaToken('');
+                      setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please try again.' }));
+                    }}
+                    onError={() => {
+                      setRecaptchaToken('');
+                      setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA error. Please try again.' }));
+                    }}
+                  />
+                  {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
+                </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end gap-4">
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
-                className="px-6 py-3 border rounded-lg font-medium transition-colors"
-                style={{ borderColor: theme.borderLight, color: theme.textPrimary, backgroundColor: theme.background }}
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-lg font-medium text-white transition-colors"
-                style={{ backgroundColor: theme.primary }}
-                disabled={loading}
-                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-              >
-                {loading ? 'Submitting...' : 'Submit Article'}
-              </button>
-            </div>
-          </form>
-          </>
+                {/* Submit Button */}
+                <div className="flex justify-end gap-4">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/dashboard')}
+                    className="px-6 py-3 border rounded-lg font-medium transition-colors"
+                    style={{ borderColor: theme.borderLight, color: theme.textPrimary, backgroundColor: theme.background }}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                    style={{ backgroundColor: theme.primary }}
+                    disabled={loading}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                  >
+                    {loading ? 'Submitting...' : 'Submit Article'}
+                  </button>
+                </div>
+              </form>
+            </>
           )}
 
-         {activeTab === 'my-submissions' && (
+          {activeTab === 'my-submissions' && (
             <div>
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-4" style={{ color: theme.textPrimary }}>
@@ -831,13 +829,12 @@ const ArticleSubmissionPage = () => {
                         </div>
                         <div className="ml-4">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              submission.status === 'approved'
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${submission.status === 'approved'
                                 ? 'bg-green-100 text-green-800'
                                 : submission.status === 'rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                              }`}
                           >
                             {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
                           </span>
