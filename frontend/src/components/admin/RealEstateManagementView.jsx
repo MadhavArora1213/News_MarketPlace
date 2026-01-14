@@ -981,7 +981,7 @@ const RealEstateManagementView = () => {
                 </div>
               </div>
 
-              <div style={{ overflowX: 'auto', maxHeight: paginatedRealEstates.length > 50 ? '600px' : 'auto', overflowY: paginatedRealEstates.length > 50 ? 'auto' : 'visible' }}>
+              <div style={{ overflowX: 'auto', maxHeight: displayRealEstates.length > 50 ? '600px' : 'auto', overflowY: displayRealEstates.length > 50 ? 'auto' : 'visible' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
