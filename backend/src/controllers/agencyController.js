@@ -388,7 +388,7 @@ class AgencyController {
         return res.status(404).json({ error: 'Agency not found' });
       }
 
-      await agency.update({ status });
+      await agency.updateStatus(status);
 
       // Send email notification
       try {

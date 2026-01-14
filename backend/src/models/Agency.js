@@ -205,6 +205,19 @@ class Agency {
     return this;
   }
 
+  // Update status only (bypasses full validation)
+  async updateStatus(status) {
+    const validStatuses = ['pending', 'approved', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      throw new Error('Invalid status');
+    }
+
+    const sql = 'UPDATE agencies SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *';
+    const result = await query(sql, [status, this.id]);
+    Object.assign(this, result.rows[0]);
+    return this;
+  }
+
   // Delete agency
   async delete() {
     const sql = 'DELETE FROM agencies WHERE id = $1';
