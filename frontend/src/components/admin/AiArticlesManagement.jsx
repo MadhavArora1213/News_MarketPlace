@@ -3,7 +3,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from '../common/Icon';
 import Sidebar from './Sidebar';
 import api from '../../services/api';
-import { Eye, Edit, Trash2, CheckCircle, XCircle, RefreshCw, FileText } from 'lucide-react';
+import { Eye, Edit, Trash2, CheckCircle, XCircle, RefreshCw, FileText, Download } from 'lucide-react';
 
 // Brand colors from Color palette .pdf - using only defined colors
 const theme = {
@@ -77,6 +77,8 @@ const AiArticlesManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', onResize);
@@ -136,6 +138,38 @@ const AiArticlesManagement = () => {
     } catch (error) {
       console.error('Error deleting article:', error);
       alert('Failed to delete article');
+    }
+  };
+
+  const handleDownloadCSV = async (downloadAll = false) => {
+    try {
+      setDownloading(true);
+      const params = new URLSearchParams();
+
+      if (!downloadAll) {
+        if (filters.status) params.append('status', filters.status);
+        if (filters.story_type) params.append('story_type', filters.story_type);
+      }
+
+      const response = await api.get(`/ai-generated-articles/download-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `ai_articles_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV. Please try again.');
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -381,322 +415,386 @@ const AiArticlesManagement = () => {
             <p className="text-gray-600">Manage AI-generated article submissions</p>
           </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
+          {/* Filters */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={filters.status}
+                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Story Type</label>
-            <select
-              value={filters.story_type}
-              onChange={(e) => setFilters({ ...filters, story_type: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Types</option>
-              <option value="profile">Profile</option>
-              <option value="editorial">Editorial</option>
-              <option value="advertorial">Advertorial</option>
-              <option value="listicle">Listicle</option>
-            </select>
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Story Type</label>
+                <select
+                  value={filters.story_type}
+                  onChange={(e) => setFilters({ ...filters, story_type: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Types</option>
+                  <option value="profile">Profile</option>
+                  <option value="editorial">Editorial</option>
+                  <option value="advertorial">Advertorial</option>
+                  <option value="listicle">Listicle</option>
+                </select>
+              </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-            <input
-              type="text"
-              placeholder="Search by name, publication..."
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Articles Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-            <span className="ml-2 text-gray-600">Loading articles...</span>
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No AI articles found</h3>
-            <p className="text-gray-600">No articles match your current filters.</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Article Info
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {articles.map((article) => (
-                    <tr key={article.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="flex items-center">
-                            <span className="text-sm font-medium text-gray-900 capitalize">
-                              {article.story_type}
-                            </span>
-                            {article.publication && (
-                              <span className="ml-2 text-sm text-gray-500">
-                                • {article.publication.publication_name}
-                              </span>
-                            )}
-                          </div>
-                          {article.name && (
-                            <div className="text-sm text-gray-600 mt-1">
-                              {article.name}
-                            </div>
-                          )}
-                          {article.generated_content && (
-                            <div className="text-xs text-gray-500 mt-1 line-clamp-2">
-                              {article.generated_content.substring(0, 100)}...
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {article.user?.first_name} {article.user?.last_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {article.user?.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={article.status}
-                          onChange={(e) => handleStatusChange(article.id, e.target.value)}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border-0 cursor-pointer ${getStatusColor(article.status)}`}
-                        >
-                          <option value="draft">Draft</option>
-                          <option value="pending">Pending</option>
-                          <option value="approved">Approved</option>
-                          <option value="rejected">Rejected</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(article.created_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => {
-                              setSelectedArticle(article);
-                              setShowModal(true);
-                            }}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="View Details"
-                          >
-                            <Eye size={16} />
-                          </button>
-
-                          {article.status === 'pending' && (
-                            <>
-                              <button
-                                onClick={() => handleStatusChange(article.id, 'approved')}
-                                className="text-green-600 hover:text-green-900"
-                                title="Approve"
-                              >
-                                <CheckCircle size={16} />
-                              </button>
-                              <button
-                                onClick={() => handleStatusChange(article.id, 'rejected')}
-                                className="text-red-600 hover:text-red-900"
-                                title="Reject"
-                              >
-                                <XCircle size={16} />
-                              </button>
-                            </>
-                          )}
-
-                          <button
-                            onClick={() => handleDelete(article.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <input
+                  type="text"
+                  placeholder="Search by name, publication..."
+                  value={filters.search}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowDownloadModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Download size={18} />
+                Download CSV
+              </button>
+            </div>
+          </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                <div className="flex-1 flex justify-between sm:hidden">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Next
-                  </button>
+          {/* Articles Table */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+                <span className="ml-2 text-gray-600">Loading articles...</span>
+              </div>
+            ) : articles.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText size={48} className="mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No AI articles found</h3>
+                <p className="text-gray-600">No articles match your current filters.</p>
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Article Info
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Created
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {articles.map((article) => (
+                        <tr key={article.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="flex items-center">
+                                <span className="text-sm font-medium text-gray-900 capitalize">
+                                  {article.story_type}
+                                </span>
+                                {article.publication && (
+                                  <span className="ml-2 text-sm text-gray-500">
+                                    • {article.publication.publication_name}
+                                  </span>
+                                )}
+                              </div>
+                              {article.name && (
+                                <div className="text-sm text-gray-600 mt-1">
+                                  {article.name}
+                                </div>
+                              )}
+                              {article.generated_content && (
+                                <div className="text-xs text-gray-500 mt-1 line-clamp-2">
+                                  {article.generated_content.substring(0, 100)}...
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {article.user?.first_name} {article.user?.last_name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {article.user?.email}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <select
+                              value={article.status}
+                              onChange={(e) => handleStatusChange(article.id, e.target.value)}
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border-0 cursor-pointer ${getStatusColor(article.status)}`}
+                            >
+                              <option value="draft">Draft</option>
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(article.created_at)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedArticle(article);
+                                  setShowModal(true);
+                                }}
+                                className="text-blue-600 hover:text-blue-900"
+                                title="View Details"
+                              >
+                                <Eye size={16} />
+                              </button>
+
+                              {article.status === 'pending' && (
+                                <>
+                                  <button
+                                    onClick={() => handleStatusChange(article.id, 'approved')}
+                                    className="text-green-600 hover:text-green-900"
+                                    title="Approve"
+                                  >
+                                    <CheckCircle size={16} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleStatusChange(article.id, 'rejected')}
+                                    className="text-red-600 hover:text-red-900"
+                                    title="Reject"
+                                  >
+                                    <XCircle size={16} />
+                                  </button>
+                                </>
+                              )}
+
+                              <button
+                                onClick={() => handleDelete(article.id)}
+                                className="text-red-600 hover:text-red-900"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm text-gray-700">
-                      Page <span className="font-medium">{currentPage}</span> of{' '}
-                      <span className="font-medium">{totalPages}</span>
-                    </p>
-                  </div>
-                  <div>
-                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div className="flex-1 flex justify-between sm:hidden">
                       <button
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                       >
                         Previous
                       </button>
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        const pageNum = Math.max(1, currentPage - 2) + i;
-                        if (pageNum > totalPages) return null;
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                              currentPage === pageNum
-                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
                       <button
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                       >
                         Next
                       </button>
-                    </nav>
+                    </div>
+                    <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm text-gray-700">
+                          Page <span className="font-medium">{currentPage}</span> of{' '}
+                          <span className="font-medium">{totalPages}</span>
+                        </p>
+                      </div>
+                      <div>
+                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                          >
+                            Previous
+                          </button>
+                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                            const pageNum = Math.max(1, currentPage - 2) + i;
+                            if (pageNum > totalPages) return null;
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => setCurrentPage(pageNum)}
+                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pageNum
+                                  ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                                  : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                  }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                          >
+                            Next
+                          </button>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Article Details Modal */}
+          {showModal && selectedArticle && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+              <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">AI Article Details</h3>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <XCircle size={24} />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Story Type</label>
+                      <p className="text-sm text-gray-900 capitalize">{selectedArticle.story_type}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Status</label>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedArticle.status)}`}>
+                        {getStatusIcon(selectedArticle.status)}
+                        <span className="ml-1 capitalize">{selectedArticle.status}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Publication</label>
+                      <p className="text-sm text-gray-900">{selectedArticle.publication?.publication_name || 'Not Assigned'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Created</label>
+                      <p className="text-sm text-gray-900">{formatDate(selectedArticle.created_at)}</p>
+                    </div>
+                  </div>
+
+                  {selectedArticle.name && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Subject Name</label>
+                      <p className="text-sm text-gray-900">{selectedArticle.name}</p>
+                    </div>
+                  )}
+
+                  {selectedArticle.generated_content && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Generated Content</label>
+                      <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                        <div className="prose prose-sm max-w-none">
+                          <div dangerouslySetInnerHTML={{ __html: selectedArticle.generated_content }} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t">
+                    <button
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
               </div>
-            )}
-          </>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      </main>
 
-      {/* Article Details Modal */}
-      {showModal && selectedArticle && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">AI Article Details</h3>
+      {/* Download Options Modal */}
+      {showDownloadModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Download CSV</h3>
               <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                onClick={() => setShowDownloadModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
               >
-                <XCircle size={24} />
+                ×
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Story Type</label>
-                  <p className="text-sm text-gray-900 capitalize">{selectedArticle.story_type}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedArticle.status)}`}>
-                    {getStatusIcon(selectedArticle.status)}
-                    <span className="ml-1 capitalize">{selectedArticle.status}</span>
-                  </span>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Publication</label>
-                  <p className="text-sm text-gray-900">{selectedArticle.publication?.publication_name || 'Not Assigned'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Created</label>
-                  <p className="text-sm text-gray-900">{formatDate(selectedArticle.created_at)}</p>
-                </div>
-              </div>
+            <p className="text-gray-600 mb-6">
+              Choose how you want to download AI article data:
+            </p>
 
-              {selectedArticle.name && (
+            <div className="space-y-3">
+              <button
+                onClick={() => handleDownloadCSV(false)}
+                disabled={downloading}
+                className="w-full flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-teal-500 hover:bg-teal-50 transition-colors text-left"
+              >
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Subject Name</label>
-                  <p className="text-sm text-gray-900">{selectedArticle.name}</p>
-                </div>
-              )}
-
-              {selectedArticle.generated_content && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Generated Content</label>
-                  <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-                    <div className="prose prose-sm max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: selectedArticle.generated_content }} />
-                    </div>
+                  <div className="font-semibold text-gray-900">Download Filtered Data</div>
+                  <div className="text-sm text-gray-500">
+                    Export articles based on current filters (Status: {filters.status || 'All'}, Type: {filters.story_type || 'All'})
                   </div>
                 </div>
-              )}
+                <Download size={20} className="text-teal-600 flex-shrink-0" />
+              </button>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Close
-                </button>
-              </div>
+              <button
+                onClick={() => handleDownloadCSV(true)}
+                disabled={downloading}
+                className="w-full flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+              >
+                <div>
+                  <div className="font-semibold text-gray-900">Download All Data</div>
+                  <div className="text-sm text-gray-500">Export all AI articles from the database</div>
+                </div>
+                <Download size={20} className="text-blue-600 flex-shrink-0" />
+              </button>
             </div>
+
+            {downloading && (
+              <div className="mt-4 text-center text-gray-600">
+                <div className="animate-spin inline-block w-5 h-5 border-2 border-teal-600 border-t-transparent rounded-full mr-2"></div>
+                Preparing download...
+              </div>
+            )}
           </div>
         </div>
       )}
-        </div>
-      </main>
     </div>
   );
 };

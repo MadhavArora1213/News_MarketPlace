@@ -1500,6 +1500,60 @@ class ArticleSubmissionController {
       </html>
     `;
   }
+
+  async downloadCSV(req, res) {
+    try {
+      const { status, publication_id, date_from, date_to, search } = req.query;
+      let whereClause = '';
+      const values = [];
+      let paramCount = 1;
+
+      if (status && status !== 'all') {
+        whereClause += ` WHERE asub.status = $${paramCount}`;
+        values.push(status);
+        paramCount++;
+      }
+      if (publication_id) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` asub.publication_id = $${paramCount}`;
+        values.push(parseInt(publication_id));
+        paramCount++;
+      }
+      if (date_from) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` DATE(asub.created_at) >= $${paramCount}`;
+        values.push(date_from);
+        paramCount++;
+      }
+      if (date_to) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` DATE(asub.created_at) <= $${paramCount}`;
+        values.push(date_to);
+        paramCount++;
+      }
+      if (search) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` (asub.title ILIKE $${paramCount} OR u.email ILIKE $${paramCount})`;
+        values.push(`%${search}%`);
+        paramCount++;
+      }
+
+      const sql = `SELECT asub.*, u.first_name, u.last_name, u.email, p.publication_name FROM article_submissions asub LEFT JOIN users u ON asub.user_id = u.id LEFT JOIN publications p ON asub.publication_id = p.id ${whereClause} ORDER BY asub.created_at DESC`;
+      const result = await query(sql, values);
+      const submissions = result.rows;
+
+      const headers = ['ID', 'Title', 'Publication', 'User Email', 'By Line', 'Status', 'Created At'];
+      let csv = headers.join(',') + '\n';
+      submissions.forEach(s => {
+        const row = [s.id, `"${(s.title || '').replace(/"/g, '""')}"`, `"${(s.publication_name || '').replace(/"/g, '""')}"`, `"${(s.email || '').replace(/"/g, '""')}"`, `"${(s.by_line || '').replace(/"/g, '""')}"`, `"${(s.status || '').replace(/"/g, '""')}"`, s.created_at ? new Date(s.created_at).toISOString() : ''];
+        csv += row.join(',') + '\n';
+      });
+
+      const filename = `article_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new ArticleSubmissionController();

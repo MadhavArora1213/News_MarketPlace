@@ -7,7 +7,7 @@ import api from '../../services/api';
 import ReCAPTCHA from 'react-google-recaptcha';
 import {
   Plus, Eye, Edit, Trash2, Search, Filter, CheckCircle2, XCircle,
-  AlertCircle, Info, FileText, User, Newspaper, Calendar, Tag
+  AlertCircle, Info, FileText, User, Newspaper, Calendar, Tag, Download
 } from 'lucide-react';
 
 // Article Submission View Modal Component
@@ -1402,6 +1402,8 @@ const ArticleSubmissionsManagement = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   // Layout constants
   const headerZ = 1000;
@@ -1558,6 +1560,38 @@ const ArticleSubmissionsManagement = () => {
       case 'rejected': return { color: '#F44336', bg: '#FFEBEE' };
       case 'pending': return { color: '#FF9800', bg: '#FFF3E0' };
       default: return { color: '#757575', bg: '#F5F5F5' };
+    }
+  };
+
+  const handleDownloadCSV = async (downloadAll = false) => {
+    try {
+      setDownloading(true);
+      const params = new URLSearchParams();
+
+      if (!downloadAll) {
+        if (statusFilter) params.append('status', statusFilter);
+        if (searchQuery) params.append('search', searchQuery);
+      }
+
+      const response = await api.get(`/admin/article-submissions/download-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `article_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV. Please try again.');
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -1793,6 +1827,14 @@ const ArticleSubmissionsManagement = () => {
                 <Plus className="w-5 h-5" />
                 Create New Submission
               </button>
+
+              <button
+                onClick={() => setShowDownloadModal(true)}
+                className="bg-[#00796B] hover:bg-[#004D40] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Download CSV
+              </button>
             </div>
           </div>
         </section>
@@ -2017,6 +2059,62 @@ const ArticleSubmissionsManagement = () => {
         onClose={() => setShowCreateModal(false)}
         onSave={handleCreateFormSave}
       />
+
+      {/* Download Options Modal */}
+      {showDownloadModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Download CSV</h3>
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Choose how you want to download article submission data:
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleDownloadCSV(false)}
+                disabled={downloading}
+                className="w-full flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-teal-500 hover:bg-teal-50 transition-colors text-left"
+              >
+                <div>
+                  <div className="font-semibold text-gray-900">Download Filtered Data</div>
+                  <div className="text-sm text-gray-500">
+                    Export submissions based on current filters (Status: {statusFilter || 'All'})
+                  </div>
+                </div>
+                <Download size={20} className="text-teal-600 flex-shrink-0" />
+              </button>
+
+              <button
+                onClick={() => handleDownloadCSV(true)}
+                disabled={downloading}
+                className="w-full flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+              >
+                <div>
+                  <div className="font-semibold text-gray-900">Download All Data</div>
+                  <div className="text-sm text-gray-500">Export all article submissions from the database</div>
+                </div>
+                <Download size={20} className="text-blue-600 flex-shrink-0" />
+              </button>
+            </div>
+
+            {downloading && (
+              <div className="mt-4 text-center text-gray-600">
+                <div className="animate-spin inline-block w-5 h-5 border-2 border-teal-600 border-t-transparent rounded-full mr-2"></div>
+                Preparing download...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

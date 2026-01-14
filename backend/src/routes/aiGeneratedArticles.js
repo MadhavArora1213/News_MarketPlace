@@ -87,6 +87,12 @@ router.get('/',
   aiGeneratedArticleController.getAllArticles
 );
 
+router.get('/download-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  (req, res) => aiGeneratedArticleController.downloadCSV(req, res)
+);
+
 router.patch('/:id/status',
   verifyAdminToken,
   requireAdminPanelAccess,

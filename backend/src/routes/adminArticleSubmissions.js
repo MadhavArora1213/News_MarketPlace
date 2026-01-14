@@ -52,6 +52,12 @@ router.get('/',
   articleSubmissionController.getAllSubmissions
 );
 
+router.get('/download-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  (req, res) => articleSubmissionController.downloadCSV(req, res)
+);
+
 router.get('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,

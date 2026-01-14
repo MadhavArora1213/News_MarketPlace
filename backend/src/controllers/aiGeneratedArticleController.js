@@ -714,6 +714,55 @@ class AiGeneratedArticleController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
+  async downloadCSV(req, res) {
+    try {
+      const { status, story_type, date_from, date_to } = req.query;
+      let whereClause = '';
+      const values = [];
+      let paramCount = 1;
+
+      if (status && status !== 'all') {
+        whereClause += ` WHERE aga.status = $${paramCount}`;
+        values.push(status);
+        paramCount++;
+      }
+      if (story_type) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` aga.story_type = $${paramCount}`;
+        values.push(story_type);
+        paramCount++;
+      }
+      if (date_from) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` DATE(aga.created_at) >= $${paramCount}`;
+        values.push(date_from);
+        paramCount++;
+      }
+      if (date_to) {
+        whereClause += (whereClause ? ' AND' : ' WHERE') + ` DATE(aga.created_at) <= $${paramCount}`;
+        values.push(date_to);
+        paramCount++;
+      }
+
+      const sql = `SELECT aga.*, u.first_name, u.last_name, u.email, p.publication_name FROM ai_generated_articles aga LEFT JOIN users u ON aga.user_id = u.id LEFT JOIN publications p ON aga.publication_id = p.id ${whereClause} ORDER BY aga.created_at DESC`;
+      const result = await query(sql, values);
+      const articles = result.rows;
+
+      const headers = ['ID', 'Name', 'Story Type', 'Publication', 'User Email', 'Status', 'Created At'];
+      let csv = headers.join(',') + '\n';
+      articles.forEach(a => {
+        const row = [a.id, `"${(a.name || '').replace(/"/g, '""')}"`, `"${a.story_type || ''}"`, `"${a.publication_name || ''}"`, `"${a.email || ''}"`, `"${a.status || ''}"`, a.created_at ? new Date(a.created_at).toISOString() : ''];
+        csv += row.join(',') + '\n';
+      });
+
+      const filename = `ai_articles_${new Date().toISOString().split('T')[0]}.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new AiGeneratedArticleController();
