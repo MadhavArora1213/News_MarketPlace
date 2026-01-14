@@ -24,7 +24,7 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
         status: newStatus,
         admin_notes: adminNotes
       });
-      
+
       onStatusUpdate();
       onClose();
     } catch (error) {
@@ -102,7 +102,7 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
             <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#212121' }}>
               Customer Information
             </h3>
-            
+
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>Name</label>
               <div style={valueStyle}>{order.name}</div>
@@ -173,16 +173,16 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
 
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>Status</label>
-              <div style={{ 
-                display: 'inline-block', 
-                padding: '4px 12px', 
-                borderRadius: '20px', 
-                fontSize: '12px', 
+              <div style={{
+                display: 'inline-block',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '12px',
                 fontWeight: '600',
-                backgroundColor: status === 'approved' ? '#dcfce7' : 
-                                status === 'rejected' ? '#fee2e2' : '#fef3c7',
-                color: status === 'approved' ? '#166534' : 
-                       status === 'rejected' ? '#991b1b' : '#92400e'
+                backgroundColor: status === 'approved' ? '#dcfce7' :
+                  status === 'rejected' ? '#fee2e2' : '#fef3c7',
+                color: status === 'approved' ? '#166534' :
+                  status === 'rejected' ? '#991b1b' : '#92400e'
               }}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </div>
@@ -415,11 +415,11 @@ const PressPackOrderManagement = () => {
       const params = new URLSearchParams();
       params.append('page', currentPage.toString());
       params.append('limit', pageSize.toString());
-      
+
       if (statusFilter !== 'all') {
         params.append('status', statusFilter);
       }
-      
+
       if (dateFilter !== 'all') {
         params.append('dateFilter', dateFilter);
       }
@@ -437,6 +437,29 @@ const PressPackOrderManagement = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+
+      const response = await api.get('/admin/press-pack-orders/export-csv', {
+        params: params,
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `press_pack_orders_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV. Please try again.');
     }
   };
 
@@ -610,6 +633,26 @@ const PressPackOrderManagement = () => {
                 </div>
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage press pack orders and submissions</p>
               </div>
+              <button
+                onClick={handleDownloadCSV}
+                style={{
+                  backgroundColor: theme.success,
+                  color: '#fff',
+                  padding: '0.625rem 1rem',
+                  borderRadius: '0.5rem',
+                  fontWeight: 600,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  cursor: 'pointer',
+                  border: 'none',
+                  boxShadow: '0 4px 14px rgba(76, 175, 80, 0.4)'
+                }}
+              >
+                <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                Download CSV
+              </button>
             </div>
 
             {/* Stats Cards */}
@@ -623,7 +666,7 @@ const PressPackOrderManagement = () => {
                   <div style={{ fontSize: 12, color: '#757575' }}>Total Orders</div>
                 </div>
               </div>
-              
+
               <div style={{ background: '#fff', borderRadius: 12, padding: 18, boxShadow: '0 8px 20px rgba(2,6,23,0.06)', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 10, background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon name="clock" size="lg" style={{ color: '#f59e0b' }} />
