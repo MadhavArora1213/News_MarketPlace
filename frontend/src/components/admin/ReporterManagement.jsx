@@ -3,7 +3,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from '../common/Icon';
 import Sidebar from './Sidebar';
 import ReporterFormModal from './ReporterFormModal';
-import api from '../../services/api';
+import api, { adminAPI } from '../../services/api';
 
 // Brand colors from Color palette .pdf - using only defined colors
 const theme = {
@@ -431,7 +431,7 @@ const ReporterManagement = () => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await api.downloadReporterTemplate();
+      const response = await adminAPI.downloadReporterTemplate();
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -458,7 +458,7 @@ const ReporterManagement = () => {
     try {
       setIsUploading(true);
       setUploadStatus(null);
-      const response = await api.uploadBulkReporters(formData);
+      const response = await adminAPI.uploadBulkReporters(formData);
 
       setUploadStatus({
         type: 'success',
@@ -501,7 +501,7 @@ const ReporterManagement = () => {
         sortOrder: sortDirection.toUpperCase()
       };
 
-      const response = await api.downloadReportersCSV(params);
+      const response = await adminAPI.downloadReportersCSV(params);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
