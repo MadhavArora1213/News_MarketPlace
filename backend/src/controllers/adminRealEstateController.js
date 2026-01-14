@@ -293,6 +293,67 @@ class AdminRealEstateController {
     }
   }
 
+  // Download CSV of all records
+  async downloadCSV(req, res) {
+    try {
+      const { status, search } = req.query;
+      const whereClause = {};
+
+      if (search) {
+        whereClause.search = { val: search };
+      } else {
+        if (status) whereClause.status = status;
+      }
+
+      const { rows } = await RealEstate.findAndCountAll({
+        where: whereClause,
+        order: [['created_at', 'DESC']]
+      });
+
+      const headers = [
+        'ID', 'Title', 'Description', 'Price', 'Location',
+        'Property Type', 'Bedrooms', 'Bathrooms', 'Area (sqft)',
+        'Status', 'Created At'
+      ];
+
+      let csv = headers.join(',') + '\n';
+
+      const escape = (text) => {
+        if (text === null || text === undefined) return '';
+        const stringValue = String(text);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      };
+
+      rows.forEach(row => {
+        const data = [
+          row.id,
+          escape(row.title),
+          escape(row.description),
+          row.price,
+          escape(row.location),
+          escape(row.property_type),
+          row.bedrooms,
+          row.bathrooms,
+          row.area_sqft,
+          row.status,
+          row.created_at ? new Date(row.created_at).toISOString().split('T')[0] : ''
+        ];
+        csv += data.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=real_estate_export_${new Date().toISOString().split('T')[0]}.csv`);
+      res.send(csv);
+
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Download CSV template for bulk upload
   async downloadTemplate(req, res) {
     try {

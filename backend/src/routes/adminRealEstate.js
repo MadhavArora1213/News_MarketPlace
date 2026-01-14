@@ -14,6 +14,13 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Admin Real Estate test route working!' });
 });
 
+// Download CSV (Export) (admin only)
+router.get('/export-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.downloadCSV
+);
+
 // Download template (admin only)
 router.get('/template',
   verifyAdminToken,

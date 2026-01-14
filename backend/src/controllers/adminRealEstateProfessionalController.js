@@ -25,6 +25,18 @@ class AdminRealEstateProfessionalController {
       }
     });
 
+    // Multer for CSV bulk upload
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+
     // Bind methods to preserve 'this' context
     this.getAll = this.getAll.bind(this);
     this.getById = this.getById.bind(this);
@@ -33,6 +45,183 @@ class AdminRealEstateProfessionalController {
     this.delete = this.delete.bind(this);
     this.findAllWithFilters = this.findAllWithFilters.bind(this);
     this.getCount = this.getCount.bind(this);
+    this.downloadCSV = this.downloadCSV.bind(this);
+    this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.bulkUpload = this.bulkUpload.bind(this);
+  }
+
+  // Download CSV of all records
+  async downloadCSV(req, res) {
+    try {
+      const { status, search } = req.query;
+      const whereClause = {};
+
+      if (search) {
+        whereClause.search = { val: search };
+      } else {
+        if (status) whereClause.status = status;
+      }
+
+      const { rows } = await RealEstateProfessional.findAndCountAll({
+        where: whereClause,
+        order: [['created_at', 'DESC']]
+      });
+
+      const headers = [
+        'ID', 'First Name', 'Last Name', 'IG URL', 'Followers', 'Verified',
+        'Agency Owner', 'Agent', 'Dev Employee',
+        'Gender', 'Nationality', 'City', 'Status', 'Created At'
+      ];
+
+      let csv = headers.join(',') + '\n';
+
+      const escape = (text) => {
+        if (text === null || text === undefined) return '';
+        const stringValue = String(text);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      };
+
+      rows.forEach(row => {
+        const data = [
+          row.id,
+          escape(row.first_name),
+          escape(row.last_name),
+          escape(row.ig_url),
+          row.no_of_followers,
+          row.verified_tick ? 'Yes' : 'No',
+          row.real_estate_agency_owner ? 'Yes' : 'No',
+          row.real_estate_agent ? 'Yes' : 'No',
+          row.developer_employee ? 'Yes' : 'No',
+          escape(row.gender),
+          escape(row.nationality),
+          escape(row.current_residence_city),
+          escape(row.status),
+          row.created_at ? new Date(row.created_at).toISOString().split('T')[0] : ''
+        ];
+        csv += data.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=real_estate_professionals_export_${new Date().toISOString().split('T')[0]}.csv`);
+      res.send(csv);
+
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'first_name',
+        'last_name',
+        'ig_url',
+        'no_of_followers',
+        'verified_tick',
+        'real_estate_agency_owner',
+        'real_estate_agent',
+        'developer_employee',
+        'gender',
+        'nationality',
+        'current_residence_city',
+        'status'
+      ];
+
+      const dummyData = [
+        ['John', 'Doe', 'https://instagram.com/johndoe', '5000', 'true', 'true', 'false', 'false', 'Male', 'USA', 'New York', 'approved'],
+        ['Jane', 'Smith', 'https://instagram.com/janesmith', '10000', 'true', 'false', 'true', 'false', 'Female', 'uk', 'London', 'pending']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=real_estate_professionals_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload real estate professionals from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                // Basic mapping and cleaning
+                const professionalData = {
+                  first_name: row.first_name || '',
+                  last_name: row.last_name || '',
+                  ig_url: row.ig_url || '',
+                  no_of_followers: parseInt(row.no_of_followers) || 0,
+                  verified_tick: row.verified_tick === 'true',
+                  real_estate_agency_owner: row.real_estate_agency_owner === 'true',
+                  real_estate_agent: row.real_estate_agent === 'true',
+                  developer_employee: row.developer_employee === 'true',
+                  gender: row.gender || '',
+                  nationality: row.nationality || '',
+                  current_residence_city: row.current_residence_city || '',
+                  status: row.status || 'pending',
+                  is_active: true,
+                  submitted_by_admin: req.admin.adminId
+                };
+
+                if (!professionalData.first_name || !professionalData.last_name) {
+                  errors.push(`Row ${index + 1}: First name and last name are required.`);
+                  continue;
+                }
+
+                const record = await RealEstateProfessional.create(professionalData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 
   // Validation rules for create

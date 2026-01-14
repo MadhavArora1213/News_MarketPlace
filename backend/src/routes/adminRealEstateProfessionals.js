@@ -14,6 +14,28 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Admin Real Estate Professionals test route working!' });
 });
 
+// Bulk upload (admin only)
+router.post('/bulk-upload',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.csvUpload.single('file'),
+  controller.bulkUpload
+);
+
+// Download CSV of all records (admin only)
+router.get('/export-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.downloadCSV
+);
+
+// Download template (admin only)
+router.get('/template',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.downloadTemplate
+);
+
 // Get all real estate professionals (admin only)
 router.get('/',
   verifyAdminToken,

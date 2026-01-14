@@ -610,6 +610,8 @@ const RealEstateProfessionalsManagementPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [message, setMessage] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   // Search and Filter State
   const [search, setSearch] = useState('');
@@ -761,6 +763,80 @@ const RealEstateProfessionalsManagementPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/admin/real-estate-professionals/template', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'real_estate_professionals_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const params = new URLSearchParams({
+        ...(search && { search: search }),
+        ...(statusFilter && { status: statusFilter })
+      });
+
+      const response = await api.get(`/admin/real-estate-professionals/export-csv?${params}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'real_estate_professionals_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/admin/real-estate-professionals/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage({
+        type: 'success',
+        text: response.data.message,
+        errors: response.data.errors
+      });
+      fetchRecords();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || 'Failed to upload file.',
+        errors: error.response?.data?.errors
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -916,13 +992,44 @@ const RealEstateProfessionalsManagementPage = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage real estate professional records</p>
               </div>
 
-              <button
-                onClick={handleCreateRecord}
-                style={btnPrimary}
-              >
-                <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
-                Add Professional
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ ...btnPrimary, backgroundColor: theme.info }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  style={{ ...btnPrimary, backgroundColor: theme.textSecondary }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Export CSV
+                </button>
+                <button
+                  onClick={handleCreateRecord}
+                  style={btnPrimary}
+                >
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
+                  Add Professional
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}

@@ -64,6 +64,8 @@ const RealEstateManagementView = () => {
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingRealEstate, setEditingRealEstate] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
 
 
   // Layout constants (same as AdminDashboard)
@@ -172,6 +174,72 @@ const RealEstateManagementView = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/real-estates/admin/template', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'real_estate_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const params = new URLSearchParams({
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+        ...(statusFilter && { status: statusFilter })
+      });
+
+      const response = await api.get(`/real-estates/admin/export-csv?${params}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'real_estate_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/real-estates/admin/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      alert(response.data.message);
+      fetchRealEstates();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert(error.response?.data?.error || 'Failed to upload file.');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -620,20 +688,54 @@ const RealEstateManagementView = () => {
                 </div>
                 <p style={{ marginTop: 8, color: '#757575' }}>View and manage real estate listings</p>
               </div>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                style={{
-                  ...btnPrimary,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 20px',
-                  fontSize: '14px'
-                }}
-              >
-                <Icon name="plus" size="sm" style={{ color: '#fff' }} />
-                Create Listing
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+                <button
+                  onClick={handleDownloadTemplate}
+                  title="Download CSV Template"
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary, padding: '12px 20px', fontSize: '14px' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  title="Bulk Upload CSV"
+                  style={{ ...btnPrimary, backgroundColor: theme.info, padding: '12px 20px', fontSize: '14px' }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  title="Export to CSV"
+                  style={{ ...btnPrimary, backgroundColor: theme.textSecondary, padding: '12px 20px', fontSize: '14px' }}
+                >
+                  <Icon name="document-text" size="sm" style={{ color: '#fff' }} />
+                  Export CSV
+                </button>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  style={{
+                    ...btnPrimary,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 20px',
+                    fontSize: '14px'
+                  }}
+                >
+                  <Icon name="plus" size="sm" style={{ color: '#fff' }} />
+                  Create Listing
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}
@@ -1689,7 +1791,7 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                             padding: '8px'
                           }}
                         >
-                          Image not found<br/>
+                          Image not found<br />
                           <small>{imageName}</small>
                         </div>
                         <button
