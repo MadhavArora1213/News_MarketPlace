@@ -44,6 +44,22 @@ router.get('/my',
   realEstateController.getMyRealEstates
 );
 
+// Bulk routes (must be before /:id routes)
+router.put('/bulk-approve',
+  authenticateAdmin,
+  realEstateController.bulkApprove
+);
+
+router.put('/bulk-reject',
+  authenticateAdmin,
+  realEstateController.bulkReject
+);
+
+router.put('/bulk-delete',
+  authenticateAdmin,
+  realEstateController.bulkDelete
+);
+
 router.put('/:id',
   authenticateUser,
   upload.fields([{ name: 'images', maxCount: 10 }]),
@@ -96,15 +112,7 @@ router.put('/admin/:id/reject',
   realEstateController.rejectRealEstate
 );
 
-router.put('/bulk-approve',
-  authenticateAdmin,
-  realEstateController.bulkApprove
-);
 
-router.put('/bulk-reject',
-  authenticateAdmin,
-  realEstateController.bulkReject
-);
 
 // Public routes (no authentication required)
 router.get('/',

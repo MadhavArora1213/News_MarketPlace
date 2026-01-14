@@ -418,6 +418,29 @@ const RealEstateManagementView = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedRealEstates.length === 0) {
+      alert('Please select real estates to delete.');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to PERMANENTLY DELETE ${selectedRealEstates.length} real estate(s)? This action cannot be undone.`)) return;
+
+    setBulkActionLoading(true);
+    try {
+      await api.put('/real-estates/bulk-delete', { ids: selectedRealEstates });
+      // Update local state by removing deleted items
+      setRealEstates(prev => prev.filter(r => !selectedRealEstates.includes(r.id)));
+      setSelectedRealEstates([]);
+      alert(`${selectedRealEstates.length} real estate(s) deleted successfully!`);
+    } catch (error) {
+      console.error('Error bulk deleting real estates:', error);
+      alert('Failed to delete selected real estates. Please try again.');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
   const handleSelectRealEstate = (realEstateId) => {
     setSelectedRealEstates(prev =>
       prev.includes(realEstateId)
@@ -807,6 +830,23 @@ const RealEstateManagementView = () => {
                     }}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Bulk Reject'}
+                  </button>
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={bulkActionLoading}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: '#ef4444', // Darker red for delete
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      cursor: bulkActionLoading ? 'not-allowed' : 'pointer',
+                      fontWeight: '500',
+                      opacity: bulkActionLoading ? 0.6 : 1
+                    }}
+                  >
+                    {bulkActionLoading ? 'Processing...' : 'Bulk Delete'}
                   </button>
                   <button
                     onClick={() => setSelectedRealEstates([])}

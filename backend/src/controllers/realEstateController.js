@@ -251,19 +251,19 @@ class RealEstateController {
       let searchSql = '';
       const searchValues = [];
       let searchParamCount = Object.keys(filters).length + 1;
-  
+
       if (title) {
         searchSql += ` AND r.title ILIKE $${searchParamCount}`;
         searchValues.push(`%${title}%`);
         searchParamCount++;
       }
-  
+
       if (location) {
         searchSql += ` AND r.location ILIKE $${searchParamCount}`;
         searchValues.push(`%${location}%`);
         searchParamCount++;
       }
-  
+
       if (property_type) {
         searchSql += ` AND r.property_type ILIKE $${searchParamCount}`;
         searchValues.push(`%${property_type}%`);
@@ -821,6 +821,66 @@ class RealEstateController {
     }
   }
 
+  // Bulk delete real estates (soft delete)
+  async bulkDelete(req, res) {
+    try {
+      const { ids } = req.body;
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'IDs array is required' });
+      }
+
+      const { admin } = req;
+      if (!admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const deletedRealEstates = [];
+      const errors = [];
+
+      for (let i = 0; i < ids.length; i++) {
+        try {
+          const realEstate = await RealEstate.findById(ids[i]);
+
+          if (!realEstate) {
+            errors.push({ index: i, error: 'Real estate not found' });
+            continue;
+          }
+
+          // Delete associated images from S3
+          if (realEstate.images && Array.isArray(realEstate.images)) {
+            for (const imageUrl of realEstate.images) {
+              try {
+                const s3Key = s3Service.extractKeyFromUrl(imageUrl);
+                if (s3Key) {
+                  await s3Service.deleteFile(s3Key);
+                }
+              } catch (deleteError) {
+                console.error('Failed to delete real estate image from S3:', deleteError);
+              }
+            }
+          }
+
+          await realEstate.update({ is_active: false });
+          deletedRealEstates.push(realEstate.id);
+        } catch (error) {
+          errors.push({ index: i, error: error.message });
+        }
+      }
+
+      res.json({
+        message: `Deleted ${deletedRealEstates.length} real estate listing(s) successfully`,
+        deleted: deletedRealEstates.length,
+        errors: errors.length,
+        deletedIds: deletedRealEstates,
+        errors: errors
+      });
+    } catch (error) {
+      console.error('Bulk delete real estates error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Helper methods for database queries
   async findAllWithFilters(filters, searchSql, searchValues, limit, offset) {
     const { query } = require('../config/database');
@@ -838,7 +898,7 @@ class RealEstateController {
 
     params.push(...searchValues);
     paramCount += searchValues.length;
-  
+
     const sql = `
       SELECT r.* FROM real_estates r
       ${whereClause} ${searchSql}
