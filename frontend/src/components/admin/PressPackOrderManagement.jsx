@@ -527,7 +527,7 @@ const PressPackOrderManagement = () => {
         <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
           <main style={{ flex: 1, minWidth: 0, paddingLeft: !isMobile ? leftGap : 0 }}>
             {/* Page Header */}
-            <div style={{ background: '#fff', borderRadius: 12, padding: 28, border: `4px solid #000`, display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 24, alignItems: 'center' }}>
+            <div style={{ background: '#fff', borderRadius: 12, padding: 28, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)', display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 24, alignItems: 'center' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: '#e6f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -542,7 +542,7 @@ const PressPackOrderManagement = () => {
                 style={{
                   backgroundColor: theme.success,
                   color: '#fff',
-                  padding: '0.625rem 1rem',
+                  padding: '0.75rem 1.25rem',
                   borderRadius: '0.5rem',
                   fontWeight: 600,
                   display: 'inline-flex',
@@ -551,11 +551,20 @@ const PressPackOrderManagement = () => {
                   gap: '0.5rem',
                   cursor: 'pointer',
                   border: 'none',
-                  boxShadow: '0 4px 14px rgba(76, 175, 80, 0.3)'
+                  boxShadow: '0 4px 14px rgba(76, 175, 80, 0.4)',
+                  transition: 'transform 0.2s, box-shadow 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(76, 175, 80, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 14px rgba(76, 175, 80, 0.4)';
                 }}
               >
                 <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
-                Download CSV
+                <span>Download CSV</span>
               </button>
             </div>
 

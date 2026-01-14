@@ -700,7 +700,6 @@ const sendOrderStatusUpdateEmail = async (order) => {
 const downloadCSV = async (req, res) => {
   try {
     const { status, search } = req.query;
-    const { Parser } = require('json2csv');
 
     // Build filters
     const filters = {};
@@ -759,7 +758,16 @@ const downloadCSV = async (req, res) => {
     const result = await pool.query(query, queryParams);
     const orders = result.rows;
 
-    const formattedOrders = orders.map(order => {
+    const headers = [
+      'Order ID', 'Customer Name', 'Customer Email', 'WhatsApp', 'Calling Number',
+      'Press Pack Name', 'Press Release Title', 'Region', 'Price',
+      'Type', 'Submitted By', 'Content Writing', 'Status', 'Order Date',
+      'Admin Notes'
+    ];
+
+    let csv = headers.join(',') + '\n';
+
+    orders.forEach(order => {
       // Parse additional data from message field
       let additionalData = {};
       let cleanMessage = order.customer_message || '';
@@ -777,69 +785,51 @@ const downloadCSV = async (req, res) => {
       let pressReleaseType = '';
       if (additionalData.press_release_type) {
         if (Array.isArray(additionalData.press_release_type)) {
-          pressReleaseType = additionalData.press_release_type.join(', ');
+          pressReleaseType = additionalData.press_release_type.join('; ');
         } else {
           pressReleaseType = additionalData.press_release_type;
         }
       }
 
-      return {
-        id: order.id,
-        name: order.customer_name,
-        email: order.customer_email,
-        whatsapp_number: order.customer_phone,
-        whatsapp_country_code: additionalData.whatsapp_country_code || '+91',
-        calling_number: additionalData.calling_number || 'Not provided',
-        calling_country_code: additionalData.calling_country_code || '+91',
-        company_project_type: pressReleaseType,
-        submitted_by: additionalData.submitted_by_type === 'agency' ? 'Agency' : 'Direct Company/Individual',
-        press_release_name: order.press_release_title ?
-          `${order.press_release_title} - ${order.press_release_region || 'N/A'} - $${order.press_release_price || '0.00'}` :
-          'Not specified',
-        press_release_package: order.press_pack_name || 'Not specified',
-        content_writing_assistance: additionalData.content_writing_assistance ? 'Yes' : 'No',
-        status: order.status,
-        admin_notes: order.admin_comments || '',
-        created_at: new Date(order.created_at).toLocaleString(),
-        message: cleanMessage
+      const escape = (text) => {
+        if (text === null || text === undefined) return '';
+        const stringValue = String(text);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
       };
+
+      const row = [
+        order.id,
+        escape(order.customer_name),
+        escape(order.customer_email),
+        escape(order.customer_phone),
+        escape(additionalData.calling_number || ''),
+        escape(order.press_pack_name),
+        escape(order.press_release_title),
+        escape(order.press_release_region),
+        order.price,
+        escape(pressReleaseType),
+        escape(additionalData.submitted_by_type),
+        additionalData.content_writing_assistance ? 'Yes' : 'No',
+        escape(order.status),
+        order.created_at ? new Date(order.created_at).toISOString().split('T')[0] : '',
+        escape(order.admin_notes)
+      ];
+      csv += row.join(',') + '\n';
     });
 
-    const fields = [
-      { label: 'Order ID', value: 'id' },
-      { label: 'Name', value: 'name' },
-      { label: 'Email', value: 'email' },
-      { label: 'WhatsApp', value: 'whatsapp_number' },
-      { label: 'WhatsApp Country Code', value: 'whatsapp_country_code' },
-      { label: 'Calling Number', value: 'calling_number' },
-      { label: 'Calling Country Code', value: 'calling_country_code' },
-      { label: 'Company/Project Type', value: 'company_project_type' },
-      { label: 'Submitted By', value: 'submitted_by' },
-      { label: 'Press Release Name', value: 'press_release_name' },
-      { label: 'Package', value: 'press_release_package' },
-      { label: 'Content Writing', value: 'content_writing_assistance' },
-      { label: 'Status', value: 'status' },
-      { label: 'Admin Notes', value: 'admin_notes' },
-      { label: 'Created At', value: 'created_at' },
-      { label: 'Message', value: 'message' }
-    ];
-
-    const json2csvParser = new Parser({ fields });
-    const csv = json2csvParser.parse(formattedOrders);
-
-    res.header('Content-Type', 'text/csv');
-    res.attachment('press_pack_orders.csv');
-    return res.send(csv);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=press_pack_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csv);
 
   } catch (error) {
-    console.error('Error downloading CSV:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to download CSV',
-      error: error.message
-    });
+    console.error('Download CSV error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 module.exports = {
   downloadCSV,
