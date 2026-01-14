@@ -59,6 +59,14 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         </svg>
       );
 
+    case 'cloud-arrow-up':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3" />
+          <path d="M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75z" />
+        </svg>
+      );
+
     case 'cog-6-tooth':
       return (
         <svg {...common} className={className} style={style} {...rest}>
@@ -226,6 +234,21 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         <svg {...common} className={className} style={style} {...rest}>
           <circle cx="12" cy="12" r="10" />
           <path d="M10 8l6 4-6 4V8z" />
+        </svg>
+      );
+
+    case 'plus-circle':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v8m-4-4h8" />
+        </svg>
+      );
+
+    case 'plus':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M12 5v14m-7-7h14" />
         </svg>
       );
 
