@@ -13,6 +13,21 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Admin Publication Management test route working!' });
 });
 
+// Download template (admin only)
+router.get('/template',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.downloadTemplate
+);
+
+// Bulk upload (admin only)
+router.post('/bulk-upload',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.csvUpload.single('file'),
+  controller.bulkUpload
+);
+
 // Get all publication management records (public for GET)
 router.get('/',
   controller.getAll

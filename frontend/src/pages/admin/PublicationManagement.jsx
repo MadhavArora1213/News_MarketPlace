@@ -578,6 +578,8 @@ const PublicationManagementPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [message, setMessage] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   // Search and Filter State
   const [search, setSearch] = useState('');
@@ -728,6 +730,57 @@ const PublicationManagementPage = () => {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/admin/publication-management/template', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'publication_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/admin/publication-management/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage({
+        type: 'success',
+        text: response.data.message,
+        errors: response.data.errors
+      });
+      fetchRecords();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || 'Failed to upload file.',
+        errors: error.response?.data?.errors
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -872,13 +925,37 @@ const PublicationManagementPage = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage publication management records</p>
               </div>
 
-              <button
-                onClick={handleCreateRecord}
-                style={btnPrimary}
-              >
-                <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
-                Add Record
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ ...btnPrimary, backgroundColor: theme.info }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={handleCreateRecord}
+                  style={btnPrimary}
+                >
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
+                  Add Record
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}
@@ -985,18 +1062,41 @@ const PublicationManagementPage = () => {
               <div style={{
                 padding: '12px 16px',
                 borderRadius: '8px',
-                marginBottom: '16px',
+                marginBottom: '24px',
                 backgroundColor: message.type === 'success' ? '#dcfce7' : '#fee2e2',
                 border: `1px solid ${message.type === 'success' ? '#10b981' : '#ef4444'}`,
-                color: message.type === 'success' ? '#065f46' : '#991b1b'
+                color: message.type === 'success' ? '#065f46' : '#991b1b',
+                position: 'relative'
               }}>
-                {message.text}
-                <button
-                  onClick={() => setMessage(null)}
-                  style={{ float: 'right', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '16px' }}
-                >
-                  ×
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ fontWeight: '600', marginBottom: message.errors?.length ? '8px' : '0' }}>
+                    {message.text}
+                  </div>
+                  <button
+                    onClick={() => setMessage(null)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'inherit', fontWeight: 'bold', padding: '0 4px' }}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {message.errors && message.errors.length > 0 && (
+                  <div style={{
+                    marginTop: '8px',
+                    paddingTop: '8px',
+                    borderTop: `1px solid ${message.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    fontSize: '13px'
+                  }}>
+                    <div style={{ fontWeight: '600', marginBottom: '4px' }}>Row Details:</div>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                      {message.errors.map((err, idx) => (
+                        <li key={idx} style={{ marginBottom: '2px' }}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 

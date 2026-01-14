@@ -32,6 +32,18 @@ class AdminRealEstateController {
       }
     });
 
+    // Multer for CSV bulk upload
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+
   }
 
 
@@ -277,6 +289,112 @@ class AdminRealEstateController {
       res.json({ message: 'Real estate record deleted successfully' });
     } catch (error) {
       console.error('Delete real estate error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'title',
+        'description',
+        'price',
+        'location',
+        'property_type',
+        'bedrooms',
+        'bathrooms',
+        'area_sqft',
+        'status'
+      ];
+
+      const dummyData = [
+        ['Modern Apartment in Downtown', 'A beautiful modern apartment with city views', '250000', 'New York, NY', 'Apartment', '2', '2', '1200', 'approved'],
+        ['Cozy Suburban House', 'Perfect for a small family with a large backyard', '350000', 'Austin, TX', 'House', '3', '2', '1800', 'approved'],
+        ['Luxury Villa with Pool', 'Exclusive villa in a gated community', '1200000', 'Miami, FL', 'Villa', '5', '4', '4500', 'pending'],
+        ['Compact Studio Condo', 'Efficient living space near the tech hub', '180000', 'San Francisco, CA', 'Condo', '1', '1', '600', 'approved'],
+        ['Spacious Townhouse', 'Multi-level townhouse with modern amenities', '450000', 'Chicago, IL', 'Townhouse', '3', '3', '2200', 'approved']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=real_estate_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload real estate records from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                // Basic mapping and cleaning
+                const realEstateData = {
+                  title: row.title || '',
+                  description: row.description || '',
+                  price: parseFloat(row.price) || 0,
+                  location: row.location || '',
+                  property_type: row.property_type || '',
+                  bedrooms: parseInt(row.bedrooms) || 0,
+                  bathrooms: parseInt(row.bathrooms) || 0,
+                  area_sqft: parseFloat(row.area_sqft) || 0,
+                  status: row.status || 'pending',
+                  is_active: true
+                };
+
+                if (!realEstateData.title || !realEstateData.description) {
+                  errors.push(`Row ${index + 1}: Title and description are required.`);
+                  continue;
+                }
+
+                const record = await RealEstate.create(realEstateData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
