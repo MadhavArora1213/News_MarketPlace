@@ -142,8 +142,105 @@ class WebsiteController {
   bulkUpdateStatusValidation = [
     body('ids').isArray({ min: 1 }).withMessage('At least one ID required'),
     body('status').isIn(['pending', 'approved', 'rejected']).withMessage('Valid status required'),
-    body('reason').optional().isLength({ min: 1 }).withMessage('Reason must be provided if specified')
+    body('reason').optional({ checkFalsy: true }).isLength({ min: 1 }).withMessage('Reason must be provided if specified')
   ];
+
+  // Download CSV
+  downloadCSV = async (req, res) => {
+    try {
+      const { status, search } = req.query;
+
+      let whereClause = 'WHERE w.is_active = true';
+      const params = [];
+      let paramCount = 1;
+
+      // Add status filter
+      if (status && status !== 'all') {
+        whereClause += ` AND w.status = $${paramCount}`;
+        params.push(status);
+        paramCount++;
+      }
+
+      // Add search filter
+      if (search) {
+        whereClause += ` AND (w.media_name ILIKE $${paramCount} OR w.owner_name ILIKE $${paramCount} OR w.owner_email ILIKE $${paramCount})`;
+        params.push(`%${search}%`);
+        paramCount++;
+      }
+
+      // Get websites with user details
+      const sqlQuery = `
+        SELECT
+          w.*,
+          u.first_name,
+          u.last_name,
+          u.email as user_email
+        FROM websites w
+        LEFT JOIN users u ON w.submitted_by = u.id
+        ${whereClause}
+        ORDER BY w.created_at DESC
+      `;
+
+      const result = await query(sqlQuery, params);
+      const websites = result.rows;
+
+      const headers = [
+        'ID', 'Media Name', 'Website Address', 'Type', 'Location Type', 'Continent', 'Country', 'State',
+        'Owner Name', 'Owner Email', 'Owner Phone', 'Status', 'Submitted By', 'Created At'
+      ];
+
+      let csv = headers.join(',') + '\n';
+
+      websites.forEach(website => {
+        const escape = (text) => {
+          if (text === null || text === undefined) return '';
+          const stringValue = String(text);
+          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+          }
+          return stringValue;
+        };
+
+        const submittedBy = website.user_email ? `${website.first_name} ${website.last_name} (${website.user_email})` : 'N/A';
+        const locationStr = website.location_type === 'Global' ? 'Global' :
+          (website.location_type === 'Regional' ? `Regional` : website.country_name || 'N/A');
+
+        // Parse JSON fields if they are strings (postgres might return them as objects automatically if jsonb, but let's be safe)
+        // Actually, query returns objects for JSON/JSONB columns usually.
+        // But for Arrays in text columns?
+        // In the model they are parsed. Here we perform raw query.
+
+        const continent = Array.isArray(website.selected_continent) ? website.selected_continent.join(';') : (website.selected_continent || '');
+        const country = Array.isArray(website.selected_country) ? website.selected_country.join(';') : (website.selected_country || '');
+        const state = Array.isArray(website.selected_state) ? website.selected_state.join(';') : (website.selected_state || '');
+
+        const row = [
+          website.id,
+          escape(website.media_name),
+          escape(website.media_website_address),
+          escape(website.news_media_type),
+          escape(website.location_type),
+          escape(continent),
+          escape(country),
+          escape(state),
+          escape(website.owner_name),
+          escape(website.owner_email),
+          escape(website.owner_number),
+          escape(website.status),
+          escape(submittedBy),
+          website.created_at ? new Date(website.created_at).toISOString().split('T')[0] : ''
+        ];
+        csv += row.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=websites_export.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 
   bulkDeleteValidation = [
     body('ids').isArray({ min: 1 }).withMessage('At least one ID required')

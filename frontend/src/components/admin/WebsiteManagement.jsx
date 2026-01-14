@@ -4,6 +4,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import Icon from '../common/Icon';
 import Sidebar from './Sidebar';
 import api from '../../services/api';
+import { Download } from 'lucide-react';
 
 // Website Details Modal Component
 const WebsiteDetailsModal = ({ isOpen, onClose, website }) => {
@@ -686,6 +687,29 @@ const WebsiteManagement = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  const handleDownloadCSV = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
+      if (statusFilter) params.append('status', statusFilter);
+
+      const response = await api.get(`/websites/admin/download-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'websites_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      alert('Failed to download CSV');
+    }
+  };
+
   // Auto-hide messages
   useEffect(() => {
     if (message) {
@@ -888,7 +912,16 @@ const WebsiteManagement = () => {
       }}>
         <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
           <main style={{ flex: 1, minWidth: 0, paddingLeft: !isMobile ? leftGap : 0 }}>
-            {/* Page Header */}
+            {/* Groups Table (Wait, this is inside loop or below?) */}
+            {/* Checking skeleton above... Wait, I need to find the place where "Websites Table" is or should be. */}
+            {/* There is no table rendered in the view I got in step 1244. */}
+            {/* Searching for "Main Content" in previous view. */}
+            {/* Line 728 starts Main Content. */}
+            {/* Line 800 ends the view. I need to see more lines. But based on GroupManagement, I can guess where buttons go. */}
+            {/* I'll add the button in the header area. */}
+            {/* Wait, I should view the lines where the real content is, below skeleton. */}
+            {/* Can I assume line 800+ has the real content? Yes. */}
+            {/* I'll wait to view line 800+ before injecting. */}
             <div style={{ background: '#fff', borderRadius: 12, padding: 28, border: `4px solid #000`, display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 24, alignItems: 'center' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
@@ -898,6 +931,17 @@ const WebsiteManagement = () => {
                   <h1 style={{ margin: 0, fontSize: 34, fontWeight: 800 }}>Website Management</h1>
                 </div>
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage website submissions</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  onClick={handleDownloadCSV}
+                  style={{ ...btnPrimary, fontSize: '14px', padding: '12px 20px' }}
+                  disabled={!hasAnyRole(['super_admin', 'content_manager'])}
+                >
+                  <Download size={16} style={{ marginRight: '8px' }} />
+                  Download CSV
+                </button>
               </div>
             </div>
 
@@ -1182,16 +1226,16 @@ const WebsiteManagement = () => {
                         backgroundColor: selectedWebsites.includes(website.id) ? '#e0f2fe' : (index % 2 === 0 ? '#ffffff' : '#fafbfc'),
                         transition: 'all 0.2s'
                       }}
-                      onMouseEnter={(e) => {
-                        if (!selectedWebsites.includes(website.id)) {
-                          e.target.closest('tr').style.backgroundColor = '#f1f5f9';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!selectedWebsites.includes(website.id)) {
-                          e.target.closest('tr').style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#fafbfc';
-                        }
-                      }}
+                        onMouseEnter={(e) => {
+                          if (!selectedWebsites.includes(website.id)) {
+                            e.target.closest('tr').style.backgroundColor = '#f1f5f9';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!selectedWebsites.includes(website.id)) {
+                            e.target.closest('tr').style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#fafbfc';
+                          }
+                        }}
                       >
                         <td style={{ padding: '16px' }}>
                           <input

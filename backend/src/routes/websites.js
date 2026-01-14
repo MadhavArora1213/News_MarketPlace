@@ -52,5 +52,6 @@ router.put('/:id/status', verifyAdminToken, websiteController.updateStatusValida
 router.delete('/:id', verifyAdminToken, websiteController.delete);
 router.post('/bulk/status', verifyAdminToken, websiteController.bulkUpdateStatusValidation, websiteController.bulkUpdateStatus);
 router.post('/bulk/delete', verifyAdminToken, websiteController.bulkDeleteValidation, websiteController.bulkDelete);
+router.get('/admin/download-csv', verifyAdminToken, websiteController.downloadCSV);
 
 module.exports = router;
