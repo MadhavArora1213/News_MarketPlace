@@ -154,6 +154,12 @@ class RealEstate {
           whereClauses.push(`(title ILIKE $${values.length + 1} OR location ILIKE $${values.length + 2} OR property_type ILIKE $${values.length + 3})`);
           values.push(`%${condition.val}%`, `%${condition.val}%`, `%${condition.val}%`);
         }
+      } else if (key === 'startDate' && condition) {
+        whereClauses.push(`created_at >= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'endDate' && condition) {
+        whereClauses.push(`created_at <= $${values.length + 1}`);
+        values.push(condition);
       } else if (condition !== undefined && condition !== null) {
         whereClauses.push(`${key} = $${values.length + 1}`);
         values.push(condition);

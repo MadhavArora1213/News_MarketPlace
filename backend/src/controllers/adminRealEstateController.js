@@ -93,6 +93,8 @@ class AdminRealEstateController {
         location,
         property_type,
         search,
+        date_from,
+        date_to,
         sortBy = 'created_at',
         sortOrder = 'DESC'
       } = req.query;
@@ -101,10 +103,21 @@ class AdminRealEstateController {
 
       if (search) {
         whereClause.search = { val: search };
-      } else {
-        if (status) whereClause.status = status;
-        if (location) whereClause.location = location;
-        if (property_type) whereClause.property_type = property_type;
+      }
+
+      if (status) whereClause.status = status;
+      if (location) whereClause.location = location;
+      if (property_type) whereClause.property_type = property_type;
+
+      if (date_from) {
+        whereClause.startDate = date_from;
+      }
+
+      if (date_to) {
+        // Add 1 day to include the end date fully if it's just a date string
+        const endDate = new Date(date_to);
+        endDate.setDate(endDate.getDate() + 1);
+        whereClause.endDate = endDate.toISOString().split('T')[0];
       }
 
       const limitNum = parseInt(limit);

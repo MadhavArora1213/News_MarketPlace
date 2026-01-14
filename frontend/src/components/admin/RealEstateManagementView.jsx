@@ -151,13 +151,13 @@ const RealEstateManagementView = () => {
       const params = new URLSearchParams({
         page: currentPage,
         limit: pageSize,
-        ...(debouncedSearchTerm && { title: debouncedSearchTerm }),
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
         ...(statusFilter && { status: statusFilter }),
         ...(dateFromFilter && { date_from: dateFromFilter }),
         ...(dateToFilter && { date_to: dateToFilter })
       });
 
-      const response = await api.get(`/real-estates/admin?${params}`);
+      const response = await api.get(`/admin/real-estates?${params}`);
       setRealEstates(response.data.realEstates || []);
     } catch (error) {
       console.error('Error fetching real estates:', error.response?.data || error.message || error);
