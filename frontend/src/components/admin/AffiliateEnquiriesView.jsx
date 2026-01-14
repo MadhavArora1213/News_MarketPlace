@@ -211,16 +211,26 @@ const AffiliateEnquiriesView = () => {
     setReferralCodeFilter('');
   };
 
-  const handleDownloadCSV = async () => {
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+
+  const handleDownloadCSV = async (downloadAll = false) => {
+    setShowDownloadModal(false);
     setDownloading(true);
     try {
-      const params = new URLSearchParams({
-        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(statusFilter && { status: statusFilter }),
-        ...(dateFromFilter && { date_from: dateFromFilter }),
-        ...(dateToFilter && { date_to: dateToFilter }),
-        ...(referralCodeFilter && { referral_code: referralCodeFilter })
-      });
+      let params;
+      if (downloadAll) {
+        // Download all data without filters
+        params = new URLSearchParams({});
+      } else {
+        // Download with current filters
+        params = new URLSearchParams({
+          ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+          ...(statusFilter && { status: statusFilter }),
+          ...(dateFromFilter && { date_from: dateFromFilter }),
+          ...(dateToFilter && { date_to: dateToFilter }),
+          ...(referralCodeFilter && { referral_code: referralCodeFilter })
+        });
+      }
 
       const response = await api.get(`/affiliate-enquiries/download-csv?${params}`, {
         responseType: 'blob'
@@ -232,7 +242,7 @@ const AffiliateEnquiriesView = () => {
 
       // Get filename from response headers or generate one
       const contentDisposition = response.headers['content-disposition'];
-      let filename = 'affiliate_enquiries.csv';
+      let filename = downloadAll ? 'affiliate_enquiries_all.csv' : 'affiliate_enquiries_filtered.csv';
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename=([^;\n]+)/);
         if (filenameMatch && filenameMatch[1]) {
@@ -686,7 +696,7 @@ const AffiliateEnquiriesView = () => {
                 </button>
 
                 <button
-                  onClick={handleDownloadCSV}
+                  onClick={() => setShowDownloadModal(true)}
                   disabled={downloading}
                   style={{
                     padding: '8px 16px',
@@ -1006,6 +1016,119 @@ const AffiliateEnquiriesView = () => {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Download Options Modal */}
+      {showDownloadModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '450px',
+            width: '100%',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '700', color: theme.textPrimary }}>
+                Download Options
+              </h2>
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: theme.textSecondary }}
+              >
+                ×
+              </button>
+            </div>
+
+            <p style={{ color: theme.textSecondary, marginBottom: '24px', fontSize: '14px' }}>
+              Choose how you want to download the affiliate enquiries data:
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                onClick={() => handleDownloadCSV(false)}
+                style={{
+                  padding: '16px 20px',
+                  backgroundColor: theme.primary,
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  textAlign: 'left'
+                }}
+              >
+                <Icon name="funnel" size="sm" style={{ color: '#fff' }} />
+                <div>
+                  <div>Download Filtered Data</div>
+                  <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
+                    Export {totalEnquiries} records matching current filters
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleDownloadCSV(true)}
+                style={{
+                  padding: '16px 20px',
+                  backgroundColor: theme.secondary,
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  textAlign: 'left'
+                }}
+              >
+                <Icon name="archive-box" size="sm" style={{ color: '#fff' }} />
+                <div>
+                  <div>Download All Data</div>
+                  <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
+                    Export complete database (all records)
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                style={{
+                  padding: '12px 20px',
+                  backgroundColor: '#f3f4f6',
+                  color: theme.textPrimary,
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  marginTop: '8px'
+                }}
+              >
+                Cancel
               </button>
             </div>
           </div>
