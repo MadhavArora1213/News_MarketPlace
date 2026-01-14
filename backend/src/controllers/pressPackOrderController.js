@@ -2,7 +2,6 @@ const PressPackOrder = require('../models/PressPackOrder');
 const PressPack = require('../models/PressPack');
 const emailService = require('../services/emailService');
 const { s3Service } = require('../services/s3Service');
-const { query } = require('../config/database');
 
 // Create a new press pack order
 const create = async (req, res) => {
@@ -750,7 +749,13 @@ const downloadCSV = async (req, res) => {
       ORDER BY po.created_at DESC
     `;
 
-    const result = await query(sql, queryParams);
+    // Execute query
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    });
+
+    const result = await pool.query(sql, queryParams);
     const orders = result.rows;
 
     const headers = [
