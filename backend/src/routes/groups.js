@@ -17,6 +17,27 @@ router.get('/', verifyToken, groupController.getAll);
 // Admin routes (admins can manage all groups and perform bulk operations)
 router.get('/admin', verifyAdminToken, requireAdminPanelAccess, groupController.getAll);
 router.post('/admin', verifyAdminToken, requireAdminPanelAccess, groupController.createValidation, groupController.create);
+
+// Bulk/CSV Routes
+router.get('/admin/download-template',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  groupController.downloadTemplate
+);
+
+router.post('/admin/bulk-upload',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  groupController.csvUpload.single('file'),
+  groupController.bulkUpload
+);
+
+router.get('/admin/download-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  groupController.downloadCSV
+);
+
 router.get('/admin/:id', verifyAdminToken, requireAdminPanelAccess, groupController.getById);
 router.put('/admin/:id', verifyAdminToken, requireAdminPanelAccess, groupController.updateValidation, groupController.update);
 router.delete('/admin/:id', verifyAdminToken, requireAdminPanelAccess, groupController.delete);

@@ -2,6 +2,176 @@ const Group = require('../models/Group');
 const { body, validationResult } = require('express-validator');
 
 class GroupController {
+  constructor() {
+    const multer = require('multer');
+    this.storage = multer.memoryStorage();
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || file.mimetype === 'application/vnd.ms-excel') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+
+    this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.bulkUpload = this.bulkUpload.bind(this);
+    this.downloadCSV = this.downloadCSV.bind(this);
+  }
+
+  // Download CSV Template
+  async downloadTemplate(req, res) {
+    try {
+      const headers = ['Group Name', 'Location', 'Website', 'LinkedIn', 'Instagram', 'Group SN (Optional)'];
+      const dummyData = [
+        ['Global Tech Group', 'San Francisco, USA', 'https://techgroup.com', 'https://linkedin.com/company/techgroup', 'https://instagram.com/techgroup', 'GRP-123456'],
+        ['Local Community', 'London, UK', 'https://community.org', '', '', '']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=groups_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk Upload
+  async bulkUpload(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdGroups = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                const groupName = row['Group Name'] || row['group_name'];
+                const groupLocation = row['Location'] || row['group_location'];
+                const groupWebsite = row['Website'] || row['group_website'];
+
+                if (!groupName || !groupLocation || !groupWebsite) {
+                  throw new Error('Group Name, Location, and Website are required');
+                }
+
+                const groupData = {
+                  group_name: groupName,
+                  group_location: groupLocation,
+                  group_website: groupWebsite,
+                  group_linkedin: row['LinkedIn'] || row['group_linkedin'] || '',
+                  group_instagram: row['Instagram'] || row['group_instagram'] || '',
+                  group_sn: row['Group SN (Optional)'] || row['Group SN'] || row['group_sn'] || '',
+                  submitted_by: req.user?.userId,
+                  submitted_by_admin: req.admin?.adminId
+                };
+
+                const newGroup = await Group.create(groupData);
+                createdGroups.push(newGroup);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdGroups.length} groups created.`,
+              count: createdGroups.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download CSV
+  async downloadCSV(req, res) {
+    try {
+      const { status, is_active, group_name } = req.query;
+
+      const filters = {};
+      if (status) filters.status = status;
+      if (is_active !== undefined) filters.is_active = is_active === 'true';
+
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (group_name) {
+        searchSql += ` AND group_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${group_name}%`);
+        searchParamCount++;
+      }
+
+      // Fetch all matching records (no limit)
+      const groups = await Group.findAll(filters, searchSql, searchValues, null, 0);
+
+      const headers = [
+        'ID', 'Group SN', 'Group Name', 'Location', 'Website', 'LinkedIn', 'Instagram',
+        'Status', 'Is Active', 'Created At'
+      ];
+
+      let csv = headers.join(',') + '\n';
+
+      groups.forEach(group => {
+        const escape = (text) => {
+          if (text === null || text === undefined) return '';
+          const stringValue = String(text);
+          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+          }
+          return stringValue;
+        };
+
+        const row = [
+          group.id,
+          escape(group.group_sn),
+          escape(group.group_name),
+          escape(group.group_location),
+          escape(group.group_website),
+          escape(group.group_linkedin),
+          escape(group.group_instagram),
+          escape(group.status),
+          group.is_active ? 'Yes' : 'No',
+          group.created_at ? new Date(group.created_at).toISOString().split('T')[0] : ''
+        ];
+        csv += row.join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=groups_export.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Validation rules
   createValidation = [
     body('group_sn').trim().isLength({ min: 1 }).withMessage('Group SN is required'),
