@@ -429,7 +429,8 @@ class AdminRealEstateController {
                   bathrooms: parseInt(row.bathrooms) || 0,
                   area_sqft: parseFloat(row.area_sqft) || 0,
                   status: row.status || 'pending',
-                  is_active: true
+                  is_active: true,
+                  submitted_by_admin: req.admin.adminId
                 };
 
                 if (!realEstateData.title || !realEstateData.description) {
