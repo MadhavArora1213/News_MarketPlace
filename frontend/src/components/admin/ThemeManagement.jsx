@@ -825,6 +825,24 @@ const ThemeManagement = () => {
 
               <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                 <button
+                  onClick={handleDownloadTemplate}
+                  style={{
+                    backgroundColor: '#fff',
+                    color: theme.primary,
+                    border: `1px solid ${theme.primary}`,
+                    padding: '0.625rem 1rem',
+                    borderRadius: '0.5rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <Icon name="document-text" size="sm" />
+                  Download Template
+                </button>
+                <button
                   onClick={() => setIsUploadModalOpen(true)}
                   style={{
                     backgroundColor: '#fff',
