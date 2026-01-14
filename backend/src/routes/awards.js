@@ -19,4 +19,13 @@ router.delete('/:id', verifyAdminToken, requireAdminPanelAccess, awardController
 // Admin search route
 router.get('/admin/search', verifyAdminToken, requireAdminPanelAccess, awardController.search);
 
+// Bulk upload and template routes
+router.get('/admin/template/download', verifyAdminToken, requireAdminPanelAccess, (req, res) => awardController.downloadTemplate(req, res));
+router.post('/admin/bulk-upload',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  awardController.csvUpload.single('file'),
+  (req, res) => awardController.bulkUpload(req, res)
+);
+
 module.exports = router;

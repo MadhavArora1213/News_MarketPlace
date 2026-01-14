@@ -1,7 +1,25 @@
+const Award = require('../models/Award');
 const AwardCreation = require('../models/AwardCreation');
 const { body, validationResult } = require('express-validator');
+const path = require('path');
+const multer = require('multer');
 
 class AwardController {
+  constructor() {
+    this.storage = multer.memoryStorage();
+
+    // Multer for CSV bulk upload
+    this.csvUpload = multer({
+      storage: this.storage,
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed'));
+        }
+      }
+    });
+  }
   // Validation rules for create/update
   createValidation = [
     body('award_name').trim().isLength({ min: 1 }).withMessage('Award name is required'),
@@ -181,6 +199,112 @@ class AwardController {
       });
     } catch (error) {
       console.error('Search awards error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'award_name',
+        'award_focus',
+        'organiser',
+        'website',
+        'linkedin',
+        'instagram',
+        'award_month',
+        'cta_text',
+        'description',
+        'chief_guest',
+        'celebrity_guest'
+      ];
+
+      const dummyData = [
+        ['Best Innovation Award', 'Technology', 'Global Tech Council', 'https://gtc.org', 'https://linkedin.com/gtc', 'https://instagram.com/gtc', 'October', 'Apply Now', 'Recognizing groundbreaking innovation', 'Satya Nadella', 'Tom Cruise'],
+        ['Rising Leader Award', 'Business', 'Business Leaders Forum', 'https://blf.com', '', '', 'March', 'Nominate', 'For young business leaders', 'Ratan Tata', 'Priyanka Chopra']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=awards_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload awards from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                // Basic mapping and cleaning
+                const awardData = {
+                  award_name: row.award_name || '',
+                  award_focus: row.award_focus || '',
+                  organiser: row.organiser || '',
+                  website: row.website || '',
+                  linkedin: row.linkedin || '',
+                  instagram: row.instagram || '',
+                  award_month: row.award_month || '',
+                  cta_text: row.cta_text || '',
+                  description: row.description || '',
+                  chief_guest: row.chief_guest || '',
+                  celebrity_guest: row.celebrity_guest || ''
+                };
+
+                if (!awardData.award_name || !awardData.organiser) {
+                  errors.push(`Row ${index + 1}: Award name and Organiser are required.`);
+                  continue;
+                }
+
+                const record = await Award.create(awardData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

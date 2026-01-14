@@ -361,6 +361,9 @@ const AwardManagement = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [focusFilter, setFocusFilter] = useState('');
   const [monthFilter, setMonthFilter] = useState('');
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState(null);
 
   // Layout constants (same as AdminDashboard)
   const headerZ = 1000;
@@ -623,6 +626,57 @@ const AwardManagement = () => {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/awards/admin/template/download', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'awards_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/awards/admin/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage({
+        type: 'success',
+        text: response.data.message,
+        errors: response.data.errors
+      });
+      fetchAwards();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || 'Failed to upload file.',
+        errors: error.response?.data?.errors
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -860,7 +914,29 @@ const AwardManagement = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage awards and award programs</p>
               </div>
 
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary, fontSize: '14px', padding: '12px 20px' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ ...btnPrimary, backgroundColor: theme.info, fontSize: '14px', padding: '12px 20px' }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff' }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
                 <button
                   onClick={handleCreateAward}
                   style={{ ...btnPrimary, fontSize: '14px', padding: '12px 20px' }}
@@ -871,6 +947,32 @@ const AwardManagement = () => {
                 </button>
               </div>
             </div>
+
+            {/* Message */}
+            {message && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '8px',
+                marginBottom: '16px',
+                backgroundColor: message.type === 'success' ? '#dcfce7' : '#fee2e2',
+                border: `1px solid ${message.type === 'success' ? '#10b981' : '#ef4444'}`,
+                color: message.type === 'success' ? '#065f46' : '#991b1b',
+                position: 'relative'
+              }}>
+                <div>{message.text}</div>
+                {message.errors && message.errors.length > 0 && (
+                  <ul style={{ marginTop: '8px', fontSize: '12px', paddingLeft: '20px' }}>
+                    {message.errors.map((err, i) => <li key={i}>{err}</li>)}
+                  </ul>
+                )}
+                <button
+                  onClick={() => setMessage(null)}
+                  style={{ position: 'absolute', right: '12px', top: '12px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px' }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             {/* Bulk Actions Bar */}
             {selectedAwards.length > 0 && (
@@ -1123,16 +1225,16 @@ const AwardManagement = () => {
                         backgroundColor: selectedAwards.includes(award.id) ? '#e0f2fe' : (index % 2 === 0 ? '#ffffff' : '#fafbfc'),
                         transition: 'all 0.2s'
                       }}
-                      onMouseEnter={(e) => {
-                        if (!selectedAwards.includes(award.id)) {
-                          e.target.closest('tr').style.backgroundColor = '#f1f5f9';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!selectedAwards.includes(award.id)) {
-                          e.target.closest('tr').style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#fafbfc';
-                        }
-                      }}
+                        onMouseEnter={(e) => {
+                          if (!selectedAwards.includes(award.id)) {
+                            e.target.closest('tr').style.backgroundColor = '#f1f5f9';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!selectedAwards.includes(award.id)) {
+                            e.target.closest('tr').style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#fafbfc';
+                          }
+                        }}
                       >
                         <td style={{ padding: '16px' }}>
                           <input
