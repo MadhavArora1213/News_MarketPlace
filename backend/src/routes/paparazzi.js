@@ -6,8 +6,35 @@ const {
   verifyAdminToken,
   requireAdminPanelAccess
 } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
 
-// Admin routes (admins can manage all paparazzi) - must come before user routes to avoid conflicts
+// Configure multer for CSV uploads
+const storage = multer.memoryStorage();
+const csvUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Admin CSV operations (must come before other admin routes)
+router.get('/admin/template', verifyAdminToken, requireAdminPanelAccess, paparazziController.downloadTemplate);
+router.get('/admin/export-csv', verifyAdminToken, requireAdminPanelAccess, paparazziController.exportCSV);
+router.post('/admin/bulk-upload', verifyAdminToken, requireAdminPanelAccess, csvUpload.single('file'), paparazziController.bulkUpload);
+router.post('/admin/bulk-approve', verifyAdminToken, requireAdminPanelAccess, paparazziController.bulkApprove);
+router.post('/admin/bulk-reject', verifyAdminToken, requireAdminPanelAccess, paparazziController.bulkReject);
+router.post('/admin/bulk-delete', verifyAdminToken, requireAdminPanelAccess, paparazziController.bulkDelete);
+
+
+// Admin routes (admins can manage all paparazzi)
 router.get('/admin', verifyAdminToken, requireAdminPanelAccess, paparazziController.getAll);
 router.get('/admin/:id', verifyAdminToken, requireAdminPanelAccess, paparazziController.getById);
 router.post('/admin', verifyAdminToken, requireAdminPanelAccess, paparazziController.createValidation, paparazziController.create);

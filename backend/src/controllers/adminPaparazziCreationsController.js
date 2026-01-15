@@ -2,6 +2,20 @@ const PaparazziCreation = require('../models/PaparazziCreation');
 const { body, validationResult } = require('express-validator');
 
 class AdminPaparazziCreationsController {
+  constructor() {
+    this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.getPublic = this.getPublic.bind(this);
+    this.getPublicById = this.getPublicById.bind(this);
+    this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.exportCSV = this.exportCSV.bind(this);
+    this.bulkUpload = this.bulkUpload.bind(this);
+    this.bulkDelete = this.bulkDelete.bind(this);
+  }
+
   // Validation rules for create
   createValidation = [
     body('instagram_page_name').trim().isLength({ min: 1 }).withMessage('Instagram page name is required'),
@@ -21,6 +35,153 @@ class AdminPaparazziCreationsController {
     body('instagram_url').optional().isURL().withMessage('Valid Instagram URL is required'),
     body('profile_dp_logo').optional().trim(),
   ];
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'instagram_page_name',
+        'no_of_followers',
+        'region_focused',
+        'category',
+        'instagram_url'
+      ];
+
+      const dummyData = [
+        ['Dubai Luxury Lifestyle', '250000', 'Middle East', 'Lifestyle', 'https://instagram.com/dubailuxury'],
+        ['The Food Guide', '150000', 'USA', 'Local Guide', 'https://instagram.com/thefoodguide']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=paparazzi_creation_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Export CSV with filtering
+  async exportCSV(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { Parser } = require('json2csv');
+      const {
+        category,
+        region_focused,
+        instagram_page_name,
+        search
+      } = req.query;
+
+      const whereClause = {};
+      if (search) {
+        whereClause.search = { val: search };
+      } else {
+        if (category) whereClause.category = category;
+        if (region_focused) whereClause.region_focused = region_focused;
+        if (instagram_page_name) whereClause.instagram_page_name = instagram_page_name;
+      }
+
+      const { rows } = await PaparazziCreation.findAndCountAll({
+        where: whereClause,
+        order: [['created_at', 'DESC']]
+      });
+
+      const fields = [
+        'id', 'instagram_page_name', 'no_of_followers', 'region_focused',
+        'category', 'instagram_url', 'profile_dp_logo', 'created_at', 'updated_at'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(rows.map(pc => pc.toJSON()));
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=paparazzi_creations_export.csv');
+      return res.send(csv);
+
+    } catch (error) {
+      console.error('Export CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload paparazzi creations from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                const pcData = {
+                  instagram_page_name: row.instagram_page_name || '',
+                  no_of_followers: row.no_of_followers ? parseInt(row.no_of_followers) : 0,
+                  region_focused: row.region_focused || '',
+                  category: row.category || 'Lifestyle',
+                  instagram_url: row.instagram_url || ''
+                };
+
+                if (!pcData.instagram_page_name) {
+                  errors.push(`Row ${index + 1}: Instagram page name is required.`);
+                  continue;
+                }
+
+                // Validate category
+                const allowedCategories = ['Entertainment and Movies', 'Lifestyle', 'Local Guide'];
+                if (!allowedCategories.includes(pcData.category)) {
+                  pcData.category = 'Lifestyle'; // Default if invalid
+                }
+
+                const record = await PaparazziCreation.create(pcData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 
   // Get all paparazzi creations
   async getAll(req, res) {
@@ -238,6 +399,48 @@ class AdminPaparazziCreationsController {
       res.json({ paparazziCreation: paparazziCreation.toJSON() });
     } catch (error) {
       console.error('Get public paparazzi creation by ID error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk delete paparazzi creations
+  async bulkDelete(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'Please provide an array of IDs' });
+      }
+
+      const results = {
+        success: [],
+        errors: []
+      };
+
+      for (const id of ids) {
+        try {
+          const pc = await PaparazziCreation.findById(id);
+          if (!pc) {
+            results.errors.push({ id, error: 'Paparazzi creation not found' });
+            continue;
+          }
+
+          await pc.delete();
+          results.success.push({ id, message: 'Deleted successfully' });
+        } catch (err) {
+          results.errors.push({ id, error: err.message });
+        }
+      }
+
+      res.json({
+        message: `Bulk delete completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
+        results
+      });
+    } catch (error) {
+      console.error('Bulk delete paparazzi creations error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

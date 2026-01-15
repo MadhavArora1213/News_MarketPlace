@@ -4,6 +4,22 @@ const emailService = require('../services/emailService');
 const { body, validationResult } = require('express-validator');
 
 class PaparazziController {
+  constructor() {
+    this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.approve = this.approve.bind(this);
+    this.reject = this.reject.bind(this);
+    this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.exportCSV = this.exportCSV.bind(this);
+    this.bulkUpload = this.bulkUpload.bind(this);
+    this.bulkApprove = this.bulkApprove.bind(this);
+    this.bulkReject = this.bulkReject.bind(this);
+    this.bulkDelete = this.bulkDelete.bind(this);
+  }
+
 
   // Validation rules
   createValidation = [
@@ -379,6 +395,338 @@ class PaparazziController {
       </html>
     `;
   }
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'platform',
+        'username',
+        'page_name',
+        'followers_count',
+        'collaboration',
+        'category',
+        'location',
+        'price_reel_no_tag_no_collab',
+        'price_reel_with_tag_no_collab',
+        'price_reel_with_tag',
+        'video_minutes_allowed',
+        'pin_post_weekly_charge',
+        'story_charge',
+        'story_with_reel_charge',
+        'page_website',
+        'status'
+      ];
+
+      const dummyData = [
+        ['Instagram', 'johndoe_paparazzi', 'John Doe Paparazzi', '50000', 'Paid', 'Lifestyle', 'London', '100', '150', '200', '2', '50', '30', '70', 'https://johndoe.com', 'approved'],
+        ['TikTok', 'janedoe_trending', 'Jane Trending', '120000', 'Barter', 'Entertainment', 'New York', '200', '250', '350', '3', '100', '80', '150', '', 'pending']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=paparazzi_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Export CSV with filtering
+  async exportCSV(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { Parser } = require('json2csv');
+      const {
+        status,
+        platform,
+        category,
+        location
+      } = req.query;
+
+      let paparazzi = await Paparazzi.findAll();
+
+      // Apply filters
+      if (status) {
+        paparazzi = paparazzi.filter(p => p.status === status);
+      }
+      if (platform) {
+        paparazzi = paparazzi.filter(p => p.platform === platform);
+      }
+      if (category) {
+        paparazzi = paparazzi.filter(p => p.category && p.category.toLowerCase().includes(category.toLowerCase()));
+      }
+      if (location) {
+        paparazzi = paparazzi.filter(p => p.location && p.location.toLowerCase().includes(location.toLowerCase()));
+      }
+
+      const fields = [
+        'id', 'platform', 'username', 'page_name', 'followers_count', 'collaboration',
+        'category', 'location', 'price_reel_no_tag_no_collab', 'price_reel_with_tag_no_collab',
+        'price_reel_with_tag', 'video_minutes_allowed', 'pin_post_weekly_charge',
+        'story_charge', 'story_with_reel_charge', 'page_website', 'status',
+        'user_id', 'created_at', 'updated_at'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(paparazzi.map(p => p.toJSON()));
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=paparazzi_export.csv');
+      return res.send(csv);
+
+    } catch (error) {
+      console.error('Export CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload paparazzi from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                const paparazziData = {
+                  platform: row.platform || 'Instagram',
+                  username: row.username || '',
+                  page_name: row.page_name || '',
+                  followers_count: row.followers_count ? parseInt(row.followers_count) : 0,
+                  collaboration: row.collaboration || '',
+                  category: row.category || '',
+                  location: row.location || '',
+                  price_reel_no_tag_no_collab: row.price_reel_no_tag_no_collab ? parseFloat(row.price_reel_no_tag_no_collab) : 0,
+                  price_reel_with_tag_no_collab: row.price_reel_with_tag_no_collab ? parseFloat(row.price_reel_with_tag_no_collab) : 0,
+                  price_reel_with_tag: row.price_reel_with_tag ? parseFloat(row.price_reel_with_tag) : 0,
+                  video_minutes_allowed: row.video_minutes_allowed ? parseInt(row.video_minutes_allowed) : 0,
+                  pin_post_weekly_charge: row.pin_post_weekly_charge ? parseFloat(row.pin_post_weekly_charge) : 0,
+                  story_charge: row.story_charge ? parseFloat(row.story_charge) : 0,
+                  story_with_reel_charge: row.story_with_reel_charge ? parseFloat(row.story_with_reel_charge) : 0,
+                  page_website: row.page_website || '',
+                  status: row.status || 'approved',
+                  user_id: req.admin.adminId // System created
+                };
+
+                if (!paparazziData.username || !paparazziData.page_name) {
+                  errors.push(`Row ${index + 1}: Username and Page Name are required.`);
+                  continue;
+                }
+
+                const record = await Paparazzi.create(paparazziData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  // Bulk approve paparazzi submissions
+  async bulkApprove(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'Please provide an array of IDs' });
+      }
+
+      const results = {
+        success: [],
+        errors: []
+      };
+
+      for (const id of ids) {
+        try {
+          const paparazzi = await Paparazzi.findById(id);
+          if (!paparazzi) {
+            results.errors.push({ id, error: 'Paparazzi not found' });
+            continue;
+          }
+
+          if (paparazzi.status === 'approved') {
+            // Success but no action needed
+            results.success.push({ id, message: 'Already approved' });
+            continue;
+          }
+
+          await paparazzi.approve(req.admin.adminId);
+
+          // Send approval email
+          try {
+            const user = await User.findById(paparazzi.user_id);
+            if (user) {
+              const htmlContent = PaparazziController.generateApprovalEmailTemplate(paparazzi);
+              await emailService.sendCustomEmail(user.email, 'Your Paparazzi Submission Has Been Approved', htmlContent);
+            }
+          } catch (emailError) {
+            console.error(`Failed to send approval email for ID ${id}:`, emailError);
+          }
+
+          results.success.push({ id, message: 'Approved successfully' });
+        } catch (err) {
+          results.errors.push({ id, error: err.message });
+        }
+      }
+
+      res.json({
+        message: `Bulk approval completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
+        results
+      });
+    } catch (error) {
+      console.error('Bulk approve paparazzi error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk reject paparazzi submissions
+  async bulkReject(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { ids, reason } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'Please provide an array of IDs' });
+      }
+      if (!reason || reason.trim().length === 0) {
+        return res.status(400).json({ error: 'Rejection reason is required' });
+      }
+
+      const results = {
+        success: [],
+        errors: []
+      };
+
+      for (const id of ids) {
+        try {
+          const paparazzi = await Paparazzi.findById(id);
+          if (!paparazzi) {
+            results.errors.push({ id, error: 'Paparazzi not found' });
+            continue;
+          }
+
+          if (paparazzi.status === 'rejected') {
+            results.success.push({ id, message: 'Already rejected' });
+            continue;
+          }
+
+          await paparazzi.reject(req.admin.adminId, reason);
+
+          // Send rejection email
+          try {
+            const user = await User.findById(paparazzi.user_id);
+            if (user) {
+              const htmlContent = PaparazziController.generateRejectionEmailTemplate(paparazzi, reason);
+              await emailService.sendCustomEmail(user.email, 'Your Paparazzi Submission Has Been Rejected', htmlContent);
+            }
+          } catch (emailError) {
+            console.error(`Failed to send rejection email for ID ${id}:`, emailError);
+          }
+
+          results.success.push({ id, message: 'Rejected successfully' });
+        } catch (err) {
+          results.errors.push({ id, error: err.message });
+        }
+      }
+
+      res.json({
+        message: `Bulk rejection completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
+        results
+      });
+    } catch (error) {
+      console.error('Bulk reject paparazzi error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk delete paparazzi records
+  async bulkDelete(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'Please provide an array of IDs' });
+      }
+
+      const results = {
+        success: [],
+        errors: []
+      };
+
+      for (const id of ids) {
+        try {
+          const paparazzi = await Paparazzi.findById(id);
+          if (!paparazzi) {
+            results.errors.push({ id, error: 'Paparazzi not found' });
+            continue;
+          }
+
+          await paparazzi.delete();
+          results.success.push({ id, message: 'Deleted successfully' });
+        } catch (err) {
+          results.errors.push({ id, error: err.message });
+        }
+      }
+
+      res.json({
+        message: `Bulk delete completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
+        results
+      });
+    } catch (error) {
+      console.error('Bulk delete paparazzi error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new PaparazziController();
+

@@ -5,27 +5,54 @@ const {
   verifyAdminToken,
   requireAdminPanelAccess
 } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for CSV uploads
+const storage = multer.memoryStorage();
+const csvUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 // Test route
 router.get('/test', (req, res) => {
   res.json({ message: 'Admin Paparazzi Creations test route working!' });
 });
 
-// Get all paparazzi creations (public for GET)
-router.get('/',
-  adminPaparazziCreationsController.getAll
-);
+// Admin CSV operations (must come before parameterized routes)
+router.get('/template', verifyAdminToken, requireAdminPanelAccess, adminPaparazziCreationsController.downloadTemplate);
+router.get('/export-csv', verifyAdminToken, requireAdminPanelAccess, adminPaparazziCreationsController.exportCSV);
+router.post('/bulk-upload', verifyAdminToken, requireAdminPanelAccess, csvUpload.single('file'), adminPaparazziCreationsController.bulkUpload);
+router.post('/bulk-delete', verifyAdminToken, requireAdminPanelAccess, adminPaparazziCreationsController.bulkDelete);
 
-// Get paparazzi creation by ID (public for GET)
-router.get('/:id',
-  adminPaparazziCreationsController.getById
-);
 
 // Public routes for paparazzi creations
 router.get('/public/list', adminPaparazziCreationsController.getPublic);
 router.get('/public/:id', adminPaparazziCreationsController.getPublicById);
 
-// Create a new paparazzi creation (admin only)
+// Admin Management Routes
+router.get('/',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  adminPaparazziCreationsController.getAll
+);
+
+router.get('/:id',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  adminPaparazziCreationsController.getById
+);
+
 router.post('/',
   verifyAdminToken,
   requireAdminPanelAccess,
@@ -33,7 +60,6 @@ router.post('/',
   adminPaparazziCreationsController.create
 );
 
-// Update paparazzi creation (admin only)
 router.put('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,
@@ -41,7 +67,6 @@ router.put('/:id',
   adminPaparazziCreationsController.update
 );
 
-// Delete paparazzi creation (admin only)
 router.delete('/:id',
   verifyAdminToken,
   requireAdminPanelAccess,

@@ -231,8 +231,183 @@ const PaparazziCreationsFormModal = ({ isOpen, onClose, record, onSave }) => {
   );
 };
 
+// CSV Upload Modal Component
+const CSVUploadModal = ({ isOpen, onClose, onUploadComplete }) => {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState(null);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type === 'text/csv') {
+      setFile(selectedFile);
+    } else {
+      alert('Please select a valid CSV file.');
+      e.target.value = null;
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setResults(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await api.post('/admin/paparazzi-creations/bulk-upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setResults(response.data);
+      if (onUploadComplete) onUploadComplete();
+    } catch (error) {
+      console.error('Error uploading CSV:', error);
+      alert(error.response?.data?.error || 'Failed to upload CSV file.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', zIndex: 10001, padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px',
+        maxWidth: '500px', width: '100%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Bulk Upload Paparazzi creations</h2>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>×</button>
+        </div>
+
+        {!results ? (
+          <div>
+            <p style={{ marginBottom: '16px', color: '#666', fontSize: '14px' }}>
+              Select a CSV file to upload multiple records at once.
+            </p>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              style={{ marginBottom: '20px', width: '100%' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button onClick={onClose} style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+              <button
+                onClick={handleUpload}
+                disabled={!file || uploading}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: file && !uploading ? '#1976D2' : '#ccc',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: file && !uploading ? 'pointer' : 'default'
+                }}
+              >
+                {uploading ? 'Uploading...' : 'Upload CSV'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: '#4CAF50', fontSize: '48px', marginBottom: '16px' }}>✓</div>
+            <h3 style={{ marginBottom: '8px' }}>Upload Complete</h3>
+            <p style={{ marginBottom: '24px', color: '#666' }}>{results.message}</p>
+            {results.errors && results.errors.length > 0 && (
+              <div style={{
+                textAlign: 'left', backgroundColor: '#FFF3F3', padding: '12px',
+                borderRadius: '8px', marginBottom: '24px', maxHeight: '150px', overflowY: 'auto'
+              }}>
+                <p style={{ fontWeight: '700', color: '#D32F2F', marginBottom: '8px', fontSize: '12px' }}>Errors:</p>
+                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#D32F2F' }}>
+                  {results.errors.map((error, i) => <li key={i}>{error}</li>)}
+                </ul>
+              </div>
+            )}
+            <button
+              onClick={onClose}
+              style={{
+                width: '100%', padding: '12px', backgroundColor: '#1976D2',
+                color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Export Options Modal
+const ExportOptionsModal = ({ isOpen, onClose, onExport }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', zIndex: 10001, padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px',
+        maxWidth: '400px', width: '100%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', fontWeight: '800' }}>Export Paparazzi creations</h2>
+        <p style={{ marginBottom: '24px', color: '#666', fontSize: '14px' }}>
+          Choose which data you would like to export to CSV.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onExport('filtered')}
+            style={{
+              padding: '12px', backgroundColor: '#E3F2FD', color: '#1976D2',
+              border: '1px solid #1976D2', borderRadius: '8px', fontWeight: '600', cursor: 'pointer',
+              textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px'
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#1976D2' }}></div>
+            Current Filtered View
+          </button>
+          <button
+            onClick={() => onExport('all')}
+            style={{
+              padding: '12px', backgroundColor: '#F5F5F5', color: '#212121',
+              border: '1px solid #BDBDBD', borderRadius: '8px', fontWeight: '600', cursor: 'pointer',
+              textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px'
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#757575' }}></div>
+            All Paparazzi Creations
+          </button>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: '24px', width: '100%', padding: '10px',
+            background: 'transparent', border: '1px solid #E0E0E0', borderRadius: '8px', cursor: 'pointer'
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Brand colors from Color palette
 const theme = {
+
   primary: '#1976D2',
   primaryDark: '#0D47A1',
   primaryLight: '#E3F2FD',
@@ -282,6 +457,10 @@ const PaparazziCreationsPage = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [showCSVModal, setShowCSVModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+
   const [message, setMessage] = useState(null);
 
   // Search and Filter State
@@ -386,6 +565,7 @@ const PaparazziCreationsPage = () => {
       const response = await api.get(`/admin/paparazzi-creations?${params.toString()}`);
       setRecords(response.data.paparazziCreations || []);
       setTotalRecords(response.data.pagination?.total || 0);
+      setSelectedIds([]); // Clear selection on new fetch
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status === 401) {
@@ -433,7 +613,83 @@ const PaparazziCreationsPage = () => {
     }
   };
 
+  const handleDownloadCSV = async (type = 'filtered') => {
+    try {
+      let url = '/admin/paparazzi-creations/export-csv';
+      if (type === 'filtered') {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (categoryFilter) params.append('category', categoryFilter);
+        if (regionalFilter) params.append('region_focused', regionalFilter);
+
+        const queryString = params.toString();
+        if (queryString) url += `?${queryString}`;
+      }
+
+      const response = await api.get(url, { responseType: 'blob' });
+      const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `paparazzi_creations_export_${type}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setShowExportModal(false);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Failed to export CSV. Please try again.');
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/admin/paparazzi-creations/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'paparazzi_creations_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template. Please try again.');
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(records.map(r => r.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected records? This action cannot be undone.`)) return;
+
+    try {
+      setLoading(true);
+      await api.post('/admin/paparazzi-creations/bulk-delete', { ids: selectedIds });
+      alert('Selected records deleted successfully');
+      fetchRecords();
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      alert('Failed to delete selected records');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const totalPages = Math.ceil(totalRecords / pageSize);
+
 
   if (loading) {
     return (
@@ -573,13 +829,37 @@ const PaparazziCreationsPage = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage paparazzi creation records</p>
               </div>
 
-              <button
-                onClick={handleCreateRecord}
-                style={btnPrimary}
-              >
-                <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
-                Add Record
-              </button>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="document-arrow-down" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Export CSV
+                </button>
+                <button
+                  onClick={() => setShowCSVModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-up-tray" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Bulk Upload
+                </button>
+                <button
+                  onClick={handleCreateRecord}
+                  style={btnPrimary}
+                >
+                  <Icon name="plus-circle" size="sm" style={{ color: '#fff' }} />
+                  Add Record
+                </button>
+              </div>
+
             </div>
 
             {/* Stats Cards */}
@@ -705,9 +985,33 @@ const PaparazziCreationsPage = () => {
             <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 8px 20px rgba(2,6,23,0.06)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', backgroundColor: '#f8fafc' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '14px', fontWeight: '600', color: theme.textPrimary }}>
-                    Paparazzi Creation Records ({totalRecords})
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: '600', color: theme.textPrimary }}>
+                      Paparazzi Creation Records ({totalRecords})
+                    </span>
+                    {selectedIds.length > 0 && (
+                      <div style={{ display: 'flex', gap: '8px', marginLeft: '16px', borderLeft: '1px solid #e5e7eb', paddingLeft: '16px' }}>
+                        <button
+                          onClick={handleBulkDelete}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: '#374151',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Icon name="trash" size="xs" style={{ color: '#fff' }} />
+                          Delete ({selectedIds.length})
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     {loading && <span style={{ fontSize: '12px', color: theme.primary }}>Updating...</span>}
                     <select
@@ -738,6 +1042,14 @@ const PaparazziCreationsPage = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                      <th style={{ padding: '16px', textAlign: 'left', width: '40px' }}>
+                        <input
+                          type="checkbox"
+                          checked={records.length > 0 && selectedIds.length === records.length}
+                          onChange={handleSelectAll}
+                          style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                        />
+                      </th>
                       {[
                         { key: 'instagram_page_name', label: 'Instagram Page Name' },
                         { key: 'no_of_followers', label: 'No of Followers' },
@@ -790,8 +1102,16 @@ const PaparazziCreationsPage = () => {
                     {records.map((record, index) => (
                       <tr key={record.id} style={{
                         borderBottom: '1px solid #f1f5f9',
-                        backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafbfc'
+                        backgroundColor: selectedIds.includes(record.id) ? `${theme.primary}10` : (index % 2 === 0 ? '#ffffff' : '#fafbfc')
                       }}>
+                        <td style={{ padding: '16px', width: '40px' }}>
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(record.id)}
+                            onChange={() => toggleSelect(record.id)}
+                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                          />
+                        </td>
                         <td style={{ padding: '16px' }}>
                           <div style={{ fontSize: '14px', color: theme.textPrimary, fontWeight: '500' }}>
                             {record.instagram_page_name}
@@ -940,6 +1260,16 @@ const PaparazziCreationsPage = () => {
         onClose={() => setShowFormModal(false)}
         record={editingRecord}
         onSave={handleFormSave}
+      />
+      <CSVUploadModal
+        isOpen={showCSVModal}
+        onClose={() => setShowCSVModal(false)}
+        onUploadComplete={fetchRecords}
+      />
+      <ExportOptionsModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleDownloadCSV}
       />
     </div>
   );

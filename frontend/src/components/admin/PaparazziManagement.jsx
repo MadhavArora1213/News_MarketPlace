@@ -498,8 +498,183 @@ const RejectionReasonModal = ({ isOpen, onClose, onConfirm, paparazzi }) => {
   );
 };
 
+// CSV Upload Modal Component
+const CSVUploadModal = ({ isOpen, onClose, onUploadComplete }) => {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState(null);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type === 'text/csv') {
+      setFile(selectedFile);
+    } else {
+      alert('Please select a valid CSV file.');
+      e.target.value = null;
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setResults(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await api.post('/paparazzi/admin/bulk-upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setResults(response.data);
+      if (onUploadComplete) onUploadComplete();
+    } catch (error) {
+      console.error('Error uploading CSV:', error);
+      alert(error.response?.data?.error || 'Failed to upload CSV file.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', zIndex: 10001, padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px',
+        maxWidth: '500px', width: '100%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Bulk Upload Paparazzi</h2>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>×</button>
+        </div>
+
+        {!results ? (
+          <div>
+            <p style={{ marginBottom: '16px', color: '#666', fontSize: '14px' }}>
+              Select a CSV file to upload multiple paparazzi records at once.
+            </p>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              style={{ marginBottom: '20px', width: '100%' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button onClick={onClose} style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+              <button
+                onClick={handleUpload}
+                disabled={!file || uploading}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: file && !uploading ? '#1976D2' : '#ccc',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: file && !uploading ? 'pointer' : 'default'
+                }}
+              >
+                {uploading ? 'Uploading...' : 'Upload CSV'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: '#4CAF50', fontSize: '48px', marginBottom: '16px' }}>✓</div>
+            <h3 style={{ marginBottom: '8px' }}>Upload Complete</h3>
+            <p style={{ marginBottom: '24px', color: '#666' }}>{results.message}</p>
+            {results.errors && results.errors.length > 0 && (
+              <div style={{
+                textAlign: 'left', backgroundColor: '#FFF3F3', padding: '12px',
+                borderRadius: '8px', marginBottom: '24px', maxHeight: '150px', overflowY: 'auto'
+              }}>
+                <p style={{ fontWeight: '700', color: '#D32F2F', marginBottom: '8px', fontSize: '12px' }}>Errors:</p>
+                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#D32F2F' }}>
+                  {results.errors.map((error, i) => <li key={i}>{error}</li>)}
+                </ul>
+              </div>
+            )}
+            <button
+              onClick={onClose}
+              style={{
+                width: '100%', padding: '12px', backgroundColor: '#1976D2',
+                color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Export Options Modal
+const ExportOptionsModal = ({ isOpen, onClose, onExport }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', zIndex: 10001, padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', padding: '24px',
+        maxWidth: '400px', width: '100%', boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', fontWeight: '800' }}>Export Paparazzi</h2>
+        <p style={{ marginBottom: '24px', color: '#666', fontSize: '14px' }}>
+          Choose which data you would like to export to CSV.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onExport('filtered')}
+            style={{
+              padding: '12px', backgroundColor: '#E3F2FD', color: '#1976D2',
+              border: '1px solid #1976D2', borderRadius: '8px', fontWeight: '600', cursor: 'pointer',
+              textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px'
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#1976D2' }}></div>
+            Current Filtered View
+          </button>
+          <button
+            onClick={() => onExport('all')}
+            style={{
+              padding: '12px', backgroundColor: '#F5F5F5', color: '#212121',
+              border: '1px solid #BDBDBD', borderRadius: '8px', fontWeight: '600', cursor: 'pointer',
+              textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px'
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#757575' }}></div>
+            All Paparazzi Data
+          </button>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: '24px', width: '100%', padding: '10px',
+            background: 'transparent', border: '1px solid #E0E0E0', borderRadius: '8px', cursor: 'pointer'
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Brand colors from Color palette .pdf - using only defined colors
 const theme = {
+
   primary: '#1976D2',        // Primary Blue
   primaryDark: '#0D47A1',    // Primary Dark
   primaryLight: '#E3F2FD',   // Primary Light
@@ -566,6 +741,11 @@ const PaparazziManagement = () => {
   const [sortField, setSortField] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [showCSVModal, setShowCSVModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [showBulkRejectionModal, setShowBulkRejectionModal] = useState(false);
+
 
   // Layout constants (same as AdminDashboard)
   const headerZ = 1000;
@@ -669,8 +849,10 @@ const PaparazziManagement = () => {
 
   const fetchPaparazzi = async () => {
     try {
+      setLoading(true);
       const response = await api.get('/paparazzi/admin');
       setPaparazzi(response.data.paparazzi || []);
+      setSelectedIds([]); // Clear selection on new fetch
     } catch (error) {
       console.error('Error fetching paparazzi:', error);
       if (error.response?.status === 401) {
@@ -768,6 +950,74 @@ const PaparazziManagement = () => {
     }
   };
 
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(paginatedPaparazzi.map(p => p.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to approve ${selectedIds.length} selected submissions?`)) return;
+
+    setLoading(true);
+    try {
+      await api.post('/paparazzi/admin/bulk-approve', { ids: selectedIds });
+      alert('Selected submissions approved successfully');
+      fetchPaparazzi();
+    } catch (error) {
+      console.error('Bulk approval error:', error);
+      alert('Failed to approve selected submissions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkReject = () => {
+    if (selectedIds.length === 0) return;
+    setShowBulkRejectionModal(true);
+  };
+
+  const handleBulkRejectConfirm = async (reason) => {
+    setLoading(true);
+    try {
+      await api.post('/paparazzi/admin/bulk-reject', { ids: selectedIds, reason });
+      alert('Selected submissions rejected successfully');
+      setShowBulkRejectionModal(false);
+      fetchPaparazzi();
+    } catch (error) {
+      console.error('Bulk rejection error:', error);
+      alert('Failed to reject selected submissions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected records? This action cannot be undone.`)) return;
+
+    setLoading(true);
+    try {
+      await api.post('/paparazzi/admin/bulk-delete', { ids: selectedIds });
+      alert('Selected records deleted successfully');
+      fetchPaparazzi();
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      alert('Failed to delete selected records');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getSortIcon = (field) => {
     if (sortField !== field) return '';
     return sortDirection === 'asc' ? '↑' : '↓';
@@ -784,7 +1034,53 @@ const PaparazziManagement = () => {
     setShowFormModal(true);
   };
 
+  const handleDownloadCSV = async (type = 'filtered') => {
+    try {
+      let url = '/paparazzi/admin/export-csv';
+      if (type === 'filtered') {
+        const params = new URLSearchParams();
+        if (statusFilter) params.append('status', statusFilter);
+        if (platformFilter) params.append('platform', platformFilter);
+        if (categoryFilter) params.append('category', categoryFilter);
+        if (locationFilter) params.append('location', locationFilter);
+
+        const queryString = params.toString();
+        if (queryString) url += `?${queryString}`;
+      }
+
+      const response = await api.get(url, { responseType: 'blob' });
+      const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `paparazzi_export_${type}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setShowExportModal(false);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Failed to export CSV. Please try again.');
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/paparazzi/admin/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'paparazzi_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template. Please try again.');
+    }
+  };
+
   const handleDeletePaparazzi = async (paparazziId) => {
+
     if (!window.confirm('Are you sure you want to delete this paparazzi submission?')) return;
 
     try {
@@ -1074,7 +1370,28 @@ const PaparazziManagement = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage paparazzi submissions and approvals</p>
               </div>
 
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="document-arrow-down" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Template
+                </button>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Export CSV
+                </button>
+                <button
+                  onClick={() => setShowCSVModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: '#f5f5f5', color: '#212121', fontSize: '14px', padding: '12px 20px', border: '1px solid #e0e0e0', boxShadow: 'none' }}
+                >
+                  <Icon name="arrow-up-tray" size="sm" style={{ color: '#757575', marginRight: 8 }} />
+                  Bulk Upload
+                </button>
                 <button
                   onClick={handleCreatePaparazzi}
                   style={{ ...btnPrimary, fontSize: '14px', padding: '12px 20px' }}
@@ -1084,6 +1401,7 @@ const PaparazziManagement = () => {
                   Add Paparazzi
                 </button>
               </div>
+
             </div>
 
             {/* Search and Filters */}
@@ -1256,6 +1574,64 @@ const PaparazziManagement = () => {
                     <span style={{ fontSize: '14px', fontWeight: '600', color: theme.textPrimary }}>
                       Paparazzi
                     </span>
+                    {selectedIds.length > 0 && (
+                      <div style={{ display: 'flex', gap: '8px', marginLeft: '16px', borderLeft: '1px solid #e5e7eb', paddingLeft: '16px' }}>
+                        <button
+                          onClick={handleBulkApprove}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: theme.success,
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Icon name="check" size="xs" style={{ color: '#fff' }} />
+                          Approve ({selectedIds.length})
+                        </button>
+                        <button
+                          onClick={handleBulkReject}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: theme.danger,
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Icon name="x-mark" size="xs" style={{ color: '#fff' }} />
+                          Reject ({selectedIds.length})
+                        </button>
+                        <button
+                          onClick={handleBulkDelete}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: '#374151',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Icon name="trash" size="xs" style={{ color: '#fff' }} />
+                          Delete ({selectedIds.length})
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <select
@@ -1285,6 +1661,14 @@ const PaparazziManagement = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                      <th style={{ padding: '16px', textAlign: 'left', width: '40px' }}>
+                        <input
+                          type="checkbox"
+                          checked={paginatedPaparazzi.length > 0 && selectedIds.length === paginatedPaparazzi.length}
+                          onChange={handleSelectAll}
+                          style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                        />
+                      </th>
                       <th style={{ padding: '16px', textAlign: 'left', fontWeight: '700', fontSize: '12px', color: theme.textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Platform
                       </th>
@@ -1332,7 +1716,15 @@ const PaparazziManagement = () => {
                       </tr>
                     ) : (
                       paginatedPaparazzi.map((paparazziItem, index) => (
-                        <tr key={paparazziItem.id} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafbfc', borderBottom: '1px solid #f1f5f9' }}>
+                        <tr key={paparazziItem.id} style={{ backgroundColor: selectedIds.includes(paparazziItem.id) ? `${theme.primary}10` : (index % 2 === 0 ? '#ffffff' : '#fafbfc'), borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '16px', textAlign: 'left' }}>
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.includes(paparazziItem.id)}
+                              onChange={() => toggleSelect(paparazziItem.id)}
+                              style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                            />
+                          </td>
                           <td style={{ padding: '16px', fontSize: '14px', color: theme.textPrimary }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ fontSize: '16px' }}>{getPlatformIcon(paparazziItem.platform)}</span>
@@ -1516,6 +1908,22 @@ const PaparazziManagement = () => {
         onClose={() => setShowRejectionModal(false)}
         onConfirm={handleRejectConfirm}
         paparazzi={rejectingPaparazzi}
+      />
+      <CSVUploadModal
+        isOpen={showCSVModal}
+        onClose={() => setShowCSVModal(false)}
+        onUploadComplete={fetchPaparazzi}
+      />
+      <ExportOptionsModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleDownloadCSV}
+      />
+      <RejectionReasonModal
+        isOpen={showBulkRejectionModal}
+        onClose={() => setShowBulkRejectionModal(false)}
+        onConfirm={handleBulkRejectConfirm}
+        paparazzi={{ page_name: `${selectedIds.length} selected items` }}
       />
     </div>
   );
