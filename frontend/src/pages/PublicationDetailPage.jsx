@@ -14,7 +14,7 @@ import {
   Instagram, Facebook, Twitter, Linkedin
 } from 'lucide-react';
 
-// Updated theme colors matching the color palette from PDF
+// Updated theme colors matching the color pal
 const theme = {
   primary: '#1976D2',
   primaryDark: '#0D47A1',
