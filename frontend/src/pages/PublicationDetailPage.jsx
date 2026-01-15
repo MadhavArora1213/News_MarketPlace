@@ -64,10 +64,10 @@ const PublicationDetailPage = () => {
     try {
       setLoading(true);
       console.log('Fetching publication details for ID:', id);
-      
+
       const response = await api.get(`/admin/publication-management/${id}`);
       console.log('Publication details response:', response.data);
-      
+
       setPublication(response.data.publication || response.data);
     } catch (error) {
       console.error('Error fetching publication details:', error);
@@ -115,7 +115,7 @@ const PublicationDetailPage = () => {
       // Simulate save action
       setIsSaved(!isSaved);
       console.log('Save toggled:', !isSaved);
-      
+
       // Here you would typically call an API to save/unsave the publication
       // await api.post(`/publications/${id}/save`, { saved: !isSaved });
     } catch (error) {
@@ -279,12 +279,12 @@ const PublicationDetailPage = () => {
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Publication Header */}
                 <div className="flex items-start gap-6 mb-8">
-                  <div className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  <div className="w-32 h-20 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden p-2">
                     {publication.image ? (
                       <img
                         src={publication.image}
                         alt={publication.publication_name}
-                        className="w-full h-full object-cover"
+                        className="max-w-full max-h-full object-contain"
                         onError={(e) => {
                           e.target.src = '/logo.png';
                         }}
@@ -293,7 +293,7 @@ const PublicationDetailPage = () => {
                       <img
                         src="/logo.png"
                         alt="Logo"
-                        className="w-12 h-12 object-contain"
+                        className="w-12 h-12 object-contain opacity-50"
                       />
                     )}
                   </div>
