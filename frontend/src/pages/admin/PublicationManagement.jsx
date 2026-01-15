@@ -1054,13 +1054,7 @@ const PublicationManagementPage = () => {
                   style={{ display: 'none' }}
                   accept=".csv"
                 />
-                <button
-                  onClick={handleDownloadTemplate}
-                  style={{ ...btnPrimary, backgroundColor: theme.secondary }}
-                >
-                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
-                  Template
-                </button>
+
                 <button
                   onClick={() => setShowExportModal(true)}
                   style={{ ...btnPrimary, backgroundColor: theme.secondaryDark }}
