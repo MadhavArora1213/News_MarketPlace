@@ -1056,6 +1056,13 @@ const PublicationManagementPage = () => {
                 />
 
                 <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
+                  Download Template
+                </button>
+                <button
                   onClick={() => setShowExportModal(true)}
                   style={{ ...btnPrimary, backgroundColor: theme.secondaryDark }}
                 >
