@@ -108,7 +108,17 @@ class AdminPublicationManagementController {
         region,
         language,
         publication_name,
+        publication_primary_focus,
         search,
+        price_min,
+        price_max,
+        da_min,
+        da_max,
+        dr_min,
+        dr_max,
+        tat_min,
+        tat_max,
+        do_follow,
         sortBy = 'created_at',
         sortOrder = 'DESC'
       } = req.query;
@@ -121,10 +131,27 @@ class AdminPublicationManagementController {
         if (region) whereClause.region = region;
         if (language) whereClause.language = language;
         if (publication_name) whereClause.publication_name = publication_name;
+        if (publication_primary_focus) whereClause.publication_primary_focus = publication_primary_focus;
+      }
+
+      // Range filters
+      if (price_min !== undefined) whereClause.price_min = parseFloat(price_min);
+      if (price_max !== undefined) whereClause.price_max = parseFloat(price_max);
+      if (da_min !== undefined) whereClause.da_min = parseInt(da_min);
+      if (da_max !== undefined) whereClause.da_max = parseInt(da_max);
+      if (dr_min !== undefined) whereClause.dr_min = parseInt(dr_min);
+      if (dr_max !== undefined) whereClause.dr_max = parseInt(dr_max);
+      if (tat_min !== undefined) whereClause.tat_min = parseInt(tat_min);
+      if (tat_max !== undefined) whereClause.tat_max = parseInt(tat_max);
+
+      // Boolean filters
+      if (do_follow !== undefined) {
+        whereClause.do_follow = do_follow === 'true' || do_follow === true;
       }
 
       const limitNum = parseInt(limit);
-      const offset = (page - 1) * limitNum;
+      const pageNum = parseInt(page);
+      const offset = (pageNum - 1) * limitNum;
 
       const { count, rows } = await PublicationManagement.findAndCountAll({
         where: whereClause,
@@ -136,7 +163,7 @@ class AdminPublicationManagementController {
       res.json({
         publications: rows.map(pub => pub.toJSON()),
         pagination: {
-          page: parseInt(page),
+          page: pageNum,
           limit: limitNum,
           total: count,
           pages: Math.ceil(count / limitNum)

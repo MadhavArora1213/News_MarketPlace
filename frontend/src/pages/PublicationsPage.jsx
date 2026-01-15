@@ -53,12 +53,12 @@ const PublicationsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAuth, setShowAuth] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
-  
+
   // View mode and layout state
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Filter states
   const [regionFilter, setRegionFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
@@ -67,12 +67,18 @@ const PublicationsPage = () => {
   const [daRange, setDaRange] = useState([0, 100]);
   const [drRange, setDrRange] = useState([0, 100]);
   const [tatFilter, setTatFilter] = useState([]);
-  const [dofollowFilter, setDofollowFilter] = useState('');
-  
+  const [dofollowFilter, setDofollowFilter] = useState('all');
+
   // Sorting state
-  const [sortField, setSortField] = useState('publication_name');
-  const [sortDirection, setSortDirection] = useState('asc');
-  
+  const [sortField, setSortField] = useState('created_at');
+  const [sortDirection, setSortDirection] = useState('desc');
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
   // Groups data
   const [groups, setGroups] = useState([]);
 
@@ -84,52 +90,73 @@ const PublicationsPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchPublications();
     fetchGroups();
   }, []);
 
-  // Enhanced search with debouncing
+  // Enhanced search and filter with debouncing
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page on filter change
       fetchPublications();
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, regionFilter, languageFilter]);
+  }, [searchTerm, regionFilter, languageFilter, focusFilter, priceRange, daRange, drRange, tatFilter, dofollowFilter, sortField, sortDirection, pageSize]);
+
+  // Fetch when page changes
+  useEffect(() => {
+    fetchPublications();
+  }, [currentPage]);
 
   const fetchPublications = async () => {
     try {
       setLoading(true);
-      
+
       const params = new URLSearchParams({
-        limit: '1000'
+        page: currentPage.toString(),
+        limit: pageSize.toString(),
+        sortBy: sortField,
+        sortOrder: sortDirection
       });
 
-      // Enhanced search across multiple fields
-      if (searchTerm.trim()) {
-        params.append('publication_name', searchTerm.trim());
-      }
-      
+      if (searchTerm.trim()) params.append('search', searchTerm.trim());
       if (regionFilter) params.append('region', regionFilter);
       if (languageFilter) params.append('language', languageFilter);
+      if (focusFilter) params.append('publication_primary_focus', focusFilter);
 
-      const response = await api.get(`/admin/publication-management?${params.toString()}`);
-      let pubs = response.data.publications || [];
+      // Range filters
+      if (priceRange[0] > 0) params.append('price_min', priceRange[0].toString());
+      if (priceRange[1] < 20000) params.append('price_max', priceRange[1].toString());
+      if (daRange[0] > 0) params.append('da_min', daRange[0].toString());
+      if (daRange[1] < 100) params.append('da_max', daRange[1].toString());
+      if (drRange[0] > 0) params.append('dr_min', drRange[0].toString());
+      if (drRange[1] < 100) params.append('dr_max', drRange[1].toString());
 
-      // Client-side search for better results
-      if (searchTerm.trim()) {
-        const searchLower = searchTerm.toLowerCase().trim();
-        pubs = pubs.filter(pub => {
-          return (
-            pub.publication_name?.toLowerCase().includes(searchLower) ||
-            pub.region?.toLowerCase().includes(searchLower) ||
-            pub.language?.toLowerCase().includes(searchLower) ||
-            pub.publication_primary_focus?.toLowerCase().includes(searchLower)
-          );
+      // TAT filter mapping
+      if (tatFilter.length > 0) {
+        // Find min and max days across all selected filters
+        let min = 1000, max = 0;
+        tatFilter.forEach(filter => {
+          switch (filter) {
+            case '1-5 days': min = Math.min(min, 1); max = Math.max(max, 5); break;
+            case '6-10 days': min = Math.min(min, 6); max = Math.max(max, 10); break;
+            case '2-3 weeks': min = Math.min(min, 14); max = Math.max(max, 21); break;
+            case '4-6 weeks': min = Math.min(min, 28); max = Math.max(max, 42); break;
+          }
         });
+        if (min < 1000) params.append('tat_min', min.toString());
+        if (max > 0) params.append('tat_max', max.toString());
       }
 
-      setPublications(pubs);
+      if (dofollowFilter !== 'all') {
+        params.append('do_follow', dofollowFilter === 'dofollow' ? 'true' : 'false');
+      }
+
+      const response = await api.get(`/admin/publication-management?${params.toString()}`);
+
+      setPublications(response.data.publications || []);
+      setTotalRecords(response.data.pagination?.total || 0);
+      setTotalPages(response.data.pagination?.pages || 0);
     } catch (error) {
       console.error('Error fetching publications:', error);
       if (error.response?.status === 401) {
@@ -150,101 +177,6 @@ const PublicationsPage = () => {
       console.error('Error fetching groups:', error);
     }
   };
-
-  // Filtering logic
-  const filteredPublications = useMemo(() => {
-    let filtered = [...publications];
-
-    // Apply filters
-    if (regionFilter) {
-      filtered = filtered.filter(pub =>
-        pub.region?.toLowerCase().includes(regionFilter.toLowerCase())
-      );
-    }
-
-    if (languageFilter) {
-      filtered = filtered.filter(pub =>
-        pub.language?.toLowerCase().includes(languageFilter.toLowerCase())
-      );
-    }
-
-    if (focusFilter) {
-      filtered = filtered.filter(pub =>
-        pub.publication_primary_focus?.toLowerCase().includes(focusFilter.toLowerCase())
-      );
-    }
-
-    // Price range filter
-    filtered = filtered.filter(pub => {
-      const price = parseFloat(pub.price_usd) || 0;
-      return price >= priceRange[0] && price <= priceRange[1];
-    });
-
-    // DA range filter
-    filtered = filtered.filter(pub => {
-      const da = parseInt(pub.da) || 0;
-      return da >= daRange[0] && da <= daRange[1];
-    });
-
-    // DR range filter
-    filtered = filtered.filter(pub => {
-      const dr = parseInt(pub.dr) || 0;
-      return dr >= drRange[0] && dr <= drRange[1];
-    });
-
-    // TAT filter
-    if (tatFilter.length > 0) {
-      filtered = filtered.filter(pub => {
-        const days = pub.committed_tat;
-        return tatFilter.some(tat => {
-          switch (tat) {
-            case '1-5 days': return days >= 1 && days <= 5;
-            case '6-10 days': return days >= 6 && days <= 10;
-            case '2-3 weeks': return days >= 14 && days <= 21;
-            case '4-6 weeks': return days >= 28 && days <= 42;
-            default: return false;
-          }
-        });
-      });
-    }
-
-    // Link type filter
-    if (dofollowFilter) {
-      if (dofollowFilter === 'true') {
-        filtered = filtered.filter(pub => pub.do_follow === true);
-      } else if (dofollowFilter === 'false') {
-        filtered = filtered.filter(pub => pub.do_follow === false);
-      }
-    }
-
-    return filtered;
-  }, [publications, regionFilter, languageFilter, focusFilter,
-      priceRange, daRange, drRange, tatFilter, dofollowFilter]);
-
-  // Sorting logic
-  const sortedPublications = useMemo(() => {
-    return [...filteredPublications].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === 'price_usd' || sortField === 'da' || sortField === 'dr') {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
-      } else if (sortField === 'created_at' || sortField === 'updated_at') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
-      }
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-  }, [filteredPublications, sortField, sortDirection]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -268,8 +200,10 @@ const PublicationsPage = () => {
     setDaRange([0, 100]);
     setDrRange([0, 100]);
     setTatFilter([]);
-    setDofollowFilter('');
+    setDofollowFilter('all');
+    setCurrentPage(1);
   };
+
 
   const toggleTatFilter = (tatOption) => {
     setTatFilter(prev =>
@@ -281,10 +215,10 @@ const PublicationsPage = () => {
 
   const hasActiveFilters = () => {
     return regionFilter || languageFilter || focusFilter ||
-            priceRange[0] > 0 || priceRange[1] < 20000 ||
-            daRange[0] > 0 || daRange[1] < 100 ||
-            drRange[0] > 0 || drRange[1] < 100 ||
-            tatFilter.length > 0 || (dofollowFilter !== '');
+      priceRange[0] > 0 || priceRange[1] < 20000 ||
+      daRange[0] > 0 || daRange[1] < 100 ||
+      drRange[0] > 0 || drRange[1] < 100 ||
+      tatFilter.length > 0 || (dofollowFilter !== '');
   };
 
   const formatTAT = (days) => {
@@ -393,11 +327,9 @@ const PublicationsPage = () => {
               Publications
             </h1>
             <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
-             Global, Regional, National and Local Newspapers and Magazines. Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently. Connect with trusted publishers and journalists. Explore diverse content opportunities worldwide.
+              Global, Regional, National and Local Newspapers and Magazines. Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently. Connect with trusted publishers and journalists. Explore diverse content opportunities worldwide.
             </p>
-            <p className="text-sm md:text-base text-red-600 max-w-2xl mx-auto leading-relaxed font-semibold mb-6">
-              The current page is for representation purpose only, the comprehensive list will be live soon
-            </p>
+
 
             {/* Search Bar */}
             <div className="max-w-xl mx-auto">
@@ -459,7 +391,7 @@ const PublicationsPage = () => {
                   <Globe size={16} className="text-[#1976D2]" />
                   Basic Filters
                 </h4>
-                
+
                 {/* Filters in row-wise layout for mobile */}
                 <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
                   {/* Region Filter */}
@@ -610,26 +542,24 @@ const PublicationsPage = () => {
                   <label className="block text-sm font-medium mb-3" style={{ color: theme.textPrimary }}>
                     Link Type
                   </label>
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-white">
-                      <input
-                        type="checkbox"
-                        checked={dofollowFilter === 'true'}
-                        onChange={(e) => setDofollowFilter(e.target.checked ? 'true' : '')}
-                        className="rounded accent-[#1976D2]"
-                      />
-                      <span className="text-sm" style={{ color: theme.textPrimary }}>Do-follow Links</span>
-                    </label>
-                    <label className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-white">
-                      <input
-                        type="checkbox"
-                        checked={dofollowFilter === 'false'}
-                        onChange={(e) => setDofollowFilter(e.target.checked ? 'false' : '')}
-                        className="rounded accent-[#1976D2]"
-                      />
-                      <span className="text-sm" style={{ color: theme.textPrimary }}>No-follow Links</span>
-                    </label>
-                  </div>
+                  <label className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-white">
+                    <input
+                      type="checkbox"
+                      checked={dofollowFilter === 'dofollow'}
+                      onChange={(e) => setDofollowFilter(e.target.checked ? 'dofollow' : 'all')}
+                      className="rounded accent-[#1976D2]"
+                    />
+                    <span className="text-sm" style={{ color: theme.textPrimary }}>Do-follow Links</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-white">
+                    <input
+                      type="checkbox"
+                      checked={dofollowFilter === 'nofollow'}
+                      onChange={(e) => setDofollowFilter(e.target.checked ? 'nofollow' : 'all')}
+                      className="rounded accent-[#1976D2]"
+                    />
+                    <span className="text-sm" style={{ color: theme.textPrimary }}>No-follow Links</span>
+                  </label>
                 </div>
               </div>
 
@@ -669,7 +599,7 @@ const PublicationsPage = () => {
         {/* Main Content - Enhanced */}
         <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
           {/* Enhanced Controls Bar */}
-          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{ 
+          <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
             borderColor: theme.borderLight,
             boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
           }}>
@@ -691,28 +621,26 @@ const PublicationsPage = () => {
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid' 
-                        ? 'bg-white shadow-sm text-[#1976D2]' 
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list' 
-                        ? 'bg-white shadow-sm text-[#1976D2]' 
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <List size={16} />
                   </button>
                 </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {sortedPublications.length} publications found
+                  {totalRecords} publications found
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
                       for "{searchTerm}"
@@ -751,12 +679,12 @@ const PublicationsPage = () => {
           </div>
 
           {/* Publications Display */}
-          {sortedPublications.length > 0 ? (
+          {totalRecords > 0 ? (
             <>
               {/* Enhanced Grid View */}
               {viewMode === 'grid' && (
                 <div className="grid grid-cols-3 gap-6">
-                  {sortedPublications.map((publication, index) => (
+                  {publications.map((publication, index) => (
                     <motion.div
                       key={publication.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -905,7 +833,7 @@ const PublicationsPage = () => {
 
               {/* Enhanced List View - Table Format */}
               {viewMode === 'list' && (
-                <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{ 
+                <div className="bg-white rounded-lg shadow-lg border overflow-hidden" style={{
                   borderColor: theme.borderLight,
                   boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
                 }}>
@@ -913,7 +841,7 @@ const PublicationsPage = () => {
                     <table className="w-full">
                       <thead style={{ backgroundColor: theme.backgroundSoft }}>
                         <tr>
-                          <th 
+                          <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
                             onClick={() => handleSort('publication_name')}
@@ -940,7 +868,7 @@ const PublicationsPage = () => {
                               Language {getSortIcon('language')}
                             </div>
                           </th>
-                          <th 
+                          <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
                             onClick={() => handleSort('da')}
@@ -949,7 +877,7 @@ const PublicationsPage = () => {
                               DA {getSortIcon('da')}
                             </div>
                           </th>
-                          <th 
+                          <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
                             style={{ color: theme.textPrimary }}
                             onClick={() => handleSort('dr')}
@@ -985,8 +913,8 @@ const PublicationsPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {sortedPublications.map((publication, index) => (
-                          <tr 
+                        {publications.map((publication, index) => (
+                          <tr
                             key={publication.id}
                             className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
                             style={{ borderColor: theme.borderLight }}
@@ -1033,7 +961,7 @@ const PublicationsPage = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4">
-                              <div 
+                              <div
                                 className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
                                 style={{ backgroundColor: getDAScoreColor(publication.da) }}
                               >
@@ -1041,7 +969,7 @@ const PublicationsPage = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div 
+                              <div
                                 className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
                                 style={{ backgroundColor: getDRScoreColor(publication.dr) }}
                               >
@@ -1082,6 +1010,79 @@ const PublicationsPage = () => {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              )}
+              {/* Enhanced Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-xl border shadow-sm" style={{ borderColor: theme.borderLight }}>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: theme.textSecondary }}>
+                      Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords} results
+                    </span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(parseInt(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="text-sm border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1976D2] bg-white"
+                      style={{ borderColor: theme.borderLight, color: theme.textPrimary }}
+                    >
+                      <option value={12}>12 per page</option>
+                      <option value={24}>24 per page</option>
+                      <option value={48}>48 per page</option>
+                      <option value={96}>96 per page</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${currentPage === 1 ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-gray-50 active:scale-95'}`}
+                      style={{ borderColor: theme.borderLight, color: theme.textPrimary }}
+                    >
+                      Previous
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-10 h-10 rounded-lg text-sm font-bold transition-all ${currentPage === pageNum ? 'text-white' : 'hover:bg-gray-100'}`}
+                            style={{
+                              backgroundColor: currentPage === pageNum ? theme.primary : 'transparent',
+                              color: currentPage === pageNum ? '#fff' : theme.textPrimary
+                            }}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-gray-50 active:scale-95'}`}
+                      style={{ borderColor: theme.borderLight, color: theme.textPrimary }}
+                    >
+                      Next
+                    </button>
                   </div>
                 </div>
               )}
@@ -1140,4 +1141,3 @@ const PublicationsPage = () => {
 };
 
 export default PublicationsPage;
-   

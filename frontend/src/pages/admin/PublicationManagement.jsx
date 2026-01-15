@@ -676,6 +676,11 @@ const PublicationManagementPage = () => {
   const [search, setSearch] = useState('');
   const [regionFilter, setRegionFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
+  const [focusFilter, setFocusFilter] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 20000]);
+  const [daRange, setDaRange] = useState([0, 100]);
+  const [drRange, setDrRange] = useState([0, 100]);
+  const [dofollowFilter, setDofollowFilter] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('DESC');
 
@@ -743,7 +748,7 @@ const PublicationManagementPage = () => {
 
   useEffect(() => {
     fetchRecords();
-  }, [currentPage, pageSize, regionFilter, languageFilter, sortBy, sortOrder]);
+  }, [currentPage, pageSize, regionFilter, languageFilter, focusFilter, priceRange, daRange, drRange, dofollowFilter, sortBy, sortOrder]);
 
   // Debounced search
   useEffect(() => {
@@ -767,6 +772,19 @@ const PublicationManagementPage = () => {
       if (search) params.append('search', search);
       if (regionFilter) params.append('region', regionFilter);
       if (languageFilter) params.append('language', languageFilter);
+      if (focusFilter) params.append('publication_primary_focus', focusFilter);
+
+      // Range filters
+      if (priceRange[0] > 0) params.append('price_min', priceRange[0].toString());
+      if (priceRange[1] < 20000) params.append('price_max', priceRange[1].toString());
+      if (daRange[0] > 0) params.append('da_min', daRange[0].toString());
+      if (daRange[1] < 100) params.append('da_max', daRange[1].toString());
+      if (drRange[0] > 0) params.append('dr_min', drRange[0].toString());
+      if (drRange[1] < 100) params.append('dr_max', drRange[1].toString());
+
+      if (dofollowFilter !== 'all') {
+        params.append('do_follow', dofollowFilter === 'dofollow' ? 'true' : 'false');
+      }
 
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
@@ -1158,6 +1176,81 @@ const PublicationManagementPage = () => {
                   </select>
                 </div>
 
+                {/* Focus Filter */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: theme.textSecondary, marginBottom: '8px', textTransform: 'uppercase' }}>Focus</label>
+                  <select
+                    value={focusFilter}
+                    onChange={(e) => setFocusFilter(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', backgroundColor: '#fff', outline: 'none' }}
+                  >
+                    <option value="">All Focus</option>
+                    {[...new Set(records.map(r => r.publication_primary_focus).filter(Boolean))].map(f => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: theme.textSecondary, marginBottom: '8px', textTransform: 'uppercase' }}>Price Range: ${priceRange[0]} - ${priceRange[1]}</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="range"
+                      min="0"
+                      max="2000"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                      style={{ width: '100%' }}
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="2000"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+
+                {/* DA Range */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: theme.textSecondary, marginBottom: '8px', textTransform: 'uppercase' }}>DA: {daRange[0]} - {daRange[1]}</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={daRange[0]}
+                      onChange={(e) => setDaRange([parseInt(e.target.value), daRange[1]])}
+                      style={{ width: '100%' }}
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={daRange[1]}
+                      onChange={(e) => setDaRange([daRange[0], parseInt(e.target.value)])}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Link Type Filter */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: theme.textSecondary, marginBottom: '8px', textTransform: 'uppercase' }}>Link Type</label>
+                  <select
+                    value={dofollowFilter}
+                    onChange={(e) => setDofollowFilter(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', backgroundColor: '#fff', outline: 'none' }}
+                  >
+                    <option value="all">All Types</option>
+                    <option value="dofollow">Do-follow</option>
+                    <option value="nofollow">No-follow</option>
+                  </select>
+                </div>
+
                 {/* Clear Filters */}
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                   <button
@@ -1165,6 +1258,11 @@ const PublicationManagementPage = () => {
                       setSearch('');
                       setRegionFilter('');
                       setLanguageFilter('');
+                      setFocusFilter('');
+                      setPriceRange([0, 20000]);
+                      setDaRange([0, 100]);
+                      setDrRange([0, 100]);
+                      setDofollowFilter('all');
                       setSortBy('created_at');
                       setSortOrder('DESC');
                     }}

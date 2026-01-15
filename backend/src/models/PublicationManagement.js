@@ -101,11 +101,36 @@ class PublicationManagement {
     // Construct WHERE clause
     Object.keys(where).forEach((key) => {
       const condition = where[key];
-      if (condition && typeof condition === 'object') {
-        if (key === 'search' && condition.val) {
+      if (condition && typeof condition === 'object' && key === 'search') {
+        if (condition.val) {
           whereClauses.push(`(publication_name ILIKE $${values.length + 1} OR region ILIKE $${values.length + 2} OR language ILIKE $${values.length + 3} OR publication_primary_focus ILIKE $${values.length + 4})`);
           values.push(`%${condition.val}%`, `%${condition.val}%`, `%${condition.val}%`, `%${condition.val}%`);
         }
+      } else if (key === 'price_min') {
+        whereClauses.push(`price_usd >= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'price_max') {
+        whereClauses.push(`price_usd <= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'da_min') {
+        whereClauses.push(`da >= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'da_max') {
+        whereClauses.push(`da <= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'dr_min') {
+        whereClauses.push(`dr >= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'dr_max') {
+        whereClauses.push(`dr <= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'tat_min') {
+        // Since tat is VARCHAR, we cast it to INTEGER for comparison
+        whereClauses.push(`NULLIF(committed_tat, '')::INTEGER >= $${values.length + 1}`);
+        values.push(condition);
+      } else if (key === 'tat_max') {
+        whereClauses.push(`NULLIF(committed_tat, '')::INTEGER <= $${values.length + 1}`);
+        values.push(condition);
       } else if (condition !== undefined && condition !== null) {
         whereClauses.push(`${key} = $${values.length + 1}`);
         values.push(condition);
@@ -121,22 +146,31 @@ class PublicationManagement {
     // Handle ORDER BY
     if (order && order.length > 0) {
       const [col, dir] = order[0];
-      sql += ` ORDER BY ${col} ${dir}`;
+      // Basic validation for column name to prevent SQL injection
+      const allowedCols = ['id', 'publication_name', 'region', 'language', 'publication_primary_focus', 'da', 'dr', 'price_usd', 'committed_tat', 'created_at', 'updated_at'];
+      const safeCol = allowedCols.includes(col) ? col : 'created_at';
+
+      const safeDir = dir.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+      sql += ` ORDER BY ${safeCol} ${safeDir}`;
+    } else {
+      sql += ` ORDER BY created_at DESC`;
     }
 
     // Handle Limit and Offset
     if (limit !== null) {
       sql += ` LIMIT $${values.length + 1}`;
-      values.push(limit);
+      values.push(parseInt(limit));
     }
     if (offset !== null) {
       sql += ` OFFSET $${values.length + 1}`;
-      values.push(offset);
+      values.push(parseInt(offset));
     }
+
+    const countValues = limit !== null ? (offset !== null ? values.slice(0, values.length - 2) : values.slice(0, values.length - 1)) : values;
 
     const [result, countResult] = await Promise.all([
       query(sql, values),
-      query(countSql, values.slice(0, values.length - (limit !== null ? (offset !== null ? 2 : 1) : 0)))
+      query(countSql, countValues)
     ]);
 
     return {
