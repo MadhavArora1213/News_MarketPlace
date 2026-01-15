@@ -103,45 +103,39 @@ class PaparazziController {
         user_id,
         platform,
         category,
-        location
+        location,
+        search,
+        sortBy = 'created_at',
+        sortOrder = 'DESC'
       } = req.query;
 
-      let paparazzi;
-      if (status) {
-        paparazzi = await Paparazzi.findByStatus(status);
-      } else if (user_id) {
-        paparazzi = await Paparazzi.findByUserId(user_id);
-      } else {
-        paparazzi = await Paparazzi.findAll();
-      }
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+      const offset = (pageNum - 1) * limitNum;
 
-      // For user routes, only show approved paparazzi unless it's their own
-      if (!req.admin) {
-        paparazzi = paparazzi.filter(p => p.status === 'approved' || p.user_id === req.user.userId);
-      }
+      const where = {};
+      if (status) where.status = status;
+      if (user_id) where.user_id = user_id;
+      if (platform) where.platform = platform;
+      if (category) where.category = category;
+      if (location) where.location = location;
+      if (search) where.search = { val: search };
 
-      // Apply additional filters
-      let filtered = paparazzi;
-      if (platform) {
-        filtered = filtered.filter(p => p.platform === platform);
-      }
-      if (category) {
-        filtered = filtered.filter(p => p.category && p.category.toLowerCase().includes(category.toLowerCase()));
-      }
-      if (location) {
-        filtered = filtered.filter(p => p.location && p.location.toLowerCase().includes(location.toLowerCase()));
-      }
-
-      // Pagination
-      const offset = (page - 1) * limit;
-      const paginated = filtered.slice(offset, offset + parseInt(limit));
+      const { count, rows } = await Paparazzi.findAndCountAll({
+        where,
+        limit: limitNum,
+        offset,
+        sortBy,
+        sortOrder
+      });
 
       res.json({
-        paparazzi: paginated.map(p => p.toJSON()),
+        paparazzi: rows.map(p => p.toJSON()),
         pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: filtered.length
+          page: pageNum,
+          limit: limitNum,
+          total: count,
+          pages: Math.ceil(count / limitNum)
         }
       });
     } catch (error) {

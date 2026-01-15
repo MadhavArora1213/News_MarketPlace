@@ -745,6 +745,7 @@ const PaparazziManagement = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [showBulkRejectionModal, setShowBulkRejectionModal] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
 
 
   // Layout constants (same as AdminDashboard)
@@ -835,28 +836,30 @@ const PaparazziManagement = () => {
   }, [sidebarOpen, isMobile]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchPaparazzi();
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // If unauthorized, the API interceptor will handle redirect
-      }
-    };
-
-    fetchData();
-  }, []);
+    fetchPaparazzi();
+  }, [debouncedSearchTerm, statusFilter, platformFilter, categoryFilter, locationFilter, currentPage, pageSize, sortField, sortDirection]);
 
   const fetchPaparazzi = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/paparazzi/admin');
+      const params = new URLSearchParams();
+      params.append('page', currentPage);
+      params.append('limit', pageSize);
+      if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
+      if (statusFilter) params.append('status', statusFilter);
+      if (platformFilter) params.append('platform', platformFilter);
+      if (categoryFilter) params.append('category', categoryFilter);
+      if (locationFilter) params.append('location', locationFilter);
+      params.append('sortBy', sortField);
+      params.append('sortOrder', sortDirection.toUpperCase());
+
+      const response = await api.get(`/paparazzi/admin?${params.toString()}`);
       setPaparazzi(response.data.paparazzi || []);
+      setTotalRecords(response.data.pagination?.total || 0);
       setSelectedIds([]); // Clear selection on new fetch
     } catch (error) {
       console.error('Error fetching paparazzi:', error);
       if (error.response?.status === 401) {
-        // Token expired or invalid, redirect to login
         localStorage.removeItem('adminAccessToken');
         window.location.href = '/admin/login';
         return;
@@ -867,75 +870,7 @@ const PaparazziManagement = () => {
     }
   };
 
-  // Filtered paparazzi based on search and filters
-  const filteredPaparazzi = useMemo(() => {
-    let filtered = paparazzi;
-
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(p =>
-        p.page_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        p.username.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        p.category?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        p.location?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      );
-    }
-
-    if (statusFilter) {
-      filtered = filtered.filter(p => p.status === statusFilter);
-    }
-
-    if (platformFilter) {
-      filtered = filtered.filter(p => p.platform === platformFilter);
-    }
-
-    if (categoryFilter) {
-      filtered = filtered.filter(p => p.category && p.category.toLowerCase().includes(categoryFilter.toLowerCase()));
-    }
-
-    if (locationFilter) {
-      filtered = filtered.filter(p => p.location && p.location.toLowerCase().includes(locationFilter.toLowerCase()));
-    }
-
-    return filtered;
-  }, [paparazzi, debouncedSearchTerm, statusFilter, platformFilter, categoryFilter, locationFilter]);
-
-  // Update filtered paparazzi when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm, statusFilter, platformFilter, categoryFilter, locationFilter]);
-
-  // Sorting logic
-  const sortedPaparazzi = useMemo(() => {
-    return [...filteredPaparazzi].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === 'followers_count' || sortField === 'price_reel_no_tag_no_collab') {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
-      } else if (sortField === 'created_at' || sortField === 'updated_at') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
-      }
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-  }, [filteredPaparazzi, sortField, sortDirection]);
-
-  // Pagination logic
-  const paginatedPaparazzi = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedPaparazzi.slice(startIndex, startIndex + pageSize);
-  }, [sortedPaparazzi, currentPage, pageSize]);
-
-  const totalPages = Math.ceil(sortedPaparazzi.length / pageSize);
+  const totalPages = Math.ceil(totalRecords / pageSize);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
@@ -952,7 +887,7 @@ const PaparazziManagement = () => {
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedIds(paginatedPaparazzi.map(p => p.id));
+      setSelectedIds(paparazzi.map(p => p.id));
     } else {
       setSelectedIds([]);
     }
@@ -1404,6 +1339,19 @@ const PaparazziManagement = () => {
 
             </div>
 
+            {/* Stats Section */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #e0e0e0', boxShadow: '0 8px 20px rgba(2,6,23,0.06)', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div style={{ width: 56, height: 56, borderRadius: 12, background: '#e6f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="camera" size="lg" style={{ color: '#1976D2' }} />
+                </div>
+                <div>
+                  <div style={{ color: theme.textSecondary, fontSize: '14px', fontWeight: '600', marginBottom: 4 }}>Total Paparazzi</div>
+                  <div style={{ fontSize: '32px', fontWeight: '800', color: theme.textPrimary, lineHeight: 1 }}>{totalRecords}</div>
+                </div>
+              </div>
+            </div>
+
             {/* Search and Filters */}
             <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '16px', boxShadow: '0 8px 20px rgba(2,6,23,0.06)' }}>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1549,18 +1497,7 @@ const PaparazziManagement = () => {
               {/* Search Results Summary */}
               <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                  {debouncedSearchTerm ? (
-                    <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Search:</span> Found <strong>{sortedPaparazzi.length}</strong> paparazzi
-                    </>
-                  ) : (
-                    <>
-                      Showing <strong>{paginatedPaparazzi.length}</strong> of <strong>{sortedPaparazzi.length}</strong> paparazzi
-                      {sortedPaparazzi.length !== paparazzi.length && (
-                        <span> (filtered from {paparazzi.length} total)</span>
-                      )}
-                    </>
-                  )}
+                  Showing <strong>{paparazzi.length}</strong> of <strong>{totalRecords}</strong> paparazzi entries
                 </div>
               </div>
             </div>
@@ -1657,14 +1594,14 @@ const PaparazziManagement = () => {
                 </div>
               </div>
 
-              <div style={{ overflowX: 'auto', maxHeight: paginatedPaparazzi.length > 50 ? '600px' : 'auto', overflowY: paginatedPaparazzi.length > 50 ? 'auto' : 'visible' }}>
+              <div style={{ overflowX: 'auto', maxHeight: paparazzi.length > 50 ? '600px' : 'auto', overflowY: paparazzi.length > 50 ? 'auto' : 'visible' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                       <th style={{ padding: '16px', textAlign: 'left', width: '40px' }}>
                         <input
                           type="checkbox"
-                          checked={paginatedPaparazzi.length > 0 && selectedIds.length === paginatedPaparazzi.length}
+                          checked={paparazzi.length > 0 && selectedIds.length === paparazzi.length}
                           onChange={handleSelectAll}
                           style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                         />
@@ -1705,7 +1642,7 @@ const PaparazziManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedPaparazzi.length === 0 ? (
+                    {paparazzi.length === 0 ? (
                       <tr>
                         <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: theme.textSecondary }}>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
@@ -1715,7 +1652,7 @@ const PaparazziManagement = () => {
                         </td>
                       </tr>
                     ) : (
-                      paginatedPaparazzi.map((paparazziItem, index) => (
+                      paparazzi.map((paparazziItem, index) => (
                         <tr key={paparazziItem.id} style={{ backgroundColor: selectedIds.includes(paparazziItem.id) ? `${theme.primary}10` : (index % 2 === 0 ? '#ffffff' : '#fafbfc'), borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '16px', textAlign: 'left' }}>
                             <input

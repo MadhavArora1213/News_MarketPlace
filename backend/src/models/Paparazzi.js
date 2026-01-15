@@ -148,6 +148,89 @@ class Paparazzi {
     await query(sql, [this.id]);
   }
 
+  // Find and count for pagination
+  static async findAndCountAll({ where = {}, limit, offset, sortBy = 'created_at', sortOrder = 'DESC' }) {
+    let whereSql = '';
+    const values = [];
+    let paramCount = 1;
+
+    const conditions = [];
+
+    if (where.status) {
+      conditions.push(`status = $${paramCount}`);
+      values.push(where.status);
+      paramCount++;
+    }
+
+    if (where.platform) {
+      conditions.push(`platform = $${paramCount}`);
+      values.push(where.platform);
+      paramCount++;
+    }
+
+    if (where.user_id) {
+      conditions.push(`user_id = $${paramCount}`);
+      values.push(where.user_id);
+      paramCount++;
+    }
+
+    if (where.search) {
+      const searchVal = `%${where.search.val}%`;
+      conditions.push(`(page_name ILIKE $${paramCount} OR username ILIKE $${paramCount} OR category ILIKE $${paramCount} OR location ILIKE $${paramCount})`);
+      values.push(searchVal);
+      paramCount++;
+    } else {
+      if (where.category) {
+        conditions.push(`category ILIKE $${paramCount}`);
+        values.push(`%${where.category}%`);
+        paramCount++;
+      }
+      if (where.location) {
+        conditions.push(`location ILIKE $${paramCount}`);
+        values.push(`%${where.location}%`);
+        paramCount++;
+      }
+    }
+
+    if (conditions.length > 0) {
+      whereSql = 'WHERE ' + conditions.join(' AND ');
+    }
+
+    // Sort mapping to prevent SQL injection
+    const allowedSortFields = [
+      'id', 'platform', 'username', 'page_name', 'followers_count',
+      'category', 'location', 'status', 'created_at', 'updated_at',
+      'price_reel_no_tag_no_collab', 'price_reel_with_tag_no_collab', 'price_reel_with_tag'
+    ];
+    if (!allowedSortFields.includes(sortBy)) {
+      sortBy = 'created_at';
+    }
+    sortOrder = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+    const countSql = `SELECT COUNT(*) FROM paparazzi ${whereSql}`;
+    const countResult = await query(countSql, values);
+    const total = parseInt(countResult.rows[0].count);
+
+    let paginationSql = '';
+    if (limit !== undefined && offset !== undefined) {
+      paginationSql = `LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
+    }
+
+    const dataSql = `
+      SELECT * FROM paparazzi 
+      ${whereSql} 
+      ORDER BY ${sortBy} ${sortOrder} 
+      ${paginationSql}
+    `;
+
+    const dataResult = await query(dataSql, values);
+
+    return {
+      count: total,
+      rows: dataResult.rows.map(row => new Paparazzi(row))
+    };
+  }
+
   // Convert to JSON (exclude sensitive data if any)
   toJSON() {
     return {
