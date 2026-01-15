@@ -50,12 +50,12 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
               <span>{award.award_organiser_name || 'Organiser TBA'}</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+          <div className="w-20 h-12 flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-50 rounded-lg p-1 shadow-sm">
             {award.image ? (
               <img
                 src={award.image}
                 alt={award.award_name}
-                className="w-full h-full object-cover"
+                className="max-w-full max-h-full object-contain"
                 onError={(e) => {
                   e.target.src = "/logo.png";
                 }}
@@ -64,7 +64,7 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
               <img
                 src="/logo.png"
                 alt="Logo"
-                className="w-full h-full object-contain"
+                className="w-8 h-8 object-contain opacity-50"
               />
             )}
           </div>
