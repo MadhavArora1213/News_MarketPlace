@@ -500,17 +500,7 @@ export default function Sidebar({
               </a>
             </li>
 
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/radio-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Radio Order Management</span>
-              </a>
-            </li>
+
 
 
             <li style={{ marginBottom: 10 }}>
@@ -791,7 +781,7 @@ export default function Sidebar({
             <li style={{ marginBottom: 12 }}><a href="/admin/orders" style={{ color: '#212121', textDecoration: 'none' }}>Order Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi-orders" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Order Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/theme-orders" style={{ color: '#212121', textDecoration: 'none' }}>Theme Order Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/radio-orders" style={{ color: '#212121', textDecoration: 'none' }}>Radio Order Management</a></li>
+
             <li style={{ marginBottom: 12 }}>
               <div onClick={() => setRadioDropdownOpen(!radioDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Radio</div>
               {radioDropdownOpen && (
