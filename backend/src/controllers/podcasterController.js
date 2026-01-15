@@ -46,6 +46,16 @@ class PodcasterController {
     this.exportCSV = this.exportCSV.bind(this);
     this.bulkUpload = this.bulkUpload.bind(this);
     this.downloadTemplate = this.downloadTemplate.bind(this);
+    this.getById = this.getById.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.approvePodcaster = this.approvePodcaster.bind(this);
+    this.rejectPodcaster = this.rejectPodcaster.bind(this);
+    this.bulkApprove = this.bulkApprove.bind(this);
+    this.bulkReject = this.bulkReject.bind(this);
+    this.getMyPodcasters = this.getMyPodcasters.bind(this);
+    this.getApprovedById = this.getApprovedById.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
   }
   // Validation rules for user submissions
   createValidation = [
@@ -830,18 +840,21 @@ class PodcasterController {
           const updatedPodcaster = await podcaster.update(updateData);
           approvedPodcasters.push(updatedPodcaster.toJSON());
 
-          // Send notifications
-          try {
-            await UserNotification.create({
-              user_id: podcaster.submitted_by,
-              type: 'podcaster_approved',
-              title: 'Podcaster Profile Approved!',
-              message: `Your podcaster profile for "${podcaster.podcast_name}" has been approved.`,
-              related_id: podcaster.id
-            });
-          } catch (notificationError) {
-            console.error('Failed to create approval notification:', notificationError);
+          // Send notifications if it was submitted by a user
+          if (podcaster.submitted_by) {
+            try {
+              await UserNotification.create({
+                user_id: podcaster.submitted_by,
+                type: 'podcaster_approved',
+                title: 'Podcaster Profile Approved!',
+                message: `Your podcaster profile for "${podcaster.podcast_name}" has been approved.`,
+                related_id: podcaster.id
+              });
+            } catch (notificationError) {
+              console.error('Failed to create approval notification:', notificationError);
+            }
           }
+
         } catch (error) {
           errors.push({ index: i, error: error.message });
         }
@@ -849,8 +862,7 @@ class PodcasterController {
 
       res.json({
         message: `Approved ${approvedPodcasters.length} podcaster profiles successfully`,
-        approved: approvedPodcasters.length,
-        errors: errors.length,
+        count: approvedPodcasters.length,
         approvedPodcasters: approvedPodcasters,
         errors: errors
       });
@@ -912,18 +924,21 @@ class PodcasterController {
           const updatedPodcaster = await podcaster.update(updateData);
           rejectedPodcasters.push(updatedPodcaster.toJSON());
 
-          // Send notifications
-          try {
-            await UserNotification.create({
-              user_id: podcaster.submitted_by,
-              type: 'podcaster_rejected',
-              title: 'Podcaster Profile Review Update',
-              message: `Your podcaster profile for "${podcaster.podcast_name}" has been reviewed.`,
-              related_id: podcaster.id
-            });
-          } catch (notificationError) {
-            console.error('Failed to create rejection notification:', notificationError);
+          // Send notifications if it was submitted by a user
+          if (podcaster.submitted_by) {
+            try {
+              await UserNotification.create({
+                user_id: podcaster.submitted_by,
+                type: 'podcaster_rejected',
+                title: 'Podcaster Profile Review Update',
+                message: `Your podcaster profile for "${podcaster.podcast_name}" has been reviewed.`,
+                related_id: podcaster.id
+              });
+            } catch (notificationError) {
+              console.error('Failed to create rejection notification:', notificationError);
+            }
           }
+
         } catch (error) {
           errors.push({ index: i, error: error.message });
         }
@@ -931,8 +946,7 @@ class PodcasterController {
 
       res.json({
         message: `Rejected ${rejectedPodcasters.length} podcaster profiles successfully`,
-        rejected: rejectedPodcasters.length,
-        errors: errors.length,
+        count: rejectedPodcasters.length,
         rejectedPodcasters: rejectedPodcasters,
         errors: errors
       });
