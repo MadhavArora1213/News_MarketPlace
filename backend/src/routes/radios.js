@@ -24,6 +24,11 @@ router.delete('/admin/:id', verifyAdminToken, requireAdminPanelAccess, radioCont
 // Image upload route
 router.post('/admin/upload-image', verifyAdminToken, requireAdminPanelAccess, upload.single('image'), radioController.uploadImage);
 
+// Bulk upload and CSV operations
+router.post('/admin/bulk-upload', verifyAdminToken, requireAdminPanelAccess, upload.single('file'), radioController.bulkUpload);
+router.get('/admin/template', verifyAdminToken, requireAdminPanelAccess, radioController.downloadTemplate);
+router.get('/admin/export-csv', verifyAdminToken, requireAdminPanelAccess, radioController.exportCSV);
+
 // Get group for a specific radio
 router.get('/:id/group', verifyToken, radioController.getGroup);
 

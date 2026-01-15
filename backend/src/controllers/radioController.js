@@ -1,6 +1,9 @@
 const Radio = require('../models/Radio');
 const { s3Service: S3Service } = require('../services/s3Service');
 const { body, validationResult } = require('express-validator');
+const csv = require('csv-parser');
+const { Parser } = require('json2csv');
+const { Readable } = require('stream');
 
 class RadioController {
   // Validation rules
@@ -241,7 +244,7 @@ class RadioController {
 
       // Upload to S3
       const imageUrl = await S3Service.uploadRadioImage(req.file.buffer, req.file.originalname, 'radios');
-      
+
       res.json({
         message: 'Image uploaded successfully',
         imageUrl: imageUrl
@@ -269,6 +272,174 @@ class RadioController {
       });
     } catch (error) {
       console.error('Get radio group error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload radios
+  async bulkUpload(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No CSV file provided' });
+      }
+
+      const results = [];
+      const errors = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          let successCount = 0;
+
+          for (const [index, row] of results.entries()) {
+            try {
+              // Basic validation
+              if (!row.radio_name || !row.frequency || !row.radio_language || !row.emirate_state) {
+                errors.push(`Row ${index + 1}: Missing required fields`);
+                continue;
+              }
+
+              // Create radio object
+              const radioData = {
+                sn: row.sn || null, // Allow auto-generation if empty
+                group_id: row.group_id ? parseInt(row.group_id) : null,
+                radio_name: row.radio_name,
+                frequency: row.frequency,
+                radio_language: row.radio_language,
+                radio_website: row.radio_website || '',
+                radio_linkedin: row.radio_linkedin || '',
+                radio_instagram: row.radio_instagram || '',
+                emirate_state: row.emirate_state,
+                radio_popular_rj: row.radio_popular_rj || '',
+                remarks: row.remarks || '',
+                description: row.description || '',
+                image_url: row.image_url || '' // Optional image URL from CSV
+              };
+
+              await Radio.create(radioData);
+              successCount++;
+            } catch (error) {
+              errors.push(`Row ${index + 1}: ${error.message}`);
+            }
+          }
+
+          res.json({
+            message: 'Bulk upload processing completed',
+            summary: {
+              total: results.length,
+              successful: successCount,
+              failed: errors.length,
+              errors: errors
+            }
+          });
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error during bulk upload' });
+    }
+  }
+
+  // Download CSV template
+  async downloadTemplate(req, res) {
+    try {
+      const fields = [
+        'sn',
+        'group_id',
+        'radio_name',
+        'frequency',
+        'radio_language',
+        'radio_website',
+        'radio_linkedin',
+        'radio_instagram',
+        'emirate_state',
+        'radio_popular_rj',
+        'remarks',
+        'description',
+        'image_url'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse([]);
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=radios_template.csv');
+      return res.send(csv);
+    } catch (error) {
+      console.error('Template download error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Export CSV
+  async exportCSV(req, res) {
+    try {
+      const {
+        group_id,
+        radio_name,
+        date_from,
+        date_to
+      } = req.query;
+
+      const filters = {};
+      if (group_id) filters.group_id = parseInt(group_id);
+
+      // Add search filters
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (radio_name) {
+        searchSql += ` AND radio_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${radio_name}%`);
+        searchParamCount++;
+      }
+
+      if (date_from) {
+        searchSql += ` AND created_at >= $${searchParamCount}`;
+        searchValues.push(date_from);
+        searchParamCount++;
+      }
+
+      if (date_to) {
+        searchSql += ` AND created_at <= $${searchParamCount}`;
+        searchValues.push(date_to);
+        searchParamCount++;
+      }
+
+      // Fetch all matching records (no limit)
+      const radios = await Radio.findAll(filters, searchSql, searchValues);
+
+      const fields = [
+        'id',
+        'sn',
+        'group_id',
+        'radio_name',
+        'frequency',
+        'radio_language',
+        'radio_website',
+        'radio_linkedin',
+        'radio_instagram',
+        'emirate_state',
+        'radio_popular_rj',
+        'remarks',
+        'description',
+        'image_url',
+        'created_at'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(radios.map(r => r.toJSON()));
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=radios_export.csv');
+      return res.send(csv);
+
+    } catch (error) {
+      console.error('Export CSV error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

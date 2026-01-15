@@ -84,7 +84,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
       }
 
       setSelectedImage(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -117,7 +117,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
         image_url: radio.image_url || '',
         description: radio.description || ''
       });
-      
+
       // Set image preview for existing radio
       if (radio.image_url) {
         setImagePreview(radio.image_url);
@@ -150,7 +150,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
     try {
       // Create FormData for multipart upload
       const submitData = new FormData();
-      
+
       // Add text fields
       submitData.append('sn', formData.sn);
       submitData.append('radio_name', formData.radio_name);
@@ -163,7 +163,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
       submitData.append('radio_popular_rj', formData.radio_popular_rj);
       submitData.append('remarks', formData.remarks);
       submitData.append('description', formData.description);
-      
+
       if (formData.group_id && formData.group_id !== '') {
         submitData.append('group_id', parseInt(formData.group_id));
       }
@@ -400,20 +400,20 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
           {/* Image Upload Section */}
           <div style={{ marginTop: '16px', padding: '20px', border: '2px dashed #e0e0e0', borderRadius: '8px', backgroundColor: '#fafafa' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#212121' }}>Radio Image</h3>
-            
+
             {/* Image Preview */}
             {imagePreview && (
               <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  style={{ 
-                    maxWidth: '200px', 
-                    maxHeight: '200px', 
-                    borderRadius: '8px', 
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    borderRadius: '8px',
                     border: '1px solid #e0e0e0',
                     objectFit: 'cover'
-                  }} 
+                  }}
                 />
                 <div style={{ marginTop: '8px' }}>
                   <button
@@ -516,6 +516,206 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
   );
 };
 
+// Bulk Upload Modal Component
+const BulkUploadModal = ({ isOpen, onClose, onUpload, loading }) => {
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!file) return;
+    onUpload(file);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10000,
+      padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '500px',
+        width: '100%',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ marginTop: 0, marginBottom: '20px', fontSize: '24px', fontWeight: '800' }}>Bulk Upload Radios</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Select CSV File</label>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                border: 'none',
+                backgroundColor: '#f3f4f6',
+                color: '#374151'
+              }}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!file || loading}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                border: 'none',
+                backgroundColor: '#1976D2',
+                color: '#fff',
+                opacity: (!file || loading) ? 0.7 : 1
+              }}
+            >
+              {loading ? 'Uploading...' : 'Upload'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Export Options Modal Component
+const ExportOptionsModal = ({ isOpen, onClose, onExport }) => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10000,
+      padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '400px',
+        width: '100%',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ marginTop: 0, marginBottom: '20px', fontSize: '20px', fontWeight: '800' }}>Export Options</h2>
+
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>Date Range (Optional)</label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px' }}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onExport('all', startDate, endDate)}
+            style={{
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
+              color: '#374151',
+              textAlign: 'left'
+            }}
+          >
+            Download All Data
+          </button>
+          <button
+            onClick={() => onExport('filtered', startDate, endDate)}
+            style={{
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
+              color: '#374151',
+              textAlign: 'left'
+            }}
+          >
+            Download Filtered/Sorted Data
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: 'none',
+              backgroundColor: '#f3f4f6',
+              color: '#374151'
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Brand colors from Color palette .pdf - using only defined colors
 const theme = {
   primary: '#1976D2',        // Primary Blue
@@ -579,6 +779,84 @@ const RadioManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  // Bulk Upload Functions
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/radios/admin/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'radios_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Error downloading template. Please try again.');
+    }
+  };
+
+  const handleBulkUpload = async (file) => {
+    setBulkLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await api.post('/radios/admin/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      alert(`Bulk upload completed.\nTotal: ${response.data.summary.total}\nSuccessful: ${response.data.summary.successful}\nFailed: ${response.data.summary.failed}`);
+
+      if (response.data.summary.errors.length > 0) {
+        console.log('Upload errors:', response.data.summary.errors);
+        alert('Check console for detailed error messages.');
+      }
+
+      setShowBulkUploadModal(false);
+      fetchRadios();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Error uploading file. Please try again.');
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const handleExportCSV = async (type, startDate, endDate) => {
+    try {
+      const params = new URLSearchParams();
+
+      if (type === 'filtered') {
+        if (groupFilter) params.append('group_id', groupFilter);
+        if (debouncedSearchTerm) params.append('radio_name', debouncedSearchTerm);
+        // Date filters can be added here if we had date pickers in the UI
+        // For now, it respects the current search/filter view
+      }
+
+      if (startDate) params.append('date_from', startDate);
+      if (endDate) params.append('date_to', endDate);
+
+      const response = await api.get(`/radios/admin/export-csv?${params.toString()}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'radios_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setShowExportOptions(false);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Error exporting CSV. Please try again.');
+    }
+  };
 
   // Layout constants (same as AdminDashboard)
   const headerZ = 1000;
@@ -1007,7 +1285,29 @@ const RadioManagement = () => {
                 <p style={{ marginTop: 8, color: '#757575' }}>Manage radio stations and their details</p>
               </div>
 
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => setShowBulkUploadModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary, color: '#fff', fontSize: '14px', padding: '12px 20px' }}
+                  disabled={!hasAnyRole(['super_admin', 'content_manager'])}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  Bulk Upload
+                </button>
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.info, color: '#fff', fontSize: '14px', padding: '12px 20px' }}
+                >
+                  <Icon name="document-arrow-down" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  Download Template
+                </button>
+                <button
+                  onClick={() => setShowExportOptions(true)}
+                  style={{ ...btnPrimary, backgroundColor: theme.success, color: '#fff', fontSize: '14px', padding: '12px 20px' }}
+                >
+                  <Icon name="table-cells" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  Download CSV
+                </button>
                 <button
                   onClick={handleCreateRadio}
                   style={{ ...btnPrimary, fontSize: '14px', padding: '12px 20px' }}
@@ -1335,6 +1635,19 @@ const RadioManagement = () => {
         radio={editingRadio}
         groups={groups}
         onSave={handleFormSave}
+      />
+
+      <BulkUploadModal
+        isOpen={showBulkUploadModal}
+        onClose={() => setShowBulkUploadModal(false)}
+        onUpload={handleBulkUpload}
+        loading={bulkLoading}
+      />
+
+      <ExportOptionsModal
+        isOpen={showExportOptions}
+        onClose={() => setShowExportOptions(false)}
+        onExport={handleExportCSV}
       />
     </div>
   );
