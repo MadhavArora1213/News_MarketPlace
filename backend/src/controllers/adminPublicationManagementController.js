@@ -433,6 +433,77 @@ class AdminPublicationManagementController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
+  // Export CSV
+  async exportCSV(req, res) {
+    try {
+      const { Parser } = require('json2csv');
+      const {
+        region,
+        language,
+        publication_name,
+        search,
+        sortBy = 'created_at',
+        sortOrder = 'DESC'
+      } = req.query;
+
+      const whereClause = {};
+
+      if (search) {
+        whereClause.search = { val: search };
+      } else {
+        if (region) whereClause.region = region;
+        if (language) whereClause.language = language;
+        if (publication_name) whereClause.publication_name = publication_name;
+      }
+
+      // Fetch all matching records (no limit)
+      const { rows } = await PublicationManagement.findAndCountAll({
+        where: whereClause,
+        limit: null,
+        order: [[sortBy, sortOrder.toUpperCase()]]
+      });
+
+      const fields = [
+        'id',
+        'region',
+        'publication_name',
+        'publication_url',
+        'da',
+        'article_reference_link',
+        'committed_tat',
+        'language',
+        'publication_primary_focus',
+        'practical_tat',
+        'price_usd',
+        'do_follow',
+        'dr',
+        'word_limit',
+        'needs_images',
+        'image_count',
+        'image',
+        'rating_type',
+        'instagram',
+        'facebook',
+        'twitter',
+        'linkedin',
+        'remarks',
+        'created_at'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(rows.map(r => r.toJSON()));
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=publications_export.csv');
+      return res.send(csv);
+
+    } catch (error) {
+      console.error('Export CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = AdminPublicationManagementController;

@@ -20,6 +20,13 @@ router.get('/template',
   controller.downloadTemplate
 );
 
+// Export CSV (admin only)
+router.get('/export-csv',
+  verifyAdminToken,
+  requireAdminPanelAccess,
+  controller.exportCSV
+);
+
 // Bulk upload (admin only)
 router.post('/bulk-upload',
   verifyAdminToken,

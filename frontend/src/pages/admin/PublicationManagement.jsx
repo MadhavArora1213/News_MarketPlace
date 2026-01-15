@@ -4,6 +4,96 @@ import Icon from '../../components/common/Icon';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
+// Export Options Modal Component
+const ExportOptionsModal = ({ isOpen, onClose, onExport }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10000,
+      padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '400px',
+        width: '100%',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+      }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ marginTop: 0, marginBottom: '20px', fontSize: '20px', fontWeight: '800' }}>Export Options</h2>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => onExport('all')}
+            style={{
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
+              color: '#374151',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}
+          >
+            <Icon name="table-cells" size="sm" style={{ color: '#1976D2' }} />
+            Download All Data
+          </button>
+          <button
+            onClick={() => onExport('filtered')}
+            style={{
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: '1px solid #e0e0e0',
+              backgroundColor: '#fff',
+              color: '#374151',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}
+          >
+            <Icon name="adjustments-horizontal" size="sm" style={{ color: '#FF9800' }} />
+            Download Filtered/Sorted Data
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: 'none',
+              backgroundColor: '#f3f4f6',
+              color: '#374151'
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Publication Management Form Modal Component
 const PublicationManagementFormModal = ({ isOpen, onClose, record, onSave }) => {
   const [formData, setFormData] = useState({
@@ -580,6 +670,7 @@ const PublicationManagementPage = () => {
   const [message, setMessage] = useState(null);
   const fileInputRef = React.useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Search and Filter State
   const [search, setSearch] = useState('');
@@ -781,6 +872,36 @@ const PublicationManagementPage = () => {
     }
   };
 
+  const handleExportCSV = async (type) => {
+    try {
+      const params = new URLSearchParams();
+
+      if (type === 'filtered') {
+        if (search) params.append('search', search);
+        if (regionFilter) params.append('region', regionFilter);
+        if (languageFilter) params.append('language', languageFilter);
+        params.append('sortBy', sortBy);
+        params.append('sortOrder', sortOrder);
+      }
+
+      const response = await api.get(`/admin/publication-management/export-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'publications_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setShowExportModal(false);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Failed to export CSV.');
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -939,6 +1060,13 @@ const PublicationManagementPage = () => {
                 >
                   <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff' }} />
                   Template
+                </button>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondaryDark }}
+                >
+                  <Icon name="document-arrow-down" size="sm" style={{ color: '#fff' }} />
+                  Download CSV
                 </button>
                 <button
                   onClick={() => fileInputRef.current.click()}
@@ -1354,6 +1482,13 @@ const PublicationManagementPage = () => {
         onClose={() => setShowFormModal(false)}
         record={editingRecord}
         onSave={handleFormSave}
+      />
+
+      {/* Export Options Modal */}
+      <ExportOptionsModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleExportCSV}
       />
     </div>
   );
