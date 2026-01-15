@@ -284,7 +284,7 @@ class RadioController {
       const results = [];
       const errors = [];
       const csv = require('csv-parser');
-      const stream = Readable.from(req.file.buffer.toString());
+      const stream = Readable.from(req.file.buffer.toString('utf-8'));
 
       stream
         .pipe(csv())
