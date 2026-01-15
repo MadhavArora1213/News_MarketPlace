@@ -64,6 +64,10 @@ const PodcasterManagementView = () => {
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingPodcaster, setEditingPodcaster] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [message, setMessage] = useState(null);
 
   // Layout constants (same as AdminDashboard)
   const headerZ = 1000;
@@ -397,6 +401,86 @@ const PodcasterManagementView = () => {
 
   const stats = getPodcasterStats();
 
+  // Handler functions for bulk operations
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/podcasters/admin/template', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'podcasters_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Failed to download template.');
+    }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploading(true);
+    try {
+      const response = await api.post('/podcasters/admin/bulk-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage({
+        type: 'success',
+        text: response.data.message,
+        errors: response.data.errors
+      });
+      fetchPodcasters();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || 'Failed to upload file.',
+        errors: error.response?.data?.errors
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleExportCSV = async (type) => {
+    try {
+      const params = new URLSearchParams();
+
+      if (type === 'filtered') {
+        if (debouncedSearchTerm) params.append('podcast_name', debouncedSearchTerm);
+        if (statusFilter) params.append('status', statusFilter);
+      }
+
+      const response = await api.get(`/podcasters/admin/export-csv?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'podcasters_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setShowExportModal(false);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Failed to export CSV.');
+    }
+  };
+
+
   if (loading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundSoft, color: theme.text, paddingBottom: '3rem' }}>
@@ -606,21 +690,86 @@ const PodcasterManagementView = () => {
                 </div>
                 <p style={{ marginTop: 8, color: '#757575' }}>View and manage podcaster profile submissions</p>
               </div>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                style={{
-                  ...btnPrimary,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 20px',
-                  fontSize: '14px'
-                }}
-              >
-                <Icon name="plus" size="sm" style={{ color: '#fff' }} />
-                Create Podcaster
-              </button>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleBulkUpload}
+                  style={{ display: 'none' }}
+                  accept=".csv"
+                />
+
+                <button
+                  onClick={handleDownloadTemplate}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondary, fontSize: '14px', padding: '12px 20px' }}
+                >
+                  <Icon name="arrow-down-tray" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  Download Template
+                </button>
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  style={{ ...btnPrimary, backgroundColor: theme.secondaryDark, fontSize: '14px', padding: '12px 20px' }}
+                >
+                  <Icon name="document-arrow-down" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  Download CSV
+                </button>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ ...btnPrimary, backgroundColor: theme.info, fontSize: '14px', padding: '12px 20px' }}
+                  disabled={uploading}
+                >
+                  <Icon name="cloud-arrow-up" size="sm" style={{ color: '#fff', marginRight: 8 }} />
+                  {uploading ? 'Uploading...' : 'Bulk Upload'}
+                </button>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  style={{
+                    ...btnPrimary,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 20px',
+                    fontSize: '14px'
+                  }}
+                >
+                  <Icon name="plus" size="sm" style={{ color: '#fff' }} />
+                  Create Podcaster
+                </button>
+              </div>
             </div>
+
+            {/* Message Display */}
+            {message && (
+              <div style={{
+                backgroundColor: message.type === 'success' ? '#ecfdf5' : '#fef2f2',
+                border: `1px solid ${message.type === 'success' ? '#10b981' : '#ef4444'}`,
+                color: message.type === 'success' ? '#065f46' : '#991b1b',
+                padding: '16px',
+                borderRadius: '12px',
+                marginBottom: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600' }}>
+                    <Icon name={message.type === 'success' ? 'check-circle' : 'exclamation-circle'} size="sm" />
+                    {message.text}
+                  </div>
+                  <button
+                    onClick={() => setMessage(null)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'inherit' }}
+                  >
+                    ×
+                  </button>
+                </div>
+                {message.errors && (
+                  <ul style={{ margin: '8px 0 0 24px', padding: 0, fontSize: '13px' }}>
+                    {message.errors.map((err, i) => <li key={i}>{err}</li>)}
+                  </ul>
+                )}
+              </div>
+            )}
 
             {/* Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
@@ -1325,6 +1474,16 @@ const PodcasterManagementView = () => {
           }}
         />
       )}
+
+      {/* Export Options Modal */}
+      {showExportModal && (
+        <ExportOptionsModal
+          onClose={() => setShowExportModal(false)}
+          onExport={handleExportCSV}
+          theme={theme}
+        />
+      )}
+
     </div>
   );
 };
@@ -1988,5 +2147,167 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
     </div>
   );
 };
+
+// Export Options Modal Component
+const ExportOptionsModal = ({ onClose, onExport, theme }) => {
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 10000,
+      padding: '20px'
+    }} onClick={onClose}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '16px',
+        padding: '32px',
+        maxWidth: '450px',
+        width: '100%',
+        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+        position: 'relative'
+      }} onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            fontSize: '24px',
+            cursor: 'pointer',
+            color: '#94a3b8'
+          }}
+        >
+          ×
+        </button>
+
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            backgroundColor: '#f0f9ff',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px'
+          }}>
+            <Icon name="document-arrow-down" size="lg" style={{ color: '#0ea5e9' }} />
+          </div>
+          <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#1e293b' }}>Export Data</h2>
+          <p style={{ color: '#64748b', marginTop: '8px' }}>Choose how you would like to export the podcaster records.</p>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <button
+            onClick={() => onExport('filtered')}
+            style={{
+              padding: '16px',
+              backgroundColor: '#fff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '12px',
+              textAlign: 'left',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#0ea5e9';
+              e.currentTarget.style.backgroundColor = '#f0f9ff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.backgroundColor = '#fff';
+            }}
+          >
+            <div style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: '#e0f2fe',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Icon name="funnel" size="sm" style={{ color: '#0ea5e9' }} />
+            </div>
+            <div>
+              <div style={{ fontWeight: '700', color: '#1e293b' }}>Export Filtered Data</div>
+              <div style={{ fontSize: '13px', color: '#64748b' }}>Only current search and filter results</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onExport('all')}
+            style={{
+              padding: '16px',
+              backgroundColor: '#fff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '12px',
+              textAlign: 'left',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#0ea5e9';
+              e.currentTarget.style.backgroundColor = '#f0f9ff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.backgroundColor = '#fff';
+            }}
+          >
+            <div style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: '#e0f2fe',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Icon name="archive-box" size="sm" style={{ color: '#0ea5e9' }} />
+            </div>
+            <div>
+              <div style={{ fontWeight: '700', color: '#1e293b' }}>Export All Data</div>
+              <div style={{ fontSize: '13px', color: '#64748b' }}>Complete database export (no filters)</div>
+            </div>
+          </button>
+        </div>
+
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%',
+            marginTop: '24px',
+            padding: '12px',
+            backgroundColor: '#f1f5f9',
+            border: 'none',
+            borderRadius: '10px',
+            color: '#475569',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
 
 export default PodcasterManagementView;

@@ -517,6 +517,16 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
         </svg>
       );
 
+    case 'exclamation-circle':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <circle cx="12" cy="12" r="9" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      );
+
+
     case 'language':
       return (
         <svg {...common} className={className} style={style} {...rest}>
@@ -798,6 +808,22 @@ export default function Icon({ name = '', size = 'md', className = '', style = {
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       );
+
+    case 'funnel':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M3 4h18l-7 9v6l-4 2v-8L3 4z" />
+        </svg>
+      );
+
+    case 'archive-box':
+      return (
+        <svg {...common} className={className} style={style} {...rest}>
+          <path d="M21 8H3V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2z" />
+          <path d="M10 12h4m-7 8h10a2 2 0 0 0 2-2V8H5v10a2 2 0 0 0 2 2z" />
+        </svg>
+      );
+
     case 'chevron-up':
       return (
         <svg {...common} className={className} style={style} {...rest}>

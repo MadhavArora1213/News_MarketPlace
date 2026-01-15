@@ -41,6 +41,27 @@ const upload = multer({
   }
 });
 
+// CSV upload for bulk operations
+const csvUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/csv' || path.extname(file.originalname).toLowerCase() === '.csv') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Admin CSV operations (before other routes)
+router.get('/admin/template', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_podcasters'), podcasterController.downloadTemplate);
+router.get('/admin/export-csv', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_podcasters'), podcasterController.exportCSV);
+router.post('/admin/bulk-upload', verifyAdminToken, requireAdminPanelAccess, requireAdminPermission('manage_podcasters'), csvUpload.single('file'), podcasterController.bulkUpload);
+
+
 // Public routes (no authentication required)
 router.get('/approved', podcasterController.getApprovedPodcasters);
 router.get('/approved/:id', podcasterController.getApprovedById);

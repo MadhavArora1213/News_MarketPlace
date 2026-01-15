@@ -1184,6 +1184,235 @@ class PodcasterController {
       </html>
     `;
   }
+
+  // Download CSV template for bulk upload
+  async downloadTemplate(req, res) {
+    try {
+      const headers = [
+        'podcast_name',
+        'podcast_host',
+        'podcast_focus_industry',
+        'podcast_target_audience',
+        'podcast_region',
+        'podcast_website',
+        'podcast_ig',
+        'podcast_linkedin',
+        'podcast_facebook',
+        'podcast_ig_username',
+        'podcast_ig_followers',
+        'podcast_ig_engagement_rate',
+        'podcast_ig_prominent_guests',
+        'spotify_channel_name',
+        'spotify_channel_url',
+        'youtube_channel_name',
+        'youtube_channel_url',
+        'tiktok',
+        'cta',
+        'contact_us_to_be_on_podcast',
+        'gender',
+        'nationality',
+        'status'
+      ];
+
+      const dummyData = [
+        ['Tech Talk Show', 'John Doe', 'Technology', 'Tech Professionals', 'USA', 'https://techtalk.com', 'https://instagram.com/techtalk', 'https://linkedin.com/company/techtalk', 'https://facebook.com/techtalk', '@techtalk', '50000', '3.5', 'Elon Musk, Tim Cook', 'Tech Talk Podcast', 'https://spotify.com/show/techtalk', 'Tech Talk Channel', 'https://youtube.com/techtalk', 'https://tiktok.com/@techtalk', 'Subscribe Now', 'contact@techtalk.com', 'male', 'American', 'pending'],
+        ['Business Insights', 'Jane Smith', 'Business', 'Entrepreneurs', 'UK', 'https://bizinsights.com', '', '', '', '', '', '', '', 'Business Insights', 'https://spotify.com/show/bizinsights', '', '', '', 'Join Us', 'info@bizinsights.com', 'female', 'British', 'pending']
+      ];
+
+      let csv = headers.join(',') + '\n';
+      dummyData.forEach(row => {
+        csv += row.map(val => `"${val}"`).join(',') + '\n';
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=podcasters_template.csv');
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error('Download template error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Export CSV with filtering and sorting
+  async exportCSV(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { Parser } = require('json2csv');
+      const {
+        status,
+        podcast_name,
+        podcast_host,
+        podcast_focus_industry,
+        podcast_region,
+        sortBy = 'created_at',
+        sortOrder = 'DESC'
+      } = req.query;
+
+      const filters = {};
+      if (status) filters.status = status;
+
+      // Add search filters
+      let searchSql = '';
+      const searchValues = [];
+      let searchParamCount = Object.keys(filters).length + 1;
+
+      if (podcast_name) {
+        searchSql += ` AND p.podcast_name ILIKE $${searchParamCount}`;
+        searchValues.push(`%${podcast_name}%`);
+        searchParamCount++;
+      }
+
+      if (podcast_host) {
+        searchSql += ` AND p.podcast_host ILIKE $${searchParamCount}`;
+        searchValues.push(`%${podcast_host}%`);
+        searchParamCount++;
+      }
+
+      if (podcast_focus_industry) {
+        searchSql += ` AND p.podcast_focus_industry ILIKE $${searchParamCount}`;
+        searchValues.push(`%${podcast_focus_industry}%`);
+        searchParamCount++;
+      }
+
+      if (podcast_region) {
+        searchSql += ` AND p.podcast_region ILIKE $${searchParamCount}`;
+        searchValues.push(`%${podcast_region}%`);
+        searchParamCount++;
+      }
+
+      // Fetch all matching records (no limit)
+      const podcasters = await this.findAllWithFilters(filters, searchSql, searchValues, 100000, 0);
+
+      const fields = [
+        'id',
+        'podcast_name',
+        'podcast_host',
+        'podcast_focus_industry',
+        'podcast_target_audience',
+        'podcast_region',
+        'podcast_website',
+        'podcast_ig',
+        'podcast_linkedin',
+        'podcast_facebook',
+        'podcast_ig_username',
+        'podcast_ig_followers',
+        'podcast_ig_engagement_rate',
+        'podcast_ig_prominent_guests',
+        'spotify_channel_name',
+        'spotify_channel_url',
+        'youtube_channel_name',
+        'youtube_channel_url',
+        'tiktok',
+        'cta',
+        'contact_us_to_be_on_podcast',
+        'gender',
+        'nationality',
+        'status',
+        'is_active',
+        'created_at',
+        'updated_at'
+      ];
+
+      const opts = { fields };
+      const parser = new Parser(opts);
+      const csv = parser.parse(podcasters.map(p => p.toJSON()));
+
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=podcasters_export.csv');
+      return res.send(csv);
+
+    } catch (error) {
+      console.error('Export CSV error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Bulk upload podcasters from CSV
+  async bulkUpload(req, res) {
+    try {
+      if (!req.admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload a CSV file' });
+      }
+
+      const csvParser = require('csv-parser');
+      const { Readable } = require('stream');
+
+      const results = [];
+      const stream = Readable.from(req.file.buffer.toString());
+
+      stream
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            const createdRecords = [];
+            const errors = [];
+
+            for (const [index, row] of results.entries()) {
+              try {
+                // Basic mapping and cleaning
+                const podcasterData = {
+                  podcast_name: row.podcast_name || '',
+                  podcast_host: row.podcast_host || '',
+                  podcast_focus_industry: row.podcast_focus_industry || '',
+                  podcast_target_audience: row.podcast_target_audience || '',
+                  podcast_region: row.podcast_region || '',
+                  podcast_website: row.podcast_website || '',
+                  podcast_ig: row.podcast_ig || '',
+                  podcast_linkedin: row.podcast_linkedin || '',
+                  podcast_facebook: row.podcast_facebook || '',
+                  podcast_ig_username: row.podcast_ig_username || '',
+                  podcast_ig_followers: row.podcast_ig_followers ? parseInt(row.podcast_ig_followers) : null,
+                  podcast_ig_engagement_rate: row.podcast_ig_engagement_rate ? parseFloat(row.podcast_ig_engagement_rate) : null,
+                  podcast_ig_prominent_guests: row.podcast_ig_prominent_guests || '',
+                  spotify_channel_name: row.spotify_channel_name || '',
+                  spotify_channel_url: row.spotify_channel_url || '',
+                  youtube_channel_name: row.youtube_channel_name || '',
+                  youtube_channel_url: row.youtube_channel_url || '',
+                  tiktok: row.tiktok || '',
+                  cta: row.cta || '',
+                  contact_us_to_be_on_podcast: row.contact_us_to_be_on_podcast || '',
+                  gender: row.gender || '',
+                  nationality: row.nationality || '',
+                  status: row.status || 'pending',
+                  submitted_by_admin: req.admin?.adminId,
+                  is_active: true
+                };
+
+                if (!podcasterData.podcast_name) {
+                  errors.push(`Row ${index + 1}: Podcast name is required.`);
+                  continue;
+                }
+
+                const record = await Podcaster.create(podcasterData);
+                createdRecords.push(record);
+              } catch (err) {
+                errors.push(`Row ${index + 1}: ${err.message}`);
+              }
+            }
+
+            res.json({
+              message: `Bulk upload completed. ${createdRecords.length} records created.`,
+              count: createdRecords.length,
+              errors: errors.length > 0 ? errors : undefined
+            });
+          } catch (error) {
+            console.error('Processing batch error:', error);
+            res.status(500).json({ error: 'Error processing bulk upload' });
+          }
+        });
+    } catch (error) {
+      console.error('Bulk upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new PodcasterController();
