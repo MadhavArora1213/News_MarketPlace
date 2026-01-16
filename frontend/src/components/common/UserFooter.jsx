@@ -77,9 +77,9 @@ export default function UserFooter() {
     <footer className="bg-gray-50 border-t border-gray-200 py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
-          <div>
+          <div className="flex flex-col">
             <div className="flex items-center mb-4">
               <h3 className="heading-4 text-primary">VaaS Solutions: Vision to Visibility, Instantly</h3>
             </div>
@@ -97,7 +97,7 @@ export default function UserFooter() {
                 >
                   {icon.name === 'x' ? (
                     <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 462.799" className="w-5 h-5">
-                      <path fill="currentColor" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+                      <path fill="currentColor" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z" />
                     </svg>
                   ) : icon.name === 'play-circle' ? (
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -112,7 +112,7 @@ export default function UserFooter() {
           </div>
 
           {/* Legal & Policies */}
-          <div>
+          <div className="flex flex-col">
             <h4 className="heading-4 text-gray-900 mb-3">{legalPoliciesTitle}</h4>
             <ul className="space-y-1.5">
               <li><button onClick={() => setShowPrivacyPolicyPopup(true)} className="body-small text-gray-600 hover:text-primary transition-colors text-left">{privacyPolicy}</button></li>
@@ -126,7 +126,7 @@ export default function UserFooter() {
           </div>
 
           {/* Company */}
-          <div>
+          <div className="flex flex-col">
             <h4 className="heading-4 text-gray-900 mb-3">{companyTitle}</h4>
             <ul className="space-y-1.5">
               <li><Link to="/about-us" className="body-small text-gray-600 hover:text-primary transition-colors">{aboutUs}</Link></li>
@@ -141,7 +141,7 @@ export default function UserFooter() {
           </div>
 
           {/* Services & Partnerships */}
-          <div>
+          <div className="flex flex-col">
             <h4 className="heading-4 text-gray-900 mb-3">{servicesPartnershipsTitle}</h4>
             <ul className="space-y-1.5">
               <li><Link to="/agency-registration" className="body-small text-gray-600 hover:text-primary transition-colors">{agencyRegistration}</Link></li>
