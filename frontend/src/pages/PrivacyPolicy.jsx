@@ -1,254 +1,217 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 
 const PrivacyPolicy = () => {
-    const [activeTab, setActiveTab] = useState('highlights');
+    const [activeSection, setActiveSection] = useState(0);
+    const observerRefs = useRef([]);
 
-    const highlights = [
+    const sections = [
         {
-            id: 'collection',
-            title: 'What We Collect',
-            icon: 'document-text', // mapped from collection
-            color: 'bg-blue-50 text-blue-700 border-blue-200',
-            iconColor: 'text-blue-600',
-            summary: 'Basic account details, usage data, and communication preferences to provide our services.',
-            details: [
-                'Personal identifiers (Name, Email, Phone)',
-                'Device and usage information',
-                'Cookies and tracking technologies',
-                'User-generated content'
-            ]
+            id: 'collect',
+            title: "What We Collect",
+            question: "What do we know about you?",
+            icon: "document-text",
+            content: "We believe in minimalism. We only collect what's absolutely necessary to deliver your news: your basic profile (name, email) and your reading preferences to tailor the feed. No hidden trackers, no creeping.",
+            stats: [
+                { label: "Profile Data", value: "Standard" },
+                { label: "Location", value: "Approximate" },
+                { label: "Reading History", value: "Private" }
+            ],
+            color: "from-blue-500 to-cyan-400"
         },
         {
             id: 'usage',
-            title: 'How We Use It',
-            icon: 'lightning-bolt',
-            color: 'bg-teal-50 text-teal-700 border-teal-200',
-            iconColor: 'text-teal-600',
-            summary: 'To improve personal experience, process transactions, and send relevant updates.',
-            details: [
-                'Service delivery and maintenance',
-                'Personalization of content',
-                'Security and fraud prevention',
-                'Communication about updates'
-            ]
+            title: "How We Use It",
+            question: "Why do we need it?",
+            icon: "lightning-bolt",
+            content: "Your data fuels the engine. It helps us recommend the 'Technology' articles you love and skip the 'Sports' ones you don't. It also processes your premium subscriptions and keeps your account secure.",
+            stats: [
+                { label: "Personalization", value: "Active" },
+                { label: "Ad Targeting", value: "Minimal" },
+                { label: "Data Selling", value: "Never" }
+            ],
+            color: "from-emerald-500 to-teal-400"
         },
         {
-            id: 'sharing',
-            title: 'Who We Share With',
-            icon: 'share-nodes',
-            color: 'bg-purple-50 text-purple-700 border-purple-200',
-            iconColor: 'text-purple-600',
-            summary: 'We do not sell your data. We only share with trusted partners essential for service delivery.',
-            details: [
-                'Service providers (Hosting, Payment)',
-                'Legal compliance authorities',
-                'Affiliates (with consent)',
-                'Business transfer entities'
-            ]
+            id: 'security',
+            title: "Security Measures",
+            question: "Is it safe with us?",
+            icon: "shield-check",
+            content: "We treat your data like a vault. With military-grade AES-256 encryption and continuous security audits, your information is locked away from prying eyes. We hire white-hat hackers to test us regularly.",
+            stats: [
+                { label: "Encryption", value: "AES-256" },
+                { label: "Audits", value: "Quarterly" },
+                { label: "Breaches", value: "Zero" }
+            ],
+            color: "from-violet-500 to-purple-400"
         },
         {
-            id: 'protection',
-            title: 'Your Protection',
-            icon: 'shield-check',
-            color: 'bg-green-50 text-green-700 border-green-200',
-            iconColor: 'text-green-600',
-            summary: 'Industry-standard encryption and security measures to keep your data safe.',
-            details: [
-                'SSL/TLS Encryption',
-                'Regular security audits',
-                'Access control policies',
-                'Data anonymization'
-            ]
-        },
-        {
-            id: 'rights',
-            title: 'Your Rights',
-            icon: 'user-check',
-            color: 'bg-orange-50 text-orange-700 border-orange-200',
-            iconColor: 'text-orange-600',
-            summary: 'Full control over your data. Access, update, or delete your information anytime.',
-            details: [
-                'Right to access your data',
-                'Right to rectification',
-                'Right to erasure ("Right to be forgotten")',
-                'Right to restrict processing'
-            ]
-        },
-        {
-            id: 'cookies',
-            title: 'Cookies & Tracking',
-            icon: 'eye',
-            color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-            iconColor: 'text-indigo-600',
-            summary: 'We use cookies to enhance your browsing experience and analyze site traffic.',
-            details: [
-                'Essential cookies for site function',
-                'Analytics cookies for improvements',
-                'Marketing cookies (optional)',
-                'Cookie management options'
-            ]
+            id: 'control',
+            title: "Your Control",
+            question: "Who is in charge?",
+            icon: "adjustments-horizontal",
+            content: "You are. Always. You can download every byte of data we have on you, correct it, or nuke it completely from our servers with a single click. No questions asked. No 'retention periods'.",
+            stats: [
+                { label: "Export Data", value: "Anytime" },
+                { label: "Delete Account", value: "Instant" },
+                { label: "Opt-out", value: "One-click" }
+            ],
+            color: "from-orange-500 to-amber-400"
         }
     ];
 
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = Number(entry.target.getAttribute('data-index'));
+                        setActiveSection(index);
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        observerRefs.current.forEach((ref) => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Custom "Aurora" Background Component
+    const AuroraBackground = () => (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            <div className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob bg-gradient-to-r ${sections[activeSection].color} transition-colors duration-1000 ease-in-out`}></div>
+            <div className={`absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob animation-delay-2000 bg-gradient-to-l ${sections[(activeSection + 1) % 4].color} transition-colors duration-1000 ease-in-out`}></div>
+            <div className={`absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob animation-delay-4000 bg-gray-200`}></div>
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-white font-sans text-gray-800">
+        <div className="min-h-screen bg-white font-sans text-slate-800 selection:bg-blue-100">
             <UserHeader />
 
-            {/* Unique Hero Section */}
-            <div className="relative bg-white overflow-hidden">
-                {/* Background decorative blobs */}
-                <div className="absolute top-0 left-1/2 -ml-[40rem] w-[80rem] h-[80rem] rounded-full bg-blue-50/50 mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none -z-10 animate-pulse" />
-                <div className="absolute top-0 right-0 -mr-20 w-[60rem] h-[60rem] rounded-full bg-teal-50/50 mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none -z-10" />
+            <AuroraBackground />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 text-blue-700 font-medium text-sm mb-6 border border-blue-100">
-                        <Icon name="shield-check" className="w-4 h-4" />
-                        <span>Trusted & Secure</span>
+            <main className="relative z-10">
+
+                {/* Immersive Hero */}
+                <section className="h-screen flex flex-col justify-center items-center text-center px-4 relative">
+                    <div className="animate-fade-in-up">
+                        <div className="inline-flex items-center justify-center p-3 mb-8 rounded-2xl bg-white/50 border border-white/60 shadow-lg backdrop-blur-md">
+                            <Icon name="lock-closed" size="md" className="text-slate-800" />
+                        </div>
+                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900" style={{ lineHeight: 1.1 }}>
+                            Your Privacy.<br />
+                            <span className="font-light italic text-slate-500">Uncompromised.</span>
+                        </h1>
+                        <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+                            We've redesigned our policy to be as transparent as our journalism.
+                            <br />No legalese. Just the truth.
+                        </p>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-6">
-                        Privacy, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">Simplified.</span>
-                    </h1>
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                        We believe you shouldn't need a law degree to understand how your data is handled. Here is our plain-English guide to your privacy.
-                    </p>
-                </div>
-            </div>
 
-            {/* Main Interactive Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-
-                {/* Toggle View (Simple vs Detailed) - Optional flair */}
-                <div className="flex justify-center mb-12">
-                    <div className="bg-gray-100/80 p-1.5 rounded-xl inline-flex relative">
-                        <button
-                            onClick={() => setActiveTab('highlights')}
-                            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${activeTab === 'highlights'
-                                    ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
-                                }`}
-                        >
-                            <Icon name="sparkles" size="sm" className={activeTab === 'highlights' ? 'text-amber-500' : ''} />
-                            Visual Guide
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('full')}
-                            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${activeTab === 'full'
-                                    ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
-                                }`}
-                        >
-                            <Icon name="document-text" size="sm" className={activeTab === 'full' ? 'text-blue-500' : ''} />
-                            Full Policy
-                        </button>
+                    <div className="absolute bottom-10 animate-bounce">
+                        <Icon name="chevron-down" className="w-8 h-8 text-slate-400" />
                     </div>
-                </div>
+                </section>
 
-                {activeTab === 'highlights' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
-                        {highlights.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`group relative p-8 rounded-3xl border border-transparent transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-default ${item.color.replace('text', 'bg').replace('bg', 'bg-opacity-10')} hover:bg-white hover:border-gray-100`}
-                            >
-                                {/* Card visual elements */}
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:rotate-6 ${item.color}`}>
-                                    <Icon name={item.icon} className="w-7 h-7" />
+                {/* Sticky Split Layout */}
+                <div className="relative max-w-7xl mx-auto px-4 lg:px-8 pb-40">
+                    <div className="lg:grid lg:grid-cols-2 gap-20">
+
+                        {/* Left Side: Sticky Navigator & Graphic */}
+                        <div className="hidden lg:block relative">
+                            <div className="sticky top-1/4 h-[60vh] flex flex-col justify-between">
+                                {/* Dynamic Icon Display */}
+                                <div className={`w-full aspect-square rounded-[3rem] bg-gradient-to-br ${sections[activeSection].color} shadow-2xl flex items-center justify-center transition-all duration-700 ease-out transform hover:scale-105`}>
+                                    <div className="bg-white/20 backdrop-blur-xl p-12 rounded-3xl border border-white/30 text-white shadow-inner">
+                                        <Icon name={sections[activeSection].icon} size="2xl" className="w-24 h-24" />
+                                    </div>
                                 </div>
 
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                                <p className="text-gray-600 mb-6 leading-relaxed">
-                                    {item.summary}
-                                </p>
-
-                                {/* Micro-details list */}
-                                <ul className="space-y-3">
-                                    {item.details.map((detail, idx) => (
-                                        <li key={idx} className="flex items-center gap-3 text-sm font-medium text-gray-500">
-                                            <div className={`w-1.5 h-1.5 rounded-full ${item.iconColor.replace('text', 'bg')}`} />
-                                            {detail}
-                                        </li>
+                                {/* Section Progress */}
+                                <div className="mt-12 space-y-4">
+                                    {sections.map((section, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => document.getElementById(section.id).scrollIntoView({ behavior: 'smooth' })}
+                                            className={`group flex items-center gap-4 w-full text-left transition-all duration-300 ${activeSection === idx ? 'opacity-100 translate-x-4' : 'opacity-40 hover:opacity-70 hover:translate-x-2'}`}
+                                        >
+                                            <span className={`h-px bg-slate-900 transition-all duration-300 ${activeSection === idx ? 'w-12' : 'w-4'}`}></span>
+                                            <span className="text-lg font-bold tracking-widest uppercase">{section.title}</span>
+                                        </button>
                                     ))}
-                                </ul>
-
-                                {/* Corner decorative icon */}
-                                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <Icon name="arrow-right" className="w-5 h-5 text-gray-300" />
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {activeTab === 'full' && (
-                    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 animate-fade-in">
-                        <div className="prose prose-lg prose-blue max-w-none text-gray-600">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b pb-4">Full Privacy Policy</h2>
-
-                            <p className="lead text-xl text-gray-500 mb-8">
-                                Effective Date: January 16, 2026
-                            </p>
-
-                            <div className="space-y-12">
-                                <section>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                        <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-sm">1</span>
-                                        Information We Collect
-                                    </h3>
-                                    <p className="mb-4">
-                                        We collect information you provide directly to us, such as when you create an account, subscribe to our newsletter, request customer support, or otherwise communicate with us. The types of information we may collect include your name, email address, postal address, phone number, and any other information you choose to provide.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                        <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-sm">2</span>
-                                        How We Use Your Information
-                                    </h3>
-                                    <p className="mb-4">
-                                        We use the information we collect to provide, maintain, and improve our services, including to process transactions, send you related information, respond to your comments and questions, and communicate with you about products, services, offers, and events.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                        <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-sm">3</span>
-                                        Information Sharing
-                                    </h3>
-                                    <p className="mb-4">
-                                        We do not share your personal information with third parties except as described in this policy. We may share your information with third-party vendors, consultants, and other service providers who need access to such information to carry out work on our behalf.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                        <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-sm">4</span>
-                                        Data Security
-                                    </h3>
-                                    <p className="mb-4">
-                                        We take reasonable measures to help protect information about you from loss, theft, misuse, and unauthorized access, disclosure, alteration, and destruction.
-                                    </p>
-                                </section>
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {/* Bottom CTA */}
-                <div className="mt-20 text-center">
-                    <p className="text-gray-500 mb-4">Still have questions about your privacy?</p>
-                    <a
-                        href="/contact-us"
-                        className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200"
-                    >
-                        Contact our Data Protection Officer
-                    </a>
+                        {/* Right Side: Scrollable Content */}
+                        <div className="space-y-[30vh] py-[10vh]">
+                            {sections.map((section, idx) => (
+                                <div
+                                    key={idx}
+                                    id={section.id}
+                                    data-index={idx}
+                                    ref={el => observerRefs.current[idx] = el}
+                                    className="min-h-[60vh] flex flex-col justify-center"
+                                >
+                                    {/* Mobile Only Header */}
+                                    <div className="lg:hidden mb-8 flex items-center gap-4">
+                                        <div className={`p-4 rounded-2xl bg-gradient-to-br ${section.color} text-white shadow-lg`}>
+                                            <Icon name={section.icon} size="lg" />
+                                        </div>
+                                        <h2 className="text-3xl font-black text-slate-900">{section.title}</h2>
+                                    </div>
+
+                                    <div className="bg-white/80 backdrop-blur-3xl p-8 md:p-12 rounded-[2.5rem] border border-white/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] transition-transform duration-500 hover:-translate-y-2">
+                                        <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 mb-2 uppercase tracking-wide">
+                                            {section.title}
+                                        </h3>
+                                        <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-8 leading-tight">
+                                            {section.question}
+                                        </h2>
+                                        <p className="text-lg md:text-xl text-slate-600 leading-relaxed mb-12">
+                                            {section.content}
+                                        </p>
+
+                                        {/* Data Pills */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            {section.stats.map((stat, sIdx) => (
+                                                <div key={sIdx} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.label}</span>
+                                                    <span className="text-lg font-bold text-slate-800">{stat.value}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Final CTA Card */}
+                            <div className="min-h-[40vh] flex flex-col justify-center items-center text-center">
+                                <h2 className="text-3xl font-bold text-slate-900 mb-6">Need the fine print?</h2>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <button className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-colors shadow-xl">
+                                        Download Legal PDF
+                                    </button>
+                                    <a href="/contact-us" className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-full font-bold hover:bg-slate-50 transition-colors shadow-sm">
+                                        Contact DPO
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
-            </div>
+            </main>
 
             <UserFooter />
         </div>
