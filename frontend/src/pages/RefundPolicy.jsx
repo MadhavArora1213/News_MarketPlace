@@ -1,185 +1,138 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 
 const RefundPolicy = () => {
+    const [activeCard, setActiveCard] = useState('eligibility');
+
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800">
+        <div className="min-h-screen bg-[#0B0F19] font-sans text-white selection:bg-purple-500/30">
             <UserHeader />
 
-            {/* Hero: Fintech Style - Trust & Security */}
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 flex flex-col md:flex-row items-center justify-between gap-12">
-
-                    <div className="flex-1 text-center md:text-left animate-fade-in-up">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wide mb-6">
-                            <Icon name="check-circle" className="w-4 h-4" />
-                            Money Back Guarantee
-                        </div>
-                        <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 mb-6 tracking-tight tight-leading">
-                            Fair Refunds, <br />
-                            <span className="text-emerald-600">Zero Hassle.</span>
-                        </h1>
-                        <p className="text-xl text-slate-500 max-w-lg mx-auto md:mx-0 leading-relaxed">
-                            We value your trust above all else. Our refund policy is designed to be transparent, quick, and fair for everyone.
-                        </p>
-                    </div>
-
-                    {/* Abstract "Trust Badge" Graphic */}
-                    <div className="flex-1 flex justify-center md:justify-end animate-fade-in relative">
-                        {/* Decorative circles */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-emerald-50 rounded-full blur-3xl opacity-50"></div>
-
-                        <div className="relative bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-100 max-w-sm w-full transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600">
-                                    <Icon name="currency-dollar" className="w-7 h-7" />
-                                </div>
-                                <span className="px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-500">POLICY 2026</span>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="h-4 bg-slate-50 rounded w-3/4"></div>
-                                <div className="h-4 bg-slate-50 rounded w-full"></div>
-                                <div className="h-4 bg-slate-50 rounded w-5/6"></div>
-                            </div>
-                            <div className="mt-8 pt-8 border-t border-slate-100 flex items-center gap-4">
-                                <div className="flex -space-x-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white"></div>
-                                    <div className="w-8 h-8 rounded-full bg-purple-100 border-2 border-white"></div>
-                                    <div className="w-8 h-8 rounded-full bg-orange-100 border-2 border-white"></div>
-                                </div>
-                                <div className="text-xs font-semibold text-slate-400">Trusted by 1000+ Agencies</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {/* Background Effects */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-purple-900/20 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
+                <div className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] bg-blue-900/20 rounded-full blur-[100px] mix-blend-screen animate-pulse animation-delay-2000"></div>
             </div>
 
-            {/* Main Content: The "Ledger" Layout */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <main className="relative z-10 pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
-                {/* Comparison Section: Eligible vs Non-Eligible */}
-                <div className="grid md:grid-cols-2 gap-8 mb-24">
-                    {/* Card 1: Refundable */}
-                    <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                                <Icon name="check" className="w-6 h-6" />
-                            </div>
-                            <h2 className="text-2xl font-bold text-slate-900">Eligible for Refund</h2>
+                {/* Hero Section */}
+                <div className="text-center mb-24 animate-fade-in-up">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8">
+                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span className="text-sm font-medium text-gray-300">Updated Policy 2026</span>
+                    </div>
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8">
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-500">
+                            Peace of mind.
+                        </span>
+                        <span className="block text-3xl md:text-5xl lg:text-6xl font-light text-gray-400 mt-4">
+                            Guaranteed.
+                        </span>
+                    </h1>
+                    <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        We've simplified our refund process because your trust is our most valuable currency. Fair, fast, and transparent.
+                    </p>
+                </div>
+
+                {/* Interactive BENTO GRID Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,auto)]">
+
+                    {/* Card 1: The Promise (Large) */}
+                    <div className="md:col-span-2 row-span-2 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group shadow-2xl shadow-indigo-900/20">
+                        <div className="absolute top-0 right-0 p-12 opacity-10 transform group-hover:scale-110 transition-transform duration-700">
+                            <Icon name="shield-check" className="w-64 h-64 text-white" />
                         </div>
+                        <div className="relative z-10 h-full flex flex-col justify-between">
+                            <div>
+                                <h3 className="text-3xl font-bold text-white mb-4">The "No-Risk" Guarantee</h3>
+                                <p className="text-indigo-100 text-lg leading-relaxed max-w-lg">
+                                    If we fail to deliver a service as described in our agreement, you are entitled to a full refund. We don't hide behind complex clauses. If the mistake is ours, the money is yours.
+                                </p>
+                            </div>
+                            <div className="mt-8 flex gap-4">
+                                <div className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-white font-semibold">
+                                    7-Day Processing
+                                </div>
+                                <div className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-white font-semibold">
+                                    100% Secure
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Card 2: Eligibility (Tall) */}
+                    <div className="row-span-2 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 hover:bg-gray-800/50 transition-colors duration-300">
+                        <div className="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center mb-6 text-green-400">
+                            <Icon name="check" className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-6">Eligible Cases</h3>
                         <ul className="space-y-4">
                             {[
-                                "Service not delivered within agreed timeframe",
-                                "Mistaken duplicate payment",
-                                "Cancellation request before processing started",
-                                "Technical failure preventing service delivery"
+                                "Service not delivered",
+                                "Duplicate payment",
+                                "Accidental order (pre-process)",
+                                "Technical billing errors"
                             ].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <Icon name="check-circle" className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
-                                    <span className="text-slate-600 font-medium">{item}</span>
+                                <li key={i} className="flex items-center gap-3 text-gray-300 border-b border-white/5 pb-3 last:border-0">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                    {item}
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Card 2: Non-Refundable */}
-                    <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                                <Icon name="x-mark" className="w-6 h-6" />
+                    {/* Card 3: Non-Refundable (Standard) */}
+                    <div className="md:col-span-1 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 hover:bg-gray-800/50 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400">
+                                <Icon name="x-mark" className="w-5 h-5" />
                             </div>
-                            <h2 className="text-2xl font-bold text-slate-900">Non-Refundable</h2>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Exceptions</span>
                         </div>
-                        <ul className="space-y-4">
-                            {[
-                                "Published articles (Live content)",
-                                "Change of mind after active processing",
-                                "Minor editorial differences (see Terms)",
-                                "Services purchased > 30 days ago"
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <Icon name="x-circle" className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
-                                    <span className="text-slate-600 font-medium">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Process Timeline */}
-                <div className="mb-24">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900">How Refunds Work</h2>
-                        <p className="text-slate-500 mt-4">Simple, transparent process to get your money back.</p>
+                        <h3 className="text-xl font-bold text-white mb-2">Non-Refundable</h3>
+                        <p className="text-sm text-gray-400 leading-relaxed">
+                             Live articles, started social media campaigns, and services fulfilled >30 days ago.
+                        </p>
                     </div>
 
-                    <div className="relative">
-                        {/* Connecting Line (Desktop) */}
-                        <div className="hidden md:block absolute top-12 left-0 right-0 h-0.5 bg-slate-200 -z-10"></div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                            {/* Step 1 */}
-                            <div className="flex flex-col items-center text-center bg-[#F8FAFC] md:bg-transparent p-6 md:p-0 rounded-2xl">
-                                <div className="w-24 h-24 bg-white border-4 border-slate-100 rounded-full flex items-center justify-center text-blue-600 shadow-sm mb-6">
-                                    <span className="text-3xl font-bold">1</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Request</h3>
-                                <p className="text-slate-500 text-sm">Submit your request via email or support ticket with Order ID.</p>
+                    {/* Card 4: Process (Standard) */}
+                    <div className="md:col-span-1 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 hover:bg-gray-800/50 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                <Icon name="clock" className="w-5 h-5" />
                             </div>
-
-                            {/* Step 2 */}
-                            <div className="flex flex-col items-center text-center bg-[#F8FAFC] md:bg-transparent p-6 md:p-0 rounded-2xl">
-                                <div className="w-24 h-24 bg-white border-4 border-slate-100 rounded-full flex items-center justify-center text-purple-600 shadow-sm mb-6">
-                                    <span className="text-3xl font-bold">2</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Review</h3>
-                                <p className="text-slate-500 text-sm">We verify the claim within <span className="font-bold text-slate-900">24-48 hours</span>.</p>
-                            </div>
-
-                            {/* Step 3 */}
-                            <div className="flex flex-col items-center text-center bg-[#F8FAFC] md:bg-transparent p-6 md:p-0 rounded-2xl">
-                                <div className="w-24 h-24 bg-white border-4 border-slate-100 rounded-full flex items-center justify-center text-emerald-600 shadow-sm mb-6">
-                                    <span className="text-3xl font-bold">3</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Refund</h3>
-                                <p className="text-slate-500 text-sm">Funds returned to original source in <span className="font-bold text-slate-900">7-10 days</span>.</p>
-                            </div>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Timeline</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">The Timeline</h3>
+                        <div className="flex justify-between items-center text-sm text-gray-400 mt-4">
+                            <span>Request</span>
+                            <span className="h-px w-8 bg-gray-700"></span>
+                            <span>Review (48h)</span>
+                            <span className="h-px w-8 bg-gray-700"></span>
+                            <span className="text-white font-bold">Paid</span>
                         </div>
                     </div>
+
+                    {/* Card 5: Contact CTA (Wide) */}
+                    <div className="md:col-span-1 bg-white text-gray-900 rounded-[2.5rem] p-8 flex flex-col justify-center items-center text-center relative overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform duration-300">
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-bold mb-2">Need Help?</h3>
+                            <button className="px-6 py-2 bg-gray-900 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors">
+                                Open Ticket
+                            </button>
+                        </div>
+                        {/* Abstract background blobs for card */}
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200 rounded-full blur-2xl -mr-10 -mt-10 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200 rounded-full blur-2xl -ml-10 -mb-10 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+
                 </div>
 
-                {/* FAQ Grid */}
-                <div className="grid md:grid-cols-2 gap-x-12 gap-y-8 border-t border-slate-200 pt-16">
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Partial Refunds?</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Yes, in cases where a bundle service was partially fulfilled, we will refund the pro-rated amount for the unfulfilled portion.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Processing Fees?</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            We do not charge a cancellation fee if the refund is approved. However, bank transaction fees or currency conversion differences are not covered.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Refund Method?</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Refunds are strictly processed to the <strong>original payment method</strong> (Credit Card, PayPal, or Bank Transfer) to prevent fraud.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Social Media Services?</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed">
-                            Due to the instant nature of social media engagement, these are usually non-refundable once the campaign has started.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
+            </main>
 
             <div className="relative z-10 bg-white">
                 <UserFooter />
