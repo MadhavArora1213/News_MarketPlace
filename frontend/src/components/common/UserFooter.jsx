@@ -77,9 +77,9 @@ export default function UserFooter() {
     <footer className="bg-gray-50 border-t border-gray-200 py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="flex flex-col lg:flex-row lg:justify-between gap-8 mb-8">
           {/* Company Info */}
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:max-w-xs">
             <div className="flex items-center mb-4">
               <h3 className="heading-4 text-primary">VaaS Solutions: Vision to Visibility, Instantly</h3>
             </div>
@@ -112,7 +112,7 @@ export default function UserFooter() {
           </div>
 
           {/* Legal & Policies */}
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:w-56">
             <h4 className="heading-4 text-gray-900 mb-3">{legalPoliciesTitle}</h4>
             <ul className="space-y-1.5">
               <li><button onClick={() => setShowPrivacyPolicyPopup(true)} className="body-small text-gray-600 hover:text-primary transition-colors text-left">{privacyPolicy}</button></li>
@@ -126,7 +126,7 @@ export default function UserFooter() {
           </div>
 
           {/* Company */}
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:w-56">
             <h4 className="heading-4 text-gray-900 mb-3">{companyTitle}</h4>
             <ul className="space-y-1.5">
               <li><Link to="/about-us" className="body-small text-gray-600 hover:text-primary transition-colors">{aboutUs}</Link></li>
@@ -141,7 +141,7 @@ export default function UserFooter() {
           </div>
 
           {/* Services & Partnerships */}
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:w-64">
             <h4 className="heading-4 text-gray-900 mb-3">{servicesPartnershipsTitle}</h4>
             <ul className="space-y-1.5">
               <li><Link to="/agency-registration" className="body-small text-gray-600 hover:text-primary transition-colors">{agencyRegistration}</Link></li>
