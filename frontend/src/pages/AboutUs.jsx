@@ -91,7 +91,7 @@ const AboutUs = () => {
       <UserHeader />
 
       {/* Header / Intro */}
-      <div className="pt-24 pb-16 text-center px-4">
+      <div className="pt-12 pb-16 text-center px-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-bold tracking-widest uppercase mb-6 text-slate-500">
           <span className="w-2 h-2 rounded-full bg-slate-400"></span>
           Our Manifesto
