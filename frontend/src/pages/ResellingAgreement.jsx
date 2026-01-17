@@ -1,161 +1,159 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 
 const ResellingAgreement = () => {
+    // Scroll progress for sidebar interaction (optional visual flair)
+    const [scrolled, setScrolled] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            setScrolled(scrolled);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const agreementPoints = [
         {
-            id: 1,
+            id: "01",
             title: "Agreement Overview",
-            content: "This Reselling Agreement governs the terms under which partners, agencies, and authorized resellers may resell our publication and media services to their clients.",
-            icon: "document-text",
-            color: "text-blue-600",
-            bg: "bg-blue-50"
+            content: "This Reselling Agreement governs the terms under which partners, agencies, and authorized resellers may resell our publication and media services to their clients. It serves as the foundational framework for our commercial relationship."
         },
         {
-            id: 2,
+            id: "02",
             title: "Authorized Reseller Status",
-            content: "To become an authorized reseller, you must apply and be approved by our partnership team. Resellers are independent contractors and not employees, agents, or partners of News Marketplace in a legal sense.",
-            icon: "badge-check",
-            color: "text-emerald-600",
-            bg: "bg-emerald-50"
+            content: "To become an authorized reseller, you must apply and be approved by our partnership team. Resellers are independent contractors and not employees, agents, or partners of News Marketplace in a legal sense."
         },
         {
-            id: 3,
+            id: "03",
             title: "Pricing and Margins",
-            content: "Resellers are provided with wholesale pricing or discount structures as defined in their partnership tier. Resellers are free to set their own retail pricing for their clients, provided they do not misrepresent the service value or features.",
-            icon: "currency-dollar", // Changed from 'chart-bar' to 'currency-dollar' for better fit
-            color: "text-amber-600",
-            bg: "bg-amber-50"
+            content: "Resellers are provided with wholesale pricing or discount structures as defined in their partnership tier. Resellers are free to set their own retail pricing for their clients, provided they do not misrepresent the service value or features."
         },
         {
-            id: 4,
+            id: "04",
             title: "White Labeling",
-            content: "Unless otherwise specified, services are provided on a white-label basis. Resellers may present the reports and proofs of publication under their own brand. However, they must not claim ownership of the underlying media outlets or trademarks belonging to the publishers.",
-            icon: "tag",
-            color: "text-purple-600",
-            bg: "bg-purple-50"
+            content: "Unless otherwise specified, services are provided on a white-label basis. Resellers may present the reports and proofs of publication under their own brand. However, they must not claim ownership of the underlying media outlets or trademarks belonging to the publishers."
         },
         {
-            id: 5,
+            id: "05",
             title: "Client Confidentiality",
-            content: "We respect the reseller-client relationship. We will not solicit your clients directly. All communication regarding the order will be conducted through the reseller.",
-            icon: "lock-closed",
-            color: "text-rose-600",
-            bg: "bg-rose-50"
+            content: "We respect the reseller-client relationship. We will not solicit your clients directly. All communication regarding the order will be conducted through the reseller, ensuring complete privacy and trust in your client relationships."
         },
         {
-            id: 6,
+            id: "06",
             title: "Reseller Obligations",
-            content: "Resellers are responsible for ensuring their clients comply with our Content Guidelines and Terms & Conditions. Resellers must not knowingly submit prohibited content. Resellers handle all first-line support and billing for their clients.",
-            icon: "scale",
-            color: "text-indigo-600",
-            bg: "bg-indigo-50"
+            content: "Resellers are responsible for ensuring their clients comply with our Content Guidelines and Terms & Conditions. Resellers must not knowingly submit prohibited content. Resellers handle all first-line support and billing for their clients."
         },
         {
-            id: 7,
+            id: "07",
             title: "Termination",
-            content: "We reserve the right to terminate the reseller agreement if the reseller violates these terms, engages in fraudulent activity, or conducts business in a way that damages our reputation or relationships with publishers.",
-            icon: "x-circle",
-            color: "text-slate-600",
-            bg: "bg-slate-100"
+            content: "We reserve the right to terminate the reseller agreement if the reseller violates these terms, engages in fraudulent activity, or conducts business in a way that damages our reputation or relationships with publishers."
         }
     ];
 
     return (
-        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-amber-100 selection:text-amber-900">
+        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
             <UserHeader />
 
-            {/* Hero Section with abstract BG */}
-            <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-amber-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+                <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold tracking-widest uppercase mb-6 shadow-xl shadow-slate-200">
-                        <Icon name="handshake" className="w-4 h-4 text-amber-400" />
-                        Partner Program
-                    </div>
-                    <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-                        Reselling <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">Agreement</span>
-                    </h1>
-                    <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                        Empowering agencies and partners with clear, fair, and profitable terms. Your growth is our business.
-                    </p>
-                </div>
-            </div>
-
-            {/* Content Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {/* First Large Item */}
-                    <div className="md:col-span-2 lg:col-span-2 bg-slate-50 rounded-[2rem] p-8 md:p-12 border border-slate-100 hover:border-amber-200 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-300 group">
-                        <div className="flex flex-col md:flex-row gap-8 items-start">
-                            <div className={`w-16 h-16 rounded-2xl ${agreementPoints[0].bg} ${agreementPoints[0].color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                                <Icon name={agreementPoints[0].icon} size="xl" />
+                    {/* Left Sticky Sidebar - Navigation & Header */}
+                    <div className="lg:w-1/3 lg:shrink-0">
+                        <div className="sticky top-32">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-[2px] bg-slate-900"></div>
+                                <span className="uppercase tracking-widest text-xs font-bold text-slate-500">Partner Program</span>
                             </div>
-                            <div>
-                                <h3 className="text-2xl font-bold text-slate-900 mb-4">{agreementPoints[0].title}</h3>
-                                <p className="text-lg text-slate-600 leading-relaxed">
-                                    {agreementPoints[0].content}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Second Half Item */}
-                    <div className="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-200 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group">
-                        <div className={`w-14 h-14 rounded-2xl ${agreementPoints[1].bg} ${agreementPoints[1].color} flex items-center justify-center mb-6 group-hover:rotate-6 transition-transform`}>
-                            <Icon name={agreementPoints[1].icon} size="lg" />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-3">{agreementPoints[1].title}</h3>
-                        <p className="text-slate-500 leading-relaxed">
-                            {agreementPoints[1].content}
-                        </p>
-                    </div>
+                            <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-8 leading-[0.9]">
+                                Reselling<br />
+                                <span className="text-slate-300">Policy.</span>
+                            </h1>
 
-                    {/* Standard Grid Items */}
-                    {agreementPoints.slice(2).map((item) => (
-                        <div key={item.id} className="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-200 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group">
-                            <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center mb-6 group-hover:rotate-6 transition-transform`}>
-                                <Icon name={item.icon} size="lg" />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
-                            <p className="text-slate-500 leading-relaxed">
-                                {item.content}
+                            <p className="text-lg text-slate-600 mb-10 leading-relaxed font-medium">
+                                A comprehensive guide for agencies and partners. Clear terms for a transparent and profitable partnership.
                             </p>
-                        </div>
-                    ))}
-                </div>
 
-                {/* Footer CTA */}
-                <div className="mt-20 rounded-[2.5rem] bg-slate-900 overflow-hidden relative">
-                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/30 blur-[80px] rounded-full pointer-events-none"></div>
+                            <div className="flex flex-col gap-4 items-start">
+                                <a href="#contact" className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-slate-900 hover:text-blue-600 transition-colors">
+                                    <span className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-blue-600 group-hover:bg-blue-50 transition-all">
+                                        <Icon name="arrow-right" size="sm" />
+                                    </span>
+                                    Apply for Partnership
+                                </a>
+                                <Link to="/contact-us" className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-slate-900 hover:text-blue-600 transition-colors">
+                                    <span className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-blue-600 group-hover:bg-blue-50 transition-all">
+                                        <Icon name="chat-bubble-left" size="sm" />
+                                    </span>
+                                    Contact Support
+                                </Link>
+                            </div>
 
-                    <div className="relative z-10 p-10 md:p-16 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div>
-                            <h2 className="text-3xl font-black text-white mb-4">Ready to Scale?</h2>
-                            <p className="text-slate-400 max-w-lg text-lg">
-                                Join our network of successful agencies. Apply today to unlock exclusive wholesale pricing.
-                            </p>
-                        </div>
-                        <div className="flex gap-4 flex-shrink-0">
-                            <button className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-900 text-base font-bold rounded-full transition-all shadow-lg hover:shadow-amber-500/20 transform hover:-translate-y-1">
-                                Apply as Partner
-                            </button>
-                            <button className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white text-base font-bold rounded-full transition-all backdrop-blur-sm">
-                                Contact Sales
-                            </button>
+                            {/* Decorative Scroll Line for Sidebar */}
+                            <div className="mt-16 hidden lg:block h-px w-full bg-slate-100 relative overflow-hidden">
+                                <div
+                                    className="absolute top-0 left-0 h-full bg-slate-900 transition-all duration-300 ease-out"
+                                    style={{ width: `${Math.min(scrolled * 1.5, 100)}%` }}
+                                ></div>
+                            </div>
+                            <div className="mt-2 text-xs text-slate-400 hidden lg:block font-mono">
+                                SCROLL TO READ
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="mt-12 text-center">
-                    <p className="text-slate-400 text-sm">Last update: <span className="text-slate-900 font-semibold">January 2026</span></p>
-                </div>
+                    {/* Right Content - Scrollable List */}
+                    <div className="lg:w-2/3">
+                        <div className="divide-y divide-slate-100 border-t border-slate-100">
+                            {agreementPoints.map((item, index) => (
+                                <div key={index} className="py-12 md:py-16 group transition-colors hover:bg-slate-50/50 -mx-4 px-4 sm:px-0 sm:mx-0 rounded-3xl sm:rounded-none">
+                                    <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start">
 
+                                        {/* Number */}
+                                        <span className="text-sm font-mono font-bold text-slate-300 group-hover:text-slate-900 transition-colors pt-2">
+                                            {item.id}
+                                        </span>
+
+                                        <div className="flex-1">
+                                            {/* Title */}
+                                            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6 group-hover:text-blue-600 transition-colors">
+                                                {item.title}
+                                            </h3>
+
+                                            {/* Content */}
+                                            <p className="text-lg text-slate-600 leading-relaxed">
+                                                {item.content}
+                                            </p>
+                                        </div>
+
+                                        {/* Dynamic Icon Interaction */}
+                                        <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0 duration-300 text-slate-300">
+                                            <Icon name="arrow-right" className="w-6 h-6" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Bottom Meta */}
+                        <div className="mt-12 pt-12 border-t border-slate-900 flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                                End of Document
+                            </span>
+                            <span className="text-slate-400 text-sm">
+                                Last Updated: Jan 2026
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             <div className="relative z-20 bg-white">
