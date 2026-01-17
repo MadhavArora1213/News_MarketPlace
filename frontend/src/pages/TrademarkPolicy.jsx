@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
@@ -165,12 +166,12 @@ const TrademarkPolicy = () => {
                         >
                             Download Assets
                         </button>
-                        <a
-                            href="mailto:thesheikhmedia@gmail.com?subject=Trademark%20Violation%20Report"
+                        <Link
+                            to="/contact-us"
                             className="px-6 py-2 bg-slate-900 rounded-full text-white text-sm font-bold shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center"
                         >
                             Report Violation
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
