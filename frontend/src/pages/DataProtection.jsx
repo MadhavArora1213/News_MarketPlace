@@ -19,14 +19,14 @@ const DataProtection = () => {
             title: "Legal Framework",
             subtitle: "Processing Basis",
             content: "We never process data in a vacuum. Every byte processed rests on a solid legal pillar: your explicit consent, contractual necessity, statutory obligation, or a verified legitimate interest that never overrides your fundamental rights.",
-            icon: "scale"
+            icon: "document-text"
         },
         {
             id: 3,
             title: "Your Data Bill of Rights",
             subtitle: "Empowerment",
             content: "You are not a passive subject. You hold the power to Access your files, Rectify errors, Erase your history ('Right to be Forgotten'), Restrict active processing, and Port your data to other services. These aren't just features; they are your legal entitlements.",
-            icon: "user-check",
+            icon: "list-bullet",
             isList: true
         },
         {
@@ -146,7 +146,7 @@ const DataProtection = () => {
                         <p className="text-slate-400 text-sm mb-1">Last Updated</p>
                         <p className="text-slate-900 font-bold">January 2026</p>
                     </div>
-                    <Icon name="finger-print" className="w-16 h-16 text-slate-200" />
+                    <Icon name="shield-check" className="w-16 h-16 text-slate-200" />
                 </div>
 
             </div>
