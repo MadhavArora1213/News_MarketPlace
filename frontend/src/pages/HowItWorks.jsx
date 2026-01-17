@@ -72,7 +72,7 @@ const HowItWorks = () => {
       <UserHeader />
 
       {/* Ultra-Minimal Hero */}
-      <div className="pt-32 pb-20 px-6 max-w-5xl mx-auto text-center">
+      <div className="pt-12 pb-20 px-6 max-w-5xl mx-auto text-center">
         <p className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-6">
           Platform Guide
         </p>
@@ -85,14 +85,14 @@ const HowItWorks = () => {
       </div>
 
       {/* The Linear Path Section */}
-      <div className="max-w-5xl mx-auto px-6 pb-32">
-        <div className="space-y-24">
+      <div className="max-w-5xl mx-auto px-6 pb-24">
+        <div className="space-y-16">
           {steps.map((step, index) => (
             <div key={index} className="group flex flex-col md:flex-row gap-8 md:gap-20 items-start relative">
 
               {/* Connector Line (Left) */}
               {index !== steps.length - 1 && (
-                <div className="hidden md:block absolute left-[3.5rem] top-24 bottom-[-6rem] w-px bg-slate-100 group-hover:bg-blue-100 transition-colors duration-500"></div>
+                <div className="hidden md:block absolute left-[3.5rem] top-24 bottom-[-4rem] w-px bg-slate-100 group-hover:bg-blue-100 transition-colors duration-500"></div>
               )}
 
               {/* Number & Icon Block */}
@@ -142,9 +142,11 @@ const HowItWorks = () => {
 
           <div className="mt-16 text-center">
             <p className="text-slate-600 mb-6">Still have questions?</p>
-            <button className="px-8 py-3 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl">
-              Visit Help Center
-            </button>
+            <Link to="/contact-us">
+              <button className="px-8 py-3 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl">
+                Visit Help Center
+              </button>
+            </Link>
           </div>
         </div>
       </div>
