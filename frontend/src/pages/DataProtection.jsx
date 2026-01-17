@@ -52,10 +52,10 @@ const DataProtection = () => {
             {/* Geometric Accent Background - Light Theme */}
             <div className="fixed top-0 left-0 w-full h-[60vh] bg-white border-b border-slate-200 skew-y-[-4deg] origin-top-left -z-10 translate-y-[-10vh]"></div>
 
-            <div className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+            <div className="relative z-10 pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
 
                 {/* Minimalist Header - Dark Text for Light Theme */}
-                <div className="flex flex-col md:flex-row justify-between items-end mb-24 md:mb-32">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16">
                     <div className="text-slate-900">
                         <div className="flex items-center gap-2 mb-4">
                             <Icon name="lock-closed" className="w-5 h-5 text-emerald-600" />
@@ -141,7 +141,7 @@ const DataProtection = () => {
                 </div>
 
                 {/* Footer Signature */}
-                <div className="mt-20 flex justify-between items-end border-t border-slate-200 pt-8">
+                <div className="mt-12 flex justify-between items-end border-t border-slate-200 pt-6">
                     <div>
                         <p className="text-slate-400 text-sm mb-1">Last Updated</p>
                         <p className="text-slate-900 font-bold">January 2026</p>
