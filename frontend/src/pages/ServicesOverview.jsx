@@ -31,16 +31,16 @@ const ServicesOverview = () => {
   ];
 
   const stats = [
-    { number: '500K+', label: 'Content Pieces', icon: 'document-duplicate' },
+    { number: '500K+', label: 'Content Pieces', icon: 'document-text' },
     { number: '50K+', label: 'Active Users', icon: 'user-group' },
-    { number: '99%', label: 'Uptime', icon: 'server' }
+    { number: '99%', label: 'Uptime', icon: 'check-circle' }
   ];
 
   const whyChooseFeatures = [
     {
       title: "AI-Powered",
       description: "Advanced artificial intelligence for superior content creation and optimization",
-      icon: "cpu-chip",
+      icon: "sparkles",
     },
     {
       title: "24/7 Support",
@@ -140,26 +140,6 @@ const ServicesOverview = () => {
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Minimalist CTA */}
-      <div className="bg-slate-50 py-20 border-t border-slate-200">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">
-            Ready to scale your content?
-          </h2>
-          <p className="text-slate-500 mb-8 max-w-xl mx-auto text-lg">
-            Join thousands of creators revolutionizing their workflow. Free to start, cancel anytime.
-          </p>
-          <div className="flex justify-center gap-4">
-            <button className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/25">
-              Start Free Trial
-            </button>
-            <button className="px-8 py-3 bg-white hover:bg-slate-50 text-slate-900 font-bold rounded-xl border border-slate-200 transition-all">
-              Talk to Sales
-            </button>
           </div>
         </div>
       </div>
