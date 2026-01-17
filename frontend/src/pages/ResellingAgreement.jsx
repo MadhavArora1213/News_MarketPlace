@@ -82,12 +82,6 @@ const ResellingAgreement = () => {
                             </p>
 
                             <div className="flex flex-col gap-4 items-start">
-                                <a href="#contact" className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-slate-900 hover:text-blue-600 transition-colors">
-                                    <span className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-blue-600 group-hover:bg-blue-50 transition-all">
-                                        <Icon name="arrow-right" size="sm" />
-                                    </span>
-                                    Apply for Partnership
-                                </a>
                                 <Link to="/contact-us" className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-slate-900 hover:text-blue-600 transition-colors">
                                     <span className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-blue-600 group-hover:bg-blue-50 transition-all">
                                         <Icon name="chat-bubble-left" size="sm" />
