@@ -1,120 +1,208 @@
-
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 
 const RefundPolicy = () => {
+    const [activeSection, setActiveSection] = useState(0);
+    const observerRefs = useRef([]);
+
+    const sections = [
+        {
+            id: 'eligibility',
+            title: "Eligibility",
+            question: "When can I get a refund?",
+            icon: "currency-dollar",
+            content: "We believe in fair play. You are entitled to a refund if we completely fail to deliver the agreed service, if there's a technical error like a double charge, or if you cancel before our team starts working on your order.",
+            stats: [
+                { label: "Service Failure", value: "100% Refund" },
+                { label: "Tech Errors", value: "Instant Fix" },
+                { label: "Pre-work Cancel", value: "Full Return" }
+            ],
+            color: "from-blue-600 to-cyan-500"
+        },
+        {
+            id: 'non-refundable',
+            title: "Non-Refundable",
+            question: "What is final sale?",
+            icon: "lock-closed",
+            content: "Some actions are irreversible. Once an article is published live, a marketing campaign has started, or an order is older than 30 days, we cannot offer a refund as resources have already been irrevocably allocated.",
+            stats: [
+                { label: "Live Articles", value: "Final Sale" },
+                { label: "Started Jobs", value: "No Refund" },
+                { label: "Order Age", value: "> 30 Days" }
+            ],
+            color: "from-rose-500 to-pink-600"
+        },
+        {
+            id: 'timeline',
+            title: "Timeline",
+            question: "How long does it take?",
+            icon: "calendar-days",
+            content: "We don't hold your money hostage. Once you submit a request with your Order ID, we verify the details within 48 hours. If approved, the banking system typically reflects the refund in your account within 7-10 business days.",
+            stats: [
+                { label: "Submit Request", value: "Email Us" },
+                { label: "Verification", value: "48 Hours" },
+                { label: "Transfer", value: "7-10 Days" }
+            ],
+            color: "from-violet-600 to-indigo-600"
+        },
+        {
+            id: 'contact',
+            title: "Contact",
+            question: "Still have questions?",
+            icon: "mail",
+            content: "Every case is unique. If you believe your situation warrants an exception or if you're just unsure, our support team is here to listen. We approach every request with a human touch.",
+            stats: [
+                { label: "Support", value: "24/7" },
+                { label: "Response", value: "< 24h" },
+                { label: "Resolution", value: "Priority" }
+            ],
+            color: "from-amber-400 to-orange-500"
+        }
+    ];
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = Number(entry.target.getAttribute('data-index'));
+                        setActiveSection(index);
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        observerRefs.current.forEach((ref) => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Custom "Aurora" Background Component
+    const AuroraBackground = () => (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            <div className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob bg-gradient-to-r ${sections[activeSection].color} transition-colors duration-1000 ease-in-out`}></div>
+            <div className={`absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob animation-delay-2000 bg-gradient-to-l ${sections[(activeSection + 1) % 4].color} transition-colors duration-1000 ease-in-out`}></div>
+            <div className={`absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob animation-delay-4000 bg-slate-200`}></div>
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-[#F0F4F8] font-sans text-slate-800">
+        <div className="min-h-screen bg-white font-sans text-slate-800 selection:bg-blue-100">
             <UserHeader />
 
-            {/* Decorative Background Elements - Subtle & Light */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-blue-100/50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-rose-100/50 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
-            </div>
+            <AuroraBackground />
 
-            <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
+            <main className="relative z-10">
 
-                {/* Header Section - Clean & Minimal */}
-                <div className="text-center mb-16 animate-fade-in-up">
-                    <div className="inline-block p-4 rounded-3xl bg-white shadow-lg shadow-blue-900/5 mb-6 rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <Icon name="currency-dollar" className="w-8 h-8 text-blue-600" />
+                {/* Immersive Hero */}
+                <section className="min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center items-center text-center px-4 relative pt-12 pb-12">
+                    <div className="animate-fade-in-up max-w-4xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 leading-tight">
+                            Money Back <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-rose-500 font-bold italic">Guarantee.</span>
+                        </h1>
+                        <p className="text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed px-4">
+                            We keep it simple. If something goes wrong, we fix it.
+                            <br className="hidden md:block" />Here are the rules of engagement.
+                        </p>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-                        Money Back <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-rose-500">Guarantee.</span>
-                    </h1>
-                    <p className="text-lg text-slate-500 max-w-xl mx-auto font-medium">
-                        We keep it simple. If something goes wrong, we fix it. Here are the rules of engagement.
-                    </p>
-                </div>
+                </section>
 
-                {/* Content stacked in a single elegant column */}
-                <div className="space-y-8">
+                {/* Sticky Split Layout */}
+                <div className="relative max-w-7xl mx-auto px-4 lg:px-8 pb-20 md:pb-40">
+                    <div className="lg:grid lg:grid-cols-2 gap-10 lg:gap-20">
 
-                    {/* Section 1: The Basics (Large Card) */}
-                    <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-white/50">
-                        <div className="flex flex-col md:flex-row gap-8 items-start">
-                            <div className="md:w-1/3">
-                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Eligibility</h3>
-                                <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">When you can claim</p>
+                        {/* Left Side: Sticky Navigator & Graphic (Desktop Only) */}
+                        <div className="hidden lg:block relative">
+                            <div className="sticky top-1/4 h-[auto] min-h-[400px] flex flex-col justify-start gap-8">
+                                {/* Dynamic Icon Display */}
+                                <div className={`w-full aspect-square max-w-[250px] rounded-[2rem] bg-gradient-to-br ${sections[activeSection].color} shadow-2xl flex items-center justify-center transition-all duration-700 ease-out`}>
+                                    <div className="bg-white/20 backdrop-blur-xl p-8 rounded-2xl border border-white/30 text-white shadow-inner">
+                                        <Icon name={sections[activeSection].icon} size="xl" className="w-16 h-16" />
+                                    </div>
+                                </div>
+
+                                {/* Section Progress */}
+                                <div className="space-y-4">
+                                    {sections.map((section, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => document.getElementById(section.id).scrollIntoView({ behavior: 'smooth' })}
+                                            className={`group flex items-center gap-4 w-full text-left transition-all duration-300 ${activeSection === idx ? 'opacity-100 translate-x-4' : 'opacity-40 hover:opacity-70 hover:translate-x-2'}`}
+                                        >
+                                            <span className={`h-px bg-slate-900 transition-all duration-300 ${activeSection === idx ? 'w-12' : 'w-4'}`}></span>
+                                            <span className="text-lg font-bold tracking-widest uppercase">{section.title}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="md:w-2/3 grid gap-4">
-                                {[
-                                    { title: "Service Failure", desc: "If we completely fail to deliver the agreed service." },
-                                    { title: "Technical Error", desc: "Double charges or system glitches during checkout." },
-                                    { title: "Pre-processing", desc: "Cancellations made before our team starts work." }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 transition-colors group">
-                                        <div className="mt-1 w-6 h-6 rounded-full bg-slate-200 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
-                                            <Icon name="check" className="w-3 h-3 text-slate-500 group-hover:text-blue-600" />
+                        </div>
+
+                        {/* Right Side: Scrollable Content */}
+                        <div className="space-y-16 md:space-y-[30vh] md:py-[5vh]">
+                            {sections.map((section, idx) => (
+                                <div
+                                    key={idx}
+                                    id={section.id}
+                                    data-index={idx}
+                                    ref={el => observerRefs.current[idx] = el}
+                                    className="min-h-[auto] md:min-h-[50vh] flex flex-col justify-center scroll-mt-24"
+                                >
+                                    {/* Mobile Only Header with Icon */}
+                                    <div className="lg:hidden mb-6 flex items-center gap-4 sticky top-20 z-20 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-slate-100">
+                                        <div className={`p-3 rounded-xl bg-gradient-to-br ${section.color} text-white shadow-md`}>
+                                            <Icon name={section.icon} size="md" />
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">{item.title}</h4>
-                                            <p className="text-sm text-slate-500">{item.desc}</p>
+                                        <h2 className="text-xl font-black text-slate-900">{section.title}</h2>
+                                    </div>
+
+                                    <div className="bg-white/80 backdrop-blur-3xl p-6 md:p-10 rounded-[2rem] border border-white/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                                        <h3 className="hidden md:block text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 mb-2 uppercase tracking-wide">
+                                            {section.title}
+                                        </h3>
+
+                                        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight">
+                                            {section.question}
+                                        </h2>
+                                        <p className="text-lg md:text-xl text-slate-600 leading-relaxed mb-8 md:mb-12">
+                                            {section.content}
+                                        </p>
+
+                                        {/* Data Pills */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                                            {section.stats.map((stat, sIdx) => (
+                                                <div key={sIdx} className="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-1 md:gap-2">
+                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.label}</span>
+                                                    <span className="text-base md:text-lg font-bold text-slate-800">{stat.value}</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Section 2: Non-Refundable (Glass Strip) */}
-                    <div className="bg-white/60 backdrop-blur-md rounded-[2rem] p-8 border border-white/60">
-                        <div className="flex flex-col md:flex-row gap-8 items-center">
-                            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-100 text-rose-500 flex-shrink-0">
-                                <Icon name="x-mark" className="w-6 h-6" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Non-Refundable Items</h3>
-                                <p className="text-slate-600 leading-relaxed">
-                                    Please note that <span className="font-bold text-rose-600">Live Articles</span>, <span className="font-bold text-rose-600">Started Campaigns</span>, and orders older than <span className="font-bold text-slate-900">30 days</span> are final sale. Editorial preferences do not qualify for refunds.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Section 3: The Process (Horizontal Steps) */}
-                    <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-blue-900/20 relative overflow-hidden">
-                        {/* Background pattern */}
-                        <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <Icon name="clock" className="w-40 h-40" />
-                        </div>
-
-                        <div className="relative z-10">
-                            <h3 className="text-2xl font-bold mb-8">Refund Timeline</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div className="relative">
-                                    <div className="text-5xl font-black text-blue-500/30 mb-2">01</div>
-                                    <h4 className="text-lg font-bold mb-2">Submit Request</h4>
-                                    <p className="text-slate-400 text-sm">Send us an email with your Order ID.</p>
                                 </div>
-                                <div className="relative">
-                                    <div className="text-5xl font-black text-purple-500/30 mb-2">02</div>
-                                    <h4 className="text-lg font-bold mb-2">Verification</h4>
-                                    <p className="text-slate-400 text-sm">We review your case within 48 hours.</p>
-                                </div>
-                                <div className="relative">
-                                    <div className="text-5xl font-black text-emerald-500/30 mb-2">03</div>
-                                    <h4 className="text-lg font-bold mb-2">Money Returned</h4>
-                                    <p className="text-slate-400 text-sm">Funds appear in 7-10 business days.</p>
-                                </div>
+                            ))}
+
+                            {/* Final CTA Card */}
+                            <div className="min-h-[30vh] flex flex-col justify-center items-center text-center py-12">
+                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8">Need to start a return?</h2>
+                                <a
+                                    href="/contact-us"
+                                    className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-colors shadow-xl w-full sm:w-auto inline-flex justify-center items-center gap-2"
+                                >
+                                    <Icon name="mail" size="sm" className="text-white" />
+                                    Contact Support
+                                </a>
                             </div>
                         </div>
                     </div>
-
-                    {/* Contact Section */}
-                    <div className="text-center pt-8">
-                        <p className="text-slate-500 mb-4">Have specific questions?</p>
-                        <button className="px-8 py-3 bg-white border border-slate-200 text-slate-900 font-bold rounded-full hover:bg-slate-50 hover:shadow-lg transition-all">
-                            Contact Support Team
-                        </button>
-                    </div>
-
                 </div>
-            </div>
+
+            </main>
 
             <div className="relative z-10 bg-white">
                 <UserFooter />
