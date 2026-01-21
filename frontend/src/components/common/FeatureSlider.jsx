@@ -181,8 +181,10 @@ const FeatureSlider = () => {
     return () => clearInterval(timer);
   }, [features.length]);
 
+  const isRTL = language === 'ar';
+
   return (
-    <section className="pb-4 relative overflow-hidden">
+    <section className={`pb-4 relative overflow-hidden ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -190,17 +192,17 @@ const FeatureSlider = () => {
         }}></div>
       </div>
 
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 ${language === 'ar' ? 'lg:px-12' : ''}`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 ${isRTL ? 'lg:px-12' : ''}`}>
         <div className="relative">
 
           {/* Slider Container */}
           <div className="overflow-hidden rounded-2xl shadow-2xl bg-white/60 backdrop-blur-md border border-white/30">
             <div
               className="flex transition-transform duration-700 ease-out"
-              style={{ transform: `translateX(${language === 'ar' ? (currentSlide * 100) : -(currentSlide * 100)}%)` }}
+              style={{ transform: `translateX(${isRTL ? (currentSlide * 100) : -(currentSlide * 100)}%)` }}
             >
               {features.map((feature) => (
-                <div key={feature.id} className="w-full flex-shrink-0">
+                <div key={feature.id} className="w-full flex-shrink-0" dir={isRTL ? 'rtl' : 'ltr'}>
                   <div className={`bg-gradient-to-br ${feature.bgGradient} relative h-full`}>
                     <div className="flex flex-col md:flex-row h-full">
                       {/* Image Section - More compact on mobile */}
@@ -217,8 +219,8 @@ const FeatureSlider = () => {
 
                       {/* Content Section - Natural height based on content */}
                       <div className="w-full md:w-3/5 p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center bg-white/10 backdrop-blur-sm">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center mb-3 sm:mb-6">
-                          <div className={`p-2 sm:p-3 md:p-4 rounded-xl bg-white/20 backdrop-blur-sm mb-2 sm:mb-0 ${language === 'ar' ? 'sm:ml-4' : 'sm:mr-4'} shadow-lg border border-white/30 transform hover:scale-105 transition-all duration-300`}>
+                        <div className={`flex flex-col sm:flex-row items-start sm:items-center mb-3 sm:mb-6 ${isRTL ? 'space-x-reverse' : ''}`}>
+                          <div className={`p-2 sm:p-3 md:p-4 rounded-xl bg-white/20 backdrop-blur-sm mb-2 sm:mb-0 ${isRTL ? 'sm:ml-4' : 'sm:mr-4'} shadow-lg border border-white/30 transform hover:scale-105 transition-all duration-300`}>
                             <Icon name={feature.icon} size="lg" className="text-white" />
                           </div>
                           <div className="flex-1">
@@ -236,7 +238,7 @@ const FeatureSlider = () => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-3 md:gap-4 text-[10px] sm:text-sm md:text-base text-white/90 mt-1 md:mt-6">
                             {feature.highlights.map((highlight, index) => (
                               <div key={index} className="flex items-center justify-start bg-white/10 backdrop-blur-sm rounded-lg p-1 sm:p-2 border border-white/5">
-                                <Icon name={highlight.icon} size="sm" className={`text-[#4CAF50] ${language === 'ar' ? 'ml-1.5' : 'mr-1.5'} flex-shrink-0`} />
+                                <Icon name={highlight.icon} size="sm" className={`text-[#4CAF50] ${isRTL ? 'ml-1.5' : 'mr-1.5'} flex-shrink-0`} />
                                 <span className="font-medium break-words leading-tight">{highlight.text}</span>
                               </div>
                             ))}
