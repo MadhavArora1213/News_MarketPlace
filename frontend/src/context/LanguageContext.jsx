@@ -48,6 +48,7 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const t = (key, params = {}) => {
+    let value;
     // First check if the full key exists (handles keys with dots/periods)
     if (translations[language]?.[key]) {
       value = translations[language][key];
