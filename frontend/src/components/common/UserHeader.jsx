@@ -139,6 +139,11 @@ const UserHeader = () => {
   const currentLang = languages.find(l => l.code === language) || languages[0];
   const [isLangOpen, setIsLangOpen] = useState(false);
 
+  // Dynamic service visibility based on language
+  const visibleServicesLimit = language === 'ru' ? 6 : 8;
+  const visibleServices = services.slice(0, visibleServicesLimit);
+  const overflowServices = services.slice(visibleServicesLimit);
+
   // Close language dropdown on click away
   useEffect(() => {
     const handleClick = () => setIsLangOpen(false);
@@ -246,9 +251,9 @@ const UserHeader = () => {
 
         {/* Bottom Row: Resources and Services */}
         <div className="hidden xl:flex justify-between items-center py-2">
-          <div className="flex items-center gap-x-1.5 xl:gap-x-2 2xl:gap-x-3">
+          <div className="flex items-center gap-x-1 xl:gap-x-1.5 2xl:gap-x-2">
             {/* Services shown directly */}
-            {services.map((service, index) => (
+            {visibleServices.map((service, index) => (
               service.onClick ? (
                 <button
                   key={`service-${index}`}
@@ -259,7 +264,7 @@ const UserHeader = () => {
                       service.onClick();
                     }
                   }}
-                  className="group relative flex items-center gap-x-2 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
+                  className="group relative flex items-center gap-x-1.5 px-2 xl:px-2.5 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
                 >
                   <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
                   <span className="whitespace-nowrap">{service.name}</span>
@@ -268,7 +273,7 @@ const UserHeader = () => {
                 <a
                   key={`service-${index}`}
                   href={service.href}
-                  className="group relative flex items-center gap-x-2 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
+                  className="group relative flex items-center gap-x-1.5 px-2 xl:px-2.5 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
                   onClick={(e) => {
                     if (!isAuthenticated && !service.bypassAuth) {
                       e.preventDefault();
@@ -291,6 +296,36 @@ const UserHeader = () => {
               </button>
               <div className={`absolute top-full ${language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30 max-h-[450px] overflow-y-auto custom-scrollbar`}>
                 <div className="p-4">
+                  {/* Overflow Services first if any */}
+                  {overflowServices.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('More Actions')}</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {overflowServices.map((service, index) => (
+                          <a
+                            key={`overflow-${index}`}
+                            href={service.href}
+                            className="flex items-center gap-x-3 px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
+                            onClick={(e) => {
+                              if (service.onClick) {
+                                e.preventDefault();
+                                if (!isAuthenticated) showAuthModal();
+                                else service.onClick();
+                              } else if (!isAuthenticated && !service.bypassAuth) {
+                                e.preventDefault();
+                                showAuthModal();
+                              }
+                            }}
+                          >
+                            <Icon name={service.icon} size="xs" className="text-gray-500 flex-shrink-0" />
+                            <span className="text-left">{service.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                      <div className="my-3 border-t border-gray-100"></div>
+                    </div>
+                  )}
+
                   <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('Resources')}</h4>
                   <div className="grid grid-cols-1 gap-2">
                     {menuItems.map((item, index) => (
