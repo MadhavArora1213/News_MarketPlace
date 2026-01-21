@@ -28,14 +28,14 @@ const TopHeader = () => {
 	const adminAlert = useTranslatedText('Admins should submit publications through the admin panel.');
 
 	const actionItems = [
-		{ name: 'Agency Registration', displayName: agencyRegistration, href: '/agency-registration', icon: 'user-group', color: '#4CAF50', isLink: true, hasAuthCheck: false },
+		{ name: 'Agency Registration', displayName: agencyRegistration, href: '/agency-registration', icon: 'building', color: '#4CAF50', isLink: true, hasAuthCheck: false },
 		// { name: 'Editor Registration', displayName: editorRegistration, href: '#', icon: 'user', color: '#1976D2', isLink: false, hasAuthCheck: true },
 		{ name: 'Reporter Registration', displayName: reporterRegistration, href: '/reporter-registration', icon: 'user-plus', color: '#FF5722', isLink: true, hasAuthCheck: false },
 		// { name: 'Submit Publication', displayName: submitPublication, href: '#', icon: 'document-plus', color: '#9C27B0', isLink: false, hasAuthCheck: true },
 		{ name: 'Theme Pages', displayName: themePages, href: '/themes', icon: 'tag', color: '#FF9800', isLink: true, hasAuthCheck: false },
 		{ name: 'Creators', displayName: realEstate, href: '/real-estate-professionals', icon: 'home', color: '#2196F3', isLink: true, hasAuthCheck: false },
-		{ name: 'Press Release', displayName: pressRelease, href: '/press-packs', icon: 'megaphone', color: '#4CAF50', isLink: true, hasAuthCheck: false },
-		{ name: 'Podcasters', displayName: podcasters, href: '/podcasters', icon: 'microphone', color: '#9C27B0', isLink: true, hasAuthCheck: false }
+		{ name: 'Press Release', displayName: pressRelease, href: '/press-packs', icon: 'newspaper', color: '#4CAF50', isLink: true, hasAuthCheck: false },
+		{ name: 'Podcasters', displayName: podcasters, href: '/podcasters', icon: 'headphones', color: '#9C27B0', isLink: true, hasAuthCheck: false }
 	];
 
 
