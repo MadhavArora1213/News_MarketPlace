@@ -2,61 +2,63 @@ import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import { useLanguage } from '../context/LanguageContext';
 
 const RefundPolicy = () => {
+    const { t } = useLanguage();
     const [activeSection, setActiveSection] = useState(0);
     const observerRefs = useRef([]);
 
     const sections = [
         {
             id: 'eligibility',
-            title: "Eligibility",
-            question: "When can I get a refund?",
+            title: t('refund.sections.eligibility.title'),
+            question: t('refund.sections.eligibility.question'),
             icon: "currency-dollar",
-            content: "We believe in fair play. You are entitled to a refund if we completely fail to deliver the agreed service, if there's a technical error like a double charge, or if you cancel before our team starts working on your order.",
+            content: t('refund.sections.eligibility.content'),
             stats: [
-                { label: "Service Failure", value: "100% Refund" },
-                { label: "Tech Errors", value: "Instant Fix" },
-                { label: "Pre-work Cancel", value: "Full Return" }
+                { label: t('refund.sections.eligibility.stats.serviceFailure'), value: t('refund.sections.eligibility.stats.serviceFailureValue') },
+                { label: t('refund.sections.eligibility.stats.techErrors'), value: t('refund.sections.eligibility.stats.techErrorsValue') },
+                { label: t('refund.sections.eligibility.stats.preWorkCancel'), value: t('refund.sections.eligibility.stats.preWorkCancelValue') }
             ],
             color: "from-blue-600 to-cyan-500"
         },
         {
             id: 'non-refundable',
-            title: "Non-Refundable",
-            question: "What is final sale?",
+            title: t('refund.sections.nonRefundable.title'),
+            question: t('refund.sections.nonRefundable.question'),
             icon: "lock-closed",
-            content: "Some actions are irreversible. Once an article is published live, a marketing campaign has started, or an order is older than 30 days, we cannot offer a refund as resources have already been irrevocably allocated.",
+            content: t('refund.sections.nonRefundable.content'),
             stats: [
-                { label: "Live Articles", value: "Final Sale" },
-                { label: "Started Jobs", value: "No Refund" },
-                { label: "Order Age", value: "> 30 Days" }
+                { label: t('refund.sections.nonRefundable.stats.liveArticles'), value: t('refund.sections.nonRefundable.stats.liveArticlesValue') },
+                { label: t('refund.sections.nonRefundable.stats.startedJobs'), value: t('refund.sections.nonRefundable.stats.startedJobsValue') },
+                { label: t('refund.sections.nonRefundable.stats.orderAge'), value: t('refund.sections.nonRefundable.stats.orderAgeValue') }
             ],
             color: "from-rose-500 to-pink-600"
         },
         {
             id: 'timeline',
-            title: "Timeline",
-            question: "How long does it take?",
+            title: t('refund.sections.timeline.title'),
+            question: t('refund.sections.timeline.question'),
             icon: "calendar-days",
-            content: "We don't hold your money hostage. Once you submit a request with your Order ID, we verify the details within 48 hours. If approved, the banking system typically reflects the refund in your account within 7-10 business days.",
+            content: t('refund.sections.timeline.content'),
             stats: [
-                { label: "Submit Request", value: "Email Us" },
-                { label: "Verification", value: "48 Hours" },
-                { label: "Transfer", value: "7-10 Days" }
+                { label: t('refund.sections.timeline.stats.submitRequest'), value: t('refund.sections.timeline.stats.submitRequestValue') },
+                { label: t('refund.sections.timeline.stats.verification'), value: t('refund.sections.timeline.stats.verificationValue') },
+                { label: t('refund.sections.timeline.stats.transfer'), value: t('refund.sections.timeline.stats.transferValue') }
             ],
             color: "from-violet-600 to-indigo-600"
         },
         {
             id: 'contact',
-            title: "Contact",
-            question: "Still have questions?",
+            title: t('refund.sections.contact.title'),
+            question: t('refund.sections.contact.question'),
             icon: "mail",
-            content: "Every case is unique. If you believe your situation warrants an exception or if you're just unsure, our support team is here to listen. We approach every request with a human touch.",
+            content: t('refund.sections.contact.content'),
             stats: [
-                { label: "Support", value: "24/7" },
-                { label: "Response", value: "< 24h" },
-                { label: "Resolution", value: "Priority" }
+                { label: t('refund.sections.contact.stats.support'), value: t('refund.sections.contact.stats.supportValue') },
+                { label: t('refund.sections.contact.stats.response'), value: t('refund.sections.contact.stats.responseValue') },
+                { label: t('refund.sections.contact.stats.resolution'), value: t('refund.sections.contact.stats.resolutionValue') }
             ],
             color: "from-amber-400 to-orange-500"
         }
@@ -104,12 +106,11 @@ const RefundPolicy = () => {
                 <section className="min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center items-center text-center px-4 relative pt-12 pb-12">
                     <div className="animate-fade-in-up max-w-4xl mx-auto">
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 leading-tight">
-                            Money Back <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-rose-500 font-bold italic">Guarantee.</span>
+                            {t('refund.heroTitle')} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-rose-500 font-bold italic">{t('refund.heroSubtitle')}</span>
                         </h1>
                         <p className="text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed px-4">
-                            We keep it simple. If something goes wrong, we fix it.
-                            <br className="hidden md:block" />Here are the rules of engagement.
+                            {t('refund.heroDesc')}
                         </p>
                     </div>
                 </section>
@@ -189,13 +190,13 @@ const RefundPolicy = () => {
 
                             {/* Final CTA Card */}
                             <div className="min-h-[30vh] flex flex-col justify-center items-center text-center py-12">
-                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8">Need to start a return?</h2>
+                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8">{t('refund.ctas.startReturn')}</h2>
                                 <a
                                     href="/contact-us"
                                     className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-colors shadow-xl w-full sm:w-auto inline-flex justify-center items-center gap-2"
                                 >
                                     <Icon name="mail" size="sm" className="text-white" />
-                                    Contact Support
+                                    {t('refund.ctas.contactSupport')}
                                 </a>
                             </div>
                         </div>
