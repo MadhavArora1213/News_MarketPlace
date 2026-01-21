@@ -148,6 +148,25 @@ const UserHeader = () => {
     }
   };
 
+  const languages = [
+    { code: 'en', label: 'English', short: 'EN', flag: 'us' },
+    { code: 'ar', label: 'العربية', short: 'AR', flag: 'sa' },
+    { code: 'hi', label: 'हिन्दी', short: 'HI', flag: 'in' },
+    { code: 'ru', label: 'Русский', short: 'RU', flag: 'ru' },
+    { code: 'zh-CN', label: '中文', short: 'ZH', flag: 'cn' },
+    { code: 'fr', label: 'Français', short: 'FR', flag: 'fr' }
+  ];
+
+  const currentLang = languages.find(l => l.code === language) || languages[0];
+  const [isLangOpen, setIsLangOpen] = useState(false);
+
+  // Close language dropdown on click away
+  useEffect(() => {
+    const handleClick = () => setIsLangOpen(false);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
+
   return (
     <header className="bg-white/70 backdrop-blur-md border-b border-white/20 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
@@ -176,19 +195,50 @@ const UserHeader = () => {
 
           {/* Right: Language & Contact Icons */}
           <div className="flex items-center space-x-3">
-            {/* Language Selector */}
-            <select
-              value={language}
-              onChange={(e) => switchLanguage(e.target.value)}
-              className="hidden md:block bg-white/60 backdrop-blur-sm text-[#212121] text-xs py-1.5 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
-            >
-              <option value="en">🇺🇸 EN</option>
-              <option value="ar">🇸🇦 AR</option>
-              <option value="hi">🇮🇳 HI</option>
-              <option value="ru">🇷🇺 RU</option>
-              <option value="zh-CN">🇨🇳 ZH</option>
-              <option value="fr">🇫🇷 FR</option>
-            </select>
+            {/* Custom Language Selector */}
+            <div className="relative hidden md:block" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setIsLangOpen(!isLangOpen)}
+                className="flex items-center space-x-2 bg-white/60 hover:bg-white/80 backdrop-blur-sm text-[#212121] text-xs py-1.5 px-3 border border-white/30 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
+              >
+                <img
+                  src={`https://flagcdn.com/w20/${currentLang.flag}.png`}
+                  alt={currentLang.short}
+                  className="w-4 h-auto rounded-sm object-cover"
+                />
+                <span className="font-bold">{currentLang.short}</span>
+                <Icon name="chevron-down" size="xs" className={`transition-transform duration-300 ${isLangOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isLangOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute top-full right-0 mt-2 w-40 bg-white border border-gray-100 rounded-xl shadow-2xl py-2 z-[60] overflow-hidden"
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        switchLanguage(lang.code);
+                        setIsLangOpen(false);
+                      }}
+                      className={`w-full flex items-center space-x-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-blue-50/50 ${language === lang.code ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
+                    >
+                      <img
+                        src={`https://flagcdn.com/w20/${lang.flag}.png`}
+                        alt={lang.short}
+                        className="w-5 h-auto rounded-sm"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xs leading-none">{lang.label}</span>
+                        <span className="text-[10px] opacity-60 font-bold">{lang.short}</span>
+                      </div>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </div>
 
             {/* Contact Icons */}
             <div className="hidden md:flex items-center space-x-1">
@@ -408,20 +458,26 @@ const UserHeader = () => {
 
             {/* Language and Contact Icons */}
             <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
-              <div className="flex flex-wrap justify-center items-center gap-3 mb-3">
-                <select
-                  value={language}
-                  onChange={(e) => switchLanguage(e.target.value)}
-                  className="bg-white/60 backdrop-blur-sm text-[#212121] text-sm py-2 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
-                >
-                  <option value="en">🇺🇸 EN</option>
-                  <option value="ar">🇸🇦 AR</option>
-                  <option value="hi">🇮🇳 HI</option>
-                  <option value="ru">🇷🇺 RU</option>
-                  <option value="zh-CN">🇨🇳 ZH</option>
-                  <option value="fr">🇫🇷 FR</option>
-                </select>
+              <div className="mb-4">
+                <div className="flex flex-wrap justify-center gap-2">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => switchLanguage(lang.code)}
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-all duration-300 ${language === lang.code ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white/60 text-gray-700 border-white/30 hover:bg-white/80'}`}
+                    >
+                      <img
+                        src={`https://flagcdn.com/w20/${lang.flag}.png`}
+                        alt={lang.short}
+                        className="w-4 h-auto rounded-sm"
+                      />
+                      <span className="text-xs font-bold">{lang.short}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
+              <div className="flex flex-wrap justify-center items-center gap-3 mb-3">
                 <div className="flex space-x-1">
                   {contactIcons.map((icon) => (
                     <a
