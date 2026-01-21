@@ -3,61 +3,63 @@ import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import { useLanguage } from '../context/LanguageContext';
 
 const PrivacyPolicy = () => {
+    const { t } = useLanguage();
     const [activeSection, setActiveSection] = useState(0);
     const observerRefs = useRef([]);
 
     const sections = [
         {
             id: 'collect',
-            title: "What We Collect",
-            question: "What do we know about you?",
+            title: t('privacy.sections.collect.title'),
+            question: t('privacy.sections.collect.question'),
             icon: "document-text",
-            content: "We believe in minimalism. We only collect what's absolutely necessary to deliver your news: your basic profile (name, email) and your reading preferences to tailor the feed. No hidden trackers, no creeping.",
+            content: t('privacy.sections.collect.content'),
             stats: [
-                { label: "Profile Data", value: "Standard" },
-                { label: "Location", value: "Approximate" },
-                { label: "Reading History", value: "Private" }
+                { label: "Profile Data", value: t('privacy.sections.collect.stats.profile') },
+                { label: "Location", value: t('privacy.sections.collect.stats.location') },
+                { label: "Reading History", value: t('privacy.sections.collect.stats.history') }
             ],
             color: "from-blue-500 to-cyan-400"
         },
         {
             id: 'usage',
-            title: "How We Use It",
-            question: "Why do we need it?",
+            title: t('privacy.sections.usage.title'),
+            question: t('privacy.sections.usage.question'),
             icon: "lightning-bolt",
-            content: "Your data fuels the engine. It helps us recommend the 'Technology' articles you love and skip the 'Sports' ones you don't. It also processes your premium subscriptions and keeps your account secure.",
+            content: t('privacy.sections.usage.content'),
             stats: [
-                { label: "Personalization", value: "Active" },
-                { label: "Ad Targeting", value: "Minimal" },
-                { label: "Data Selling", value: "Never" }
+                { label: "Personalization", value: t('privacy.sections.usage.stats.personalization') },
+                { label: "Ad Targeting", value: t('privacy.sections.usage.stats.targeting') },
+                { label: "Data Selling", value: t('privacy.sections.usage.stats.selling') }
             ],
             color: "from-emerald-500 to-teal-400"
         },
         {
             id: 'security',
-            title: "Security Measures",
-            question: "Is it safe with us?",
+            title: t('privacy.sections.security.title'),
+            question: t('privacy.sections.security.question'),
             icon: "shield-check",
-            content: "We treat your data like a vault. With military-grade AES-256 encryption and continuous security audits, your information is locked away from prying eyes. We hire white-hat hackers to test us regularly.",
+            content: t('privacy.sections.security.content'),
             stats: [
-                { label: "Encryption", value: "AES-256" },
-                { label: "Audits", value: "Quarterly" },
-                { label: "Breaches", value: "Zero" }
+                { label: "Encryption", value: t('privacy.sections.security.stats.encryption') },
+                { label: "Audits", value: t('privacy.sections.security.stats.audits') },
+                { label: "Breaches", value: t('privacy.sections.security.stats.breaches') }
             ],
             color: "from-violet-500 to-purple-400"
         },
         {
             id: 'control',
-            title: "Your Control",
-            question: "Who is in charge?",
+            title: t('privacy.sections.control.title'),
+            question: t('privacy.sections.control.question'),
             icon: "adjustments-horizontal",
-            content: "You are. Always. You can download every byte of data we have on you, correct it, or nuke it completely from our servers with a single click. No questions asked. No 'retention periods'.",
+            content: t('privacy.sections.control.content'),
             stats: [
-                { label: "Export Data", value: "Anytime" },
-                { label: "Delete Account", value: "Instant" },
-                { label: "Opt-out", value: "One-click" }
+                { label: "Export Data", value: t('privacy.sections.control.stats.export') },
+                { label: "Delete Account", value: t('privacy.sections.control.stats.delete') },
+                { label: "Opt-out", value: t('privacy.sections.control.stats.optout') }
             ],
             color: "from-orange-500 to-amber-400"
         }
@@ -109,12 +111,11 @@ const PrivacyPolicy = () => {
                 <section className="min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center items-center text-center px-4 relative pt-12 pb-12">
                     <div className="animate-fade-in-up max-w-4xl mx-auto">
                         <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 leading-tight">
-                            Your Privacy.<br />
-                            <span className="font-light italic text-slate-500">Uncompromised.</span>
+                            {t('privacy.heroTitle')}<br />
+                            <span className="font-light italic text-slate-500">{t('privacy.heroSubtitle')}</span>
                         </h1>
                         <p className="text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed px-4">
-                            We've redesigned our policy to be as transparent as our journalism.
-                            <br className="hidden md:block" />No legalese. Just the truth.
+                            {t('privacy.heroDesc')}
                         </p>
                     </div>
                 </section>
@@ -195,19 +196,19 @@ const PrivacyPolicy = () => {
 
                             {/* Final CTA Card */}
                             <div className="min-h-[30vh] flex flex-col justify-center items-center text-center py-12">
-                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8">Need the fine print?</h2>
+                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-8">{t('privacy.finePrintTitle')}</h2>
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
                                     <button
                                         onClick={handlePrint}
                                         className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-colors shadow-xl w-full sm:w-auto"
                                     >
-                                        Save as PDF
+                                        {t('privacy.savePdf')}
                                     </button>
                                     <a
                                         href="/contact-us"
                                         className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-full font-bold hover:bg-slate-50 transition-colors shadow-sm w-full sm:w-auto inline-flex justify-center items-center"
                                     >
-                                        Contact DPO
+                                        {t('privacy.contactDpo')}
                                     </a>
                                 </div>
                             </div>

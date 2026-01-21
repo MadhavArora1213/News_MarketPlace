@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import { useLanguage } from '../context/LanguageContext';
 
 const CookiePolicy = () => {
+    const { t } = useLanguage();
     // Mock state for the interactive visual
     const [toggles, setToggles] = useState({
         essential: true,
@@ -47,11 +49,10 @@ const CookiePolicy = () => {
                         <Icon name="cog" className="w-8 h-8 text-blue-400" />
                     </div>
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight">
-                        Transparency in <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">every byte.</span>
+                        {t('cookie.heroTitle')}
                     </h1>
                     <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                        We believe you should control your digital footprint. This dashboard explains exactly what cookies we use and gives you the knowledge to manage them.
+                        {t('cookie.heroDesc')}
                     </p>
                 </div>
             </div>
@@ -68,7 +69,7 @@ const CookiePolicy = () => {
                             <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                             <div className="w-3 h-3 rounded-full bg-green-400"></div>
                         </div>
-                        <div className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Cookie Configuration</div>
+                        <div className="text-sm font-semibold text-slate-400 uppercase tracking-wider">{t('cookie.config')}</div>
                     </div>
 
                     {/* List Rows */}
@@ -79,11 +80,11 @@ const CookiePolicy = () => {
                             <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-xl font-bold text-slate-900">Essential Cookies</h3>
+                                        <h3 className="text-xl font-bold text-slate-900">{t('cookie.essential.title')}</h3>
                                         <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded uppercase">Required</span>
                                     </div>
                                     <p className="text-slate-600 mb-3">
-                                        Strictly necessary for the site to function (e.g., login status, security keys). You cannot opt-out of these.
+                                        {t('cookie.essential.desc')}
                                     </p>
                                     <div className="text-xs font-mono text-slate-400 bg-slate-100 inline-block px-2 py-1 rounded">
                                         ID: Session_Auth_v2
@@ -104,10 +105,10 @@ const CookiePolicy = () => {
                             <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-xl font-bold text-slate-900">Analytics & Performance</h3>
+                                        <h3 className="text-xl font-bold text-slate-900">{t('cookie.performance.title')}</h3>
                                     </div>
                                     <p className="text-slate-600 mb-3">
-                                        Helps us understand how you use the site so we can make it better. Data is anonymous and aggregated.
+                                        {t('cookie.performance.desc')}
                                     </p>
                                     <div className="flex gap-2">
                                         <div className="text-xs font-mono text-slate-400 bg-slate-100 inline-block px-2 py-1 rounded">
@@ -128,10 +129,10 @@ const CookiePolicy = () => {
                             <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-xl font-bold text-slate-900">Marketing & Ads</h3>
+                                        <h3 className="text-xl font-bold text-slate-900">{t('cookie.marketing.title')}</h3>
                                     </div>
                                     <p className="text-slate-600 mb-3">
-                                        Used by third-parties to serve relevant ads to you on other platforms. If disabled, ads will be less relevant.
+                                        {t('cookie.marketing.desc')}
                                     </p>
                                     <div className="flex gap-2">
                                         <div className="text-xs font-mono text-slate-400 bg-slate-100 inline-block px-2 py-1 rounded">
@@ -152,7 +153,7 @@ const CookiePolicy = () => {
                     {/* Footer of Panel */}
                     <div className="bg-slate-50 px-8 py-6 border-t border-slate-200 text-center">
                         <p className="text-sm text-slate-500 mb-0">
-                            * This is a visual guide. To actually change your preferences, please check your browser settings or the popup consent manager.
+                            {t('cookie.footerNote')}
                         </p>
                     </div>
                 </div>
@@ -160,18 +161,18 @@ const CookiePolicy = () => {
                 {/* Detailed FAQ Section */}
                 <div className="mt-20 max-w-3xl mx-auto space-y-12">
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-4 border-l-4 border-blue-500 pl-4">How to manage cookies?</h2>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-4 border-l-4 border-blue-500 pl-4">{t('cookie.manageTitle')}</h2>
                         <p className="text-lg text-slate-600 leading-relaxed">
-                            Most web browsers allow you to control cookies through their settings preferences. You can switch off cookies at any time, but remember that this may disable some features of our website.
+                            {t('cookie.manageDesc')}
                         </p>
                         <div className="mt-6 flex flex-wrap gap-4">
                             <a href="https://support.google.com/chrome/answer/95647" className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 transition-colors">
                                 <Icon name="globe-alt" className="w-5 h-5 text-gray-400" />
-                                Chrome Guide
+                                {t('cookie.chromeGuide')}
                             </a>
                             <a href="https://support.apple.com/en-gb/guide/safari/sfri11471/mac" className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 transition-colors">
                                 <Icon name="globe-alt" className="w-5 h-5 text-gray-400" />
-                                Safari Guide
+                                {t('cookie.safariGuide')}
                             </a>
                         </div>
                     </div>
@@ -181,9 +182,9 @@ const CookiePolicy = () => {
                             <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
                                 <Icon name="clock" className="w-5 h-5 text-orange-600" />
                             </div>
-                            <h3 className="font-bold text-slate-900 mb-2">Duration</h3>
+                            <h3 className="font-bold text-slate-900 mb-2">{t('cookie.durationTitle')}</h3>
                             <p className="text-slate-600 text-sm">
-                                Some cookies are "session cookies" which are deleted when you close your browser. Others are "persistent" and stay until they expire or you delete them.
+                                {t('cookie.durationDesc')}
                             </p>
                         </div>
 
@@ -191,9 +192,9 @@ const CookiePolicy = () => {
                             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                                 <Icon name="share" className="w-5 h-5 text-purple-600" />
                             </div>
-                            <h3 className="font-bold text-slate-900 mb-2">Third Parties</h3>
+                            <h3 className="font-bold text-slate-900 mb-2">{t('cookie.thirdPartyTitle')}</h3>
                             <p className="text-slate-600 text-sm">
-                                We may use trusted third-party services (like Google Analytics) which may also set cookies on your device during your visit.
+                                {t('cookie.thirdPartyDesc')}
                             </p>
                         </div>
                     </div>
