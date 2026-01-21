@@ -5,13 +5,14 @@ import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useAuthModal } from '../../App';
 import Icon from './Icon';
+import { useLanguage } from '../../context/LanguageContext';
 import PublicationSubmissionForm from '../user/PublicationSubmissionForm';
 
 const UserHeader = () => {
   const { isAuthenticated, user, logout, hasRole, hasAnyRole, getRoleLevel } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const { showAuthModal } = useAuthModal();
-  const [language, setLanguage] = useState('en');
+  const { language, switchLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
   const [showArticleSubmissionPopup, setShowArticleSubmissionPopup] = useState(false);
@@ -37,9 +38,9 @@ const UserHeader = () => {
   ];
 
   const contactIcons = [
-    { name: 'whatsapp', href: 'https://whatsapp.com/channel/0029VbBpPm2J3juzI0r3wy11', label: 'WhatsApp', color: 'hover:text-green-600' },
-    { name: 'telegram', href: 'https://t.me/visibilityasaservice', label: 'Telegram', color: 'hover:text-blue-500' },
-    { name: 'mail', href: 'mailto:info@vaas.solutions', label: 'Email', color: 'hover:text-emerald-600' }
+    { name: 'whatsapp', href: 'https://whatsapp.com/channel/0029VbBpPm2J3juzI0r3wy11', label: t('WhatsApp'), color: 'hover:text-green-600' },
+    { name: 'telegram', href: 'https://t.me/visibilityasaservice', label: t('Telegram'), color: 'hover:text-blue-500' },
+    { name: 'mail', href: 'mailto:info@vaas.solutions', label: t('Email'), color: 'hover:text-emerald-600' }
   ];
 
   const menuItems = [
@@ -112,14 +113,14 @@ const UserHeader = () => {
   ];
 
   const services = [
-    { name: 'Home', href: '/', icon: 'home', bypassAuth: true },
-    { name: 'Submit Article', href: '#', icon: 'document-text', onClick: () => setShowArticleSubmissionPopup(true) },
-    { name: 'Publications', href: '/publications', icon: 'book-open' },
-    { name: 'Websites', href: '/website-submission', icon: 'globe' },
-    { name: 'Radio', href: '/radio', icon: 'radio' },
-    { name: 'Paparazzi', href: '/paparazzi', icon: 'camera' },
-    { name: 'Power List', href: '/power-lists', icon: 'chart-bar' },
-    { name: 'Awards', href: '/awards', icon: 'award' }
+    { name: t('Home'), href: '/', icon: 'home', bypassAuth: true },
+    { name: t('Submit Article'), href: '#', icon: 'document-text', onClick: () => setShowArticleSubmissionPopup(true) },
+    { name: t('Publications'), href: '/publications', icon: 'book-open' },
+    { name: t('Websites'), href: '/website-submission', icon: 'globe' },
+    { name: t('Radio'), href: '/radio', icon: 'radio' },
+    { name: t('Paparazzi'), href: '/paparazzi', icon: 'camera' },
+    { name: t('Power List'), href: '/power-lists', icon: 'chart-bar' },
+    { name: t('Awards'), href: '/awards', icon: 'award' }
   ];
 
   const allItems = [
@@ -178,14 +179,14 @@ const UserHeader = () => {
             {/* Language Selector */}
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value)}
+              onChange={(e) => switchLanguage(e.target.value)}
               className="hidden md:block bg-white/60 backdrop-blur-sm text-[#212121] text-xs py-1.5 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
             >
               <option value="en">🇺🇸 EN</option>
               <option value="ar">🇸🇦 AR</option>
               <option value="hi">🇮🇳 HI</option>
               <option value="ru">🇷🇺 RU</option>
-              <option value="zh">🇨🇳 ZH</option>
+              <option value="zh-CN">🇨🇳 ZH</option>
               <option value="fr">🇫🇷 FR</option>
             </select>
 
@@ -256,7 +257,7 @@ const UserHeader = () => {
             <div className="group relative">
               <button className="group relative flex items-center space-x-1.5 px-2.5 xl:px-3 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md">
                 <Icon name="menu" size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
-                <span className="whitespace-nowrap">More</span>
+                <span className="whitespace-nowrap">{t('More')}</span>
                 <Icon name="chevron-down" size="xs" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
               </button>
               <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30 max-h-[450px] overflow-y-auto custom-scrollbar">
@@ -289,14 +290,14 @@ const UserHeader = () => {
             <button onClick={showAuthModal} className="px-5 py-2 bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold text-sm rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
               <span className="flex items-center space-x-1.5">
                 <Icon name="login" size="xs" />
-                <span>Sign In / Sign Up</span>
+                <span>{t('Sign In / Sign Up')}</span>
               </span>
             </button>
           ) : (
             <button onClick={logout} className="px-5 py-2 bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold text-sm rounded-lg hover:from-[#D32F2F] hover:to-[#D32F2F] transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg backdrop-blur-sm">
               <span className="flex items-center justify-center space-x-1.5">
                 <Icon name="logout" size="xs" />
-                <span>Logout</span>
+                <span>{t('Logout')}</span>
               </span>
             </button>
           )}
@@ -367,7 +368,7 @@ const UserHeader = () => {
                       className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
                     >
                       <Icon name="menu" size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
-                      <span className="text-xs leading-tight truncate w-full">More</span>
+                      <span className="text-xs leading-tight truncate w-full">{t('More')}</span>
                     </button>
                   )}
                 </div>
@@ -377,7 +378,7 @@ const UserHeader = () => {
                       onClick={() => setMobileShowAllItems(false)}
                       className="text-xs text-[#1976D2] hover:text-[#1976D2] bg-white/50 hover:bg-white/60 px-3 py-1 rounded-md transition-colors"
                     >
-                      Show Less
+                      {t('Show Less')}
                     </button>
                   </div>
                 )}
@@ -391,14 +392,14 @@ const UserHeader = () => {
                   <button onClick={showAuthModal} className="w-full bg-gradient-to-r from-[#1976D2] to-[#0D47A1] text-white font-bold py-3 rounded-lg hover:from-[#0D47A1] hover:to-[#0D47A1] transition-all duration-300 shadow-md text-sm">
                     <span className="flex items-center justify-center space-x-1.5">
                       <Icon name="login" size="xs" />
-                      <span>Sign In / Sign Up</span>
+                      <span>{t('Sign In / Sign Up')}</span>
                     </span>
                   </button>
                 ) : (
                   <button onClick={logout} className="w-full bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold py-3 rounded-lg hover:from-[#D32F2F] hover:to-[#D32F2F] transition-all duration-300 shadow-md text-sm">
                     <span className="flex items-center justify-center space-x-1.5">
                       <Icon name="logout" size="xs" />
-                      <span>Logout</span>
+                      <span>{t('Logout')}</span>
                     </span>
                   </button>
                 )}
@@ -410,14 +411,14 @@ const UserHeader = () => {
               <div className="flex flex-wrap justify-center items-center gap-3 mb-3">
                 <select
                   value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
+                  onChange={(e) => switchLanguage(e.target.value)}
                   className="bg-white/60 backdrop-blur-sm text-[#212121] text-sm py-2 px-3 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] transition-all duration-300"
                 >
                   <option value="en">🇺🇸 EN</option>
                   <option value="ar">🇸🇦 AR</option>
                   <option value="hi">🇮🇳 HI</option>
                   <option value="ru">🇷🇺 RU</option>
-                  <option value="zh">🇨🇳 ZH</option>
+                  <option value="zh-CN">🇨🇳 ZH</option>
                   <option value="fr">🇫🇷 FR</option>
                 </select>
 
@@ -484,10 +485,10 @@ const UserHeader = () => {
               <div className="p-6">
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    Choose Submission Type
+                    {t('Choose Submission Type')}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    How would you like to submit your article?
+                    {t('How would you like to submit your article?')}
                   </p>
                 </div>
 
@@ -506,10 +507,10 @@ const UserHeader = () => {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900 text-sm group-hover:text-blue-700 transition-colors">
-                          Manual Submission
+                          {t('Manual Submission')}
                         </h4>
                         <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
-                          Welcome Back, submit your article here
+                          {t('Welcome Back, submit your article here')}
                         </p>
                       </div>
                     </div>
@@ -529,10 +530,10 @@ const UserHeader = () => {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900 text-sm group-hover:text-green-700 transition-colors">
-                          AI Generation
+                          {t('AI Generation')}
                         </h4>
                         <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
-                          Let AI help create your article
+                          {t('Let AI help create your article')}
                         </p>
                       </div>
                     </div>

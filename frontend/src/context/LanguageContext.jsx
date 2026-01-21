@@ -1,9 +1,23 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import enTranslations from '../locales/en.json';
+import arTranslations from '../locales/ar.json';
+import frTranslations from '../locales/fr.json';
+import hiTranslations from '../locales/hi.json';
+import zhTranslations from '../locales/zh.json';
+import ruTranslations from '../locales/ru.json';
+import { forceResetTranslationCache } from '../hooks/useTranslation';
 
-// Create the Language Context
 const LanguageContext = createContext();
 
-// Custom hook to use the Language Context
+const translations = {
+  en: enTranslations,
+  ar: arTranslations,
+  fr: frTranslations,
+  hi: hiTranslations,
+  'zh-CN': zhTranslations,
+  ru: ruTranslations,
+};
+
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
@@ -12,33 +26,66 @@ export const useLanguage = () => {
   return context;
 };
 
-// Language Provider Component
 export const LanguageProvider = ({ children }) => {
-  // State for current language, default to 'en'
-  const [language, setLanguageState] = useState('en');
+  const [language, setLanguage] = useState('en');
 
-  // Load language from localStorage on mount
+  useEffect(() => {
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [language]);
+
+  const switchLanguage = (newLanguage) => {
+    if (translations[newLanguage]) {
+      console.log(`🌍 Switching language: ${language} → ${newLanguage}`);
+
+      // FORCE clear ALL translation caches before switching
+      // This ensures translator.py API is called for fresh translations
+      forceResetTranslationCache();
+
+      setLanguage(newLanguage);
+      localStorage.setItem('language', newLanguage);
+    }
+  };
+
+  const t = (key, params = {}) => {
+    const keys = key.split('.');
+    let value = translations[language];
+    for (const k of keys) {
+      value = value?.[k];
+    }
+
+    let defaultValue = key;
+    let substitutionParams = {};
+
+    // Check if params is a string (use as default value) or object (use for substitution)
+    if (typeof params === 'string') {
+      defaultValue = params;
+    } else if (params && typeof params === 'object' && !Array.isArray(params)) {
+      substitutionParams = params;
+    }
+
+    let text = value || defaultValue;
+
+    // Perform parameter substitution if substitutionParams are provided
+    if (typeof text === 'string' && Object.keys(substitutionParams).length > 0) {
+      Object.keys(substitutionParams).forEach(param => {
+        // Escape the parameter key to avoid "Invalid regular expression" errors with braces
+        text = text.replace(new RegExp(`\\{${param}\\}`, 'g'), substitutionParams[param]);
+      });
+    }
+
+    return text;
+  };
+
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
-      setLanguageState(savedLanguage);
+    if (savedLanguage && translations[savedLanguage]) {
+      setLanguage(savedLanguage);
     }
   }, []);
 
-  // Function to change language, persists to localStorage
-  const setLanguage = (newLanguage) => {
-    setLanguageState(newLanguage);
-    localStorage.setItem('language', newLanguage);
-  };
-
-  // Context value
-  const value = {
-    language,
-    setLanguage,
-  };
-
   return (
-    <LanguageContext.Provider value={value}>
+    <LanguageContext.Provider value={{ language, switchLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

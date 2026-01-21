@@ -4,7 +4,7 @@ import Icon from './Icon';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useAuthModal } from '../../App';
-import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 
 const TopHeader = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,6 +13,7 @@ const TopHeader = () => {
 	const { isAuthenticated } = useAuth();
 	const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
 	const { showAuthModal } = useAuthModal();
+	const { t } = useLanguage();
 
 	const toggleDropdown = (name) => {
 		setActiveDropdown(activeDropdown === name ? null : name);
@@ -26,18 +27,16 @@ const TopHeader = () => {
 	}, []);
 
 	// Translated strings
-	const agencyRegistration = useTranslatedText('Agency Registration');
-	// const editorRegistration = useTranslatedText('Editor Registration');
-	const reporterRegistration = useTranslatedText('Reporter Registration');
-	// const submitPublication = useTranslatedText('Submit Publication');
-	const themePages = useTranslatedText('Theme Pages');
-	const realEstate = 'Creators';
-	const pressRelease = useTranslatedText('Press Release');
-	const podcasters = useTranslatedText('Podcasters');
-	const more = useTranslatedText('More');
-	const showLess = useTranslatedText('Show Less');
-	const moreActions = useTranslatedText('More Actions');
-	const adminAlert = useTranslatedText('Admins should submit publications through the admin panel.');
+	const agencyRegistration = t('Agency Registration');
+	const reporterRegistration = t('Reporter Registration');
+	const themePages = t('Theme Pages');
+	const realEstate = t('Creators');
+	const pressRelease = t('Press Release');
+	const podcasters = t('Podcasters');
+	const more = t('More');
+	const showLess = t('Show Less');
+	const moreActions = t('More Actions');
+	const adminAlert = t('Admins should submit publications through the admin panel.');
 
 	const actionItems = [
 		{ name: 'Agency Registration', displayName: agencyRegistration, href: '/agency-registration', icon: 'building', color: '#4CAF50', isLink: true, hasAuthCheck: false },
