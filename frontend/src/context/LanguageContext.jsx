@@ -48,10 +48,16 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const t = (key, params = {}) => {
-    const keys = key.split('.');
-    let value = translations[language];
-    for (const k of keys) {
-      value = value?.[k];
+    // First check if the full key exists (handles keys with dots/periods)
+    if (translations[language]?.[key]) {
+      value = translations[language][key];
+    } else {
+      // If not, try nested path lookup (legacy behavior)
+      const keys = key.split('.');
+      value = translations[language];
+      for (const k of keys) {
+        value = value?.[k];
+      }
     }
 
     let defaultValue = key;

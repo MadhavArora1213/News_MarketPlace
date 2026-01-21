@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from '../components/common/Icon';
-import UserHeader from '../components/common/UserHeader';
-import UserFooter from '../components/common/UserFooter';
+// import UserHeader from '../components/common/UserHeader';
+// import UserFooter from '../components/common/UserFooter';
 import { useLanguage } from '../context/LanguageContext';
 
 const FAQ = () => {
@@ -100,7 +100,7 @@ const FAQ = () => {
 
   return (
     <div className={`min-h-screen bg-[#E3F2FD] ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <UserHeader />
+      {/* <UserHeader /> */}
 
       {/* FAQ Content */}
       <section className="py-10">
@@ -243,7 +243,7 @@ const FAQ = () => {
         </div>
       </section>
 
-      <UserFooter />
+      {/* <UserFooter /> */}
     </div>
   );
 };
