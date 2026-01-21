@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import CosmicButton from '../components/common/CosmicButton';
-import useTranslatedText from '../hooks/useTranslatedText';
+import { useLanguage } from '../context/LanguageContext';
 
 const EventsSimplified = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Translated texts
-  const eventsTitle = useTranslatedText('Events');
-  const eventsDesc = useTranslatedText('Discover and register for upcoming events in the news and media industry.');
-  const viewEventsText = useTranslatedText('View All Events');
+  const eventsTitle = t('home.events');
+  const eventsDesc = t('events.pageDesc');
+  const viewEventsText = t('home.viewEvents');
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">

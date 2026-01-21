@@ -3,40 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PowerList = () => {
   const navigate = useNavigate();
   const [powerListItems, setPowerListItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useLanguage();
 
   // Translated strings
-  const translatedServiceUnavailable = useTranslatedText('Service temporarily unavailable. Please try again later.');
-  const translatedFailedLoad = useTranslatedText('Failed to load power lists. Please try again later.');
-  const translatedGeneral = useTranslatedText('General');
-  const translatedInfluential = useTranslatedText('Influential Professional');
-  const translatedLinkedIn = useTranslatedText('LinkedIn Connected');
-  const translatedNA = useTranslatedText('N/A');
-  const translatedZeroGrowth = useTranslatedText('+0%');
-  const powerListTitle = useTranslatedText('Power List 2024');
-  const powerListDesc = useTranslatedText('Celebrating the most influential organizations and leaders shaping the media and publishing landscape.');
-  const loadingPowerList = useTranslatedText('Loading power list...');
-  const followersText = useTranslatedText('followers');
-  const growthText = useTranslatedText('growth');
-  const viewProfileText = useTranslatedText('View Profile');
-  const joinEliteText = useTranslatedText('Join the Elite');
-  const joinEliteDesc = useTranslatedText('Want to be featured in our Power List? Join the ranks of industry leaders and innovators who are shaping the future of media and publishing.');
-  const recognitionText = useTranslatedText('Recognition');
-  const recognitionDesc = useTranslatedText('Get recognized as a leader in your field');
-  const networkingText = useTranslatedText('Networking');
-  const networkingDesc = useTranslatedText('Connect with industry leaders and peers');
-  const visibilityText = useTranslatedText('Visibility');
-  const visibilityDesc = useTranslatedText('Increase your brand visibility globally');
-  const applyNowText = useTranslatedText('Apply Now');
-  const applyNowDesc = useTranslatedText('Submit your application for consideration');
-  const applyForPowerListText = useTranslatedText('Apply for Power List');
-  const nominateSomeoneText = useTranslatedText('Nominate Someone');
+  const translatedServiceUnavailable = t('common.serviceUnavailable');
+  const translatedFailedLoad = t('common.failedLoad');
+  const translatedGeneral = t('common.general');
+  const translatedInfluential = t('powerList.influential');
+  const translatedLinkedIn = t('powerList.linkedInConnected');
+  const translatedNA = t('common.NA');
+  const translatedZeroGrowth = t('powerList.zeroGrowth');
+  const powerListTitle = t('powerList.title');
+  const powerListDesc = t('powerList.desc');
+  const loadingPowerList = t('powerList.loading');
+  const followersText = t('powerList.followers');
+  const growthText = t('powerList.growth');
+  const viewProfileText = t('powerList.viewProfile');
+  const joinEliteText = t('powerList.joinElite');
+  const joinEliteDesc = t('powerList.joinEliteDesc');
+  const recognitionText = t('powerList.recognition');
+  const recognitionDesc = t('powerList.recognitionDesc');
+  const networkingText = t('powerList.networking');
+  const networkingDesc = t('powerList.networkingDesc');
+  const visibilityText = t('powerList.visibility');
+  const visibilityDesc = t('powerList.visibilityDesc');
+  const applyNowText = t('powerList.applyNow');
+  const applyNowDesc = t('powerList.applyNowDesc');
+  const applyForPowerListText = t('powerList.applyFor');
+  const nominateSomeoneText = t('powerList.nominate');
 
   useEffect(() => {
     fetchPowerlists();
@@ -114,7 +116,7 @@ const PowerList = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-20">
-          
+
           <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
             {powerListTitle}
           </h1>
@@ -144,86 +146,86 @@ const PowerList = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-24">
             {powerListItems.map((item, index) => (
-            <div
-              key={item.id}
-              className="bg-[#FFFFFF] rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group relative"
-            >
-              {/* Rank Header */}
-              <div className="relative bg-gradient-to-r from-[#E3F2FD] to-[#BBDEFB] p-8 pb-6">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-[#1976D2]/10 rounded-full -mr-10 -mt-10"></div>
-                <div className="flex items-center justify-between relative z-10">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${getRankColor(item.rank)} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-                    <div className="text-center">
-                      <Icon name={getRankIcon(item.rank)} size="lg" className="text-[#FFFFFF] mb-1" />
-                      <span className="text-[#FFFFFF] font-bold text-xs">#{item.rank}</span>
+              <div
+                key={item.id}
+                className="bg-[#FFFFFF] rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 group relative"
+              >
+                {/* Rank Header */}
+                <div className="relative bg-gradient-to-r from-[#E3F2FD] to-[#BBDEFB] p-8 pb-6">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-[#1976D2]/10 rounded-full -mr-10 -mt-10"></div>
+                  <div className="flex items-center justify-between relative z-10">
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${getRankColor(item.rank)} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                      <div className="text-center">
+                        <Icon name={getRankIcon(item.rank)} size="lg" className="text-[#FFFFFF] mb-1" />
+                        <span className="text-[#FFFFFF] font-bold text-xs">#{item.rank}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{item.followers}</div>
+                      <div className="text-sm text-[#757575] font-medium">{followersText}</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-[#212121] group-hover:text-[#1976D2] transition-colors duration-300">{item.followers}</div>
-                    <div className="text-sm text-[#757575] font-medium">{followersText}</div>
+                </div>
+
+                {/* Content */}
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-[#212121] mb-2 group-hover:text-[#1976D2] transition-colors duration-300 leading-tight">
+                    {item.name}
+                  </h3>
+                  {item.current_company && (
+                    <p className="text-[#757575] mb-2 text-lg">{item.current_company}</p>
+                  )}
+                  <p className="text-[#757575] mb-6 leading-relaxed text-base">{item.description}</p>
+
+                  {/* Category Badge */}
+                  <div className="mb-6">
+                    <span className="bg-[#1976D2]/10 text-[#1976D2] px-4 py-2 rounded-full text-sm font-semibold border border-[#1976D2]/20">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="flex items-center space-x-3 mb-6">
+                    {item.linkedin_url && (
+                      <a href={item.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#0077B5]/10 rounded-lg flex items-center justify-center hover:bg-[#0077B5]/20 transition-colors">
+                        <Icon name="linkedin" size="sm" className="text-[#0077B5]" />
+                      </a>
+                    )}
+                    {item.instagram_url && (
+                      <a href={item.instagram_url} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#E4405F]/10 rounded-lg flex items-center justify-center hover:bg-[#E4405F]/20 transition-colors">
+                        <Icon name="instagram" size="sm" className="text-[#E4405F]" />
+                      </a>
+                    )}
+                    {item.company_website && (
+                      <a href={item.company_website} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#1976D2]/10 rounded-lg flex items-center justify-center hover:bg-[#1976D2]/20 transition-colors">
+                        <Icon name="globe" size="sm" className="text-[#1976D2]" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Growth Stats */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-[#4CAF50]/10 rounded-lg flex items-center justify-center">
+                        <Icon name="trending-up" size="sm" className="text-[#4CAF50]" />
+                      </div>
+                      <div>
+                        <span className="text-[#4CAF50] font-bold text-lg">{item.growth}</span>
+                        <span className="text-[#757575] text-sm ml-1">{growthText}</span>
+                      </div>
+                    </div>
+                    <CosmicButton
+                      variant="small"
+                      textColor="#000000"
+                      className="shadow-md hover:shadow-lg transition-shadow duration-300"
+                      onClick={() => navigate(`/power-lists/${item.id}`)}
+                    >
+                      {viewProfileText}
+                    </CosmicButton>
                   </div>
                 </div>
               </div>
-
-              {/* Content */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-[#212121] mb-2 group-hover:text-[#1976D2] transition-colors duration-300 leading-tight">
-                  {item.name}
-                </h3>
-                {item.current_company && (
-                  <p className="text-[#757575] mb-2 text-lg">{item.current_company}</p>
-                )}
-                <p className="text-[#757575] mb-6 leading-relaxed text-base">{item.description}</p>
-
-                {/* Category Badge */}
-                <div className="mb-6">
-                  <span className="bg-[#1976D2]/10 text-[#1976D2] px-4 py-2 rounded-full text-sm font-semibold border border-[#1976D2]/20">
-                    {item.category}
-                  </span>
-                </div>
-
-                {/* Social Links */}
-                <div className="flex items-center space-x-3 mb-6">
-                  {item.linkedin_url && (
-                    <a href={item.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#0077B5]/10 rounded-lg flex items-center justify-center hover:bg-[#0077B5]/20 transition-colors">
-                      <Icon name="linkedin" size="sm" className="text-[#0077B5]" />
-                    </a>
-                  )}
-                  {item.instagram_url && (
-                    <a href={item.instagram_url} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#E4405F]/10 rounded-lg flex items-center justify-center hover:bg-[#E4405F]/20 transition-colors">
-                      <Icon name="instagram" size="sm" className="text-[#E4405F]" />
-                    </a>
-                  )}
-                  {item.company_website && (
-                    <a href={item.company_website} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#1976D2]/10 rounded-lg flex items-center justify-center hover:bg-[#1976D2]/20 transition-colors">
-                      <Icon name="globe" size="sm" className="text-[#1976D2]" />
-                    </a>
-                  )}
-                </div>
-
-                {/* Growth Stats */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-[#4CAF50]/10 rounded-lg flex items-center justify-center">
-                      <Icon name="trending-up" size="sm" className="text-[#4CAF50]" />
-                    </div>
-                    <div>
-                      <span className="text-[#4CAF50] font-bold text-lg">{item.growth}</span>
-                      <span className="text-[#757575] text-sm ml-1">{growthText}</span>
-                    </div>
-                  </div>
-                  <CosmicButton
-                    variant="small"
-                    textColor="#000000"
-                    className="shadow-md hover:shadow-lg transition-shadow duration-300"
-                    onClick={() => navigate(`/power-lists/${item.id}`)}
-                  >
-                    {viewProfileText}
-                  </CosmicButton>
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
           </div>
         )}
 

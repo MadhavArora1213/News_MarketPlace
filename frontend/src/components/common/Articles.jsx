@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 
 // --- Replace ImageWithFallback with a memoized, polished implementation ---
 const ImageWithFallback = memo(function ImageWithFallback({ src, alt, className }) {
@@ -18,8 +19,8 @@ const ImageWithFallback = memo(function ImageWithFallback({ src, alt, className 
         aria-hidden="true"
       >
         <svg width="84" height="84" viewBox="0 0 24 24" fill="none" className="opacity-90">
-          <path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="#0D47A1" strokeWidth="0.8" fill="rgba(255,255,255,0.06)"/>
-          <path d="M7 14l3-3 2 2 5-5" stroke="#1976D2" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="#0D47A1" strokeWidth="0.8" fill="rgba(255,255,255,0.06)" />
+          <path d="M7 14l3-3 2 2 5-5" stroke="#1976D2" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     );
@@ -100,17 +101,20 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
   const [bookmarked, setBookmarked] = useState(false);
 
   // Translated texts
-  const readArticleText = useTranslatedText('Read Article');
-  const featuredText = useTranslatedText('Featured');
-  const removeBookmarkTextAC = useTranslatedText('Remove bookmark');
-  const bookmarkTextAC = useTranslatedText('Bookmark');
-  const shareArticleTextAC = useTranslatedText('Share article');
-  const aiArticleAlt = useTranslatedText('AI-generated article on News Marketplace platform showcasing innovative content creation');
-  const contentPending = useTranslatedText('Content pending...');
-  const aiAuthor = useTranslatedText('AI Author');
-  const aiContent = useTranslatedText('AI Content');
-  const articleText = useTranslatedText('Article');
-  const aiText = useTranslatedText('AI');
+  const { t } = useLanguage();
+
+  // Translated texts
+  const readArticleText = t('articles.read');
+  const featuredText = t('articles.featured');
+  const removeBookmarkTextAC = t('articles.removeBookmark');
+  const bookmarkTextAC = t('articles.bookmark');
+  const shareArticleTextAC = t('articles.share');
+  const aiArticleAlt = t('articles.aiAlt');
+  const contentPending = t('articles.pending');
+  const aiAuthor = t('articles.aiAuthor');
+  const aiContent = t('articles.aiContent');
+  const articleText = t('articles.article');
+  const aiText = t('articles.ai');
 
   const onToggleBookmark = useCallback((e) => {
     e.stopPropagation();
@@ -215,7 +219,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
           {/* meta mini bar bottom-left */}
           <div className="absolute left-4 bottom-4 z-20 flex items-center gap-3 bg-white/80 rounded-full px-3 py-1 shadow">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1976D2] to-[#0D47A1] text-white flex items-center justify-center text-xs font-semibold">
-              {article.name ? article.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : 'AI'}
+              {article.name ? article.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : 'AI'}
             </div>
             <div className="text-xs">
               <div className="font-medium text-slate-800 leading-none">{article.name || aiAuthor}</div>
@@ -258,7 +262,7 @@ const AiArticleCard = memo(function AiArticleCard({ article, featured = false, n
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1976D2] to-[#0D47A1] text-white flex items-center justify-center font-semibold shadow">
-                  {article.name ? article.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : aiText}
+                  {article.name ? article.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : aiText}
                 </div>
                 <div className="text-xs">
                   <div className="font-medium text-slate-800">{article.name || aiAuthor}</div>
@@ -299,11 +303,14 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
   const [bookmarked, setBookmarked] = useState(false);
 
   // Translated texts
-  const readText = useTranslatedText('Read');
-  const editorsPick = useTranslatedText('Editor\'s pick');
-  const removeBookmarkText = useTranslatedText('Remove bookmark');
-  const bookmarkText = useTranslatedText('Bookmark');
-  const shareArticleText = useTranslatedText('Share article');
+  const { t } = useLanguage();
+
+  // Translated texts
+  const readText = t('articles.readShort');
+  const editorsPick = t('articles.editorsPick');
+  const removeBookmarkText = t('articles.removeBookmark');
+  const bookmarkText = t('articles.bookmark');
+  const shareArticleText = t('articles.share');
 
   const onToggleBookmark = useCallback((e) => {
     e.stopPropagation();
@@ -338,7 +345,7 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
           {/* meta mini bar bottom-left */}
           <div className="absolute left-4 bottom-4 z-20 flex items-center gap-3 bg-white/80 rounded-full px-3 py-1 shadow">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1976D2] to-[#0D47A1] text-white flex items-center justify-center text-xs font-semibold">
-              {article.author.split(' ').map(n => n[0]).slice(0,2).join('')}
+              {article.author.split(' ').map(n => n[0]).slice(0, 2).join('')}
             </div>
             <div className="text-xs">
               <div className="font-medium text-slate-800 leading-none">{article.author}</div>
@@ -381,7 +388,7 @@ const ArticleCard = memo(function ArticleCard({ article, featured = false, navig
 
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1976D2] to-[#0D47A1] text-white flex items-center justify-center font-semibold shadow">
-                  {article.author.split(' ').map(n => n[0]).slice(0,2).join('')}
+                  {article.author.split(' ').map(n => n[0]).slice(0, 2).join('')}
                 </div>
                 <div className="text-xs">
                   <div className="font-medium text-slate-800">{article.author}</div>
@@ -424,16 +431,19 @@ const Articles = () => {
   const [error, setError] = useState(null);
 
   // Translated texts
-  const latestArticlesTitle = useTranslatedText('Latest Articles — Curated & Trending');
-  const descriptionText = useTranslatedText('Fresh perspectives, practical guides, and industry analysis — crafted for creators and publishers.');
-  const serviceUnavailableText = useTranslatedText('Service temporarily unavailable. Please try again later.');
-  const failedLoadText = useTranslatedText('Failed to load articles. Please try again later.');
-  const noArticlesText = useTranslatedText('No articles found.');
-  const viewAllText = useTranslatedText('View All Articles');
-  const noDescription = useTranslatedText('No description available.');
-  const unknownAuthor = useTranslatedText('Unknown Author');
-  const minRead = useTranslatedText('5 min read');
-  const generalCategory = useTranslatedText('General');
+  const { t } = useLanguage();
+
+  // Translated texts
+  const latestArticlesTitle = t('articles.latestTitle');
+  const descriptionText = t('articles.description');
+  const serviceUnavailableText = t('common.serviceUnavailable');
+  const failedLoadText = t('common.failedLoad');
+  const noArticlesText = t('articles.noArticles');
+  const viewAllText = t('articles.viewAll');
+  const noDescription = t('articles.noDescription');
+  const unknownAuthor = t('articles.unknownAuthor');
+  const minRead = t('articles.minRead');
+  const generalCategory = t('common.general');
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -503,9 +513,9 @@ const Articles = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12 relative">
-     
 
-        
+
+
 
           <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold leading-tight z-10 relative">
             <span className="bg-gradient-to-r from-[#4FC3F7] via-[#1976D2] to-[#0D47A1] bg-clip-text text-transparent">
@@ -571,11 +581,11 @@ const Articles = () => {
         </div>
 
         {/* View All */}
-         <div className="text-center mt-10">
-           <CosmicButton>
-             {viewAllText}
-           </CosmicButton>
-         </div>
+        <div className="text-center mt-10">
+          <CosmicButton>
+            {viewAllText}
+          </CosmicButton>
+        </div>
 
       </div>
 

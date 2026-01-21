@@ -4,11 +4,12 @@ import Icon from '../components/common/Icon';
 import CosmicButton from '../components/common/CosmicButton';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import useTranslatedText from '../hooks/useTranslatedText';
+import { useLanguage } from '../context/LanguageContext';
 
 const UserCookiesData = () => {
   const navigate = useNavigate();
   const { user, hasRole } = useAuth();
+  const { t } = useLanguage();
   const [allUsersData, setAllUsersData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,38 +20,38 @@ const UserCookiesData = () => {
   }, [user]);
 
   // Translated texts
-  const pageTitle = useTranslatedText('Cookie Data Overview');
-  const pageDescription = useTranslatedText('View cookie preferences, tracking data, and privacy information.');
-  const totalUsersLabel = useTranslatedText('Total Users');
-  const userDetailsLabel = useTranslatedText('User Details');
-  const cookiePreferencesTitle = useTranslatedText('Cookie Preferences');
-  const trackingDataTitle = useTranslatedText('Tracking Data');
-  const deviceInfoTitle = useTranslatedText('Device & Location Info');
-  const consentHistoryTitle = useTranslatedText('Consent History');
-  const userIdLabel = useTranslatedText('User ID');
-  const emailLabel = useTranslatedText('Email');
-  const nameLabel = useTranslatedText('Name');
-  const consentIdLabel = useTranslatedText('Consent ID');
-  const consentTimestampLabel = useTranslatedText('Consent Given');
-  const necessaryCookiesLabel = useTranslatedText('Necessary Cookies');
-  const analyticsCookiesLabel = useTranslatedText('Analytics Cookies');
-  const marketingCookiesLabel = useTranslatedText('Marketing Cookies');
-  const totalEventsLabel = useTranslatedText('Total Events');
-  const pagesViewedLabel = useTranslatedText('Pages Viewed');
-  const timeSpentLabel = useTranslatedText('Time Spent (seconds)');
-  const lastActivityLabel = useTranslatedText('Last Activity');
-  const ipAddressLabel = useTranslatedText('IP Address');
-  const locationLabel = useTranslatedText('Location');
-  const browserLabel = useTranslatedText('Browser');
-  const osLabel = useTranslatedText('Operating System');
-  const userAgentLabel = useTranslatedText('User Agent');
-  const refreshDataLabel = useTranslatedText('Refresh Data');
-  const exportDataLabel = useTranslatedText('Export Data');
-  const noDataLabel = useTranslatedText('No data available');
-  const enabledLabel = useTranslatedText('Enabled');
-  const disabledLabel = useTranslatedText('Disabled');
-  const accessDeniedLabel = useTranslatedText('Access Denied');
-  const adminOnlyLabel = useTranslatedText('This page is only accessible to administrators.');
+  const pageTitle = t('cookieData.title');
+  const pageDescription = t('cookieData.desc');
+  // const totalUsersLabel = t('cookieData.totalUsers'); // Not used in render
+  const userDetailsLabel = t('cookieData.userDetails');
+  const cookiePreferencesTitle = t('cookieData.preferences');
+  const trackingDataTitle = t('cookieData.trackingData');
+  const deviceInfoTitle = t('cookieData.deviceInfo');
+  const consentHistoryTitle = t('cookieData.consentHistory');
+  const userIdLabel = t('cookieData.userId');
+  const emailLabel = t('cookieData.email');
+  // const nameLabel = t('cookieData.name'); // Not used in render
+  const consentIdLabel = t('cookieData.consentId');
+  const consentTimestampLabel = t('cookieData.consentGiven');
+  const necessaryCookiesLabel = t('cookieData.necessary');
+  const analyticsCookiesLabel = t('cookieData.analytics');
+  const marketingCookiesLabel = t('cookieData.marketing');
+  const totalEventsLabel = t('cookieData.totalEvents');
+  const pagesViewedLabel = t('cookieData.pagesViewed');
+  const timeSpentLabel = t('cookieData.timeSpent');
+  const lastActivityLabel = t('cookieData.lastActivity');
+  const ipAddressLabel = t('cookieData.ipAddress');
+  const locationLabel = t('cookieData.location');
+  const browserLabel = t('cookieData.browser');
+  const osLabel = t('cookieData.os');
+  const userAgentLabel = t('cookieData.userAgent');
+  const refreshDataLabel = t('cookieData.refreshData');
+  const exportDataLabel = t('cookieData.exportData');
+  const noDataLabel = t('cookieData.noData');
+  const enabledLabel = t('cookieData.enabled');
+  const disabledLabel = t('cookieData.disabled');
+  // const accessDeniedLabel = t('cookieData.accessDenied'); // Not used in render
+  // const adminOnlyLabel = t('cookieData.adminOnly'); // Not used in render
 
   const loadUserCookieData = async () => {
     try {
@@ -101,7 +102,7 @@ const UserCookiesData = () => {
       exportDate: new Date().toISOString(),
       userData: allUsersData[0] || {}
     }, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
     const exportFileDefaultName = `cookie-data-${new Date().toISOString().split('T')[0]}.json`;
 

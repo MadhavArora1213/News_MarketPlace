@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const EventsSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const eventsTitle = useTranslatedText('Events');
-  const eventsDesc = useTranslatedText('Unlock sponsorships, guest appearances, and speaking opportunities at top business, lifestyle, real estate, tech, finance, Web3, hospitality, government, and other industry events — including summits, conferences, exhibitions, congresses, and expos. Connect with the top 1% of professionals, build long-term relationships, and gain credible visibility.');
-  const viewEventsText = useTranslatedText('View All Events');
+  const eventsTitle = t('home.events');
+  const eventsDesc = t('home.eventsHeroDesc');
+  const viewEventsText = t('home.viewEvents');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -44,8 +46,7 @@ const EventsSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Explore upcoming events, summits, conferences, exhibitions, congresses, expos, seminars and more..
-
+                {t('home.eventsCardTitle')}
               </h3>
 
               <CosmicButton

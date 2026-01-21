@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PaparazziSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const paparazziTitle = useTranslatedText('Paparazzi Network');
-  const paparazziDesc = useTranslatedText('Showcase your product launch, celebrity endorsements, gala dinners, corporate events, or real estate project announcements across global lifestyle and paparazzi outlets — including top Instagram pages, TikTok accounts, and YouTube channels. Gain billions of organic, multi-country views at a fraction of traditional performance-marketing costs.');
-  const viewPaparazziText = useTranslatedText('View Paparazzi Network');
+  const paparazziTitle = t('home.paparazzi');
+  const paparazziDesc = t('home.paparazziHeroDesc');
+  const viewPaparazziText = t('home.viewPaparazzi');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -44,7 +46,7 @@ const PaparazziSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Choose the right paparazzi pages tailored to your target audience.
+                {t('home.paparazziCardTitle')}
               </h3>
 
               <CosmicButton

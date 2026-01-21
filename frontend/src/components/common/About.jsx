@@ -2,31 +2,34 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 
 const About = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
   // Translated texts
-  const aboutText = useTranslatedText('About');
-  const newsMarketPlaceText = useTranslatedText('News MarketPlace');
-  const heroDescription = useTranslatedText('We\'re revolutionizing digital publishing by connecting content creators with global audiences through innovative, transparent, and efficient platforms.');
-  const articlesPublishedLabel = useTranslatedText('Articles Published');
-  const contentCreatorsLabel = useTranslatedText('Content Creators');
-  const countriesReachedLabel = useTranslatedText('Countries Reached');
-  const successRateLabel = useTranslatedText('Success Rate');
-  const premiumContentTitle = useTranslatedText('Premium Content');
-  const premiumContentDesc = useTranslatedText('Access high-quality, verified news content from trusted sources worldwide.');
-  const globalCommunityTitle = useTranslatedText('Global Community');
-  const globalCommunityDesc = useTranslatedText('Connect with writers, editors, and readers from across the globe.');
-  const verifiedPublishingTitle = useTranslatedText('Verified Publishing');
-  const verifiedPublishingDesc = useTranslatedText('Guaranteed publication with transparent pricing and quality assurance.');
-  const whyChooseUsTitle = useTranslatedText('Why Choose Us');
-  const whyChooseUsDesc = useTranslatedText('Discover the features that make News MarketPlace the preferred platform for content creators worldwide.');
-  const ourMissionTitle = useTranslatedText('Our Mission');
-  const ourMissionDesc = useTranslatedText('To democratize publishing by providing creators with the tools, platform, and audience they need to share their stories with the world. We believe in transparent, fair, and accessible media for everyone.');
-  const learnMoreButton = useTranslatedText('Learn More About Us');
-  const joinCommunityButton = useTranslatedText('Join Our Community');
-  const altText = useTranslatedText('News Marketplace global publishing network connecting content creators and publishers worldwide');
+  const aboutText = t('home.about'); // Reuse home.about
+  const newsMarketPlaceText = t('common.newsMarketPlace'); // Use common.newsMarketPlace
+  const heroDescription = t('about.heroDesc');
+  const articlesPublishedLabel = t('about.stats.articlesPublished');
+  const contentCreatorsLabel = t('about.stats.contentCreators');
+  const countriesReachedLabel = t('about.stats.countriesReached');
+  const successRateLabel = t('about.stats.successRate');
+  const premiumContentTitle = t('about.features.premiumContent');
+  const premiumContentDesc = t('about.features.premiumContentDesc');
+  const globalCommunityTitle = t('about.features.globalCommunity');
+  const globalCommunityDesc = t('about.features.globalCommunityDesc');
+  const verifiedPublishingTitle = t('about.features.verifiedPublishing');
+  const verifiedPublishingDesc = t('about.features.verifiedPublishingDesc');
+  const whyChooseUsTitle = t('about.whyChooseUs');
+  const whyChooseUsDesc = t('about.whyChooseUsDesc');
+  const ourMissionTitle = t('about.ourMission');
+  const ourMissionDesc = t('about.ourMissionDesc');
+  const learnMoreButton = t('about.learnMore');
+  const joinCommunityButton = t('about.joinCommunity');
+  const altText = t('about.altText');
 
   const stats = [
     { number: "10M+", label: articlesPublishedLabel, icon: "document-text" },

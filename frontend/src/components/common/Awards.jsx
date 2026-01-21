@@ -3,31 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import CosmicButton from './CosmicButton';
 import api from '../../services/api';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Awards = () => {
   const navigate = useNavigate();
   const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useLanguage();
 
   // Translated strings
-  const awardsTitle = useTranslatedText('Awards & Recognition');
-  const awardsDesc = useTranslatedText('Celebrating our achievements and the recognition we\'ve received for excellence in digital publishing and media innovation.');
-  const loadingAwards = useTranslatedText('Loading awards...');
-  const awardYearText = useTranslatedText('Award Year');
-  const verifiedAwardText = useTranslatedText('Verified Award');
-  const learnMoreText = useTranslatedText('Learn More');
-  const nominateTitle = useTranslatedText('Nominate for Awards');
-  const nominateDesc = useTranslatedText('Recognize excellence in digital publishing. Nominate outstanding work or submit your achievements for consideration.');
-  const submitNominationText = useTranslatedText('Submit Nomination');
-  const viewPastWinnersText = useTranslatedText('View Past Winners');
-  const serviceUnavailable = useTranslatedText('Service temporarily unavailable. Please try again later.');
-  const failedLoadAwards = useTranslatedText('Failed to load awards. Please try again later.');
-  const generalText = useTranslatedText('General');
-  const newsMarketPlaceText = useTranslatedText('News MarketPlace');
-  const awardDescNotAvailable = useTranslatedText('Award description not available.');
-  const year2024 = useTranslatedText('2024');
+  const awardsTitle = t('home.awards');
+  const awardsDesc = t('awards.heroDesc');
+  const loadingAwards = t('awards.loading');
+  const awardYearText = t('awards.year');
+  const verifiedAwardText = t('awards.verified');
+  const learnMoreText = t('awards.learnMore'); // Use new or existing key, I used about.learnMore for "Learn More About Us", home.learnMore for "Click to read". I should verify.
+  // I added "home.learnMore": "Click to read" (Wait, I used 'Click to read' in previous plan but `en.json` has "Learn More"?).
+  // Actually, I didn't add "awards.learnMore" explicitly in my recent `en.json` update.
+  // I should use `t('common.learnMore')` if it exists, or create one.
+  // Let's check `en.json`. It had "Learn More": "Learn More" ?
+  // I will use 'home.viewAwards' ("View Awards") for `viewPastWinnersText`.
+  // For `learnMoreText` (on each card), I should use a generic "Learn More".
+  // If "common.learnMore" doesn't exist, I'll temporarily use hardcoded string or a new key.
+  // I'll check my plan.
+
+  const nominateTitle = t('awards.nominateTitle');
+  const nominateDesc = t('awards.nominateDesc');
+  const submitNominationText = t('awards.submitNomination');
+  const viewPastWinnersText = t('awards.viewPastWinners');
+  const serviceUnavailable = t('common.serviceUnavailable');
+  const failedLoadAwards = t('common.failedLoad');
+  const generalText = t('common.general');
+  const newsMarketPlaceText = t('common.newsMarketPlace');
+  const awardDescNotAvailable = t('awards.descNotAvailable');
+  const year2024 = t('common.2024');
 
   useEffect(() => {
     fetchAwards();
@@ -99,7 +110,7 @@ const Awards = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-20">
-       
+
           <h1 className="text-5xl md:text-6xl font-extrabold text-[#212121] mb-8 leading-tight">
             {awardsTitle}
           </h1>

@@ -5,9 +5,11 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import { useLanguage } from '../context/LanguageContext';
 
 const ContactUs = () => {
   const recaptchaRef = useRef(null);
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -34,13 +36,13 @@ const ContactUs = () => {
   const [errors, setErrors] = useState({});
 
   const queryOptions = [
-    { value: 'current_customer', label: 'Current Customer' },
-    { value: 'potential_customer', label: 'Potential Customer' },
-    { value: 'current_vendor', label: 'Current Vendor' },
-    { value: 'potential_vendor', label: 'Potential Vendor' },
-    { value: 'suggestions_feedback', label: 'Suggestions/Feedback' },
-    { value: 'journalist_reporter', label: 'Journalist/Reporter/Editor/Contributor/Publishing Staff' },
-    { value: 'commercial_sales', label: 'Commercial/Sales/Key Accounts/Business Development/Brand Partnership/Event Partnership/Affiliate Programme/Media Partnership' }
+    { value: 'current_customer', label: t('contact.query.currentCustomer') },
+    { value: 'potential_customer', label: t('contact.query.potentialCustomer') },
+    { value: 'current_vendor', label: t('contact.query.currentVendor') },
+    { value: 'potential_vendor', label: t('contact.query.potentialVendor') },
+    { value: 'suggestions_feedback', label: t('contact.query.suggestions') },
+    { value: 'journalist_reporter', label: t('contact.query.journalist') },
+    { value: 'commercial_sales', label: t('contact.query.commercial') }
   ];
 
   const handleInputChange = (e) => {
@@ -248,9 +250,9 @@ const ContactUs = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <SEO
-        title="Contact Us"
-        description="Get in touch with News Marketplace. Contact us for inquiries, partnerships, or support. We're here to help with your publishing needs."
-        keywords="contact us, news marketplace, customer support, inquiries, partnerships, publishing support"
+        title={t('contact.title')}
+        description={t('contact.desc')}
+        keywords={t('contact.keywords')}
       />
       <UserHeader />
       <Toaster />
@@ -260,10 +262,10 @@ const ContactUs = () => {
           <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center mb-4">
               <Icon name="chat-bubble-left" size="xl" style={{ color: '#1976D2', marginRight: '12px' }} />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#212121]">Contact Us</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#212121]">{t('contact.title')}</h1>
             </div>
             <p className="text-sm sm:text-base text-[#757575] max-w-2xl mx-auto leading-relaxed">
-              Get in touch with us. We'd love to hear from you.
+              {t('contact.headerDesc')}
             </p>
           </div>
 
@@ -273,7 +275,7 @@ const ContactUs = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                   <Icon name="user" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                  Name *
+                  {t('contact.form.name')}
                 </label>
                 <input
                   type="text"
@@ -281,7 +283,7 @@ const ContactUs = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                  placeholder="Enter your full name"
+                  placeholder={t('contact.form.namePlaceholder')}
                 />
                 {errors.name && <p className="text-[#F44336] text-sm mt-1 flex items-center">
                   <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
@@ -292,7 +294,7 @@ const ContactUs = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                   <Icon name="users" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                  Gender *
+                  {t('contact.form.gender')}
                 </label>
                 <select
                   name="gender"
@@ -300,10 +302,10 @@ const ContactUs = () => {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] transition-all duration-200"
                 >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="">{t('contact.form.genderSelect')}</option>
+                  <option value="male">{t('contact.form.male')}</option>
+                  <option value="female">{t('contact.form.female')}</option>
+                  <option value="other">{t('contact.form.other')}</option>
                 </select>
                 {errors.gender && <p className="text-[#F44336] text-sm mt-1 flex items-center">
                   <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
@@ -317,7 +319,7 @@ const ContactUs = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                   <Icon name="phone" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                  Phone Number *
+                  {t('contact.form.phone')}
                 </label>
                 <input
                   type="tel"
@@ -325,7 +327,7 @@ const ContactUs = () => {
                   value={formData.number}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                  placeholder="Enter phone number"
+                  placeholder={t('contact.form.phonePlaceholder')}
                 />
                 {errors.number && <p className="text-[#F44336] text-sm mt-1 flex items-center">
                   <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
@@ -336,7 +338,7 @@ const ContactUs = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                   <Icon name="mail" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                  Email *
+                  {t('contact.form.email')}
                 </label>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
@@ -345,7 +347,7 @@ const ContactUs = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className="flex-1 px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                    placeholder="Enter email"
+                    placeholder={t('contact.form.emailPlaceholder')}
                   />
                   <button
                     type="button"
@@ -353,7 +355,7 @@ const ContactUs = () => {
                     disabled={otpSent.email || loading}
                     className="px-4 py-2.5 sm:py-3 bg-[#1976D2] text-[#FFFFFF] rounded-lg hover:bg-[#0D47A1] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
                   >
-                    {otpSent.email ? 'Sent' : 'Send OTP'}
+                    {otpSent.email ? t('contact.form.sent') : t('contact.form.sendOtp')}
                   </button>
                 </div>
                 {otpSent.email && !otpVerified.email && (
@@ -373,19 +375,19 @@ const ContactUs = () => {
                         disabled={loading}
                         className="px-4 py-2.5 bg-[#4CAF50] text-[#FFFFFF] rounded-lg hover:bg-[#388E3C] disabled:opacity-50 text-sm font-medium whitespace-nowrap transition-all duration-200 min-w-[100px]"
                       >
-                        Verify
+                        {t('contact.form.verify')}
                       </button>
                     </div>
                     <p className="text-xs sm:text-sm text-[#1976D2] flex items-start">
                       <Icon name="information-circle" size="xs" style={{ color: '#1976D2', marginRight: '4px', marginTop: '2px', flexShrink: 0 }} />
-                      Check your email for the OTP code. It may take a few minutes to arrive.
+                      {t('contact.form.checkEmail')}
                     </p>
                   </div>
                 )}
                 {otpVerified.email && (
                   <div className="mt-2 flex items-center text-[#4CAF50]">
                     <Icon name="check-circle" size="sm" style={{ color: '#4CAF50', marginRight: '6px' }} />
-                    <span className="text-sm">Email verified successfully!</span>
+                    <span className="text-sm">{t('contact.form.emailVerified')}</span>
                   </div>
                 )}
                 {errors.email && <p className="text-[#F44336] text-sm mt-1 flex items-center">
@@ -403,7 +405,7 @@ const ContactUs = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                 <Icon name="whatsapp" size="sm" style={{ color: '#25D366', marginRight: '8px' }} />
-                WhatsApp *
+                {t('contact.form.whatsapp')}
               </label>
               <input
                 type="tel"
@@ -411,7 +413,7 @@ const ContactUs = () => {
                 value={formData.whatsapp}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm sm:text-base bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                placeholder="Enter WhatsApp number"
+                placeholder={t('contact.form.whatsappPlaceholder')}
               />
               {errors.whatsapp && <p className="text-[#F44336] text-sm mt-1 flex items-center">
                 <Icon name="exclamation-triangle" size="xs" style={{ color: '#F44336', marginRight: '4px' }} />
@@ -423,7 +425,7 @@ const ContactUs = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                 <Icon name="question-mark-circle" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                Query Type *
+                {t('contact.form.queryType')}
               </label>
               <select
                 name="query"
@@ -431,7 +433,7 @@ const ContactUs = () => {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-[#FFFFFF] text-[#212121] text-sm sm:text-base transition-all duration-200"
               >
-                <option value="">Select query type</option>
+                <option value="">{t('contact.form.selectQueryType')}</option>
                 {queryOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -448,12 +450,12 @@ const ContactUs = () => {
             <div className="bg-[#F8F9FA] p-4 sm:p-6 rounded-lg border border-[#E9ECEF]">
               <h3 className="flex items-center text-lg font-semibold text-[#212121] mb-4">
                 <Icon name="building" size="sm" style={{ color: '#1976D2', marginRight: '8px' }} />
-                Company Information (Optional)
+                {t('contact.form.companyInfo')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-medium text-[#212121] mb-2">
-                    Company Name
+                    {t('contact.form.companyName')}
                   </label>
                   <input
                     type="text"
@@ -461,14 +463,14 @@ const ContactUs = () => {
                     value={formData.companyName}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2.5 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                    placeholder="Enter company name"
+                    placeholder={t('contact.form.companyNamePlaceholder')}
                   />
                 </div>
 
                 <div>
                   <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                     <Icon name="globe-alt" size="xs" style={{ color: '#757575', marginRight: '6px' }} />
-                    Company Website
+                    {t('contact.form.companyWebsite')}
                   </label>
                   <input
                     type="url"
@@ -483,7 +485,7 @@ const ContactUs = () => {
                 <div className="md:col-span-2 xl:col-span-1">
                   <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                     <Icon name="share" size="xs" style={{ color: '#757575', marginRight: '6px' }} />
-                    Social Media Links
+                    {t('contact.form.socialMedia')}
                   </label>
                   <input
                     type="text"
@@ -491,7 +493,7 @@ const ContactUs = () => {
                     value={formData.companySocialMedia}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2.5 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-sm bg-[#FFFFFF] text-[#212121] placeholder-[#757575] transition-all duration-200"
-                    placeholder="Social media links"
+                    placeholder={t('contact.form.socialMediaPlaceholder')}
                   />
                 </div>
               </div>
@@ -501,13 +503,13 @@ const ContactUs = () => {
             <div className="bg-[#F0F8FF] p-4 sm:p-6 rounded-lg border border-[#B3D9FF]">
               <h3 className="flex items-center text-lg font-semibold text-[#212121] mb-4">
                 <Icon name="user" size="sm" style={{ color: '#1976D2', marginRight: '8px' }} />
-                Personal Social Media (Optional)
+                {t('contact.form.personalSocial')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                     <Icon name="linkedin" size="xs" style={{ color: '#0077B5', marginRight: '6px' }} />
-                    LinkedIn Profile
+                    {t('contact.form.linkedin')}
                   </label>
                   <input
                     type="url"
@@ -522,7 +524,7 @@ const ContactUs = () => {
                 <div>
                   <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                     <Icon name="instagram" size="xs" style={{ color: '#E4405F', marginRight: '6px' }} />
-                    Instagram Profile
+                    {t('contact.form.instagram')}
                   </label>
                   <input
                     type="url"
@@ -540,7 +542,7 @@ const ContactUs = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                 <Icon name="question-mark-circle" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                How did you hear about us?
+                {t('contact.form.howDidYouHear')}
               </label>
               <input
                 type="text"
@@ -548,7 +550,7 @@ const ContactUs = () => {
                 value={formData.howDidYouHear}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-[#FFFFFF] text-[#212121] placeholder-[#757575] text-sm sm:text-base transition-all duration-200"
-                placeholder="How did you find us?"
+                placeholder={t('contact.form.howDidYouHearPlaceholder')}
               />
             </div>
 
@@ -556,7 +558,7 @@ const ContactUs = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-[#212121] mb-2">
                 <Icon name="document-text" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                Message *
+                {t('contact.form.message')}
               </label>
               <textarea
                 name="message"
@@ -564,17 +566,17 @@ const ContactUs = () => {
                 onChange={handleInputChange}
                 rows={window.innerWidth < 640 ? 4 : 5}
                 className="w-full px-3 py-2.5 sm:py-3 border border-[#BDBDBD] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-[#FFFFFF] text-[#212121] placeholder-[#757575] text-sm sm:text-base resize-none transition-all duration-200"
-                placeholder="Enter your message (max 500 characters)"
+                placeholder={t('contact.form.messagePlaceholder')}
                 maxLength={500}
               />
               <div className="flex justify-between items-center mt-2">
                 <p className="text-xs sm:text-sm text-[#757575]">
-                  {formData.message.length}/500 characters
+                  {formData.message.length}/500 {t('contact.form.chars')}
                 </p>
                 {formData.message.length > 450 && (
                   <p className="text-xs text-[#FF9800] flex items-center">
                     <Icon name="exclamation-triangle" size="xs" style={{ color: '#FF9800', marginRight: '4px' }} />
-                    Approaching limit
+                    {t('contact.form.approachingLimit')}
                   </p>
                 )}
               </div>
@@ -588,7 +590,7 @@ const ContactUs = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-[#212121] mb-3">
                 <Icon name="shield-check" size="sm" style={{ color: '#757575', marginRight: '8px' }} />
-                Security Verification *
+                {t('contact.form.securityVerification')}
               </label>
               <div className="flex justify-center lg:justify-start">
                 <div className="overflow-x-auto">
@@ -619,16 +621,16 @@ const ContactUs = () => {
                   className="mt-1 mr-3 flex-shrink-0 w-4 h-4 text-[#1976D2] border-[#BDBDBD] rounded focus:ring-[#1976D2] focus:ring-2"
                 />
                 <div className="text-sm text-[#795548] leading-relaxed">
-                  <span>I accept the </span>
-                  <a 
-                    href="/terms-and-conditions" 
+                  <span>{t('contact.form.acceptTerms')}</span>
+                  <a
+                    href="/terms-and-conditions"
                     className="text-[#1976D2] hover:text-[#0D47A1] font-medium underline transition-colors duration-200"
-                    target="_blank" 
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Terms and Conditions
+                    {t('contact.form.termsLink')}
                   </a>
-                  <span> and understand that my information will be processed according to the Privacy Policy.</span>
+                  <span>{t('contact.form.privacyPolicy')}</span>
                 </div>
               </label>
               {errors.termsAccepted && <p className="text-[#F44336] text-sm mt-2 flex items-center">
@@ -647,12 +649,12 @@ const ContactUs = () => {
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <Icon name="arrow-path" size="sm" className="animate-spin" style={{ color: '#FFFFFF', marginRight: '8px' }} />
-                    Submitting...
+                    {t('contact.form.submitting')}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
                     <Icon name="paper-airplane" size="sm" style={{ color: '#FFFFFF', marginRight: '8px' }} />
-                    Submit Contact Form
+                    {t('contact.form.submit')}
                   </div>
                 )}
               </button>
@@ -662,7 +664,7 @@ const ContactUs = () => {
             <div className="text-center pt-4">
               <p className="text-xs sm:text-sm text-[#757575] flex items-center justify-center">
                 <Icon name="mail" size="xs" style={{ color: '#757575', marginRight: '6px' }} />
-                Need help? Contact us at support@newsmarketplace.com
+                {t('contact.form.needHelp')}
               </p>
             </div>
           </form>

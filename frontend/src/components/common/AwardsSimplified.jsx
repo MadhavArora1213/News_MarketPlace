@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const AwardsSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated strings
-  const awardsTitle = useTranslatedText('Awards & Recognition');
-  const awardsDesc = useTranslatedText('Celebrating our achievements and the recognition we\'ve received for excellence in digital publishing and media innovation.');
-  const viewAwardsText = useTranslatedText('View Awards');
+  const awardsTitle = t('home.awards');
+  const awardsDesc = t('home.awardsHeroDesc');
+  const viewAwardsText = t('home.viewAwards');
 
   return (
     <section className="py-2 md:py-4 lg:py-6 bg-[#E3F2FD] relative overflow-hidden">
@@ -29,7 +31,7 @@ const AwardsSimplified = () => {
             {awardsTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Explore our prestigious collection of awards and recognitions celebrating excellence in digital publishing and media innovation worldwide. Discover our achievements in journalism, content creation, and industry leadership. Connect with award-winning professionals who set the standards for quality and innovation.
+            {t('home.awardsDesc')}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,7 +46,7 @@ const AwardsSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Celebrate Award-Winning Excellence
+                {t('home.awardsCardTitle')}
               </h3>
 
               <CosmicButton

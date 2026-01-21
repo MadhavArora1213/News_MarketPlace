@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ThemeSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const themeTitle = useTranslatedText('Themes');
-  const themeDesc = useTranslatedText('Explore our collection of themes for your publications and content.');
-  const viewThemesText = useTranslatedText('View All Themes');
+  const themeTitle = t('home.themes');
+  const themeDesc = t('home.themesHeroDesc');
+  const viewThemesText = t('home.viewThemes');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -29,7 +31,7 @@ const ThemeSimplified = () => {
             {themeTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Explore our extensive collection of professional themes designed for publications and content creators worldwide. Find the perfect design that matches your brand and enhances your visual storytelling. Customize your media presence with customizable templates that adapt to various content types.
+            {t('home.themesDesc')}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,7 +46,7 @@ const ThemeSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Elevate Your Content with Professional Themes
+                {t('home.themesCardTitle')}
               </h3>
 
               <CosmicButton

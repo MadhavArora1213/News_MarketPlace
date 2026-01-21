@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PublicationsSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const publicationsTitle = useTranslatedText('Publications');
-  const publicationsDesc = useTranslatedText('Global, Regional, National and Local Newspapers and Magazines. Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently.');
-  const viewPublicationsText = useTranslatedText('View All Publications');
+  const publicationsTitle = t('home.publications');
+  // const publicationsDesc = useTranslatedText('Global, Regional, National and Local Newspapers and Magazines. Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently.');
+  const viewPublicationsText = t('home.viewPublications');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -29,7 +31,7 @@ const PublicationsSimplified = () => {
             {publicationsTitle}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#757575] max-w-4xl mx-auto leading-relaxed font-light px-4 md:px-0">
-            Global, Regional, National and Local Newspapers and Magazines. Discover credible media outlets to amplify your vision and reach your target audience effectively and efficiently. Connect with trusted publishers and journalists. Explore diverse content opportunities worldwide.
+            {t('home.publicationsDesc')}
           </p>
           <div className="mt-4 md:mt-6 flex justify-center space-x-2 md:space-x-3">
             <div className="w-16 h-1.5 md:w-20 bg-gradient-to-r from-[#1976D2] to-[#42A5F5] rounded-full"></div>
@@ -44,10 +46,10 @@ const PublicationsSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Explore Our Publications Network
+                {t('home.publicationsCardTitle')}
               </h3>
               <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Find the perfect media outlet for your content needs and connect with our global network.
+                {t('home.publicationsCardDesc')}
               </p>
               <CosmicButton
                 variant="small"

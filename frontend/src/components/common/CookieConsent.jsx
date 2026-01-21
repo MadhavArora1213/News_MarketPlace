@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from './Icon';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
+import { useLanguage } from '../../context/LanguageContext';
 import { initializeAnalytics, initializeMarketing } from '../../utils/cookieUtils';
 
 const CookieConsent = () => {
@@ -8,20 +9,23 @@ const CookieConsent = () => {
   const [showDetails, setShowDetails] = useState(false);
 
   // Translated texts
-  const cookieTitle = useTranslatedText('Cookie Preferences');
-  const cookieDescription = useTranslatedText('We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.');
-  const acceptAllText = useTranslatedText('Accept All Cookies');
-  const rejectAllText = useTranslatedText('Reject All Cookies');
-  const customizeText = useTranslatedText('Customize Settings');
-  const necessaryCookiesText = useTranslatedText('Necessary Cookies');
-  const necessaryDesc = useTranslatedText('Required for the website to function properly. Cannot be disabled.');
-  const analyticsCookiesText = useTranslatedText('Analytics Cookies');
-  const analyticsDesc = useTranslatedText('Help us understand how visitors interact with our website.');
-  const marketingCookiesText = useTranslatedText('Marketing Cookies');
-  const marketingDesc = useTranslatedText('Used to deliver personalized advertisements.');
-  const savePreferencesText = useTranslatedText('Save Preferences');
-  const privacyPolicyText = useTranslatedText('Privacy Policy');
-  const cookiePolicyText = useTranslatedText('Cookie Policy');
+  const { t } = useLanguage();
+
+  // Translated texts
+  const cookieTitle = t('cookie.title');
+  const cookieDescription = t('cookie.desc');
+  const acceptAllText = t('cookie.acceptAll');
+  const rejectAllText = t('cookie.rejectAll');
+  const customizeText = t('cookie.customize');
+  // const necessaryCookiesText = t('cookie.necessary');
+  // const necessaryDesc = t('cookie.necessaryDesc');
+  // const analyticsCookiesText = t('cookie.analytics');
+  // const analyticsDesc = t('cookie.analyticsDesc');
+  // const marketingCookiesText = t('cookie.marketing');
+  // const marketingDesc = t('cookie.marketingDesc');
+  const savePreferencesText = t('cookie.save');
+  const privacyPolicyText = t('cookie.privacy');
+  const cookiePolicyText = t('cookie.policy');
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -197,13 +201,15 @@ const CookieSettingsForm = ({ onSave }) => {
     marketing: false
   });
 
-  const necessaryCookiesText = useTranslatedText('Necessary Cookies');
-  const necessaryDesc = useTranslatedText('Required for the website to function properly. Cannot be disabled.');
-  const analyticsCookiesText = useTranslatedText('Analytics Cookies');
-  const analyticsDesc = useTranslatedText('Help us understand how visitors interact with our website.');
-  const marketingCookiesText = useTranslatedText('Marketing Cookies');
-  const marketingDesc = useTranslatedText('Used to deliver personalized advertisements.');
-  const savePreferencesText = useTranslatedText('Save Preferences');
+  const { t } = useLanguage();
+
+  const necessaryCookiesText = t('cookie.necessary');
+  const necessaryDesc = t('cookie.necessaryDesc');
+  const analyticsCookiesText = t('cookie.analytics');
+  const analyticsDesc = t('cookie.analyticsDesc');
+  const marketingCookiesText = t('cookie.marketing');
+  const marketingDesc = t('cookie.marketingDesc');
+  const savePreferencesText = t('cookie.save');
 
   const handleToggle = (type) => {
     if (type === 'necessary') return; // Cannot disable necessary cookies
@@ -233,11 +239,10 @@ const CookieSettingsForm = ({ onSave }) => {
       <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
         <button
           onClick={() => handleToggle('analytics')}
-          className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
-            preferences.analytics
+          className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${preferences.analytics
               ? 'bg-[#1976D2] border-[#1976D2]'
               : 'border-gray-300'
-          }`}
+            }`}
         >
           {preferences.analytics && <Icon name="check" size="xs" className="text-white" />}
         </button>
@@ -251,11 +256,10 @@ const CookieSettingsForm = ({ onSave }) => {
       <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
         <button
           onClick={() => handleToggle('marketing')}
-          className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
-            preferences.marketing
+          className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${preferences.marketing
               ? 'bg-[#1976D2] border-[#1976D2]'
               : 'border-gray-300'
-          }`}
+            }`}
         >
           {preferences.marketing && <Icon name="check" size="xs" className="text-white" />}
         </button>

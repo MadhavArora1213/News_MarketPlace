@@ -1,20 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const AboutSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const aboutText = useTranslatedText('About');
-  const newsMarketPlaceText = useTranslatedText('Visibility as a Services (VaaS) Solutuions');
-  const heroDescription = useTranslatedText('VaaS Solutions provides comprehensive omnichannel media, corporate communication, marketing, and PR solutions, including article publishing, press releases, content distribution, and digital marketing services. The platform connects clients with credible visibility solutions, ensuring maximum reach and impact for their vision and objectives.');
-  const learnMoreButton = useTranslatedText('Click to read');
+  const aboutText = t('home.about');
+  const newsMarketPlaceText = t('home.aboutTitle');
+  const heroDescription = t('home.aboutHeroDesc');
+  const learnMoreButton = t('home.learnMore');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -45,10 +47,11 @@ const AboutSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                {learnMoreButton}
+                {t('home.learnMore')}
               </h3>
               <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                Discover the platform’s vision, mission, and the driving force behind the region’s first-of-its-kind MarTech platform for visibility services.              </p>
+                {t('home.aboutCardTitle')}
+              </p>
               <CosmicButton
                 variant="small"
                 textColor="#ffffff"
@@ -67,7 +70,7 @@ const AboutSimplified = () => {
           </div>
         </div>
       </div>
-    </section>
+    </section >
   );
 };
 

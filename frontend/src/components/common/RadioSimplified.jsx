@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RadioSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const radioTitle = useTranslatedText('Radio');
-  const radioDesc = useTranslatedText('Explore Advertisements and Interviews opportunities Across Radio Channels in Multiple Languages. Access RJs to cover your events, product launches, press conferences, and other corporate or lifestyle occasions. Amplify your visibility through our extensive, multi-language radio network.');
-  const viewRadioText = useTranslatedText('View Radio Programs');
+  const radioTitle = t('home.radio');
+  const radioDesc = t('home.radioHeroDesc');
+  const viewRadioText = t('home.viewRadio');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -44,10 +46,10 @@ const RadioSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Explore Our Radio Network.
+                {t('home.radioCardTitle')}
               </h3>
               <p className="text-white/90 leading-relaxed text-sm md:text-base mb-4">
-                English, Arabic, Hindi, Russian, Urdu, Persian and many more language channels..
+                {t('home.radioCardDesc')}
               </p>
               <CosmicButton
                 variant="small"

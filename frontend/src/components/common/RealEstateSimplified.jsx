@@ -1,19 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CosmicButton from './CosmicButton';
-import useTranslatedText from '../../hooks/useTranslatedText';
+// import useTranslatedText from '../../hooks/useTranslatedText';
 import { useAuth } from '../../context/AuthContext';
 import { useAuthModal } from '../../App';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RealEstateSimplified = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showAuthModal } = useAuthModal();
+  const { t } = useLanguage();
 
   // Translated texts
-  const realEstateTitle = 'Creators';
-  const realEstateDesc = useTranslatedText('Explore a wide range of Creators from different countries, languages, genders, and age groups. Partner with professionals who not only enhance your brand equity and amplify organic marketing but also drive substantial sales.');
-  const viewRealEstateText = useTranslatedText('View');
+  const realEstateTitle = t('home.creators');
+  const realEstateDesc = t('home.creatorsHeroDesc');
+  const viewRealEstateText = t('home.viewCreators');
 
   return (
     <section className="py-4 md:py-6 lg:py-8 bg-[#E3F2FD] relative overflow-hidden">
@@ -44,8 +46,7 @@ const RealEstateSimplified = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm"></div>
             <div className="relative z-10">
               <h3 className="text-lg md:text-xl font-bold text-white mb-2 transition-colors duration-500">
-                Discover the Perfect Creator for Your Project
-
+                {t('home.creatorsCardTitle')}
               </h3>
 
               <CosmicButton

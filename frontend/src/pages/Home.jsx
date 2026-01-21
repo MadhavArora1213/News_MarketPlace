@@ -21,7 +21,8 @@ import AuthModal from '../components/auth/AuthModal';
 import Loader from '../components/common/Loader';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
-import useTranslatedText from '../hooks/useTranslatedText';
+// import useTranslatedText from '../hooks/useTranslatedText';
+import { useLanguage } from '../context/LanguageContext';
 
 const Home = () => {
   const [showAuth, setSowAuth] = useState(false);
@@ -29,11 +30,12 @@ const Home = () => {
   const [transitioning, setTransitioning] = useState(false);
   const [hasTransitioned, setHasTransitioned] = useState(false);
   const { scrollYProgress } = useScroll();
+  const { t } = useLanguage();
 
   // Translated texts
-  const homeTitle = useTranslatedText('Home');
-  const homeDescription = useTranslatedText('Discover premium news content, connect with writers and readers, explore articles, awards, and more on News Marketplace.');
-  const homeKeywords = useTranslatedText('news marketplace, articles, journalism, writers, readers, awards, power list');
+  const homeTitle = t('Home');
+  const homeDescription = t('home.metaDescription');
+  const homeKeywords = t('home.metaKeywords');
 
   // Set the entire page background to primary light color
   const backgroundColor = '#E3F2FD';
