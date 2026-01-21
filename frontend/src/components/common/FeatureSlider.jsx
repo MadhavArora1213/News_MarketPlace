@@ -204,42 +204,42 @@ const FeatureSlider = () => {
             >
               {features.map((feature) => (
                 <div key={feature.id} className="w-full flex-shrink-0">
-                  <div className={`bg-gradient-to-br ${feature.bgGradient} relative min-h-[450px] md:min-h-[400px] lg:min-h-[450px]`}>
+                  <div className={`bg-gradient-to-br ${feature.bgGradient} relative h-full`}>
                     <div className="flex flex-col md:flex-row h-full">
-                      {/* Image Section - Reduced height on mobile */}
-                      <div className="w-full md:w-2/5 relative h-32 sm:h-40 md:h-auto min-h-[150px] md:min-h-0">
-                        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center py-6">
+                      {/* Image Section - More compact on mobile */}
+                      <div className="w-full md:w-2/5 relative h-28 sm:h-32 md:h-auto md:min-h-0">
+                        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center py-4">
                           <div className="text-center">
-                            <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4 bg-gradient-to-br ${feature.iconBg} rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300`}>
+                            <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-2 md:mb-4 bg-gradient-to-br ${feature.iconBg} rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300`}>
                               <Icon name={feature.placeholderIcon} size="xl" className="text-white" />
                             </div>
-                            <p className="text-xs sm:text-sm md:text-base text-white font-semibold px-4 drop-shadow-md max-w-[250px] mx-auto">{feature.leftText}</p>
+                            <p className="text-xs sm:text-sm md:text-base text-white font-semibold px-4 drop-shadow-md max-w-[250px] mx-auto leading-tight">{feature.leftText}</p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Content Section - Flexible padding and natural height */}
-                      <div className="w-full md:w-3/5 p-5 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center bg-white/10 backdrop-blur-sm">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 sm:mb-6">
-                          <div className={`p-2 sm:p-3 md:p-4 rounded-xl bg-white/20 backdrop-blur-sm mb-3 sm:mb-0 sm:mr-4 shadow-lg border border-white/30 transform hover:scale-105 transition-all duration-300`}>
+                      {/* Content Section - Natural height based on content */}
+                      <div className="w-full md:w-3/5 p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center bg-white/10 backdrop-blur-sm">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center mb-3 sm:mb-6">
+                          <div className={`p-2 sm:p-3 md:p-4 rounded-xl bg-white/20 backdrop-blur-sm mb-2 sm:mb-0 sm:mr-4 shadow-lg border border-white/30 transform hover:scale-105 transition-all duration-300`}>
                             <Icon name={feature.icon} size="lg" className="text-white" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 leading-tight drop-shadow-md">{feature.title}</h3>
-                            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 font-medium drop-shadow-sm">{feature.subtitle}</p>
+                            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-0.5 leading-tight drop-shadow-md">{feature.title}</h3>
+                            <p className="text-xs sm:text-base md:text-lg lg:text-xl text-white/90 font-medium drop-shadow-sm">{feature.subtitle}</p>
                           </div>
                         </div>
 
-                        <p className="text-white/95 leading-relaxed mb-6 text-sm sm:text-base md:text-lg drop-shadow-sm line-clamp-4 md:line-clamp-none">
+                        <p className="text-white/95 leading-relaxed mb-4 md:mb-6 text-xs sm:text-base md:text-lg drop-shadow-sm">
                           {feature.description}
                         </p>
 
                         <div className="space-y-4">
-                          {/* Feature Highlights - Better grid for tablet/mobile */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm md:text-base text-white/90 mt-2 md:mt-6">
+                          {/* Feature Highlights - Compact grid */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-3 md:gap-4 text-[10px] sm:text-sm md:text-base text-white/90 mt-1 md:mt-6">
                             {feature.highlights.map((highlight, index) => (
-                              <div key={index} className="flex items-center justify-start bg-white/10 backdrop-blur-sm rounded-lg p-1.5 sm:p-2 border border-white/5">
-                                <Icon name={highlight.icon} size="sm" className="text-[#4CAF50] mr-2 flex-shrink-0" />
+                              <div key={index} className="flex items-center justify-start bg-white/10 backdrop-blur-sm rounded-lg p-1 sm:p-2 border border-white/5">
+                                <Icon name={highlight.icon} size="sm" className="text-[#4CAF50] mr-1.5 flex-shrink-0" />
                                 <span className="font-medium break-words leading-tight">{highlight.text}</span>
                               </div>
                             ))}
