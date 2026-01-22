@@ -7,6 +7,7 @@ import { useTranslationArray } from '../hooks/useTranslation';
 
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import Icon from '../components/common/Icon';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
@@ -149,26 +150,7 @@ const CareersPage = () => {
     navigate(`/careers/${career.id}`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
-        <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('loading')}</p>
-          </div>
-        </div>
-        <UserFooter />
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
@@ -230,7 +212,28 @@ const CareersPage = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              {translatedCareers.length > 0 ? (
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-2 flex-1">
+                          <Skeleton className="h-6 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <Skeleton className="h-4 w-2/3" />
+                        </div>
+                        <Skeleton className="w-12 h-12 rounded-lg" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                      <Skeleton className="h-20 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : translatedCareers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {translatedCareers.map((career, index) => (
                     <motion.div
@@ -328,13 +331,6 @@ const CareersPage = () => {
                   </button>
                 </div>
               )}
-
-              {/* Placeholder for career list */}
-              {translatedCareers.length === 0 && loading && (
-                <div className="text-center py-8 border-t" style={{ borderColor: theme.borderLight }}>
-                  <p className="text-sm" style={{ color: theme.textSecondary }}>{t('loading', 'Loading...')}</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -342,7 +338,6 @@ const CareersPage = () => {
 
       <UserFooter />
 
-      {/* Auth Modal */}
       {showAuth && (
         <AuthModal
           isOpen={showAuth}
@@ -351,13 +346,12 @@ const CareersPage = () => {
         />
       )}
 
-      {/* Career Submission Modal */}
       {showCareerSubmission && (
         <CareerSubmissionForm
           onClose={handleCloseCareerSubmission}
           onSuccess={() => {
             handleCloseCareerSubmission();
-            fetchCareers(); // Refresh the careers list
+            fetchCareers();
           }}
         />
       )}

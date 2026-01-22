@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import Icon from '../components/common/Icon';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
@@ -169,16 +170,49 @@ const CareerDetailPage = () => {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('loading')}</p>
+        {/* Breadcrumb Skeleton */}
+        <div className="px-4 sm:px-6 lg:px-8 py-4 bg-white border-b">
+          <div className="max-w-7xl mx-auto">
+            <Skeleton className="h-4 w-48" />
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 space-y-8">
+            {/* Header info skeleton */}
+            <div className="flex justify-between items-start">
+              <div className="flex-1 space-y-4">
+                <Skeleton className="h-10 w-3/4" />
+                <div className="flex gap-4">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </div>
+              <Skeleton className="w-16 h-16 rounded-lg" />
+            </div>
+
+            {/* Price/Details block skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Skeleton className="h-24 w-full rounded-lg" />
+              <Skeleton className="h-24 w-full rounded-lg" />
+              <Skeleton className="h-24 w-full rounded-lg" />
+            </div>
+
+            {/* Description content skeleton */}
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-11/12" />
+            </div>
+
+            <Skeleton className="h-40 w-full rounded-lg" />
+
+            <div className="pt-6 border-t">
+              <Skeleton className="h-12 w-full rounded-lg" />
+            </div>
           </div>
         </div>
         <UserFooter />

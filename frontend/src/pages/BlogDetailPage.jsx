@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, User, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Calendar, User, ArrowRight, Clock } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationObject, useTranslationArray } from '../hooks/useTranslation';
 
@@ -186,8 +187,41 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-white">
         <UserHeader />
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1976D2]"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          {/* Back Navigation Skeleton */}
+          <div className="mb-6">
+            <Skeleton className="h-4 w-32" />
+          </div>
+
+          {/* Category Badge Skeleton */}
+          <div className="mb-4">
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </div>
+
+          {/* Title Skeleton */}
+          <Skeleton className="h-10 md:h-16 w-3/4 mb-6" />
+
+          {/* Author info Skeleton */}
+          <div className="flex items-center gap-4 mb-8">
+            <Skeleton className="w-12 h-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+
+          {/* Image Skeleton */}
+          <Skeleton className="aspect-[16/9] md:aspect-[21/9] w-full rounded-lg mb-12" />
+
+          {/* Content Skeleton */}
+          <div className="max-w-4xl mx-auto space-y-4">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-11/12" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-40 w-full rounded-lg" />
+            <Skeleton className="h-6 w-10/12" />
+            <Skeleton className="h-6 w-full" />
+          </div>
         </div>
         <UserFooter />
       </div>

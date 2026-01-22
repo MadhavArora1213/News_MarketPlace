@@ -4,6 +4,7 @@ import { Search, Filter, Calendar, User, ArrowRight, Clock, Eye, MessageCircle, 
 import { useNavigate, Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 
@@ -170,8 +171,19 @@ const BlogListingPage = () => {
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1976D2]"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden p-6 space-y-4">
+                  <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <div className="flex justify-between items-center pt-4">
+                    <Skeleton className="h-8 w-24 rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <>
