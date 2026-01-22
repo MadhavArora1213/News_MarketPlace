@@ -30,7 +30,7 @@ const CareersSidebar = ({
   onSearchChange,
   locationFilter,
   onLocationChange,
-  locations,
+  locations = [],
   typeFilter,
   onTypeChange,
   salaryMin,
@@ -39,24 +39,28 @@ const CareersSidebar = ({
   onSalaryMaxChange,
   companyFilter,
   onCompanyChange,
-  companies,
+  companies = [],
   onClearFilters
 }) => {
   const { t, language } = useLanguage();
 
+  // Ensure locations and companies are always arrays
+  const safeLocations = locations || [];
+  const safeCompanies = companies || [];
+
   // Prepare locations for translation
-  const locationsForTranslation = locations.map(loc => ({ name: loc }));
+  const locationsForTranslation = safeLocations.map(loc => ({ name: loc }));
   const { translatedItems: translatedLocationItems } = useTranslationArray(locationsForTranslation, ['name']);
-  const translatedLocations = translatedLocationItems.map(item => ({
-    original: locations[translatedLocationItems.indexOf(item)],
+  const translatedLocations = translatedLocationItems.map((item, index) => ({
+    original: safeLocations[index],
     translated: item.name
   }));
 
   // Prepare companies for translation
-  const companiesForTranslation = companies.map(comp => ({ name: comp }));
+  const companiesForTranslation = safeCompanies.map(comp => ({ name: comp }));
   const { translatedItems: translatedCompanyItems } = useTranslationArray(companiesForTranslation, ['name']);
-  const translatedCompanies = translatedCompanyItems.map(item => ({
-    original: companies[translatedCompanyItems.indexOf(item)],
+  const translatedCompanies = translatedCompanyItems.map((item, index) => ({
+    original: safeCompanies[index],
     translated: item.name
   }));
 

@@ -96,8 +96,11 @@ const CareersPage = () => {
     }
   };
 
-  // Translate careers
-  const { translatedItems: translatedCareers } = useTranslationArray(careers, ['title', 'description', 'company', 'location', 'type']);
+  // Translate careers - with null safety
+  const { translatedItems: rawTranslatedCareers } = useTranslationArray(careers, ['title', 'description', 'company', 'location', 'type']);
+
+  // Ensure translatedCareers is never null - fallback to original careers or empty array
+  const translatedCareers = rawTranslatedCareers || careers || [];
 
 
   useEffect(() => {

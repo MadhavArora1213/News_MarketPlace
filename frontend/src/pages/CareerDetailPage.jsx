@@ -49,8 +49,11 @@ const CareerDetailPage = () => {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  // Translate career details
-  const { translatedObject: translatedCareer } = useTranslationObject(career, ['title', 'description', 'company', 'location', 'type']);
+  // Translate career details - with null safety
+  const { translatedObject: rawTranslatedCareer } = useTranslationObject(career, ['title', 'description', 'company', 'location', 'type']);
+
+  // Ensure translatedCareer is never null - fallback to original career or empty object
+  const translatedCareer = rawTranslatedCareer || career || {};
 
 
   useEffect(() => {
