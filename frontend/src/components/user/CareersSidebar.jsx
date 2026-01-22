@@ -1,5 +1,5 @@
-import React from 'react';
 import { Search, X } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -41,6 +41,7 @@ const CareersSidebar = ({
   companies,
   onClearFilters
 }) => {
+  const { t } = useLanguage();
   const handleClearFilters = () => {
     onSearchChange('');
     onLocationChange('');
@@ -55,7 +56,7 @@ const CareersSidebar = ({
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold" style={{ color: theme.textPrimary }}>
-          Filters & Search
+          {t('careers.filtersAndSearch')}
         </h3>
         <button
           onClick={handleClearFilters}
@@ -74,19 +75,19 @@ const CareersSidebar = ({
             e.target.style.color = theme.primary;
           }}
         >
-          Clear All
+          {t('careers.clearAll')}
         </button>
       </div>
 
       {/* Search */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-          Search Jobs
+          {t('careers.searchJobs')}
         </label>
         <div className="relative">
           <input
             type="text"
-            placeholder="Job title, company..."
+            placeholder={t('careers.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent"
@@ -99,7 +100,7 @@ const CareersSidebar = ({
       {/* Location Filter */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-          Location
+          {t('careers.location')}
         </label>
         <select
           value={locationFilter}
@@ -107,7 +108,7 @@ const CareersSidebar = ({
           className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
           style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
         >
-          <option value="">All Locations</option>
+          <option value="">{t('careers.allLocations')}</option>
           {locations.map(location => (
             <option key={location} value={location}>{location}</option>
           ))}
@@ -117,7 +118,7 @@ const CareersSidebar = ({
       {/* Job Type Filter */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-          Job Type
+          {t('careers.jobType')}
         </label>
         <select
           value={typeFilter}
@@ -125,21 +126,21 @@ const CareersSidebar = ({
           className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
           style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
         >
-          <option value="">All Types</option>
-          <option value="full-time">Full-time</option>
-          <option value="part-time">Part-time</option>
+          <option value="">{t('careers.allTypes')}</option>
+          <option value="full-time">{t('careers.fullTime')}</option>
+          <option value="part-time">{t('careers.partTime')}</option>
         </select>
       </div>
 
       {/* Salary Range Filter */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-          Salary Range
+          {t('careers.salaryRange')}
         </label>
         <div className="grid grid-cols-2 gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('careers.min')}
             value={salaryMin}
             onChange={(e) => onSalaryMinChange(e.target.value)}
             className="px-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] text-sm"
@@ -147,7 +148,7 @@ const CareersSidebar = ({
           />
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('careers.max')}
             value={salaryMax}
             onChange={(e) => onSalaryMaxChange(e.target.value)}
             className="px-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] text-sm"
@@ -159,7 +160,7 @@ const CareersSidebar = ({
       {/* Company Filter */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-          Company
+          {t('careers.company')}
         </label>
         <select
           value={companyFilter}
@@ -167,7 +168,7 @@ const CareersSidebar = ({
           className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
           style={{ borderColor: theme.borderLight, backgroundColor: theme.background }}
         >
-          <option value="">All Companies</option>
+          <option value="">{t('careers.allCompanies')}</option>
           {companies.map(company => (
             <option key={company} value={company}>{company}</option>
           ))}
@@ -183,7 +184,7 @@ const CareersSidebar = ({
         onMouseLeave={(e) => e.target.style.backgroundColor = theme.secondary}
       >
         <X size={16} />
-        Reset Filters
+        {t('careers.resetFilters')}
       </button>
     </div>
   );

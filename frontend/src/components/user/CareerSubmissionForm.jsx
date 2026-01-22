@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 import Icon from '../common/Icon';
 import api from '../../services/api';
 
 // Career Submission Form Component
 const CareerSubmissionForm = ({ onClose, onSuccess }) => {
+  const { t } = useLanguage();
   const { isAuthenticated, user } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
@@ -34,7 +36,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
       return;
     }
     if (isAdminAuthenticated) {
-      alert('Admins should submit careers through the admin panel.');
+      alert(t('careers.form.adminAlert'));
       onClose();
       return;
     }
@@ -88,11 +90,11 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
           },
           'expired-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('careers.form.recaptchaExpired') }));
           },
           'error-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA error. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('careers.form.recaptchaError') }));
           }
         });
         console.log('reCAPTCHA rendered with widget ID:', widgetId);
@@ -129,26 +131,26 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
 
     // Required fields
     if (!formData.title || formData.title.trim() === '') {
-      newErrors.title = 'Title is required';
+      newErrors.title = t('careers.form.titleRequired');
     }
 
     // Optional validations
     if (formData.salary && (isNaN(formData.salary) || parseFloat(formData.salary) < 0)) {
-      newErrors.salary = 'Salary must be a positive number';
+      newErrors.salary = t('careers.form.salaryInvalid');
     }
 
     if (formData.type && !['full-time', 'part-time'].includes(formData.type)) {
-      newErrors.type = 'Invalid job type';
+      newErrors.type = t('careers.form.typeInvalid');
     }
 
     // Terms accepted
     if (!formData.terms_accepted) {
-      newErrors.terms_accepted = 'You must accept the terms and conditions';
+      newErrors.terms_accepted = t('careers.form.termsRequired');
     }
 
     // reCAPTCHA
     if (!recaptchaToken) {
-      newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
+      newErrors.recaptcha = t('careers.form.recaptchaRequired');
     }
 
     setErrors(newErrors);
@@ -194,16 +196,16 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
     } catch (error) {
       console.error('Error submitting career:', error);
 
-      let errorMessage = 'Failed to submit career opportunity. Please try again.';
+      let errorMessage = t('careers.submit.errorMessage');
 
       if (error.response?.status === 401) {
-        errorMessage = 'Authentication required. Please log in and try again.';
+        errorMessage = t('careers.form.authRequired');
         navigate('/login');
         return;
       } else if (error.response?.status === 429) {
-        errorMessage = error.response.data.message || 'Rate limit exceeded. Please try again later.';
+        errorMessage = error.response.data.message || t('careers.form.rateLimitExceeded');
       } else if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        errorMessage = t('careers.form.validationError');
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
@@ -326,7 +328,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-            Submit Career Opportunity
+            {t('careers.submit.title')}
           </h2>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>
             ×
@@ -335,7 +337,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
 
         <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
           <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-            Share career opportunities with our community. All submissions are reviewed before publication.
+            {t('careers.submit.description')}
           </p>
         </div>
 
@@ -352,9 +354,9 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
           }}>
             <Icon name="check-circle" size="lg" style={{ color: theme.success }} />
             <div>
-              <div style={{ fontWeight: '600', color: theme.success }}>Career Opportunity Submitted Successfully!</div>
+              <div style={{ fontWeight: '600', color: theme.success }}>{t('careers.submit.successTitle')}</div>
               <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                Your submission has been received and is pending review. You will be notified once it's approved.
+                {t('careers.submit.successMessage')}
               </div>
             </div>
           </div>
@@ -373,9 +375,9 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
           }}>
             <Icon name="exclamation-triangle" size="lg" style={{ color: theme.danger }} />
             <div>
-              <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+              <div style={{ fontWeight: '600', color: theme.danger }}>{t('careers.submit.errorTitle')}</div>
               <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                {errors.submit || 'Please check your input and try again.'}
+                {errors.submit || t('careers.submit.errorMessage')}
               </div>
             </div>
           </div>
@@ -386,7 +388,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
             <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Job Title <span style={requiredAsterisk}>*</span>
+                  {t('careers.form.jobTitle')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -397,13 +399,13 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                   onBlur={handleBlur}
                   style={getInputStyle('title', focusedField === 'title')}
                   required
-                  placeholder="e.g., Senior Reporter, Content Writer"
+                  placeholder={t('careers.form.jobTitlePlaceholder')}
                 />
                 {errors.title && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.title}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Company</label>
+                <label style={labelStyle}>{t('careers.form.company')}</label>
                 <input
                   type="text"
                   name="company"
@@ -412,13 +414,13 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                   onFocus={() => handleFocus('company')}
                   onBlur={handleBlur}
                   style={getInputStyle('company', focusedField === 'company')}
-                  placeholder="e.g., News Corp, Media Inc"
+                  placeholder={t('careers.form.companyPlaceholder')}
                 />
                 {errors.company && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.company}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Location</label>
+                <label style={labelStyle}>{t('careers.form.location')}</label>
                 <input
                   type="text"
                   name="location"
@@ -427,13 +429,13 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                   onFocus={() => handleFocus('location')}
                   onBlur={handleBlur}
                   style={getInputStyle('location', focusedField === 'location')}
-                  placeholder="e.g., New York, USA or Remote"
+                  placeholder={t('careers.form.locationPlaceholder')}
                 />
                 {errors.location && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.location}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Job Type</label>
+                <label style={labelStyle}>{t('careers.form.jobType')}</label>
                 <select
                   name="type"
                   value={formData.type}
@@ -442,15 +444,15 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                   onBlur={handleBlur}
                   style={{...getInputStyle('type', focusedField === 'type'), cursor: 'pointer'}}
                 >
-                  <option value="">Select job type</option>
-                  <option value="full-time">Full-time</option>
-                  <option value="part-time">Part-time</option>
+                  <option value="">{t('careers.form.selectJobType')}</option>
+                  <option value="full-time">{t('careers.form.fullTime')}</option>
+                  <option value="part-time">{t('careers.form.partTime')}</option>
                 </select>
                 {errors.type && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.type}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Salary (USD)</label>
+                <label style={labelStyle}>{t('careers.form.salary')}</label>
                 <input
                   type="number"
                   name="salary"
@@ -461,14 +463,14 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                   style={getInputStyle('salary', focusedField === 'salary')}
                   min="0"
                   step="0.01"
-                  placeholder="e.g., 50000"
+                  placeholder={t('careers.form.salaryPlaceholder')}
                 />
                 {errors.salary && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.salary}</div>}
               </div>
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Job Description</label>
+              <label style={labelStyle}>{t('careers.form.description')}</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -476,7 +478,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                 onFocus={() => handleFocus('description')}
                 onBlur={handleBlur}
                 style={getTextareaStyle('description', focusedField === 'description')}
-                placeholder="Describe the job responsibilities, requirements, and any additional information..."
+                placeholder={t('careers.form.descriptionPlaceholder')}
               />
               {errors.description && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.description}</div>}
             </div>
@@ -493,7 +495,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
                 style={{ marginRight: '8px', cursor: 'pointer' }}
               />
               <label htmlFor="terms-career" style={{ fontSize: '14px', color: '#212121' }}>
-                I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                {t('careers.form.terms')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
               </label>
             </div>
           </div>
@@ -507,7 +509,7 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
             ></div>
             {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
             <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
-              Complete the reCAPTCHA verification to submit your career opportunity.
+              {t('careers.form.recaptchaHelp')}
             </div>
           </div>
 
@@ -518,14 +520,14 @@ const CareerSubmissionForm = ({ onClose, onSuccess }) => {
               style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
               disabled={loading}
             >
-              Cancel
+              {t('careers.form.cancel')}
             </button>
             <button
               type="submit"
               style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Submit Career Opportunity'}
+              {loading ? t('careers.form.submitting') : t('careers.form.submit')}
             </button>
           </div>
         </form>

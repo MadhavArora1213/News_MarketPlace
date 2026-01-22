@@ -157,7 +157,7 @@ const CareersPage = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading career opportunities...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -262,12 +262,12 @@ const CareersPage = () => {
                         {/* Job Details */}
                         <div className="grid grid-cols-2 gap-2 text-center mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                           <div>
-                            <div className="text-sm font-semibold" style={{ color: theme.primary }}>{career.type || 'N/A'}</div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Type</div>
+                            <div className="text-sm font-semibold" style={{ color: theme.primary }}>{career.type || t('common.NA')}</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>{t('careers.jobType')}</div>
                           </div>
                           <div>
                             <div className="text-sm font-semibold" style={{ color: theme.success }}>{formatSalary(career.salary)}</div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Salary</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>{t('careers.salary')}</div>
                           </div>
                         </div>
 

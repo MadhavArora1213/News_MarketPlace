@@ -102,7 +102,7 @@ const CareerDetailPage = () => {
       try {
         await navigator.share({
           title: title,
-          text: `Check out this job opportunity: ${translatedCareer.title}`,
+          text: `${t('careers.share')} ${translatedCareer.title}`,
           url: url,
         });
       } catch (error) {
@@ -117,7 +117,7 @@ const CareerDetailPage = () => {
   const fallbackShare = (url, title) => {
     // Copy to clipboard as fallback
     navigator.clipboard.writeText(url).then(() => {
-      alert('Link copied to clipboard!');
+      alert(t('careers.linkCopied'));
     }).catch(() => {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
@@ -126,7 +126,7 @@ const CareerDetailPage = () => {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      alert('Link copied to clipboard!');
+      alert(t('careers.linkCopied'));
     });
   };
 
@@ -142,9 +142,9 @@ const CareerDetailPage = () => {
     // Here you would typically make an API call to save/unsave the career
     // For now, we'll just toggle the local state
     if (!isSaved) {
-      alert('Career saved to your favorites!');
+      alert(t('careers.saved'));
     } else {
-      alert('Career removed from favorites!');
+      alert(t('careers.removed'));
     }
   };
 
@@ -175,7 +175,7 @@ const CareerDetailPage = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading career details...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -402,10 +402,10 @@ const CareerDetailPage = () => {
               <div className="text-sm" style={{ color: theme.textSecondary }}>
                 <p className="mb-2">{t('careers.applyModal.include')}</p>
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Position title in the subject line</li>
-                  <li>Your resume (PDF format preferred)</li>
-                  <li>A brief cover letter explaining your interest</li>
-                  <li>Any relevant portfolio or work samples</li>
+                  <li>{t('careers.applyModal.instruction1')}</li>
+                  <li>{t('careers.applyModal.instruction2')}</li>
+                  <li>{t('careers.applyModal.instruction3')}</li>
+                  <li>{t('careers.applyModal.instruction4')}</li>
                 </ul>
               </div>
             </div>
@@ -422,7 +422,7 @@ const CareerDetailPage = () => {
                 onClick={() => {
                   // Copy email to clipboard
                   navigator.clipboard.writeText('careers@newsmarketplace.com').then(() => {
-                    alert('Email address copied to clipboard!');
+                    alert(t('careers.emailCopied'));
                     handleCloseApplyModal();
                   });
                 }}
