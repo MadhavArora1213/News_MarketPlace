@@ -1489,127 +1489,127 @@
         }
     },
     "questionnaire": {
-        "loading": "Loading questionnaire...",
+        "loading": "प्रश्नावली लोड हो रही है...",
         "hero": {
-            "title": "AI Article Questionnaire",
-            "desc": "Fill out the questionnaire below to generate an AI-powered article tailored to your needs."
+            "title": "एआई लेख प्रश्नावली",
+            "desc": "अपनी आवश्यकताओं के अनुरूप एआई-संचालित लेख उत्पन्न करने के लिए नीचे दी गई प्रश्नावली भरें।"
         },
         "popup": {
-            "title": "Important Information",
-            "desc": "Please read the following instructions carefully before proceeding.",
+            "title": "महत्वपूर्ण जानकारी",
+            "desc": "कृपया आगे बढ़ने से पहले निम्नलिखित निर्देशों को ध्यान से पढ़ें।",
             "why": {
-                "title": "Why this questionnaire?",
-                "1": "It helps us understand your brand.",
-                "2": "It ensures the content meets your goals.",
-                "3": "It provides context for the AI.",
-                "4": "It saves time in the long run."
+                "title": "यह प्रश्नावली क्यों?",
+                "1": "यह हमें आपके ब्रांड को समझने में मदद करता है।",
+                "2": "यह सुनिश्चित करता है कि सामग्री आपके लक्ष्यों को पूरा करती है।",
+                "3": "यह एआई के लिए संदर्भ प्रदान करता है।",
+                "4": "यह लंबे समय में समय बचाता है।"
             },
             "download": {
-                "title": "Download Questionnaire",
-                "desc": "You can also download the questionnaire as a Word document.",
-                "button": "Download Article Questionnaire",
-                "buttonShort": "Download"
+                "title": "प्रश्नावली डाउनलोड करें",
+                "desc": "आप प्रश्नावली को वर्ड डॉक्यूमेंट के रूप में भी डाउनलोड कर सकते हैं।",
+                "button": "लेख प्रश्नावली डाउनलोड करें",
+                "buttonShort": "डाउनलोड"
             },
             "submission": {
-                "title": "Submission Options",
-                "email": "Email:",
-                "emailDesc": "You can email the completed questionnaire to",
-                "upload": "Upload:"
+                "title": "जमा करने के विकल्प",
+                "email": "ईमेल:",
+                "emailDesc": "आप पूरी की गई प्रश्नावली को ईमेल कर सकते हैं",
+                "upload": "अपलोड:"
             },
-            "continue": "Continue to Online Form"
+            "continue": "ऑनलाइन फॉर्म पर जारी रखें"
         },
         "tabs": {
-            "questionnaire": "AI Article Questionnaire",
-            "mySubmissions": "My AI Submissions"
+            "questionnaire": "एआई लेख प्रश्नावली",
+            "mySubmissions": "मेरे एआई सबमिशन"
         },
         "form": {
             "format": {
-                "title": "Article Format",
-                "desc": "Please choose from one of the options below:",
+                "title": "लेख प्रारूप",
+                "desc": "कृपया नीचे दिए गए विकल्पों में से एक चुनें:",
                 "options": {
-                    "profile": "Profile Article",
-                    "editorial": "Editorial feature PR",
-                    "advertorial": "Advertorial / Brand Voice",
-                    "listicle": "Listicle"
+                    "profile": "प्रोफ़ाइल लेख",
+                    "editorial": "संपादकीय फ़ीचर पीआर",
+                    "advertorial": "विज्ञापन / ब्रांड आवाज़",
+                    "listicle": "सूची लेख (Listicle)"
                 }
             },
             "part1": {
-                "title": "Part 1 - About You / Your Brand",
+                "title": "भाग 1 - आपके / आपके ब्रांड के बारे में",
                 "questions": {
-                    "name": "What is the name of the person(s) and/or brand these articles are for?",
-                    "preferredTitle": "Do you have a preferred title (producer, rapper, influencer, etc.) that you'd like us to use?",
-                    "background": "What is your personal background and experience related to this article?",
-                    "inspiration": "What inspired you to start your business or become involved in this industry?",
-                    "challenges": "What challenges or obstacles have you faced in your career or business, and how have you overcome them?",
-                    "uniquePerspective": "What sets you apart from others in your industry, and what unique perspective do you bring to this article?",
-                    "highlights": "What are some notable career highlights? (Awards, recognition, accomplishments, etc.)",
-                    "anecdotes": "Do you have any personal anecdotes or stories that you would like to include in this article?",
-                    "futureVision": "Where do you see yourself/your brand in a few years? What are some of your dreams and aspirations?",
-                    "additionalInfo": "Is there anything else that you think the writer should know in order to create an effective and successful article?"
+                    "name": "उस व्यक्ति (व्यक्तियों) और/या ब्रांड का नाम क्या है जिसके लिए ये लेख हैं?",
+                    "preferredTitle": "क्या आपके पास कोई पसंदीदा शीर्षक (निर्माता, रैपर, प्रभावशाली व्यक्ति, आदि) है जिसे आप चाहते हैं कि हम उपयोग करें?",
+                    "background": "इस लेख से संबंधित आपकी व्यक्तिगत पृष्ठभूमि और अनुभव क्या है?",
+                    "inspiration": "आपको अपना व्यवसाय शुरू करने या इस उद्योग में शामिल होने के लिए किस बात ने प्रेरित किया?",
+                    "challenges": "अपने करियर या व्यवसाय में आपने किन चुनौतियों या बाधाओं का सामना किया है, और आपने उन्हें कैसे पार किया?",
+                    "uniquePerspective": "कौन सी बात आपको अपने उद्योग में दूसरों से अलग करती है, और आप इस लेख में क्या अनूठा दृष्टिकोण लाते हैं?",
+                    "highlights": "कुछ उल्लेखनीय करियर हाइलाइट्स क्या हैं? (पुरस्कार, मान्यता, उपलब्धियां, आदि)",
+                    "anecdotes": "क्या आपके पास कोई व्यक्तिगत किस्से या कहानियां हैं जिन्हें आप इस लेख में शामिल करना चाहते हैं?",
+                    "futureVision": "आप खुद को/अपने ब्रांड को कुछ वर्षों में कहां देखते हैं? आपके कुछ सपने और आकांक्षाएं क्या हैं?",
+                    "additionalInfo": "क्या कोई और बात है जो आपको लगता है कि लेखक को एक प्रभावी और सफल लेख बनाने के लिए पता होनी चाहिए?"
                 }
             },
             "part2": {
-                "title": "Part 2 - Article Guidelines",
+                "title": "भाग 2 - लेख दिशानिर्देश",
                 "questions": {
-                    "goal": "What is the main goal of this article? (e.g. to increase brand awareness, to drive traffic to a website, to generate leads)",
-                    "targetAudience": "Who is the target audience for this content piece? (e.g. age range, location, interests, job titles, industry beginners, enthusiasts)",
-                    "message": "What is the main message or theme you want in this article?",
-                    "points": "What specific points or information do you want to include in this article?",
-                    "seoKeywords": "Are there any specific SEO keywords or phrases that you want to focus on in this article?",
-                    "tone": "Are there any specific tone or style guidelines that you want the writer to follow? (if yes, please provide details)",
-                    "socialLinks": "Please provide direct links to all social media accounts (if any) you want to be included in the articles.",
-                    "references": "Are there any existing content pieces (e.g. blog posts, articles) that you want the writer to reference or link to in this article?",
-                    "titles": "Provide 2 to 3 potential title ideas if you'd like.",
-                    "exclusions": "Is there information you do NOT want to be included in the article? (if yes, please provide details)"
+                    "goal": "इस लेख का मुख्य लक्ष्य क्या है? (जैसे ब्रांड जागरूकता बढ़ाना, वेबसाइट पर ट्रैफ़िक लाना, लीड उत्पन्न करना)",
+                    "targetAudience": "इस सामग्री का लक्षित दर्शक कौन है? (जैसे आयु सीमा, स्थान, रुचियां, नौकरी के शीर्षक, उद्योग के शुरुआती लोग, उत्साही)",
+                    "message": "इस लेख में आप मुख्य संदेश या विषय क्या चाहते हैं?",
+                    "points": "आप इस लेख में कौन से विशिष्ट बिंदु या जानकारी शामिल करना चाहते हैं?",
+                    "seoKeywords": "क्या कोई विशिष्ट एसईओ कीवर्ड या वाक्यांश हैं जिन पर आप इस लेख में ध्यान केंद्रित करना चाहते हैं?",
+                    "tone": "क्या कोई विशिष्ट स्वर या शैली दिशानिर्देश हैं जिनका आप चाहते हैं कि लेखक पालन करे? (यदि हाँ, तो कृपया विवरण प्रदान करें)",
+                    "socialLinks": "कृपया उन सभी सोशल मीडिया खातों (यदि कोई हो) के सीधे लिंक प्रदान करें जिन्हें आप लेखों में शामिल करना चाहते हैं।",
+                    "references": "क्या कोई मौजूदा सामग्री (जैसे ब्लॉग पोस्ट, लेख) है जिसे आप चाहते हैं कि लेखक इस लेख में संदर्भ या लिंक करे?",
+                    "titles": "यदि आप चाहें तो 2 से 3 संभावित शीर्षक विचार प्रदान करें।",
+                    "exclusions": "क्या कोई ऐसी जानकारी है जिसे आप लेख में शामिल नहीं करना चाहते हैं? (यदि हाँ, तो कृपया विवरण प्रदान करें)"
                 }
             },
             "seo": {
-                "title": "SEO Information",
-                "keywords": "Keywords",
-                "geoLocation": "Geo Location",
-                "personName": "Person Name",
-                "companyName": "Company Name",
+                "title": "एसईओ जानकारी",
+                "keywords": "कीवर्ड",
+                "geoLocation": "भौगोलिक स्थान",
+                "personName": "व्यक्ति का नाम",
+                "companyName": "कंपनी का नाम",
                 "placeholder": {
-                    "keywords": "Enter SEO keywords",
-                    "geoLocation": "Enter geo location",
-                    "personName": "Enter person name",
-                    "companyName": "Enter company name"
+                    "keywords": "एसईओ कीवर्ड दर्ज करें",
+                    "geoLocation": "भौगोलिक स्थान दर्ज करें",
+                    "personName": "व्यक्ति का नाम दर्ज करें",
+                    "companyName": "कंपनी का नाम दर्ज करें"
                 }
             },
             "upload": {
-                "title": "Document Upload (Optional)",
-                "label": "Upload supporting documents",
-                "hint": "Accepted formats: PDF, DOC, DOCX, TXT, JPG, PNG"
+                "title": "दस्तावेज़ अपलोड (वैकल्पिक)",
+                "label": "सहायक दस्तावेज़ अपलोड करें",
+                "hint": "स्वीकृत प्रारूप: PDF, DOC, DOCX, TXT, JPG, PNG"
             },
             "publication": {
-                "title": "Publication Selection",
-                "label": "Select Publication",
-                "selectPlaceholder": "Select a publication...",
-                "loading": "Loading publications...",
-                "error": "Failed to load publications.",
-                "networkError": "Network error while loading publications."
+                "title": "प्रकाशन चयन",
+                "label": "प्रकाशन चुनें",
+                "selectPlaceholder": "एक प्रकाशन चुनें...",
+                "loading": "प्रकाशन लोड हो रहे हैं...",
+                "error": "प्रकाशन लोड करने में विफल।",
+                "networkError": "प्रकाशन लोड करते समय नेटवर्क त्रुटि।"
             },
-            "submit": "Submit Questionnaire",
-            "submitting": "Submitting...",
-            "tokensExhausted": "Tokens Exhausted - Wait for Reset",
-            "required": "This field is required",
-            "minChars": "min characters",
-            "success": "Questionnaire submitted successfully! Redirecting to article generation...",
-            "fillRequired": "Please fill in all required fields",
-            "placeholder": "Enter your response here..."
+            "submit": "प्रश्नावली जमा करें",
+            "submitting": "जमा किया जा रहा है...",
+            "tokensExhausted": "टोकन समाप्त - रीसेट की प्रतीक्षा करें",
+            "required": "यह फ़ील्ड आवश्यक है",
+            "minChars": "न्यूनतम वर्ण",
+            "success": "प्रश्नावली सफलतापूर्वक जमा की गई! लेख निर्माण के लिए पुनर्निर्देशित किया जा रहा है...",
+            "fillRequired": "कृपया सभी आवश्यक फ़ील्ड भरें",
+            "placeholder": "अपनी प्रतिक्रिया यहाँ दर्ज करें..."
         },
         "mySubmissions": {
-            "title": "My AI Submissions",
-            "subtitle": "View all your AI-generated article submissions and their status",
-            "loading": "Loading submissions...",
-            "noSubmissions": "No AI submissions yet",
-            "noSubmissionsDesc": "You haven't submitted any AI-generated articles yet.",
-            "createFirst": "Create Your First AI Article",
-            "viewArticle": "View Article",
-            "continueGeneration": "Continue Generation",
-            "storyType": "Story Type",
-            "publication": "Publication",
-            "submittedOn": "Submitted on"
+            "title": "मेरे एआई सबमिशन",
+            "subtitle": "अपने सभी एआई-जनित लेख सबमिशन और उनकी स्थिति देखें",
+            "loading": "सबमिशन लोड हो रहे हैं...",
+            "noSubmissions": "अभी तक कोई एआई सबमिशन नहीं",
+            "noSubmissionsDesc": "आपने अभी तक कोई एआई-जनित लेख जमा नहीं किया है।",
+            "createFirst": "अपना पहला एआई लेख बनाएं",
+            "viewArticle": "लेख देखें",
+            "continueGeneration": "निर्माण जारी रखें",
+            "storyType": "कहानी का प्रकार",
+            "publication": "प्रकाशन",
+            "submittedOn": "जमा किया गया"
         }
     }
 }

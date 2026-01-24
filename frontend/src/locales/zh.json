@@ -1491,127 +1491,127 @@
         }
     },
     "questionnaire": {
-        "loading": "Loading questionnaire...",
+        "loading": "正在加载问卷...",
         "hero": {
-            "title": "AI Article Questionnaire",
-            "desc": "Fill out the questionnaire below to generate an AI-powered article tailored to your needs."
+            "title": "AI文章问卷",
+            "desc": "请填写以下问卷，以生成符合您需求的AI文章。"
         },
         "popup": {
-            "title": "Important Information",
-            "desc": "Please read the following instructions carefully before proceeding.",
+            "title": "重要信息",
+            "desc": "在继续之前，请仔细阅读以下说明。",
             "why": {
-                "title": "Why this questionnaire?",
-                "1": "It helps us understand your brand.",
-                "2": "It ensures the content meets your goals.",
-                "3": "It provides context for the AI.",
-                "4": "It saves time in the long run."
+                "title": "为什么要填写此问卷？",
+                "1": "它有助于我们了解您的品牌。",
+                "2": "它确保内容符合您的目标。",
+                "3": "它为AI提供了背景信息。",
+                "4": "从长远来看，它节省了时间。"
             },
             "download": {
-                "title": "Download Questionnaire",
-                "desc": "You can also download the questionnaire as a Word document.",
-                "button": "Download Article Questionnaire",
-                "buttonShort": "Download"
+                "title": "下载问卷",
+                "desc": "您也可以下载Word格式的问卷。",
+                "button": "下载文章问卷",
+                "buttonShort": "下载"
             },
             "submission": {
-                "title": "Submission Options",
-                "email": "Email:",
-                "emailDesc": "You can email the completed questionnaire to",
-                "upload": "Upload:"
+                "title": "提交选项",
+                "email": "电子邮件：",
+                "emailDesc": "您可以将填写好的问卷通过电子邮件发送至",
+                "upload": "上传："
             },
-            "continue": "Continue to Online Form"
+            "continue": "继续在线表格"
         },
         "tabs": {
-            "questionnaire": "AI Article Questionnaire",
-            "mySubmissions": "My AI Submissions"
+            "questionnaire": "AI文章问卷",
+            "mySubmissions": "我的AI提交"
         },
         "form": {
             "format": {
-                "title": "Article Format",
-                "desc": "Please choose from one of the options below:",
+                "title": "文章格式",
+                "desc": "请从以下选项中选择一个：",
                 "options": {
-                    "profile": "Profile Article",
-                    "editorial": "Editorial feature PR",
-                    "advertorial": "Advertorial / Brand Voice",
-                    "listicle": "Listicle"
+                    "profile": "个人资料文章",
+                    "editorial": "社论特写公关",
+                    "advertorial": "软文广告 / 品牌声音",
+                    "listicle": "清单文章 (Listicle)"
                 }
             },
             "part1": {
-                "title": "Part 1 - About You / Your Brand",
+                "title": "第一部分 - 关于您 / 您的品牌",
                 "questions": {
-                    "name": "What is the name of the person(s) and/or brand these articles are for?",
-                    "preferredTitle": "Do you have a preferred title (producer, rapper, influencer, etc.) that you'd like us to use?",
-                    "background": "What is your personal background and experience related to this article?",
-                    "inspiration": "What inspired you to start your business or become involved in this industry?",
-                    "challenges": "What challenges or obstacles have you faced in your career or business, and how have you overcome them?",
-                    "uniquePerspective": "What sets you apart from others in your industry, and what unique perspective do you bring to this article?",
-                    "highlights": "What are some notable career highlights? (Awards, recognition, accomplishments, etc.)",
-                    "anecdotes": "Do you have any personal anecdotes or stories that you would like to include in this article?",
-                    "futureVision": "Where do you see yourself/your brand in a few years? What are some of your dreams and aspirations?",
-                    "additionalInfo": "Is there anything else that you think the writer should know in order to create an effective and successful article?"
+                    "name": "这些文章是为谁（人）和/或什么品牌写的？",
+                    "preferredTitle": "您是否有希望我们使用的首选头衔（制作人、说唱歌手、影响者等）？",
+                    "background": "您与本文相关的个人背景和经历是什么？",
+                    "inspiration": "是什么启发您创业或涉足该行业？",
+                    "challenges": "您在职业生涯或业务中遇到过哪些挑战或障碍，您是如何克服它们的？",
+                    "uniquePerspective": "是什么让您在行业中与众不同，您为这篇文章带来了什么独特视角？",
+                    "highlights": "有哪些显着的职业亮点？（奖项、认可、成就等）",
+                    "anecdotes": "您有什么个人轶事或故事想包含在这篇文章中吗？",
+                    "futureVision": "几年后您认为自己/您的品牌会在哪里？您有哪些梦想和愿望？",
+                    "additionalInfo": "为了创作一篇有效且成功的文章，您认为作者还应该知道什么吗？"
                 }
             },
             "part2": {
-                "title": "Part 2 - Article Guidelines",
+                "title": "第二部分 - 文章指南",
                 "questions": {
-                    "goal": "What is the main goal of this article? (e.g. to increase brand awareness, to drive traffic to a website, to generate leads)",
-                    "targetAudience": "Who is the target audience for this content piece? (e.g. age range, location, interests, job titles, industry beginners, enthusiasts)",
-                    "message": "What is the main message or theme you want in this article?",
-                    "points": "What specific points or information do you want to include in this article?",
-                    "seoKeywords": "Are there any specific SEO keywords or phrases that you want to focus on in this article?",
-                    "tone": "Are there any specific tone or style guidelines that you want the writer to follow? (if yes, please provide details)",
-                    "socialLinks": "Please provide direct links to all social media accounts (if any) you want to be included in the articles.",
-                    "references": "Are there any existing content pieces (e.g. blog posts, articles) that you want the writer to reference or link to in this article?",
-                    "titles": "Provide 2 to 3 potential title ideas if you'd like.",
-                    "exclusions": "Is there information you do NOT want to be included in the article? (if yes, please provide details)"
+                    "goal": "这篇文章的主要目标是什么？（例如：提高品牌知名度，增加网站流量，产生潜在客户）",
+                    "targetAudience": "此内容的受众是谁？（例如：年龄范围，地点，兴趣，职位，行业初学者，爱好者）",
+                    "message": "您希望在文章中传达的主要信息或主题是什么？",
+                    "points": "您希望在这篇文章中包含哪些具体的观点或信息？",
+                    "seoKeywords": "您希望在这篇文章中关注哪些特定的SEO关键词或短语？",
+                    "tone": "您希望作者遵循特定的语气或风格指南吗？（如果是，请提供详细信息）",
+                    "socialLinks": "请提供您希望包含在文章中的所有社交媒体帐户（如果有）的直接链接。",
+                    "references": "是否有任何现有的内容片段（例如博客文章、文章），您希望作者在本文中引用或链接？",
+                    "titles": "如果愿意，请提供2到3个潜在的标题想法。",
+                    "exclusions": "是否有您不希望包含在文章中的信息？（如果是，请提供详细信息）"
                 }
             },
             "seo": {
-                "title": "SEO Information",
-                "keywords": "Keywords",
-                "geoLocation": "Geo Location",
-                "personName": "Person Name",
-                "companyName": "Company Name",
+                "title": "SEO 信息",
+                "keywords": "关键词",
+                "geoLocation": "地理位置",
+                "personName": "人名",
+                "companyName": "公司名称",
                 "placeholder": {
-                    "keywords": "Enter SEO keywords",
-                    "geoLocation": "Enter geo location",
-                    "personName": "Enter person name",
-                    "companyName": "Enter company name"
+                    "keywords": "输入SEO关键词",
+                    "geoLocation": "输入地理位置",
+                    "personName": "输入人名",
+                    "companyName": "输入公司名称"
                 }
             },
             "upload": {
-                "title": "Document Upload (Optional)",
-                "label": "Upload supporting documents",
-                "hint": "Accepted formats: PDF, DOC, DOCX, TXT, JPG, PNG"
+                "title": "文档上传（可选）",
+                "label": "上传证明文件",
+                "hint": "接受的格式：PDF, DOC, DOCX, TXT, JPG, PNG"
             },
             "publication": {
-                "title": "Publication Selection",
-                "label": "Select Publication",
-                "selectPlaceholder": "Select a publication...",
-                "loading": "Loading publications...",
-                "error": "Failed to load publications.",
-                "networkError": "Network error while loading publications."
+                "title": "出版物选择",
+                "label": "选择出版物",
+                "selectPlaceholder": "选择一个出版物...",
+                "loading": "正在加载出版物...",
+                "error": "加载出版物失败。",
+                "networkError": "加载出版物时出现网络错误。"
             },
-            "submit": "Submit Questionnaire",
-            "submitting": "Submitting...",
-            "tokensExhausted": "Tokens Exhausted - Wait for Reset",
-            "required": "This field is required",
-            "minChars": "min characters",
-            "success": "Questionnaire submitted successfully! Redirecting to article generation...",
-            "fillRequired": "Please fill in all required fields",
-            "placeholder": "Enter your response here..."
+            "submit": "提交问卷",
+            "submitting": "正在提交...",
+            "tokensExhausted": "代币耗尽 - 等待重置",
+            "required": "此字段为必填项",
+            "minChars": "个最少字符",
+            "success": "问卷提交成功！正在重定向到文章生成...",
+            "fillRequired": "请填写所有必填字段",
+            "placeholder": "请在此处输入您的回答..."
         },
         "mySubmissions": {
-            "title": "My AI Submissions",
-            "subtitle": "View all your AI-generated article submissions and their status",
-            "loading": "Loading submissions...",
-            "noSubmissions": "No AI submissions yet",
-            "noSubmissionsDesc": "You haven't submitted any AI-generated articles yet.",
-            "createFirst": "Create Your First AI Article",
-            "viewArticle": "View Article",
-            "continueGeneration": "Continue Generation",
-            "storyType": "Story Type",
-            "publication": "Publication",
-            "submittedOn": "Submitted on"
+            "title": "我的AI提交",
+            "subtitle": "查看您所有的AI生成文章及其状态",
+            "loading": "正在加载提交...",
+            "noSubmissions": "暂无AI提交",
+            "noSubmissionsDesc": "您尚未提交任何AI生成的文章。",
+            "createFirst": "创建您的第一篇AI文章",
+            "viewArticle": "查看文章",
+            "continueGeneration": "继续生成",
+            "storyType": "故事类型",
+            "publication": "出版物",
+            "submittedOn": "提交于"
         }
     }
 }
