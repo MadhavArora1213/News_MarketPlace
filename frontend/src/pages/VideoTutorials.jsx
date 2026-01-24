@@ -4,6 +4,7 @@ import { Play, Bookmark, BookmarkCheck, Clock, Filter, Search, Star, Users, Eye,
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import { useLanguage } from '../context/LanguageContext';
+import { useTranslationArray } from '../hooks/useTranslation';
 import { videos } from '../data/videos';
 
 // Custom hook for localStorage persistence
@@ -18,7 +19,17 @@ const useLocalStorage = (key, initialValue) => {
 };
 
 const VideoTutorials = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  // Dynamic translation for video content
+  const { translatedItems: translatedVideos, isTranslating } = useTranslationArray(
+    videos,
+    ['title', 'description'],
+    true
+  );
+
+  // Use translated videos for display
+  const displayVideos = translatedVideos.length > 0 ? translatedVideos : videos;
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedVideos, setBookmarkedVideos] = useLocalStorage('bookmarkedVideos2', new Set());
@@ -34,7 +45,7 @@ const VideoTutorials = () => {
     { id: 'marketing', name: t('videoTutorials.categories.marketing'), count: 5 }
   ];
 
-  const filteredVideos = videos;
+  const filteredVideos = displayVideos;
 
   const toggleBookmark = (videoId) => {
     setBookmarkedVideos(prev => {
@@ -72,7 +83,7 @@ const VideoTutorials = () => {
 
   // Calculate category completion data
   const getCategoryStats = (categoryId) => {
-    const categoryVideos = videos.filter(v => categoryId === 'all' || v.category === categoryId);
+    const categoryVideos = displayVideos.filter(v => categoryId === 'all' || v.category === categoryId);
     const completed = categoryVideos.filter(v => getVideoProgress(v.id) === 100).length;
     const inProgress = categoryVideos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length;
     const total = categoryVideos.length;
@@ -186,7 +197,7 @@ const VideoTutorials = () => {
                 : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
                 }`}
             >
-              {t('videoTutorials.filter.inProgress')} ({videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length})
+              {t('videoTutorials.filter.inProgress')} ({displayVideos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length})
             </button>
             <button
               onClick={() => setSelectedCategory('completed')}
@@ -370,7 +381,7 @@ const VideoTutorials = () => {
       </section>
 
       {/* Progress Summary - Only show if user has bookmarks or progress */}
-      {(bookmarkedVideos.size > 0 || watchedVideos.size > 0 || videos.some(v => getVideoProgress(v.id) > 0)) && (
+      {(bookmarkedVideos.size > 0 || watchedVideos.size > 0 || displayVideos.some(v => getVideoProgress(v.id) > 0)) && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-2xl font-semibold text-[#212121] mb-6">{t('videoTutorials.progress.title')}</h2>
@@ -380,11 +391,11 @@ const VideoTutorials = () => {
               {watchedVideos.size > 0 && (
                 <div className="bg-[#E3F2FD] rounded-lg p-6 border border-[#E0E0E0]">
                   <div className="text-3xl font-bold text-[#1976D2] mb-2">
-                    {Math.round((watchedVideos.size / videos.length) * 100)}%
+                    {Math.round((watchedVideos.size / displayVideos.length) * 100)}%
                   </div>
                   <div className="text-[#757575] text-sm">{t('videoTutorials.progress.overall')}</div>
                   <div className="text-xs text-[#757575] mt-1">
-                    {watchedVideos.size} {t('videoTutorials.progress.of')} {videos.length} {t('videoTutorials.progress.videosCompleted')}
+                    {watchedVideos.size} {t('videoTutorials.progress.of')} {displayVideos.length} {t('videoTutorials.progress.videosCompleted')}
                   </div>
                 </div>
               )}
@@ -399,10 +410,10 @@ const VideoTutorials = () => {
                   </div>
                 </div>
               )}
-              {videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length > 0 && (
+              {displayVideos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length > 0 && (
                 <div className="bg-[#FFF3E0] rounded-lg p-6 border border-[#E0E0E0]">
                   <div className="text-3xl font-bold text-[#FF9800] mb-2">
-                    {videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length}
+                    {displayVideos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length}
                   </div>
                   <div className="text-[#757575] text-sm">{t('videoTutorials.progress.inProgress')}</div>
                   <div className="text-xs text-[#757575] mt-1">
