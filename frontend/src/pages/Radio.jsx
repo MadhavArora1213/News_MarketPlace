@@ -30,10 +30,12 @@ const theme = {
 };
 
 import { useLanguage } from '../context/LanguageContext';
+import { useTranslationArray } from '../hooks/useTranslation';
 
 const RadioPage = () => {
   const { t } = useLanguage();
   const [radios, setRadios] = useState([]);
+  const { translatedItems: translatedRadios, isTranslating } = useTranslationArray(radios, ['description', 'radio_language', 'emirate_state', 'radio_popular_rj', 'radio_name']);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAuth, setShowAuth] = useState(false);
@@ -112,7 +114,6 @@ const RadioPage = () => {
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm, languageFilter, emirateFilter]);
-
   // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -121,7 +122,7 @@ const RadioPage = () => {
 
   // Sorting logic
   const sortedRadios = useMemo(() => {
-    return [...radios].sort((a, b) => {
+    return [...translatedRadios].sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
@@ -139,7 +140,7 @@ const RadioPage = () => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [radios, sortField, sortDirection]);
+  }, [translatedRadios, sortField, sortDirection]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -166,14 +167,19 @@ const RadioPage = () => {
 
   // Get unique values for filter options
   const getUniqueLanguages = () => {
-    const languages = radios.map(r => r.radio_language).filter(Boolean);
-    return [...new Set(languages)].sort();
+    const languages = new Set(translatedRadios.map(radio => radio.radio_language).filter(Boolean));
+    return Array.from(languages).sort();
   };
 
   const getUniqueEmirates = () => {
-    const emirates = radios.map(r => r.emirate_state).filter(Boolean);
-    return [...new Set(emirates)].sort();
+    const emirates = new Set(translatedRadios.map(radio => radio.emirate_state).filter(Boolean));
+    return Array.from(emirates).sort();
   };
+
+  const filteredRadios = useMemo(() => {
+    let result = translatedRadios;
+    return result;
+  }, [translatedRadios]);
 
   const handleRadioClick = (radio) => {
     navigate(`/radio/${radio.id}`);
@@ -338,8 +344,8 @@ const RadioPage = () => {
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
                     <Grid size={16} />
@@ -347,8 +353,8 @@ const RadioPage = () => {
                   <button
                     onClick={() => setViewMode('list')}
                     className={`p-2 rounded-md transition-colors ${viewMode === 'list'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
                     <List size={16} />

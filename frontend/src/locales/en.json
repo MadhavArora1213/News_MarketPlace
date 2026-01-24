@@ -1790,5 +1790,41 @@
             "desc": "We couldn't find any radio stations matching your search criteria.",
             "clear": "Clear All Filters"
         }
+    },
+    "radioDetails": {
+        "loading": "Loading radio details...",
+        "notFound": "Radio not found",
+        "backToStations": "Back to Radio Stations",
+        "stationDetails": "Station Details",
+        "frequency": "Frequency",
+        "language": "Language",
+        "emirate": "Emirate",
+        "popularRj": "Popular RJ",
+        "na": "N/A",
+        "externalLinks": "External Links",
+        "visitWebsite": "Visit Website",
+        "about": "About This Station",
+        "summary": "Station Summary",
+        "quickActions": "Quick Actions",
+        "checkout": "Checkout",
+        "signInOrder": "Sign In to Order",
+        "processing": "Processing...",
+        "shareStation": "Share Station",
+        "alerts": {
+            "linkCopied": "Link copied to clipboard!",
+            "bookingSuccess": "Radio interview booking request submitted successfully! Our team will contact you soon.",
+            "bookingFailed": "Failed to submit booking request",
+            "bookingError": "Error submitting booking request. Please try again."
+        },
+        "orderModal": {
+            "title": "Checkout",
+            "station": "Radio Station",
+            "fullName": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "message": "Additional Message",
+            "messagePlaceholder": "Any specific requirements or questions...",
+            "cancel": "Cancel"
+        }
     }
 }

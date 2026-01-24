@@ -1784,5 +1784,41 @@
             "desc": "我们找不到符合您搜索条件的任何广播电台。",
             "clear": "清除所有筛选"
         }
+    },
+    "radioDetails": {
+        "loading": "正在加载广播详情...",
+        "notFound": "未找到广播电台",
+        "backToStations": "返回广播电台",
+        "stationDetails": "电台详情",
+        "frequency": "频率",
+        "language": "语言",
+        "emirate": "酋长国",
+        "popularRj": "热门RJ",
+        "na": "不适用",
+        "externalLinks": "外部链接",
+        "visitWebsite": "访问网站",
+        "about": "关于本台",
+        "summary": "电台摘要",
+        "quickActions": "快速操作",
+        "checkout": "结账",
+        "signInOrder": "登录以订购",
+        "processing": "处理中...",
+        "shareStation": "分享电台",
+        "alerts": {
+            "linkCopied": "链接已复制到剪贴板！",
+            "bookingSuccess": "广播采访预订请求已成功提交！我们的团队将尽快与您联系。",
+            "bookingFailed": "提交预订请求失败",
+            "bookingError": "提交预订请求时出错。请重试。"
+        },
+        "orderModal": {
+            "title": "结账",
+            "station": "广播电台",
+            "fullName": "全名",
+            "email": "电子邮件",
+            "phone": "电话",
+            "message": "附加信息",
+            "messagePlaceholder": "任何具体要求或问题...",
+            "cancel": "取消"
+        }
     }
 }

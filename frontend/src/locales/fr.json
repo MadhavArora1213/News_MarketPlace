@@ -1746,5 +1746,41 @@
             "desc": "Nous n'avons trouvé aucune station de radio correspondant à vos critères de recherche.",
             "clear": "Effacer tous les filtres"
         }
+    },
+    "radioDetails": {
+        "loading": "Chargement des détails de la radio...",
+        "notFound": "Radio non trouvée",
+        "backToStations": "Retour aux stations de radio",
+        "stationDetails": "Détails de la station",
+        "frequency": "Fréquence",
+        "language": "Langue",
+        "emirate": "Émirat",
+        "popularRj": "RJ populaire",
+        "na": "N/A",
+        "externalLinks": "Liens externes",
+        "visitWebsite": "Visiter le site web",
+        "about": "À propos de cette station",
+        "summary": "Résumé de la station",
+        "quickActions": "Actions rapides",
+        "checkout": "Commander",
+        "signInOrder": "Se connecter pour commander",
+        "processing": "Traitement...",
+        "shareStation": "Partager la station",
+        "alerts": {
+            "linkCopied": "Lien copié dans le presse-papiers !",
+            "bookingSuccess": "Demande de réservation d'interview radio soumise avec succès ! Notre équipe vous contactera bientôt.",
+            "bookingFailed": "Échec de la soumission de la demande de réservation",
+            "bookingError": "Erreur lors de la soumission de la demande de réservation. Veuillez réessayer."
+        },
+        "orderModal": {
+            "title": "Commander",
+            "station": "Station de radio",
+            "fullName": "Nom complet",
+            "email": "E-mail",
+            "phone": "Téléphone",
+            "message": "Message supplémentaire",
+            "messagePlaceholder": "Toutes exigences spécifiques ou questions...",
+            "cancel": "Annuler"
+        }
     }
 }

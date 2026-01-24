@@ -31,9 +31,14 @@ const theme = {
   borderDark: '#757575'
 };
 
+import { useLanguage } from '../context/LanguageContext';
+import { useTranslationObject } from '../hooks/useTranslation';
+
 const RadioDetails = () => {
+  const { t } = useLanguage();
   const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
   const [radio, setRadio] = useState(null);
+  const { translatedObject: translatedRadio, isTranslating } = useTranslationObject(radio, ['description', 'radio_language', 'emirate_state', 'radio_popular_rj', 'radio_name']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
@@ -92,8 +97,8 @@ const RadioDetails = () => {
     try {
       // Create order data for API
       const orderData = {
-        radioId: radio.id,
-        radioName: radio.radio_name,
+        radioId: translatedRadio.id,
+        radioName: translatedRadio.radio_name,
         customerInfo: orderFormData,
         orderDate: new Date().toISOString()
       };
@@ -102,16 +107,16 @@ const RadioDetails = () => {
       const response = await api.post('/radio-orders', orderData);
 
       if (response.data.success) {
-        alert('Radio interview booking request submitted successfully! Our team will contact you soon.');
+        alert(t('radioDetails.alerts.bookingSuccess'));
         setShowOrderModal(false);
         setOrderFormData({ fullName: '', email: '', phone: '', message: '' });
       } else {
-        throw new Error(response.data.message || 'Failed to submit booking request');
+        throw new Error(response.data.message || t('radioDetails.alerts.bookingFailed'));
       }
 
     } catch (error) {
       console.error('Error placing order:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Error submitting booking request. Please try again.';
+      const errorMessage = error.response?.data?.message || error.message || t('radioDetails.alerts.bookingError');
       alert(errorMessage);
     } finally {
       setIsOrdering(false);
@@ -124,14 +129,14 @@ const RadioDetails = () => {
     }
   };
 
-  if (loading) {
+  if (loading || (!translatedRadio && isTranslating)) {
     return (
       <div className="min-h-screen bg-white">
         <UserHeader />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1976D2] mx-auto mb-4"></div>
-            <p className="text-[#757575]">Loading radio details...</p>
+            <p className="text-[#757575]">{t('radioDetails.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -139,18 +144,18 @@ const RadioDetails = () => {
     );
   }
 
-  if (error || !radio) {
+  if (error || !translatedRadio) {
     return (
       <div className="min-h-screen bg-white">
         <UserHeader />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <p className="text-red-600 text-lg">{error || 'Radio not found'}</p>
+            <p className="text-red-600 text-lg">{error || t('radioDetails.notFound')}</p>
             <button
               onClick={handleBack}
               className="mt-4 px-6 py-2 bg-[#1976D2] text-white rounded-lg hover:bg-[#1565C0] transition-colors"
             >
-              Back to Radio Stations
+              {t('radioDetails.backToStations')}
             </button>
           </div>
         </div>
@@ -171,7 +176,7 @@ const RadioDetails = () => {
             className="flex items-center gap-2 text-[#1976D2] hover:text-[#1565C0] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            Back to Radio Stations
+            {t('radioDetails.backToStations')}
           </button>
         </div>
       </section>
@@ -186,17 +191,17 @@ const RadioDetails = () => {
             className="text-center"
           >
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4">
-              {radio.radio_name}
+              {translatedRadio.radio_name}
             </h1>
             <div className="flex justify-center mb-6">
               <span className="text-xl font-medium text-[#1976D2] bg-[#E3F2FD] px-6 py-2 rounded-full">
-                {radio.frequency}
+                {translatedRadio.frequency}
               </span>
             </div>
             <div className="flex justify-center">
               <img
-                src={radio.image_url || "/logo.png"}
-                alt={radio.radio_name}
+                src={translatedRadio.image_url || "/logo.png"}
+                alt={translatedRadio.radio_name}
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 onError={(e) => {
                   e.target.src = "/logo.png";
@@ -218,72 +223,72 @@ const RadioDetails = () => {
                 <div className="mb-8">
                   <h2 className="text-2xl font-semibold text-[#212121] mb-6 flex items-center gap-2">
                     <Radio className="w-6 h-6 text-[#1976D2]" />
-                    Station Details
+                    {t('radioDetails.stationDetails')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
                       <div className="text-2xl font-bold text-[#1976D2] mb-2">
-                        {radio.frequency}
+                        {translatedRadio.frequency}
                       </div>
-                      <div className="text-sm text-[#757575]">Frequency</div>
+                      <div className="text-sm text-[#757575]">{t('radioDetails.frequency')}</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
                       <div className="text-2xl font-bold text-[#00796B] mb-2">
-                        {radio.radio_language}
+                        {translatedRadio.radio_language}
                       </div>
-                      <div className="text-sm text-[#757575]">Language</div>
+                      <div className="text-sm text-[#757575]">{t('radioDetails.language')}</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
                       <div className="text-2xl font-bold text-[#9C27B0] mb-2">
-                        {radio.emirate_state}
+                        {translatedRadio.emirate_state}
                       </div>
-                      <div className="text-sm text-[#757575]">Emirate</div>
+                      <div className="text-sm text-[#757575]">{t('radioDetails.emirate')}</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
                       <div className="text-2xl font-bold text-[#FF9800] mb-2">
-                        {radio.radio_popular_rj || 'N/A'}
+                        {translatedRadio.radio_popular_rj || t('radioDetails.na')}
                       </div>
-                      <div className="text-sm text-[#757575]">Popular RJ</div>
+                      <div className="text-sm text-[#757575]">{t('radioDetails.popularRj')}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* External Links */}
-                {(radio.radio_website || radio.radio_linkedin || radio.radio_instagram) && (
+                {(translatedRadio.radio_website || translatedRadio.radio_linkedin || translatedRadio.radio_instagram) && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                      External Links
+                      {t('radioDetails.externalLinks')}
                     </h3>
                     <div className="flex flex-wrap gap-3">
-                      {radio.radio_website && (
+                      {translatedRadio.radio_website && (
                         <a
-                          href={radio.radio_website}
+                          href={translatedRadio.radio_website}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#1976D2] text-white hover:bg-[#0D47A1]"
                         >
                           <Globe size={16} />
-                          Visit Website
+                          {t('radioDetails.visitWebsite')}
                           <ExternalLink size={14} />
                         </a>
                       )}
-                      {radio.radio_linkedin && (
+                      {translatedRadio.radio_linkedin && (
                         <a
-                          href={radio.radio_linkedin}
+                          href={translatedRadio.radio_linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#00796B] text-white hover:bg-[#004D40]"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                           </svg>
                           LinkedIn
                           <ExternalLink size={14} />
                         </a>
                       )}
-                      {radio.radio_instagram && (
+                      {translatedRadio.radio_instagram && (
                         <a
-                          href={radio.radio_instagram}
+                          href={translatedRadio.radio_instagram}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#9C27B0] text-white hover:bg-[#7B1FA2]"
@@ -298,13 +303,13 @@ const RadioDetails = () => {
                 )}
 
                 {/* Description */}
-                {radio.description && (
+                {translatedRadio.description && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3 text-[#212121]">
-                      About This Station
+                      {t('radioDetails.about')}
                     </h3>
                     <div className="p-4 rounded-lg border bg-[#FAFAFA]">
-                      <p className="text-[#757575]">{radio.description}</p>
+                      <p className="text-[#757575]">{translatedRadio.description}</p>
                     </div>
                   </div>
                 )}
@@ -317,24 +322,24 @@ const RadioDetails = () => {
               {/* Station Summary Card */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                  Station Summary
+                  {t('radioDetails.summary')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Frequency</span>
-                    <span className="font-medium text-[#212121]">{radio.frequency}</span>
+                    <span className="text-[#757575]">{t('radioDetails.frequency')}</span>
+                    <span className="font-medium text-[#212121]">{translatedRadio.frequency}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Language</span>
-                    <span className="font-medium text-[#212121]">{radio.radio_language}</span>
+                    <span className="text-[#757575]">{t('radioDetails.language')}</span>
+                    <span className="font-medium text-[#212121]">{translatedRadio.radio_language}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Emirate</span>
-                    <span className="font-medium text-[#212121]">{radio.emirate_state}</span>
+                    <span className="text-[#757575]">{t('radioDetails.emirate')}</span>
+                    <span className="font-medium text-[#212121]">{translatedRadio.emirate_state}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Popular RJ</span>
-                    <span className="font-medium text-[#212121]">{radio.radio_popular_rj || 'N/A'}</span>
+                    <span className="text-[#757575]">{t('radioDetails.popularRj')}</span>
+                    <span className="font-medium text-[#212121]">{translatedRadio.radio_popular_rj || t('radioDetails.na')}</span>
                   </div>
                 </div>
               </div>
@@ -342,7 +347,7 @@ const RadioDetails = () => {
               {/* Action Card */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                  Quick Actions
+                  {t('radioDetails.quickActions')}
                 </h3>
                 <div className="space-y-3">
                   <button
@@ -353,26 +358,26 @@ const RadioDetails = () => {
                     onClick={handlePlaceOrder}
                     disabled={isOrdering}
                   >
-                    {isOrdering ? 'Processing...' : (isAuthenticated ? 'Checkout' : 'Sign In to Order')}
+                    {isOrdering ? t('radioDetails.processing') : (isAuthenticated ? t('radioDetails.checkout') : t('radioDetails.signInOrder'))}
                   </button>
 
                   <button
                     onClick={() => {
                       if (navigator.share) {
                         navigator.share({
-                          title: radio.radio_name,
-                          text: `Check out ${radio.radio_name} on ${radio.frequency}`,
+                          title: translatedRadio.radio_name,
+                          text: `Check out ${translatedRadio.radio_name} on ${translatedRadio.frequency}`,
                           url: window.location.href,
                         });
                       } else {
                         navigator.clipboard.writeText(window.location.href);
-                        alert('Link copied to clipboard!');
+                        alert(t('radioDetails.alerts.linkCopied'));
                       }
                     }}
                     className="w-full flex items-center justify-center gap-2 text-white font-medium py-3 px-4 rounded-lg transition-colors bg-[#9C27B0] hover:bg-[#7B1FA2]"
                   >
                     <Share2 size={16} />
-                    Share Station
+                    {t('radioDetails.shareStation')}
                   </button>
 
                   <button
@@ -380,7 +385,7 @@ const RadioDetails = () => {
                     className="w-full flex items-center justify-center gap-2 text-white font-medium py-3 px-4 rounded-lg transition-colors bg-[#757575] hover:bg-[#616161]"
                   >
                     <ArrowLeft size={16} />
-                    Back to Stations
+                    {t('radioDetails.backToStations')}
                   </button>
                 </div>
               </div>
@@ -437,7 +442,7 @@ const RadioDetails = () => {
               flexShrink: 0
             }}>
               <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.textPrimary }}>
-                Checkout
+                {t('radioDetails.orderModal.title')}
               </h2>
               <button
                 onClick={() => setShowOrderModal(false)}
@@ -475,12 +480,12 @@ const RadioDetails = () => {
                   fontWeight: '600',
                   color: theme.textPrimary
                 }}>
-                  {radio.radio_name}
+                  {translatedRadio.radio_name}
                 </h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: theme.textSecondary }}>Radio Station:</span>
+                  <span style={{ color: theme.textSecondary }}>{t('radioDetails.orderModal.station')}:</span>
                   <span style={{ fontSize: '18px', fontWeight: '700', color: theme.primary }}>
-                    {radio.frequency}
+                    {translatedRadio.frequency}
                   </span>
                 </div>
               </div>
@@ -495,7 +500,7 @@ const RadioDetails = () => {
                       color: theme.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Full Name *
+                      {t('radioDetails.orderModal.fullName')} *
                     </label>
                     <input
                       type="text"
@@ -522,7 +527,7 @@ const RadioDetails = () => {
                       color: theme.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Email *
+                      {t('radioDetails.orderModal.email')} *
                     </label>
                     <input
                       type="email"
@@ -549,7 +554,7 @@ const RadioDetails = () => {
                       color: theme.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Phone *
+                      {t('radioDetails.orderModal.phone')} *
                     </label>
                     <input
                       type="tel"
@@ -576,7 +581,7 @@ const RadioDetails = () => {
                       color: theme.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Additional Message
+                      {t('radioDetails.orderModal.message')}
                     </label>
                     <textarea
                       value={orderFormData.message}
@@ -592,7 +597,7 @@ const RadioDetails = () => {
                         backgroundColor: theme.background,
                         resize: 'vertical'
                       }}
-                      placeholder="Any specific requirements or questions..."
+                      placeholder={t('radioDetails.orderModal.messagePlaceholder')}
                     />
                   </div>
                 </div>
@@ -624,7 +629,7 @@ const RadioDetails = () => {
                 }}
                 disabled={isOrdering}
               >
-                Cancel
+                {t('radioDetails.orderModal.cancel')}
               </button>
               <button
                 type="submit"
@@ -643,7 +648,7 @@ const RadioDetails = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                {isOrdering ? 'Processing...' : 'Checkout'}
+                {isOrdering ? t('radioDetails.processing') : t('radioDetails.checkout')}
               </button>
             </div>
           </div>
@@ -655,4 +660,3 @@ const RadioDetails = () => {
 
 export default RadioDetails;
 
-                
