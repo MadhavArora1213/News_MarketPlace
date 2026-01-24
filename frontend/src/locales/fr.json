@@ -1782,5 +1782,104 @@
             "messagePlaceholder": "Toutes exigences spécifiques ou questions...",
             "cancel": "Annuler"
         }
+    },
+    "paparazzi": {
+        "hero": {
+            "title": "Réseau Paparazzi",
+            "subtitle": "Présentez votre lancement de produit, vos parrainages de célébrités, vos dîners de gala, vos événements d'entreprise ou vos annonces de projets immobiliers sur les médias lifestyle et paparazzi mondiaux — y compris les meilleures pages Instagram, comptes TikTok et chaînes YouTube. Obtenez des milliards de vues organiques dans plusieurs pays à une fraction des coûts du marketing à la performance traditionnel.",
+            "disclaimer": "La page actuelle est uniquement à des fins de représentation, la liste complète sera bientôt en ligne",
+            "searchPlaceholder": "Rechercher par nom, nom d'utilisateur ou catégorie..."
+        },
+        "filters": {
+            "title": "Filtres et tri",
+            "basic": "Filtres Paparazzi",
+            "category": "Catégorie",
+            "allCategories": "Toutes les catégories",
+            "location": "Emplacement",
+            "allLocations": "Tous les emplacements",
+            "clear": "Effacer tous les filtres"
+        },
+        "controls": {
+            "filters": "Filtres",
+            "found": "{{count}} paparazzi trouvés",
+            "for": "pour"
+        },
+        "card": {
+            "instagram": "Instagram",
+            "followers": "abonnés",
+            "asOf": "Au",
+            "viewProfile": "Profil Instagram",
+            "viewDetails": "Voir les détails"
+        },
+        "table": {
+            "page": "Page Instagram",
+            "followers": "Abonnés",
+            "category": "Catégorie",
+            "region": "Région ciblée",
+            "url": "URL Instagram",
+            "image": "Image de profil",
+            "action": "Action",
+            "na": "N/A",
+            "viewProfile": "Voir le profil"
+        },
+        "empty": {
+            "title": "Aucun paparazzi trouvé",
+            "desc": "Nous n'avons trouvé aucun paparazzi correspondant à vos critères de recherche. Essayez d'ajuster vos filtres.",
+            "clear": "Effacer tous les filtres"
+        },
+        "submitNew": "Soumettre un nouveau paparazzi"
+    },
+    "paparazziDetails": {
+        "loading": "Chargement des détails du paparazzi...",
+        "notFound": "Paparazzi non trouvé",
+        "notFoundDesc": "Le paparazzi que vous recherchez n'existe pas ou a été supprimé.",
+        "backToPaparazzi": "Retour aux paparazzi",
+        "details": "Détails du paparazzi",
+        "followers": "abonnés",
+        "added": "Ajouté",
+        "instagramProfile": "Profil Instagram",
+        "viewProfile": "Voir le profil Instagram",
+        "about": "À propos de ce paparazzi",
+        "aboutDesc": "Il s'agit d'un influenceur Instagram professionnel spécialisé dans la création de contenu et le marketing sur les réseaux sociaux. Avec une expertise dans la narration visuelle et l'engagement du public, ils fournissent des solutions complètes de médias sociaux pour les entreprises et les marques.",
+        "category": "Catégorie",
+        "region": "Région ciblée",
+        "profileImage": "Image de profil",
+        "platform": "Plateforme",
+        "profile": "Profil",
+        "view": "Voir",
+        "contactCreator": "Contacter le créateur",
+        "signInContact": "Se connecter pour contacter",
+        "processing": "Traitement...",
+        "quickInfo": "Infos rapides",
+        "save": "Enregistrer",
+        "saved": "Enregistré",
+        "share": "Partager",
+        "stats": {
+            "title": "Statistiques Paparazzi",
+            "totalViews": "Vues totales",
+            "totalOrders": "Commandes totales",
+            "avgRating": "Note moyenne",
+            "totalReviews": "Avis totaux",
+            "performanceSummary": "Résumé des performances",
+            "performanceDesc": "Ce paparazzi a montré de solides performances avec des taux d'engagement élevés et des commentaires clients positifs.",
+            "close": "Fermer"
+        },
+        "orderModal": {
+            "title": "Demande de réservation",
+            "paparazzi": "Paparazzi",
+            "fullName": "Nom complet",
+            "email": "E-mail",
+            "phone": "Téléphone",
+            "message": "Message supplémentaire",
+            "messagePlaceholder": "Toutes exigences spécifiques ou questions...",
+            "cancel": "Annuler",
+            "submit": "Soumettre la demande"
+        },
+        "alerts": {
+            "linkCopied": "Lien copié dans le presse-papiers !",
+            "bookingSuccess": "Demande de réservation soumise avec succès ! Notre équipe vous contactera bientôt.",
+            "bookingFailed": "Échec de la soumission de la demande de réservation",
+            "bookingError": "Erreur lors de la soumission de la demande de réservation. Veuillez réessayer."
+        }
     }
 }

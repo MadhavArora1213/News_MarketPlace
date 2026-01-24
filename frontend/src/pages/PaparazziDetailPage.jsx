@@ -12,6 +12,8 @@ import {
   BarChart3, Target, Award, TrendingUp, MapPin, Calendar,
   Users, Zap, Eye, Heart, Share, Instagram, Youtube, Twitter, Filter
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { useTranslationObject } from '../hooks/useTranslation';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -40,7 +42,9 @@ const PaparazziDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
+  const { t } = useLanguage();
   const [paparazzi, setPaparazzi] = useState(null);
+  const { translatedObj: translatedPaparazzi, isTranslating } = useTranslationObject(paparazzi, ['category', 'region_focused']);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -254,7 +258,7 @@ const PaparazziDetailPage = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading paparazzi details...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('paparazziDetails.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -275,10 +279,10 @@ const PaparazziDetailPage = () => {
               <Camera size={48} style={{ color: theme.textDisabled }} />
             </div>
             <h1 className="text-2xl font-semibold mb-4" style={{ color: theme.textPrimary }}>
-              Paparazzi Not Found
+              {t('paparazziDetails.notFound')}
             </h1>
             <p className="mb-8" style={{ color: theme.textSecondary }}>
-              The paparazzi you're looking for doesn't exist or has been removed.
+              {t('paparazziDetails.notFoundDesc')}
             </p>
             <button
               onClick={() => navigate('/paparazzi')}
@@ -286,7 +290,7 @@ const PaparazziDetailPage = () => {
               style={{ backgroundColor: theme.primary }}
             >
               <ArrowLeft size={16} />
-              Back to Paparazzi
+              {t('paparazziDetails.backToPaparazzi')}
             </button>
           </div>
         </div>
@@ -302,7 +306,7 @@ const PaparazziDetailPage = () => {
     );
   }
 
-  const PlatformIcon = getPlatformIcon(paparazzi.platform);
+  const PlatformIcon = getPlatformIcon(translatedPaparazzi?.platform);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
@@ -318,10 +322,10 @@ const PaparazziDetailPage = () => {
               className="flex items-center gap-1 hover:opacity-80"
             >
               <ArrowLeft size={16} />
-              Back to Paparazzi
+              {t('paparazziDetails.backToPaparazzi')}
             </button>
             <span>/</span>
-            <span>Paparazzi Details</span>
+            <span>{t('paparazziDetails.details')}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -338,46 +342,46 @@ const PaparazziDetailPage = () => {
                   </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
-                      {paparazzi.instagram_page_name}
+                      {translatedPaparazzi?.instagram_page_name}
                     </h1>
                     <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
                       <div className="flex items-center gap-2">
                         <Globe size={16} />
-                        <span>Instagram</span>
+                        <span>{t('paparazziDetails.instagramProfile')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users size={16} />
-                        <span>{formatFollowers(paparazzi.no_of_followers)} followers</span>
+                        <span>{formatFollowers(translatedPaparazzi?.no_of_followers)} {t('paparazziDetails.followers')}</span>
                       </div>
-                      {paparazzi.region_focused && (
+                      {translatedPaparazzi?.region_focused && (
                         <div className="flex items-center gap-2">
                           <MapPin size={16} />
-                          <span>{paparazzi.region_focused}</span>
+                          <span>{translatedPaparazzi.region_focused}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
-                        <span>Added {formatDate(paparazzi.created_at)}</span>
+                        <span>{t('paparazziDetails.added')} {formatDate(translatedPaparazzi?.created_at)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Instagram Link */}
-                {paparazzi.instagram_url && (
+                {translatedPaparazzi?.instagram_url && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Instagram Profile
+                      {t('paparazziDetails.instagramProfile')}
                     </h3>
                     <a
-                      href={paparazzi.instagram_url}
+                      href={translatedPaparazzi.instagram_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
                       style={{ backgroundColor: theme.primary }}
                     >
                       <Instagram size={16} />
-                      View Instagram Profile
+                      {t('paparazziDetails.viewProfile')}
                     </a>
                   </div>
                 )}
@@ -385,20 +389,20 @@ const PaparazziDetailPage = () => {
                 {/* Description/About */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    About This Paparazzi
+                    {t('paparazziDetails.about')}
                   </h3>
                   <div className="prose max-w-none" style={{ color: theme.textSecondary }}>
                     <p>
-                      This is a professional Instagram influencer specializing in content creation and social media marketing. With expertise in visual storytelling and audience engagement, they provide comprehensive social media solutions for businesses and brands.
+                      {t('paparazziDetails.aboutDesc')}
                     </p>
-                    {paparazzi.category && (
+                    {translatedPaparazzi?.category && (
                       <p className="mt-4">
-                        <strong>Category:</strong> {paparazzi.category}
+                        <strong>{t('paparazziDetails.category')}:</strong> {translatedPaparazzi.category}
                       </p>
                     )}
-                    {paparazzi.region_focused && (
+                    {translatedPaparazzi?.region_focused && (
                       <p className="mt-2">
-                        <strong>Region Focused:</strong> {paparazzi.region_focused}
+                        <strong>{t('paparazziDetails.region')}:</strong> {translatedPaparazzi.region_focused}
                       </p>
                     )}
                   </div>
@@ -407,11 +411,11 @@ const PaparazziDetailPage = () => {
                 {/* Profile Image */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    Profile Image
+                    {t('paparazziDetails.profileImage')}
                   </h3>
                   <div className="flex justify-center">
                     <img
-                      src={paparazzi.profile_dp_logo || "/logo.png"}
+                      src={translatedPaparazzi?.profile_dp_logo || "/logo.png"}
                       alt="Profile"
                       className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
                       onError={(e) => {
@@ -429,40 +433,40 @@ const PaparazziDetailPage = () => {
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center mb-6">
                   <div className="text-3xl font-bold mb-2" style={{ color: theme.primary }}>
-                    {formatFollowers(paparazzi.no_of_followers)}
+                    {formatFollowers(translatedPaparazzi?.no_of_followers)}
                   </div>
                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                    Followers
+                    {t('paparazziDetails.followers')}
                   </div>
                   <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>
-                    As of 01st Dec 2025
+                    {t('paparazzi.card.asOf')} 01st Dec 2025
                   </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Platform</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('paparazziDetails.platform')}</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
                       Instagram
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Category</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('paparazziDetails.category')}</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {paparazzi.category || 'General'}
+                      {translatedPaparazzi?.category || 'General'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Region</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('paparazziDetails.region')}</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
-                      {paparazzi.region_focused || 'Global'}
+                      {translatedPaparazzi?.region_focused || 'Global'}
                     </span>
                   </div>
-                  {paparazzi.instagram_url && (
+                  {translatedPaparazzi?.instagram_url && (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: theme.textSecondary }}>Profile</span>
-                      <a href={paparazzi.instagram_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: theme.primary }}>
-                        View →
+                      <span className="text-sm" style={{ color: theme.textSecondary }}>{t('paparazziDetails.profile')}</span>
+                      <a href={translatedPaparazzi.instagram_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: theme.primary }}>
+                        {t('paparazziDetails.view')} →
                       </a>
                     </div>
                   )}
@@ -476,18 +480,18 @@ const PaparazziDetailPage = () => {
                   onClick={handlePlaceOrder}
                   disabled={isOrdering}
                 >
-                  {isOrdering ? 'Processing...' : (isAuthenticated ? 'Contact Creator' : 'Sign In to Contact')}
+                  {isOrdering ? t('paparazziDetails.processing') : (isAuthenticated ? t('paparazziDetails.contactCreator') : t('paparazziDetails.signInContact'))}
                 </button>
               </div>
 
               {/* Profile Image Card */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Profile Picture
+                  {t('paparazziDetails.profileImage')}
                 </h3>
                 <div className="flex justify-center">
                   <img
-                    src={paparazzi.profile_dp_logo || "/logo.png"}
+                    src={translatedPaparazzi?.profile_dp_logo || "/logo.png"}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
                     onError={(e) => {
@@ -500,32 +504,32 @@ const PaparazziDetailPage = () => {
               {/* Quick Info */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Quick Info
+                  {t('paparazziDetails.quickInfo')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2">
                     <Instagram size={16} style={{ color: theme.primary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Instagram Profile
+                      {t('paparazziDetails.instagramProfile')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} style={{ color: theme.secondary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      {formatFollowers(paparazzi.no_of_followers)} followers
+                      {formatFollowers(translatedPaparazzi?.no_of_followers)} {t('paparazziDetails.followers')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Filter size={16} style={{ color: theme.warning }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Category: {paparazzi.category || 'General'}
+                      {t('paparazziDetails.category')}: {translatedPaparazzi?.category || 'General'}
                     </span>
                   </div>
-                  {paparazzi.region_focused && (
+                  {translatedPaparazzi?.region_focused && (
                     <div className="flex items-center gap-2">
                       <MapPin size={16} style={{ color: theme.info }} />
                       <span style={{ color: theme.textSecondary }}>
-                        Region: {paparazzi.region_focused}
+                        {t('paparazziDetails.region')}: {translatedPaparazzi.region_focused}
                       </span>
                     </div>
                   )}
@@ -551,7 +555,7 @@ const PaparazziDetailPage = () => {
             >
               <Heart size={16} style={{ color: isSaved ? theme.danger : theme.danger, fill: isSaved ? theme.danger : 'none' }} />
               <span style={{ color: isSaved ? theme.danger : theme.textSecondary }}>
-                {isSaved ? 'Saved' : 'Save'}
+                {isSaved ? t('paparazziDetails.saved') : t('paparazziDetails.save')}
               </span>
             </button>
             <button
@@ -563,7 +567,7 @@ const PaparazziDetailPage = () => {
               }}
             >
               <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>Share</span>
+              <span style={{ color: theme.textSecondary }}>{t('paparazziDetails.share')}</span>
             </button>
           </div>
         </div>
@@ -605,7 +609,7 @@ const PaparazziDetailPage = () => {
           }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.textPrimary }}>
-                Paparazzi Statistics
+                {t('paparazziDetails.stats.title')}
               </h2>
               <button
                 onClick={() => setShowStats(false)}
@@ -642,7 +646,7 @@ const PaparazziDetailPage = () => {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  Total Views
+                  {t('paparazziDetails.stats.totalViews')}
                 </div>
               </div>
 
@@ -666,7 +670,7 @@ const PaparazziDetailPage = () => {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  Total Orders
+                  {t('paparazziDetails.stats.totalOrders')}
                 </div>
               </div>
 
@@ -690,7 +694,7 @@ const PaparazziDetailPage = () => {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  Average Rating
+                  {t('paparazziDetails.stats.avgRating')}
                 </div>
               </div>
 
@@ -714,7 +718,7 @@ const PaparazziDetailPage = () => {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  Total Reviews
+                  {t('paparazziDetails.stats.totalReviews')}
                 </div>
               </div>
             </div>
@@ -731,15 +735,14 @@ const PaparazziDetailPage = () => {
                 fontWeight: '600',
                 color: theme.primary
               }}>
-                Performance Summary
+                {t('paparazziDetails.stats.performanceSummary')}
               </h4>
               <p style={{
                 margin: 0,
                 fontSize: '14px',
                 color: theme.textSecondary
               }}>
-                This paparazzi has shown strong performance with high engagement rates and positive customer feedback.
-                The {stats.rating}★ rating reflects excellent service quality and customer satisfaction.
+                {t('paparazziDetails.stats.performanceDesc')}
               </p>
             </div>
 
@@ -759,7 +762,7 @@ const PaparazziDetailPage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                Close
+                {t('paparazziDetails.stats.close')}
               </button>
             </div>
           </div>

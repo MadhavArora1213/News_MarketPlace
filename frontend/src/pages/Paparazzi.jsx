@@ -31,7 +31,9 @@ const theme = {
 };
 
 const PaparazziPage = () => {
+  const { t } = useLanguage();
   const [paparazzi, setPaparazzi] = useState([]);
+  const { translatedItems: translatedPaparazzi, isTranslating } = useTranslationArray(paparazzi, ['category', 'region_focused']);
   const [filteredPaparazzi, setFilteredPaparazzi] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -57,7 +59,7 @@ const PaparazziPage = () => {
 
   useEffect(() => {
     filterPaparazzi();
-  }, [paparazzi, searchQuery, selectedCategory, selectedLocation]);
+  }, [translatedPaparazzi, searchQuery, selectedCategory, selectedLocation]);
 
   const fetchPaparazzi = async () => {
     try {
@@ -88,19 +90,19 @@ const PaparazziPage = () => {
   };
 
   const filterPaparazzi = useCallback(() => {
-    let filtered = paparazzi.filter(p => {
+    let filtered = translatedPaparazzi.filter(p => {
       const matchesSearch = p.instagram_page_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                            (p.region_focused && p.region_focused.toLowerCase().includes(searchQuery.toLowerCase()));
+        (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.region_focused && p.region_focused.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
       const matchesLocation = selectedLocation === 'all' || (p.region_focused && p.region_focused.toLowerCase().includes(selectedLocation.toLowerCase()));
       return matchesSearch && matchesCategory && matchesLocation;
     });
     setFilteredPaparazzi(filtered);
-  }, [paparazzi, searchQuery, selectedCategory, selectedLocation]);
+  }, [translatedPaparazzi, searchQuery, selectedCategory, selectedLocation]);
 
-  const categories = ['all', ...new Set(paparazzi.map(p => p.category).filter(Boolean))];
-  const locations = ['all', ...new Set(paparazzi.map(p => p.region_focused).filter(Boolean))];
+  const categories = ['all', ...new Set(translatedPaparazzi.map(p => p.category).filter(Boolean))];
+  const locations = ['all', ...new Set(translatedPaparazzi.map(p => p.region_focused).filter(Boolean))];
 
   const handleCardClick = (paparazziId) => {
     navigate(`/paparazzi/${paparazziId}`);
@@ -143,15 +145,15 @@ const PaparazziPage = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            
+
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Paparazzi Network
+              {t('paparazzi.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Showcase your product launch, celebrity endorsements, gala dinners, corporate events, or real estate project announcements across global lifestyle and paparazzi outlets — including top Instagram pages, TikTok accounts, and YouTube channels. Gain billions of organic, multi-country views at a fraction of traditional performance-marketing costs.
+              {t('paparazzi.hero.subtitle')}
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
-              The current page is for representation purpose only, the comprehensive list will be live soon
+              {t('paparazzi.hero.disclaimer')}
             </p>
             <div className="mt-8">
               <button
@@ -159,7 +161,7 @@ const PaparazziPage = () => {
                 className="inline-flex items-center gap-2 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#1565C0] transition-colors"
               >
                 <Plus className="w-5 h-5" />
-                Submit New Paparazzi
+                {t('paparazzi.submitNew')}
               </button>
             </div>
           </motion.div>
@@ -182,7 +184,7 @@ const PaparazziPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
                 <Filter size={20} className="text-[#1976D2]" />
-                Filters & Sort
+                {t('paparazzi.filters.title')}
               </h3>
               {isMobile && (
                 <button
@@ -199,7 +201,7 @@ const PaparazziPage = () => {
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <Camera size={16} className="text-[#1976D2]" />
-                  Paparazzi Filters
+                  {t('paparazzi.filters.basic')}
                 </h4>
 
                 {/* Filters in row-wise layout for mobile */}
@@ -207,7 +209,7 @@ const PaparazziPage = () => {
                   {/* Category Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Category
+                      {t('paparazzi.filters.category')}
                     </label>
                     <select
                       value={selectedCategory}
@@ -216,7 +218,7 @@ const PaparazziPage = () => {
                     >
                       {categories.map(category => (
                         <option key={category} value={category}>
-                          {category === 'all' ? 'All Categories' : category}
+                          {category === 'all' ? t('paparazzi.filters.allCategories') : category}
                         </option>
                       ))}
                     </select>
@@ -225,7 +227,7 @@ const PaparazziPage = () => {
                   {/* Location Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Location
+                      {t('paparazzi.filters.location')}
                     </label>
                     <select
                       value={selectedLocation}
@@ -234,7 +236,7 @@ const PaparazziPage = () => {
                     >
                       {locations.map(location => (
                         <option key={location} value={location}>
-                          {location === 'all' ? 'All Locations' : location}
+                          {location === 'all' ? t('paparazzi.filters.allLocations') : location}
                         </option>
                       ))}
                     </select>
@@ -247,7 +249,7 @@ const PaparazziPage = () => {
                 onClick={clearAllFilters}
                 className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
               >
-                Clear All Filters
+                {t('paparazzi.filters.clear')}
               </button>
             </div>
           </div>
@@ -260,7 +262,7 @@ const PaparazziPage = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search by name, username, or category..."
+                placeholder={t('paparazzi.hero.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
@@ -292,7 +294,7 @@ const PaparazziPage = () => {
                     style={{ borderColor: theme.borderLight }}
                   >
                     <Filter size={16} />
-                    <span className="text-[#212121]">Filters</span>
+                    <span className="text-[#212121]">{t('paparazzi.controls.filters')}</span>
                   </button>
                 )}
 
@@ -300,21 +302,19 @@ const PaparazziPage = () => {
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <List size={16} />
                   </button>
@@ -373,7 +373,7 @@ const PaparazziPage = () => {
                             }}
                           />
                           <span className="text-sm font-medium text-[#1976D2] bg-[#E3F2FD] px-3 py-1 rounded-full">
-                            Instagram
+                            {t('paparazzi.card.instagram')}
                           </span>
                         </div>
                         <h3 className="text-xl font-semibold text-[#212121] mb-2 line-clamp-2">
@@ -382,10 +382,10 @@ const PaparazziPage = () => {
                         <div className="space-y-2 text-sm text-[#757575]">
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4" />
-                            <span>{formatFollowers(p.no_of_followers)} followers</span>
+                            <span>{formatFollowers(p.no_of_followers)} {t('paparazzi.card.followers')}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <small>As of 01st Dec 2025</small>
+                            <small>{t('paparazzi.card.asOf')} 01st Dec 2025</small>
                           </div>
                           {p.category && (
                             <div className="flex items-center gap-2">
@@ -403,7 +403,7 @@ const PaparazziPage = () => {
                             <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
                               <Globe className="w-4 h-4" />
                               <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-[#1976D2] hover:underline">
-                                Instagram Profile
+                                {t('paparazzi.card.viewProfile')}
                               </a>
                             </div>
                           )}
@@ -425,25 +425,25 @@ const PaparazziPage = () => {
                       <thead style={{ backgroundColor: theme.backgroundSoft }}>
                         <tr>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Instagram Page
+                            {t('paparazzi.table.page')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Followers
+                            {t('paparazzi.table.followers')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Category
+                            {t('paparazzi.table.category')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Region Focused
+                            {t('paparazzi.table.region')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Instagram URL
+                            {t('paparazzi.table.url')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Profile Image
+                            {t('paparazzi.table.image')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Action
+                            {t('paparazzi.table.action')}
                           </th>
                         </tr>
                       </thead>
@@ -476,7 +476,7 @@ const PaparazziPage = () => {
                                   {formatFollowers(p.no_of_followers)}
                                 </span>
                                 <div className="text-xs" style={{ color: theme.textSecondary }}>
-                                  As of 01st Dec 2025
+                                  {t('paparazzi.card.asOf')} 01st Dec 2025
                                 </div>
                               </div>
                             </td>
@@ -493,10 +493,10 @@ const PaparazziPage = () => {
                             <td className="px-6 py-4">
                               {p.instagram_url ? (
                                 <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-sm" style={{ color: theme.primary }}>
-                                  View Profile
+                                  {t('paparazzi.table.viewProfile')}
                                 </a>
                               ) : (
-                                <span className="text-sm" style={{ color: theme.textSecondary }}>N/A</span>
+                                <span className="text-sm" style={{ color: theme.textSecondary }}>{t('paparazzi.table.na')}</span>
                               )}
                             </td>
                             <td className="px-6 py-4">
@@ -516,7 +516,7 @@ const PaparazziPage = () => {
                                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                               >
-                                View Details
+                                {t('paparazzi.table.viewDetails')}
                               </button>
                             </td>
                           </tr>
@@ -533,10 +533,10 @@ const PaparazziPage = () => {
                     <Camera className="w-12 h-12 text-[#BDBDBD]" />
                   </div>
                   <h3 className="text-2xl font-semibold text-[#212121] mb-3">
-                    No paparazzi found
+                    {t('paparazzi.empty.title')}
                   </h3>
                   <p className="text-[#757575] text-lg max-w-md mx-auto">
-                    We couldn't find any paparazzi matching your search criteria. Try adjusting your filters.
+                    {t('paparazzi.empty.desc')}
                   </p>
                   <button
                     onClick={() => {
@@ -545,7 +545,7 @@ const PaparazziPage = () => {
                     }}
                     className="mt-6 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors"
                   >
-                    Clear All Filters
+                    {t('paparazzi.empty.clear')}
                   </button>
                 </div>
               )}

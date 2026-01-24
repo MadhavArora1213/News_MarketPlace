@@ -1826,5 +1826,104 @@
             "messagePlaceholder": "Any specific requirements or questions...",
             "cancel": "Cancel"
         }
+    },
+    "paparazzi": {
+        "hero": {
+            "title": "Paparazzi Network",
+            "subtitle": "Showcase your product launch, celebrity endorsements, gala dinners, corporate events, or real estate project announcements across global lifestyle and paparazzi outlets — including top Instagram pages, TikTok accounts, and YouTube channels. Gain billions of organic, multi-country views at a fraction of traditional performance-marketing costs.",
+            "disclaimer": "The current page is for representation purpose only, the comprehensive list will be live soon",
+            "searchPlaceholder": "Search by name, username, or category..."
+        },
+        "filters": {
+            "title": "Filters & Sort",
+            "basic": "Paparazzi Filters",
+            "category": "Category",
+            "allCategories": "All Categories",
+            "location": "Location",
+            "allLocations": "All Locations",
+            "clear": "Clear All Filters"
+        },
+        "controls": {
+            "filters": "Filters",
+            "found": "{{count}} paparazzi found",
+            "for": "for"
+        },
+        "card": {
+            "instagram": "Instagram",
+            "followers": "followers",
+            "asOf": "As of",
+            "viewProfile": "Instagram Profile",
+            "viewDetails": "View Details"
+        },
+        "table": {
+            "page": "Instagram Page",
+            "followers": "Followers",
+            "category": "Category",
+            "region": "Region Focused",
+            "url": "Instagram URL",
+            "image": "Profile Image",
+            "action": "Action",
+            "na": "N/A",
+            "viewProfile": "View Profile"
+        },
+        "empty": {
+            "title": "No paparazzi found",
+            "desc": "We couldn't find any paparazzi matching your search criteria. Try adjusting your filters.",
+            "clear": "Clear All Filters"
+        },
+        "submitNew": "Submit New Paparazzi"
+    },
+    "paparazziDetails": {
+        "loading": "Loading paparazzi details...",
+        "notFound": "Paparazzi Not Found",
+        "notFoundDesc": "The paparazzi you're looking for doesn't exist or has been removed.",
+        "backToPaparazzi": "Back to Paparazzi",
+        "details": "Paparazzi Details",
+        "followers": "followers",
+        "added": "Added",
+        "instagramProfile": "Instagram Profile",
+        "viewProfile": "View Instagram Profile",
+        "about": "About This Paparazzi",
+        "aboutDesc": "This is a professional Instagram influencer specializing in content creation and social media marketing. With expertise in visual storytelling and audience engagement, they provide comprehensive social media solutions for businesses and brands.",
+        "category": "Category",
+        "region": "Region Focused",
+        "profileImage": "Profile Image",
+        "platform": "Platform",
+        "profile": "Profile",
+        "view": "View",
+        "contactCreator": "Contact Creator",
+        "signInContact": "Sign In to Contact",
+        "processing": "Processing...",
+        "quickInfo": "Quick Info",
+        "save": "Save",
+        "saved": "Saved",
+        "share": "Share",
+        "stats": {
+            "title": "Paparazzi Statistics",
+            "totalViews": "Total Views",
+            "totalOrders": "Total Orders",
+            "avgRating": "Average Rating",
+            "totalReviews": "Total Reviews",
+            "performanceSummary": "Performance Summary",
+            "performanceDesc": "This paparazzi has shown strong performance with high engagement rates and positive customer feedback.",
+            "close": "Close"
+        },
+        "orderModal": {
+            "title": "Booking Request",
+            "paparazzi": "Paparazzi",
+            "fullName": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "message": "Additional Message",
+            "messagePlaceholder": "Any specific requirements or questions...",
+            "cancel": "Cancel",
+            "submit": "Submit Request"
+        },
+        "alerts": {
+            "linkCopied": "Link copied to clipboard!",
+            "bookingSuccess": "Call booking request submitted successfully! Our team will contact you soon.",
+            "bookingFailed": "Failed to submit booking request",
+            "bookingError": "Error submitting booking request. Please try again."
+        }
     }
 }

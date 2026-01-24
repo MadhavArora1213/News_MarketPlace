@@ -1820,5 +1820,104 @@
             "messagePlaceholder": "任何具体要求或问题...",
             "cancel": "取消"
         }
+    },
+    "paparazzi": {
+        "hero": {
+            "title": "狗仔队网络",
+            "subtitle": "在全球生活方式和狗仔队媒体上展示您的产品发布、名人代言、晚宴、企业活动或房地产项目公告——包括顶级Instagram页面、TikTok账户和YouTube频道。以传统效果营销成本的一小部分获得数十亿的有机、多国浏览量。",
+            "disclaimer": "当前页面仅用于演示目的，完整列表即将上线",
+            "searchPlaceholder": "按名称、用户名或类别搜索..."
+        },
+        "filters": {
+            "title": "筛选和排序",
+            "basic": "狗仔队筛选",
+            "category": "类别",
+            "allCategories": "所有类别",
+            "location": "位置",
+            "allLocations": "所有位置",
+            "clear": "清除所有筛选"
+        },
+        "controls": {
+            "filters": "筛选",
+            "found": "找到 {{count}} 个狗仔队",
+            "for": "为"
+        },
+        "card": {
+            "instagram": "Instagram",
+            "followers": "粉丝",
+            "asOf": "截至",
+            "viewProfile": "Instagram 个人资料",
+            "viewDetails": "查看详情"
+        },
+        "table": {
+            "page": "Instagram 页面",
+            "followers": "粉丝数",
+            "category": "类别",
+            "region": "目标区域",
+            "url": "Instagram 链接",
+            "image": "个人资料图片",
+            "action": "操作",
+            "na": "N/A",
+            "viewProfile": "查看个人资料"
+        },
+        "empty": {
+            "title": "未找到狗仔队",
+            "desc": "我们找不到符合您搜索条件的任何狗仔队。请尝试调整您的筛选条件。",
+            "clear": "清除所有筛选"
+        },
+        "submitNew": "提交新狗仔队"
+    },
+    "paparazziDetails": {
+        "loading": "正在加载狗仔队详情...",
+        "notFound": "未找到狗仔队",
+        "notFoundDesc": "您正在寻找的狗仔队不存在或已被移除。",
+        "backToPaparazzi": "返回狗仔队",
+        "details": "狗仔队详情",
+        "followers": "粉丝",
+        "added": "已添加",
+        "instagramProfile": "Instagram 个人资料",
+        "viewProfile": "查看 Instagram 个人资料",
+        "about": "关于此狗仔队",
+        "aboutDesc": "这是一位专业的 Instagram 影响者，专注于内容创作和社交媒体营销。凭借在视觉叙事和受众参与方面的专业知识，他们为企业和品牌提供全面的社交媒体解决方案。",
+        "category": "类别",
+        "region": "目标区域",
+        "profileImage": "个人资料图片",
+        "platform": "平台",
+        "profile": "个人资料",
+        "view": "查看",
+        "contactCreator": "联系创作者",
+        "signInContact": "登录以联系",
+        "processing": "处理中...",
+        "quickInfo": "快速信息",
+        "save": "保存",
+        "saved": "已保存",
+        "share": "分享",
+        "stats": {
+            "title": "狗仔队统计",
+            "totalViews": "总浏览量",
+            "totalOrders": "总订单",
+            "avgRating": "平均评分",
+            "totalReviews": "总评论",
+            "performanceSummary": "表现摘要",
+            "performanceDesc": "此狗仔队表现强劲，参与率高，客户反馈积极。",
+            "close": "关闭"
+        },
+        "orderModal": {
+            "title": "预订请求",
+            "paparazzi": "狗仔队",
+            "fullName": "全名",
+            "email": "电子邮件",
+            "phone": "电话",
+            "message": "附加信息",
+            "messagePlaceholder": "任何具体要求或问题...",
+            "cancel": "取消",
+            "submit": "提交请求"
+        },
+        "alerts": {
+            "linkCopied": "链接已复制到剪贴板！",
+            "bookingSuccess": "电话预订请求已成功提交！我们的团队将很快与您联系。",
+            "bookingFailed": "提交预订请求失败",
+            "bookingError": "提交预订请求时出错。请重试。"
+        }
     }
 }
