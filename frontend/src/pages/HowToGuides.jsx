@@ -4,6 +4,8 @@ import { BookOpen, Search, Star, MessageCircle, Clock, User, ThumbsUp, Filter, C
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import { useLanguage } from '../context/LanguageContext';
+import { useTranslationArray } from '../hooks/useTranslation';
 
 // Color palette from VideoTutorials
 const theme = {
@@ -35,6 +37,7 @@ const theme = {
 };
 
 const HowToGuides = () => {
+  const { t, language } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGuide, setSelectedGuide] = useState(null);
@@ -277,7 +280,17 @@ const HowToGuides = () => {
     }
   ];
 
-  const filteredGuides = guides.filter(guide => {
+  // Dynamic translation for guide content
+  const { translatedItems: translatedGuides, isTranslating } = useTranslationArray(
+    guides,
+    ['title', 'description'],
+    true
+  );
+
+  // Use translated guides for display
+  const displayGuides = translatedGuides.length > 0 ? translatedGuides : guides;
+
+  const filteredGuides = displayGuides.filter(guide => {
     const matchesCategory = selectedCategory === 'all' || guide.category === selectedCategory;
     const matchesSearch = guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       guide.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -307,7 +320,7 @@ const HowToGuides = () => {
   };
 
   if (selectedGuide) {
-    const guide = guides.find(g => g.id === selectedGuide);
+    const guide = displayGuides.find(g => g.id === selectedGuide);
     const IconComponent = guide.icon;
 
     return (
@@ -621,7 +634,7 @@ const HowToGuides = () => {
 
           {filteredGuides.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-[#757575] text-lg">No guides found matching your criteria.</p>
+              <p className="text-[#757575] text-lg">{t('howToGuides.noResults')}</p>
             </div>
           )}
         </div>
