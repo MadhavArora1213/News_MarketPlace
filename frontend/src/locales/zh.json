@@ -1998,5 +1998,127 @@
             "recaptcha": "请完成reCAPTCHA验证",
             "otpRequired": "提交前请验证电子邮件OTP"
         }
+    },
+    "themes": {
+        "hero": {
+            "title": "社交媒体主题",
+            "desc": "探索我们为此全球出版物和内容创作者设计的广泛专业主题系列。找到与您的品牌相匹配并增强您的视觉叙事的完美设计。使用适应各种内容类型的可自定义模板定制您的媒体存在。",
+            "disclaimer": "当前页面仅供演示用途，完整列表将很快上线",
+            "searchPlaceholder": "按用户名、页面名称或类别搜索..."
+        },
+        "filters": {
+            "title": "筛选与排序",
+            "basic": "基本筛选",
+            "platform": "平台",
+            "allPlatforms": "所有平台",
+            "category": "类别",
+            "allCategories": "所有类别",
+            "location": "位置",
+            "allLocations": "所有位置",
+            "followersRange": "粉丝范围",
+            "followers": "粉丝",
+            "allFollowers": "所有粉丝",
+            "clear": "清除所有筛选"
+        },
+        "controls": {
+            "filters": "筛选",
+            "found": "找到 {{count}} 个主题",
+            "for": "为",
+            "sortBy": "排序方式：",
+            "sortOptions": {
+                "nameAsc": "名称 (A-Z)",
+                "nameDesc": "名称 (Z-A)",
+                "platformAsc": "平台 (A-Z)",
+                "platformDesc": "平台 (Z-A)",
+                "categoryAsc": "类别 (A-Z)",
+                "categoryDesc": "类别 (Z-A)",
+                "followersDesc": "粉丝 (高到低)",
+                "followersAsc": "粉丝 (低到高)",
+                "locationAsc": "位置 (A-Z)",
+                "locationDesc": "位置 (Z-A)",
+                "newest": "最新优先",
+                "oldest": "最旧优先"
+            }
+        },
+        "card": {
+            "followers": "粉丝",
+            "starting": "起步价",
+            "viewProfile": "查看个人资料"
+        },
+        "table": {
+            "theme": "主题",
+            "platform": "平台",
+            "category": "类别",
+            "followers": "粉丝",
+            "location": "位置",
+            "action": "操作",
+            "view": "查看"
+        },
+        "empty": {
+            "title": "未找到主题",
+            "desc": "我们找不到符合您搜索条件的任何主题。请尝试调整您的筛选。",
+            "clear": "清除所有筛选"
+        },
+        "loading": "正在加载主题..."
+    },
+    "themeDetails": {
+        "loading": "正在加载主题详情...",
+        "notFound": {
+            "title": "未找到主题",
+            "desc": "您正在寻找的主题不存在或已被删除。",
+            "back": "返回主题列表"
+        },
+        "breadcrumb": {
+            "back": "返回主题列表",
+            "current": "主题详情"
+        },
+        "stats": {
+            "followers": "粉丝",
+            "added": "添加于"
+        },
+        "sections": {
+            "website": "网站",
+            "collaboration": "合作详情",
+            "pricing": "定价信息",
+            "overview": "主题概览",
+            "share": "分享",
+            "related": "相关主题"
+        },
+        "pricing": {
+            "reelWithoutTagging": "Reel (无标签/合作)",
+            "reelWithTaggingCollab": "Reel (含标签/合作)",
+            "reelWithTagging": "Reel (含标签)",
+            "videoMinutes": "允许的视频时长（分钟）",
+            "pinPost": "置顶帖子 (每周)",
+            "story": "Story 费用",
+            "storyWithReel": "Story 搭配 Reel",
+            "startingPrice": "起步价",
+            "from": "从",
+            "contactForPricing": "联系询价"
+        },
+        "order": {
+            "button": {
+                "place": "下订单",
+                "signIn": "登录以订购",
+                "processing": "处理中..."
+            },
+            "modal": {
+                "title": "下订单",
+                "total": "总金额:",
+                "fullName": "全名 *",
+                "email": "电子邮件 *",
+                "phone": "电话 *",
+                "message": "附加信息",
+                "messagePlaceholder": "任何具体要求或问题...",
+                "submit": "确认订单",
+                "cancel": "取消",
+                "success": "主题合作请求提交成功！我们的团队将尽快联系您。",
+                "error": "提交合作请求时出错。请重试。",
+                "validation": "请填写所有必填字段"
+            }
+        },
+        "share": {
+            "copied": "链接已复制到剪贴板！"
+        }
     }
 }

@@ -2004,5 +2004,127 @@
             "recaptcha": "Please complete the reCAPTCHA verification",
             "otpRequired": "Please verify email OTP before submitting"
         }
+    },
+    "themes": {
+        "hero": {
+            "title": "Social Media Themes",
+            "desc": "Explore our extensive collection of professional themes designed for publications and content creators worldwide. Find the perfect design that matches your brand and enhances your visual storytelling. Customize your media presence with customizable templates that adapt to various content types.",
+            "disclaimer": "The current page is for representation purpose only, the comprehensive list will be live soon",
+            "searchPlaceholder": "Search by username, page name, or category..."
+        },
+        "filters": {
+            "title": "Filters & Sort",
+            "basic": "Basic Filters",
+            "platform": "Platform",
+            "allPlatforms": "All Platforms",
+            "category": "Category",
+            "allCategories": "All Categories",
+            "location": "Location",
+            "allLocations": "All Locations",
+            "followersRange": "Followers Range",
+            "followers": "Followers",
+            "allFollowers": "All Followers",
+            "clear": "Clear All Filters"
+        },
+        "controls": {
+            "filters": "Filters",
+            "found": "{{count}} themes found",
+            "for": "for",
+            "sortBy": "Sort by:",
+            "sortOptions": {
+                "nameAsc": "Name (A-Z)",
+                "nameDesc": "Name (Z-A)",
+                "platformAsc": "Platform (A-Z)",
+                "platformDesc": "Platform (Z-A)",
+                "categoryAsc": "Category (A-Z)",
+                "categoryDesc": "Category (Z-A)",
+                "followersDesc": "Followers (High to Low)",
+                "followersAsc": "Followers (Low to High)",
+                "locationAsc": "Location (A-Z)",
+                "locationDesc": "Location (Z-A)",
+                "newest": "Newest First",
+                "oldest": "Oldest First"
+            }
+        },
+        "card": {
+            "followers": "Followers",
+            "starting": "Starting",
+            "viewProfile": "View Profile"
+        },
+        "table": {
+            "theme": "Theme",
+            "platform": "Platform",
+            "category": "Category",
+            "followers": "Followers",
+            "location": "Location",
+            "action": "Action",
+            "view": "View"
+        },
+        "empty": {
+            "title": "No themes found",
+            "desc": "We couldn't find any themes matching your search criteria. Try adjusting your filters.",
+            "clear": "Clear all filters"
+        },
+        "loading": "Loading themes..."
+    },
+    "themeDetails": {
+        "loading": "Loading theme details...",
+        "notFound": {
+            "title": "Theme Not Found",
+            "desc": "The theme you're looking for doesn't exist or has been removed.",
+            "back": "Back to Themes"
+        },
+        "breadcrumb": {
+            "back": "Back to Themes",
+            "current": "Theme Details"
+        },
+        "stats": {
+            "followers": "followers",
+            "added": "Added"
+        },
+        "sections": {
+            "website": "Website",
+            "collaboration": "Collaboration Details",
+            "pricing": "Pricing Information",
+            "overview": "Theme Overview",
+            "share": "Share",
+            "related": "Related Themes"
+        },
+        "pricing": {
+            "reelWithoutTagging": "Reel (Without Tagging/Collaboration)",
+            "reelWithTaggingCollab": "Reel (With Tagging/Collaboration)",
+            "reelWithTagging": "Reel (With Tagging)",
+            "videoMinutes": "Video Minutes Allowed",
+            "pinPost": "Pin Post (Weekly)",
+            "story": "Story Charges",
+            "storyWithReel": "Story with Reel",
+            "startingPrice": "Starting Price",
+            "from": "From",
+            "contactForPricing": "Contact for pricing"
+        },
+        "order": {
+            "button": {
+                "place": "Place Order",
+                "signIn": "Sign In to Order",
+                "processing": "Processing..."
+            },
+            "modal": {
+                "title": "Place Order",
+                "total": "Total Amount:",
+                "fullName": "Full Name *",
+                "email": "Email *",
+                "phone": "Phone *",
+                "message": "Additional Message",
+                "messagePlaceholder": "Any specific requirements or questions...",
+                "submit": "Confirm Order",
+                "cancel": "Cancel",
+                "success": "Theme collaboration request submitted successfully! Our team will contact you soon.",
+                "error": "Error submitting collaboration request. Please try again.",
+                "validation": "Please fill in all required fields"
+            }
+        },
+        "share": {
+            "copied": "Link copied to clipboard!"
+        }
     }
 }

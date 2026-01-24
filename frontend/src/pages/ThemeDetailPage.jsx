@@ -11,11 +11,13 @@ import {
   Instagram, Youtube, Twitter, Facebook, Hash, DollarSign,
   Calendar, Eye, Heart, Share
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const ThemeDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const [theme, setTheme] = useState(null);
   const [relatedThemes, setRelatedThemes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ const ThemeDetailPage = () => {
   };
 
   const formatPrice = (price) => {
-    if (!price) return 'Contact for pricing';
+    if (!price) return t('themeDetails.pricing.contactForPricing');
     return `$${parseFloat(price).toFixed(2)}`;
   };
 
@@ -141,7 +143,7 @@ const ThemeDetailPage = () => {
     try {
       // Validate required fields
       if (!orderFormData.fullName.trim() || !orderFormData.email.trim() || !orderFormData.phone.trim()) {
-        alert('Please fill in all required fields');
+        alert(t('themeDetails.order.modal.validation'));
         return;
       }
 
@@ -167,7 +169,7 @@ const ThemeDetailPage = () => {
       console.log('Order response:', response.data);
 
       if (response.data && (response.data.order || response.data.message)) {
-        alert('Theme collaboration request submitted successfully! Our team will contact you soon.');
+        alert(t('themeDetails.order.modal.success'));
         setShowOrderModal(false);
         setOrderFormData({ fullName: '', email: '', phone: '', message: '' });
       } else {
@@ -176,9 +178,9 @@ const ThemeDetailPage = () => {
 
     } catch (error) {
       console.error('Error placing order:', error);
-      
-      let errorMessage = 'Error submitting collaboration request. Please try again.';
-      
+
+      let errorMessage = t('themeDetails.order.modal.error');
+
       if (error.response) {
         console.error('Error response:', error.response.data);
         if (error.response.data?.error) {
@@ -194,7 +196,7 @@ const ThemeDetailPage = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       alert(errorMessage);
     } finally {
       setIsOrdering(false);
@@ -212,7 +214,7 @@ const ThemeDetailPage = () => {
       navigator.share(shareData);
     } else {
       navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link copied to clipboard!');
+        alert(t('themeDetails.share.copied'));
       }).catch(() => {
         const textArea = document.createElement('textarea');
         textArea.value = window.location.href;
@@ -220,7 +222,7 @@ const ThemeDetailPage = () => {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert('Link copied to clipboard!');
+        alert(t('themeDetails.share.copied'));
       });
     }
   };
@@ -253,7 +255,7 @@ const ThemeDetailPage = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-4 border-[#E0E0E0] border-t-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading theme details...</p>
+            <p className="text-lg text-[#757575]">{t('themeDetails.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -271,10 +273,10 @@ const ThemeDetailPage = () => {
               <Hash className="w-12 h-12 text-[#BDBDBD]" />
             </div>
             <h1 className="text-2xl font-semibold mb-4" style={{ color: themeColors.textPrimary }}>
-              Theme Not Found
+              {t('themeDetails.notFound.title')}
             </h1>
             <p className="mb-8" style={{ color: themeColors.textSecondary }}>
-              The theme you're looking for doesn't exist or has been removed.
+              {t('themeDetails.notFound.desc')}
             </p>
             <button
               onClick={() => navigate('/themes')}
@@ -282,7 +284,7 @@ const ThemeDetailPage = () => {
               style={{ backgroundColor: themeColors.primary }}
             >
               <ArrowLeft size={16} />
-              Back to Themes
+              {t('themeDetails.notFound.back')}
             </button>
           </div>
         </div>
@@ -312,10 +314,10 @@ const ThemeDetailPage = () => {
               className="flex items-center gap-1 hover:opacity-80"
             >
               <ArrowLeft size={16} />
-              Back to Themes
+              {t('themeDetails.breadcrumb.back')}
             </button>
             <span>/</span>
-            <span>Theme Details</span>
+            <span>{t('themeDetails.breadcrumb.current')}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -352,11 +354,11 @@ const ThemeDetailPage = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Users size={16} />
-                        <span>{formatFollowers(theme.no_of_followers)} followers</span>
+                        <span>{formatFollowers(theme.no_of_followers)} {t('themeDetails.stats.followers')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
-                        <span>Added {new Date(theme.created_at).toLocaleDateString()}</span>
+                        <span>{t('themeDetails.stats.added')} {new Date(theme.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
@@ -366,7 +368,7 @@ const ThemeDetailPage = () => {
                 {theme.page_website && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: themeColors.textPrimary }}>
-                      Website
+                      {t('themeDetails.sections.website')}
                     </h3>
                     <a
                       href={theme.page_website}
@@ -385,7 +387,7 @@ const ThemeDetailPage = () => {
                 {theme.collaboration && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: themeColors.textPrimary }}>
-                      Collaboration Details
+                      {t('themeDetails.sections.collaboration')}
                     </h3>
                     <div className="prose max-w-none" style={{ color: themeColors.textSecondary }}>
                       <p>{theme.collaboration}</p>
@@ -396,47 +398,47 @@ const ThemeDetailPage = () => {
                 {/* Pricing Information */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-4" style={{ color: themeColors.textPrimary }}>
-                    Pricing Information
+                    {t('themeDetails.sections.pricing')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Reel (Without Tagging/Collaboration)</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.reelWithoutTagging')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.price_reel_without_tagging_collaboration)}
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Reel (With Tagging/Collaboration)</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.reelWithTaggingCollab')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.price_reel_with_tagging_collaboration)}
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Reel (With Tagging)</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.reelWithTagging')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.price_reel_with_tagging)}
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Video Minutes Allowed</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.videoMinutes')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.primary }}>
                         {theme.video_minute_allowed || 'N/A'} min
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Pin Post (Weekly)</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.pinPost')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.pin_post_charges_week)}
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Story Charges</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.story')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.story_charges)}
                       </div>
                     </div>
                     <div className="p-4 rounded-lg border" style={{ backgroundColor: themeColors.backgroundSoft }}>
-                      <div className="text-sm text-[#757575] mb-1">Story with Reel</div>
+                      <div className="text-sm text-[#757575] mb-1">{t('themeDetails.pricing.storyWithReel')}</div>
                       <div className="text-xl font-bold" style={{ color: themeColors.success }}>
                         {formatPrice(theme.story_with_reel_charges)}
                       </div>
@@ -455,25 +457,25 @@ const ThemeDetailPage = () => {
                     {formatPrice(theme.price_reel_without_tagging_collaboration)}
                   </div>
                   <div className="text-sm" style={{ color: themeColors.textSecondary }}>
-                    Starting Price
+                    {t('themeDetails.pricing.startingPrice')}
                   </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>Platform</span>
+                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>{t('themes.filters.platform')}</span>
                     <span className="font-medium" style={{ color: themeColors.textPrimary }}>
                       {theme.platform}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>Category</span>
+                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>{t('themes.filters.category')}</span>
                     <span className="font-medium" style={{ color: themeColors.textPrimary }}>
                       {theme.category}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>Followers</span>
+                    <span className="text-sm" style={{ color: themeColors.textSecondary }}>{t('themes.filters.followers')}</span>
                     <span className="font-medium" style={{ color: themeColors.textPrimary }}>
                       {formatFollowers(theme.no_of_followers)}
                     </span>
@@ -488,7 +490,7 @@ const ThemeDetailPage = () => {
                   onClick={handlePlaceOrder}
                   disabled={isOrdering}
                 >
-                  {isOrdering ? 'Processing...' : (isAuthenticated ? 'Place Order' : 'Sign In to Order')}
+                  {isOrdering ? t('themeDetails.order.button.processing') : (isAuthenticated ? t('themeDetails.order.button.place') : t('themeDetails.order.button.signIn'))}
                 </button>
               </div>
 
@@ -496,29 +498,29 @@ const ThemeDetailPage = () => {
               {/* Theme Stats */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: themeColors.textPrimary }}>
-                  Theme Overview
+                  {t('themeDetails.sections.overview')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span style={{ color: themeColors.textSecondary }}>Platform</span>
+                    <span style={{ color: themeColors.textSecondary }}>{t('themes.filters.platform')}</span>
                     <span style={{ color: themeColors.textPrimary }} className="font-medium">
                       {theme.platform}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: themeColors.textSecondary }}>Category</span>
+                    <span style={{ color: themeColors.textSecondary }}>{t('themes.filters.category')}</span>
                     <span style={{ color: themeColors.textPrimary }} className="font-medium">
                       {theme.category}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: themeColors.textSecondary }}>Followers</span>
+                    <span style={{ color: themeColors.textSecondary }}>{t('themes.filters.followers')}</span>
                     <span style={{ color: themeColors.textPrimary }} className="font-medium">
                       {formatFollowers(theme.no_of_followers)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: themeColors.textSecondary }}>Location</span>
+                    <span style={{ color: themeColors.textSecondary }}>{t('themes.filters.location')}</span>
                     <span style={{ color: themeColors.textPrimary }} className="font-medium">
                       {theme.location}
                     </span>
@@ -543,7 +545,7 @@ const ThemeDetailPage = () => {
               }}
             >
               <Share size={16} style={{ color: themeColors.primary }} />
-              <span style={{ color: themeColors.textSecondary }}>Share</span>
+              <span style={{ color: themeColors.textSecondary }}>{t('themeDetails.sections.share')}</span>
             </button>
           </div>
         </div>
@@ -554,7 +556,7 @@ const ThemeDetailPage = () => {
         <section className="px-4 sm:px-6 lg:px-8 py-12 bg-[#FAFAFA]">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-2xl font-semibold mb-8" style={{ color: themeColors.textPrimary }}>
-              Related Themes
+              {t('themeDetails.sections.related')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedThemes.map((relatedTheme, index) => (
@@ -584,7 +586,7 @@ const ThemeDetailPage = () => {
                       <span>{formatFollowers(relatedTheme.no_of_followers)}</span>
                     </div>
                     <div className="text-sm font-medium" style={{ color: themeColors.success }}>
-                      From {formatPrice(relatedTheme.price_reel_without_tagging_collaboration)}
+                      {t('themeDetails.pricing.from')} {formatPrice(relatedTheme.price_reel_without_tagging_collaboration)}
                     </div>
                   </div>
                 </motion.div>
@@ -643,7 +645,7 @@ const ThemeDetailPage = () => {
               flexShrink: 0
             }}>
               <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: themeColors.textPrimary }}>
-                Place Order
+                {t('themeDetails.order.modal.title')}
               </h2>
               <button
                 onClick={() => setShowOrderModal(false)}
@@ -684,7 +686,7 @@ const ThemeDetailPage = () => {
                   {theme.page_name}
                 </h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: themeColors.textSecondary }}>Total Amount:</span>
+                  <span style={{ color: themeColors.textSecondary }}>{t('themeDetails.order.modal.total')}</span>
                   <span style={{ fontSize: '20px', fontWeight: '700', color: themeColors.success }}>
                     {formatPrice(theme.price_reel_without_tagging_collaboration)}
                   </span>
@@ -701,7 +703,7 @@ const ThemeDetailPage = () => {
                       color: themeColors.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Full Name *
+                      {t('themeDetails.order.modal.fullName')}
                     </label>
                     <input
                       type="text"
@@ -728,7 +730,7 @@ const ThemeDetailPage = () => {
                       color: themeColors.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Email *
+                      {t('themeDetails.order.modal.email')}
                     </label>
                     <input
                       type="email"
@@ -755,7 +757,7 @@ const ThemeDetailPage = () => {
                       color: themeColors.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Phone *
+                      {t('themeDetails.order.modal.phone')}
                     </label>
                     <input
                       type="tel"
@@ -782,7 +784,7 @@ const ThemeDetailPage = () => {
                       color: themeColors.textPrimary,
                       marginBottom: '6px'
                     }}>
-                      Additional Message
+                      {t('themeDetails.order.modal.message')}
                     </label>
                     <textarea
                       value={orderFormData.message}
@@ -798,7 +800,7 @@ const ThemeDetailPage = () => {
                         backgroundColor: themeColors.background,
                         resize: 'vertical'
                       }}
-                      placeholder="Any specific requirements or questions..."
+                      placeholder={t('themeDetails.order.modal.messagePlaceholder')}
                     />
                   </div>
                 </div>
@@ -819,37 +821,42 @@ const ThemeDetailPage = () => {
                 type="button"
                 onClick={() => setShowOrderModal(false)}
                 style={{
-                  padding: '12px 24px',
                   backgroundColor: themeColors.backgroundSoft,
                   color: themeColors.textPrimary,
                   border: 'none',
                   borderRadius: '8px',
+                  padding: '12px 24px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  fontSize: '14px'
+                  flex: '1'
                 }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#e0e0e0'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = themeColors.backgroundSoft}
                 disabled={isOrdering}
               >
-                Cancel
+                {t('themeDetails.order.modal.cancel')}
               </button>
               <button
                 type="submit"
                 form="order-form"
                 style={{
-                  padding: '12px 24px',
                   backgroundColor: themeColors.primary,
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
+                  padding: '12px 24px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  fontSize: '14px'
+                  flex: '2',
+                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)'
                 }}
-                disabled={isOrdering}
                 onMouseEnter={(e) => e.target.style.backgroundColor = themeColors.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = themeColors.primary}
+                disabled={isOrdering}
               >
-                {isOrdering ? 'Processing...' : 'Book Collaboration'}
+                {isOrdering ? t('themeDetails.order.button.processing') : t('themeDetails.order.modal.submit')}
               </button>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
   Facebook, Hash, DollarSign, ExternalLink, Grid, List,
   ArrowUpDown, ArrowUp, ArrowDown, BarChart3
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -45,6 +46,7 @@ const theme = {
 const ThemesPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [themes, setThemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,7 +222,7 @@ const ThemesPage = () => {
   };
 
   const followerRanges = [
-    { value: '', label: 'All Followers' },
+    { value: '', label: t('themes.filters.allFollowers') },
     { value: '0-1000', label: '0 - 1K' },
     { value: '1000-10000', label: '1K - 10K' },
     { value: '10000-50000', label: '10K - 50K' },
@@ -236,7 +238,7 @@ const ThemesPage = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-4 border-[#E0E0E0] border-t-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading themes...</p>
+            <p className="text-lg text-[#757575]">{t('themes.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -258,14 +260,13 @@ const ThemesPage = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Social Media Themes
+              {t('themes.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-                    Explore our extensive collection of professional themes designed for publications and content creators worldwide. Find the perfect design that matches your brand and enhances your visual storytelling. Customize your media presence with customizable templates that adapt to various content types.
-
+              {t('themes.hero.desc')}
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
-              The current page is for representation purpose only, the comprehensive list will be live soon
+              {t('themes.hero.disclaimer')}
             </p>
 
             {/* Search Bar */}
@@ -273,7 +274,7 @@ const ThemesPage = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by username, page name, or category..."
+                  placeholder={t('themes.hero.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
@@ -309,7 +310,7 @@ const ThemesPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
                 <Filter size={20} className="text-[#1976D2]" />
-                Filters & Sort
+                {t('themes.filters.title')}
               </h3>
               {isMobile && (
                 <button
@@ -326,7 +327,7 @@ const ThemesPage = () => {
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <Globe size={16} className="text-[#1976D2]" />
-                  Basic Filters
+                  {t('themes.filters.basic')}
                 </h4>
 
                 {/* Filters in row-wise layout for mobile */}
@@ -334,14 +335,14 @@ const ThemesPage = () => {
                   {/* Platform Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Platform
+                      {t('themes.filters.platform')}
                     </label>
                     <select
                       value={platformFilter}
                       onChange={(e) => setPlatformFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Platforms</option>
+                      <option value="">{t('themes.filters.allPlatforms')}</option>
                       {getUniquePlatforms().map(platform => (
                         <option key={platform} value={platform}>{platform}</option>
                       ))}
@@ -351,14 +352,14 @@ const ThemesPage = () => {
                   {/* Category Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Category
+                      {t('themes.filters.category')}
                     </label>
                     <select
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Categories</option>
+                      <option value="">{t('themes.filters.allCategories')}</option>
                       {getUniqueCategories().map(category => (
                         <option key={category} value={category}>{category}</option>
                       ))}
@@ -368,14 +369,14 @@ const ThemesPage = () => {
                   {/* Location Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Location
+                      {t('themes.filters.location')}
                     </label>
                     <select
                       value={locationFilter}
                       onChange={(e) => setLocationFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Locations</option>
+                      <option value="">{t('themes.filters.allLocations')}</option>
                       {getUniqueLocations().map(location => (
                         <option key={location} value={location}>{location}</option>
                       ))}
@@ -388,12 +389,12 @@ const ThemesPage = () => {
               <div className="bg-[#FFF3E0] rounded-lg p-4 border border-[#FF9800]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <Users size={16} className="text-[#FF9800]" />
-                  Followers Range
+                  {t('themes.filters.followersRange')}
                 </h4>
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Followers
+                      {t('themes.filters.followers')}
                     </label>
                     <select
                       value={followerFilter}
@@ -418,7 +419,7 @@ const ThemesPage = () => {
                 }}
                 className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
               >
-                Clear All Filters
+                {t('themes.filters.clear')}
               </button>
             </div>
           </div>
@@ -441,7 +442,7 @@ const ThemesPage = () => {
                     style={{ borderColor: theme.borderLight }}
                   >
                     <Filter size={16} />
-                    <span className="text-[#212121]">Filters</span>
+                    <span className="text-[#212121]">{t('themes.controls.filters')}</span>
                   </button>
                 )}
 
@@ -449,31 +450,29 @@ const ThemesPage = () => {
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list'
-                        ? 'bg-white shadow-sm text-[#1976D2]'
-                        : 'text-[#757575] hover:text-[#212121]'
-                    }`}
+                    className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                      ? 'bg-white shadow-sm text-[#1976D2]'
+                      : 'text-[#757575] hover:text-[#212121]'
+                      }`}
                   >
                     <List size={16} />
                   </button>
                 </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {totalCount} themes found
+                  {t('themes.controls.found', { count: totalCount })}
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
-                      for "{searchTerm}"
+                      {t('themes.controls.for')} "{searchTerm}"
                     </span>
                   )}
                 </span>
@@ -481,7 +480,7 @@ const ThemesPage = () => {
 
               {/* Enhanced Sort Dropdown */}
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-[#757575]">Sort by:</span>
+                <span className="text-sm font-medium text-[#757575]">{t('themes.controls.sortBy')}</span>
                 <select
                   value={`${sortField}-${sortDirection}`}
                   onChange={(e) => {
@@ -491,18 +490,18 @@ const ThemesPage = () => {
                   }}
                   className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
                 >
-                  <option value="page_name-asc">Name (A-Z)</option>
-                  <option value="page_name-desc">Name (Z-A)</option>
-                  <option value="platform-asc">Platform (A-Z)</option>
-                  <option value="platform-desc">Platform (Z-A)</option>
-                  <option value="category-asc">Category (A-Z)</option>
-                  <option value="category-desc">Category (Z-A)</option>
-                  <option value="no_of_followers-desc">Followers (High to Low)</option>
-                  <option value="no_of_followers-asc">Followers (Low to High)</option>
-                  <option value="location-asc">Location (A-Z)</option>
-                  <option value="location-desc">Location (Z-A)</option>
-                  <option value="created_at-desc">Newest First</option>
-                  <option value="created_at-asc">Oldest First</option>
+                  <option value="page_name-asc">{t('themes.controls.sortOptions.nameAsc')}</option>
+                  <option value="page_name-desc">{t('themes.controls.sortOptions.nameDesc')}</option>
+                  <option value="platform-asc">{t('themes.controls.sortOptions.platformAsc')}</option>
+                  <option value="platform-desc">{t('themes.controls.sortOptions.platformDesc')}</option>
+                  <option value="category-asc">{t('themes.controls.sortOptions.categoryAsc')}</option>
+                  <option value="category-desc">{t('themes.controls.sortOptions.categoryDesc')}</option>
+                  <option value="no_of_followers-desc">{t('themes.controls.sortOptions.followersDesc')}</option>
+                  <option value="no_of_followers-asc">{t('themes.controls.sortOptions.followersAsc')}</option>
+                  <option value="location-asc">{t('themes.controls.sortOptions.locationAsc')}</option>
+                  <option value="location-desc">{t('themes.controls.sortOptions.locationDesc')}</option>
+                  <option value="created_at-desc">{t('themes.controls.sortOptions.newest')}</option>
+                  <option value="created_at-asc">{t('themes.controls.sortOptions.oldest')}</option>
                 </select>
               </div>
             </div>
@@ -573,14 +572,14 @@ const ThemesPage = () => {
                             <div className="text-sm font-bold" style={{ color: '#E65100' }}>
                               {formatFollowers(theme.no_of_followers)}
                             </div>
-                            <div className="text-xs" style={{ color: '#BF360C' }}>Followers</div>
+                            <div className="text-xs" style={{ color: '#BF360C' }}>{t('themes.card.followers')}</div>
                           </div>
                           <div className="text-center p-3 bg-gradient-to-br from-[#E8F5E8] to-[#C8E6C9] rounded-xl">
                             <DollarSign size={18} className="mx-auto mb-1" style={{ color: '#4CAF50' }} />
                             <div className="text-sm font-bold" style={{ color: '#2E7D32' }}>
                               {formatPrice(theme.price_reel_without_tagging_collaboration).replace('$', '')}
                             </div>
-                            <div className="text-xs" style={{ color: '#388E3C' }}>Starting</div>
+                            <div className="text-xs" style={{ color: '#388E3C' }}>{t('themes.card.starting')}</div>
                           </div>
                         </div>
 
@@ -609,7 +608,7 @@ const ThemesPage = () => {
                           className="w-full bg-gradient-to-r from-[#1976D2] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                           <Eye size={16} />
-                          View Profile
+                          {t('themes.card.viewProfile')}
                           <ExternalLink size={14} />
                         </button>
                       </div>
@@ -637,7 +636,7 @@ const ThemesPage = () => {
                             onClick={() => handleSort('page_name')}
                           >
                             <div className="flex items-center gap-2">
-                              Theme {getSortIcon('page_name')}
+                              {t('themes.table.theme')} {getSortIcon('page_name')}
                             </div>
                           </th>
                           <th
@@ -646,7 +645,7 @@ const ThemesPage = () => {
                             onClick={() => handleSort('platform')}
                           >
                             <div className="flex items-center gap-2">
-                              Platform {getSortIcon('platform')}
+                              {t('themes.table.platform')} {getSortIcon('platform')}
                             </div>
                           </th>
                           <th
@@ -655,7 +654,7 @@ const ThemesPage = () => {
                             onClick={() => handleSort('category')}
                           >
                             <div className="flex items-center gap-2">
-                              Category {getSortIcon('category')}
+                              {t('themes.table.category')} {getSortIcon('category')}
                             </div>
                           </th>
                           <th
@@ -664,7 +663,7 @@ const ThemesPage = () => {
                             onClick={() => handleSort('no_of_followers')}
                           >
                             <div className="flex items-center gap-2">
-                              Followers {getSortIcon('no_of_followers')}
+                              {t('themes.table.followers')} {getSortIcon('no_of_followers')}
                             </div>
                           </th>
                           <th
@@ -673,11 +672,11 @@ const ThemesPage = () => {
                             onClick={() => handleSort('location')}
                           >
                             <div className="flex items-center gap-2">
-                              Location {getSortIcon('location')}
+                              {t('themes.table.location')} {getSortIcon('location')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Action
+                            {t('themes.table.action')}
                           </th>
                         </tr>
                       </thead>
@@ -739,7 +738,7 @@ const ThemesPage = () => {
                                 }}
                               >
                                 <Eye size={14} className="inline mr-1" />
-                                View
+                                {t('themes.table.view')}
                               </button>
                             </td>
                           </tr>
@@ -767,11 +766,10 @@ const ThemesPage = () => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 border border-[#E0E0E0] rounded-lg transition-colors ${
-                          currentPage === page
-                            ? 'bg-[#1976D2] text-white border-[#1976D2]'
-                            : 'hover:bg-[#F5F5F5] text-[#212121]'
-                        }`}
+                        className={`px-4 py-2 border border-[#E0E0E0] rounded-lg transition-colors ${currentPage === page
+                          ? 'bg-[#1976D2] text-white border-[#1976D2]'
+                          : 'hover:bg-[#F5F5F5] text-[#212121]'
+                          }`}
                       >
                         {page}
                       </button>
@@ -797,10 +795,10 @@ const ThemesPage = () => {
                 <Hash size={48} style={{ color: theme.textDisabled }} />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                No themes found
+                {t('themes.empty.title')}
               </h3>
               <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-                We couldn't find any themes matching your search criteria.
+                {t('themes.empty.desc')}
               </p>
               <button
                 onClick={() => {
@@ -815,7 +813,7 @@ const ThemesPage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                Clear All Filters
+                {t('themes.empty.clear')}
               </button>
             </div>
           )}

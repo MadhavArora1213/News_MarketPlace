@@ -1960,5 +1960,127 @@
             "recaptcha": "Veuillez compléter la vérification reCAPTCHA",
             "otpRequired": "Veuillez vérifier l'OTP par email avant de soumettre"
         }
+    },
+    "themes": {
+        "hero": {
+            "title": "Thèmes de médias sociaux",
+            "desc": "Explorez notre vaste collection de thèmes professionnels conçus pour les publications et les créateurs de contenu du monde entier. Trouvez le design parfait qui correspond à votre marque et améliore votre narration visuelle. Personnalisez votre présence médiatique avec des modèles personnalisables qui s'adaptent à divers types de contenu.",
+            "disclaimer": "La page actuelle est uniquement à des fins de représentation, la liste complète sera bientôt en ligne",
+            "searchPlaceholder": "Rechercher par nom d'utilisateur, nom de page ou catégorie..."
+        },
+        "filters": {
+            "title": "Filtres et tri",
+            "basic": "Filtres de base",
+            "platform": "Plateforme",
+            "allPlatforms": "Toutes les plateformes",
+            "category": "Catégorie",
+            "allCategories": "Toutes les catégories",
+            "location": "Lieu",
+            "allLocations": "Tous les lieux",
+            "followersRange": "Plage d'abonnés",
+            "followers": "Abonnés",
+            "allFollowers": "Tous les abonnés",
+            "clear": "Effacer tous les filtres"
+        },
+        "controls": {
+            "filters": "Filtres",
+            "found": "{{count}} thèmes trouvés",
+            "for": "pour",
+            "sortBy": "Trier par :",
+            "sortOptions": {
+                "nameAsc": "Nom (A-Z)",
+                "nameDesc": "Nom (Z-A)",
+                "platformAsc": "Plateforme (A-Z)",
+                "platformDesc": "Plateforme (Z-A)",
+                "categoryAsc": "Catégorie (A-Z)",
+                "categoryDesc": "Catégorie (Z-A)",
+                "followersDesc": "Abonnés (Haut à Bas)",
+                "followersAsc": "Abonnés (Bas à Haut)",
+                "locationAsc": "Lieu (A-Z)",
+                "locationDesc": "Lieu (Z-A)",
+                "newest": "Le plus récent en premier",
+                "oldest": "Le plus ancien en premier"
+            }
+        },
+        "card": {
+            "followers": "Abonnés",
+            "starting": "À partir de",
+            "viewProfile": "Voir le profil"
+        },
+        "table": {
+            "theme": "Thème",
+            "platform": "Plateforme",
+            "category": "Catégorie",
+            "followers": "Abonnés",
+            "location": "Lieu",
+            "action": "Action",
+            "view": "Voir"
+        },
+        "empty": {
+            "title": "Aucun thème trouvé",
+            "desc": "Nous n'avons trouvé aucun thème correspondant à vos critères de recherche. Essayez d'ajuster vos filtres.",
+            "clear": "Effacer tous les filtres"
+        },
+        "loading": "Chargement des thèmes..."
+    },
+    "themeDetails": {
+        "loading": "Chargement des détails du thème...",
+        "notFound": {
+            "title": "Thème non trouvé",
+            "desc": "Le thème que vous recherchez n'existe pas ou a été supprimé.",
+            "back": "Retour aux thèmes"
+        },
+        "breadcrumb": {
+            "back": "Retour aux thèmes",
+            "current": "Détails du thème"
+        },
+        "stats": {
+            "followers": "abonnés",
+            "added": "Ajouté le"
+        },
+        "sections": {
+            "website": "Site web",
+            "collaboration": "Détails de la collaboration",
+            "pricing": "Informations sur les prix",
+            "overview": "Aperçu du thème",
+            "share": "Partager",
+            "related": "Thèmes associés"
+        },
+        "pricing": {
+            "reelWithoutTagging": "Reel (Sans identification/collaboration)",
+            "reelWithTaggingCollab": "Reel (Avec identification/collaboration)",
+            "reelWithTagging": "Reel (Avec identification)",
+            "videoMinutes": "Minutes de vidéo autorisées",
+            "pinPost": "Épingler la publication (Hebdomadaire)",
+            "story": "Frais de Story",
+            "storyWithReel": "Story avec Reel",
+            "startingPrice": "Prix ​​de départ",
+            "from": "À partir de",
+            "contactForPricing": "Contacter pour les tarifs"
+        },
+        "order": {
+            "button": {
+                "place": "Passer commande",
+                "signIn": "Se connecter pour commander",
+                "processing": "Traitement..."
+            },
+            "modal": {
+                "title": "Passer commande",
+                "total": "Montant total :",
+                "fullName": "Nom complet *",
+                "email": "Email *",
+                "phone": "Téléphone *",
+                "message": "Message supplémentaire",
+                "messagePlaceholder": "Toute exigence ou question spécifique...",
+                "submit": "Confirmer la commande",
+                "cancel": "Annuler",
+                "success": "Demande de collaboration sur le thème soumise avec succès ! Notre équipe vous contactera bientôt.",
+                "error": "Erreur lors de la soumission de la demande de collaboration. Veuillez réessayer.",
+                "validation": "Veuillez remplir tous les champs obligatoires"
+            }
+        },
+        "share": {
+            "copied": "Lien copié dans le presse-papiers !"
+        }
     }
 }
