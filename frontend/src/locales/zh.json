@@ -2243,5 +2243,72 @@
             "success": "提名提交成功！您将收到一封确认邮件。",
             "error": "提交提名失败。请重试。"
         }
+    },
+    "awards": {
+        "title": "奖项目录",
+        "desc": "探索我们著名的奖项和认可系列，旨在庆祝全球数字出版和媒体创新的卓越成就。发现我们在新闻、内容创作和行业领导方面的成就。与制定质量和创新标准的获奖专业人士联系。",
+        "disclaimer": "当前页面仅用于展示目的，完整列表即将推出",
+        "searchPlaceholder": "按名称或组织者搜索奖项...",
+        "loading": "正在加载奖项...",
+        "filters": {
+            "title": "筛选和排序",
+            "mobileTitle": "筛选",
+            "awardFilters": "奖项筛选",
+            "month": "月份",
+            "allMonths": "所有月份",
+            "focus": "焦点",
+            "allFocuses": "所有焦点",
+            "organiser": "组织者",
+            "allOrganisers": "所有组织者",
+            "industry": "行业",
+            "allIndustries": "所有行业",
+            "country": "国家",
+            "allCountries": "所有国家",
+            "city": "城市",
+            "allCities": "所有城市",
+            "clear": "清除所有筛选"
+        },
+        "controls": {
+            "found": "找到 {{count}} 个奖项",
+            "for": "对于"
+        },
+        "pagination": {
+            "previous": "上一页",
+            "next": "下一页"
+        },
+        "empty": {
+            "title": "未找到奖项",
+            "desc": "我们找不到符合您搜索条件的任何奖项。请尝试调整您的筛选。",
+            "clear": "清除所有筛选"
+        }
+    },
+    "awardDetail": {
+        "loading": "正在加载奖项详情...",
+        "notFound": {
+            "title": "未找到奖项",
+            "desc": "您查找的奖项不存在或已被移除。",
+            "back": "返回奖项列表"
+        },
+        "breadcrumb": {
+            "back": "返回奖项列表",
+            "current": "奖项详情"
+        },
+        "about": "关于奖项",
+        "specialGuests": "特邀嘉宾",
+        "chiefGuest": "主宾",
+        "celebrityGuest": "名人嘉宾",
+        "connect": "联系组织者",
+        "summary": {
+            "title": "奖项摘要",
+            "name": "名称",
+            "organiser": "组织者",
+            "month": "月份",
+            "focus": "焦点"
+        },
+        "share": {
+            "title": "分享奖项",
+            "button": "分享奖项"
+        },
+        "cta": "申请此奖项"
     }
 }

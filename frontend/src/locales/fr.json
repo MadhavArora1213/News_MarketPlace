@@ -2205,5 +2205,72 @@
             "success": "Nomination soumise avec succès ! Vous recevrez un email de confirmation.",
             "error": "Échec de la soumission de la nomination. Veuillez réessayer."
         }
+    },
+    "awards": {
+        "title": "Répertoire des prix",
+        "desc": "Explorez notre prestigieuse collection de prix et de distinctions célébrant l'excellence dans l'édition numérique et l'innovation médiatique dans le monde entier. Découvrez nos réalisations en journalisme, création de contenu et leadership industriel. Connectez-vous avec des professionnels primés qui établissent les normes de qualité et d'innovation.",
+        "disclaimer": "La page actuelle est uniquement à des fins de représentation, la liste complète sera bientôt disponible",
+        "searchPlaceholder": "Rechercher des prix par nom ou organisateur...",
+        "loading": "Chargement des prix...",
+        "filters": {
+            "title": "Filtres et tri",
+            "mobileTitle": "Filtres",
+            "awardFilters": "Filtres des prix",
+            "month": "Mois",
+            "allMonths": "Tous les mois",
+            "focus": "Focus",
+            "allFocuses": "Tous les focus",
+            "organiser": "Organisateur",
+            "allOrganisers": "Tous les organisateurs",
+            "industry": "Secteur",
+            "allIndustries": "Tous les secteurs",
+            "country": "Pays",
+            "allCountries": "Tous les pays",
+            "city": "Ville",
+            "allCities": "Toutes les villes",
+            "clear": "Effacer tous les filtres"
+        },
+        "controls": {
+            "found": "{{count}} prix trouvés",
+            "for": "pour"
+        },
+        "pagination": {
+            "previous": "Précédent",
+            "next": "Suivant"
+        },
+        "empty": {
+            "title": "Aucun prix trouvé",
+            "desc": "Nous n'avons trouvé aucun prix correspondant à vos critères de recherche. Essayez d'ajuster vos filtres.",
+            "clear": "Effacer tous les filtres"
+        }
+    },
+    "awardDetail": {
+        "loading": "Chargement des détails du prix...",
+        "notFound": {
+            "title": "Prix non trouvé",
+            "desc": "Le prix que vous recherchez n'existe pas ou a été supprimé.",
+            "back": "Retour aux prix"
+        },
+        "breadcrumb": {
+            "back": "Retour aux prix",
+            "current": "Détails du prix"
+        },
+        "about": "À propos du prix",
+        "specialGuests": "Invités spéciaux",
+        "chiefGuest": "Invité d'honneur",
+        "celebrityGuest": "Invité célèbre",
+        "connect": "Se connecter avec l'organisateur",
+        "summary": {
+            "title": "Résumé du prix",
+            "name": "Nom",
+            "organiser": "Organisateur",
+            "month": "Mois",
+            "focus": "Focus"
+        },
+        "share": {
+            "title": "Partager le prix",
+            "button": "Partager le prix"
+        },
+        "cta": "Postuler pour ce prix"
     }
 }

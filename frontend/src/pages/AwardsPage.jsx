@@ -14,6 +14,7 @@ import {
   DollarSign, BarChart3, Users, Link as LinkIcon, Image as ImageIcon,
   FileText, Shield, User, Building, TrendingUp
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -40,6 +41,7 @@ const theme = {
 
 const AwardsPage = () => {
   const { isAuthenticated, hasRole, hasAnyRole, getRoleLevel } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -212,7 +214,7 @@ const AwardsPage = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading awards...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('awards.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -234,13 +236,13 @@ const AwardsPage = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Awards Directory
+              {t('awards.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-                   Explore our prestigious collection of awards and recognitions celebrating excellence in digital publishing and media innovation worldwide. Discover our achievements in journalism, content creation, and industry leadership. Connect with award-winning professionals who set the standards for quality and innovation.
+              {t('awards.desc')}
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
-              The current page is for representation purpose only, the comprehensive list will be live soon
+              {t('awards.disclaimer')}
             </p>
           </motion.div>
         </div>
@@ -261,7 +263,7 @@ const AwardsPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
                 <Filter size={20} className="text-[#1976D2]" />
-                Filters & Sort
+                {t('awards.filters.title')}
               </h3>
               {isMobile && (
                 <button
@@ -278,20 +280,20 @@ const AwardsPage = () => {
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <Award size={16} className="text-[#1976D2]" />
-                  Award Filters
+                  {t('awards.filters.awardFilters')}
                 </h4>
 
                 {/* Month Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Month
+                    {t('awards.filters.month')}
                   </label>
                   <select
                     value={monthFilter}
                     onChange={(e) => setMonthFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Months</option>
+                    <option value="">{t('awards.filters.allMonths')}</option>
                     {getUniqueMonths().map(month => (
                       <option key={month} value={month}>{month}</option>
                     ))}
@@ -301,14 +303,14 @@ const AwardsPage = () => {
                 {/* Focus Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Focus
+                    {t('awards.filters.focus')}
                   </label>
                   <select
                     value={focusFilter}
                     onChange={(e) => setFocusFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Focuses</option>
+                    <option value="">{t('awards.filters.allFocuses')}</option>
                     {getUniqueFocuses().map(focus => (
                       <option key={focus} value={focus}>{focus}</option>
                     ))}
@@ -318,14 +320,14 @@ const AwardsPage = () => {
                 {/* Organiser Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Organiser
+                    {t('awards.filters.organiser')}
                   </label>
                   <select
                     value={organiserFilter}
                     onChange={(e) => setOrganiserFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Organisers</option>
+                    <option value="">{t('awards.filters.allOrganisers')}</option>
                     {getUniqueOrganisers().map(organiser => (
                       <option key={organiser} value={organiser}>{organiser}</option>
                     ))}
@@ -335,14 +337,14 @@ const AwardsPage = () => {
                 {/* Industry Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Industry
+                    {t('awards.filters.industry')}
                   </label>
                   <select
                     value={industryFilter}
                     onChange={(e) => setIndustryFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Industries</option>
+                    <option value="">{t('awards.filters.allIndustries')}</option>
                     {getUniqueIndustries().map(industry => (
                       <option key={industry} value={industry}>{industry}</option>
                     ))}
@@ -352,14 +354,14 @@ const AwardsPage = () => {
                 {/* Country Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    Country
+                    {t('awards.filters.country')}
                   </label>
                   <select
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Countries</option>
+                    <option value="">{t('awards.filters.allCountries')}</option>
                     {getUniqueCountries().map(country => (
                       <option key={country} value={country}>{country}</option>
                     ))}
@@ -369,14 +371,14 @@ const AwardsPage = () => {
                 {/* City Filter */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                    City
+                    {t('awards.filters.city')}
                   </label>
                   <select
                     value={cityFilter}
                     onChange={(e) => setCityFilter(e.target.value)}
                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                   >
-                    <option value="">All Cities</option>
+                    <option value="">{t('awards.filters.allCities')}</option>
                     {getUniqueCities().map(city => (
                       <option key={city} value={city}>{city}</option>
                     ))}
@@ -390,7 +392,7 @@ const AwardsPage = () => {
                 onClick={clearAllFilters}
                 className="w-full px-4 py-3 rounded-lg font-medium transition-colors bg-[#F5F5F5] hover:bg-[#E0E0E0] text-[#212121] border border-[#E0E0E0]"
               >
-                Clear All Filters
+                {t('awards.filters.clear')}
               </button>
             </div>
           </div>
@@ -403,7 +405,7 @@ const AwardsPage = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search awards by name or organiser..."
+                placeholder={t('awards.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
@@ -435,15 +437,15 @@ const AwardsPage = () => {
                     style={{ borderColor: theme.borderLight }}
                   >
                     <Filter size={16} />
-                    <span className="text-[#212121]">Filters</span>
+                    <span className="text-[#212121]">{t('awards.filters.mobileTitle')}</span>
                   </button>
                 )}
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {awards.length} awards found
+                  {t('awards.controls.found', { count: awards.length })}
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
-                      for "{searchTerm}"
+                      {t('awards.controls.for')} "{searchTerm}"
                     </span>
                   )}
                 </span>
@@ -480,7 +482,7 @@ const AwardsPage = () => {
                     disabled={currentPage === 1}
                     className="px-4 py-2 border border-[#E0E0E0] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5F5] transition-colors text-[#212121] disabled:text-[#BDBDBD]"
                   >
-                    Previous
+                    {t('awards.pagination.previous')}
                   </button>
 
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -489,11 +491,10 @@ const AwardsPage = () => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 border border-[#E0E0E0] rounded-lg transition-colors ${
-                          currentPage === page
+                        className={`px-4 py-2 border border-[#E0E0E0] rounded-lg transition-colors ${currentPage === page
                             ? 'bg-[#1976D2] text-white border-[#1976D2]'
                             : 'hover:bg-[#F5F5F5] text-[#212121]'
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -505,7 +506,7 @@ const AwardsPage = () => {
                     disabled={currentPage === totalPages}
                     className="px-4 py-2 border border-[#E0E0E0] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5F5] transition-colors text-[#212121] disabled:text-[#BDBDBD]"
                   >
-                    Next
+                    {t('awards.pagination.next')}
                   </button>
                 </div>
               )}
@@ -516,10 +517,10 @@ const AwardsPage = () => {
                 <Award className="w-12 h-12 text-[#BDBDBD]" />
               </div>
               <h3 className="text-2xl font-semibold text-[#212121] mb-3">
-                No awards found
+                {t('awards.empty.title')}
               </h3>
               <p className="text-[#757575] text-lg max-w-md mx-auto">
-                We couldn't find any awards matching your search criteria. Try adjusting your filters.
+                {t('awards.empty.desc')}
               </p>
               <button
                 onClick={() => {
@@ -529,7 +530,7 @@ const AwardsPage = () => {
                 }}
                 className="mt-6 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0D47A1] transition-colors"
               >
-                Clear All Filters
+                {t('awards.empty.clear')}
               </button>
             </div>
           )}

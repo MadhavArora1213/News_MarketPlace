@@ -2249,5 +2249,72 @@
             "success": "Nomination successfully submitted! You will receive a confirmation email.",
             "error": "Failed to submit nomination. Please try again."
         }
+    },
+    "awards": {
+        "title": "Awards Directory",
+        "desc": "Explore our prestigious collection of awards and recognitions celebrating excellence in digital publishing and media innovation worldwide. Discover our achievements in journalism, content creation, and industry leadership. Connect with award-winning professionals who set the standards for quality and innovation.",
+        "disclaimer": "The current page is for representation purpose only, the comprehensive list will be live soon",
+        "searchPlaceholder": "Search awards by name or organiser...",
+        "loading": "Loading awards...",
+        "filters": {
+            "title": "Filters & Sort",
+            "mobileTitle": "Filters",
+            "awardFilters": "Award Filters",
+            "month": "Month",
+            "allMonths": "All Months",
+            "focus": "Focus",
+            "allFocuses": "All Focuses",
+            "organiser": "Organiser",
+            "allOrganisers": "All Organisers",
+            "industry": "Industry",
+            "allIndustries": "All Industries",
+            "country": "Country",
+            "allCountries": "All Countries",
+            "city": "City",
+            "allCities": "All Cities",
+            "clear": "Clear All Filters"
+        },
+        "controls": {
+            "found": "{{count}} awards found",
+            "for": "for"
+        },
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "empty": {
+            "title": "No awards found",
+            "desc": "We couldn't find any awards matching your search criteria. Try adjusting your filters.",
+            "clear": "Clear All Filters"
+        }
+    },
+    "awardDetail": {
+        "loading": "Loading award details...",
+        "notFound": {
+            "title": "Award Not Found",
+            "desc": "The award you're looking for doesn't exist or has been removed.",
+            "back": "Back to Awards"
+        },
+        "breadcrumb": {
+            "back": "Back to Awards",
+            "current": "Award Details"
+        },
+        "about": "About the Award",
+        "specialGuests": "Special Guests",
+        "chiefGuest": "Chief Guest",
+        "celebrityGuest": "Celebrity Guest",
+        "connect": "Connect with the Organiser",
+        "summary": {
+            "title": "Award Summary",
+            "name": "Name",
+            "organiser": "Organiser",
+            "month": "Month",
+            "focus": "Focus"
+        },
+        "share": {
+            "title": "Share Award",
+            "button": "Share Award"
+        },
+        "cta": "Apply for this Award"
     }
 }

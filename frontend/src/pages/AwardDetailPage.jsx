@@ -14,9 +14,11 @@ import {
   MapPin, Calendar, Users, Zap, Eye, Heart, Share, User, Building,
   Mail, Phone, MessageSquare
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const AwardDetailPage = () => {
   const { id } = useParams();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
   const [award, setAward] = useState(null);
@@ -90,7 +92,7 @@ const AwardDetailPage = () => {
     } else {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link copied to clipboard!');
+        alert(t('share.copied'));
       }).catch(() => {
         // Ultimate fallback
         const textArea = document.createElement('textarea');
@@ -99,7 +101,7 @@ const AwardDetailPage = () => {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert('Link copied to clipboard!');
+        alert(t('share.copied'));
       });
     }
   };
@@ -111,7 +113,7 @@ const AwardDetailPage = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-4 border-[#E0E0E0] border-t-[#1976D2]"></div>
-            <p className="text-lg text-[#757575]">Loading award details...</p>
+            <p className="text-lg text-[#757575]">{t('awardDetail.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -129,17 +131,17 @@ const AwardDetailPage = () => {
               <Award className="w-12 h-12 text-[#BDBDBD]" />
             </div>
             <h1 className="text-2xl font-semibold mb-4 text-[#212121]">
-              Award Not Found
+              {t('awardDetail.notFound.title')}
             </h1>
             <p className="mb-8 text-[#757575]">
-              The award you're looking for doesn't exist or has been removed.
+              {t('awardDetail.notFound.desc')}
             </p>
             <button
               onClick={() => navigate('/awards')}
               className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-medium transition-colors bg-[#1976D2] hover:bg-[#0D47A1]"
             >
               <ArrowLeft size={16} />
-              Back to Awards
+              {t('awardDetail.notFound.back')}
             </button>
           </div>
         </div>
@@ -169,10 +171,10 @@ const AwardDetailPage = () => {
               className="flex items-center gap-1 hover:opacity-80"
             >
               <ArrowLeft size={16} />
-              Back to Awards
+              {t('awardDetail.breadcrumb.back')}
             </button>
             <span>/</span>
-            <span>Award Details</span>
+            <span>{t('awardDetail.breadcrumb.current')}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -224,7 +226,7 @@ const AwardDetailPage = () => {
                 {award.description && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                      About the Award
+                      {t('awardDetail.about')}
                     </h3>
                     <div className="p-4 rounded-lg border border-[#E0E0E0] bg-[#F5F5F5]">
                       <p className="text-[#757575]">{award.description}</p>
@@ -235,14 +237,14 @@ const AwardDetailPage = () => {
                 {/* Guests */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                    Special Guests
+                    {t('awardDetail.specialGuests')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {award.chief_guest && (
                       <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F5F5F5]">
                         <Star size={20} color="#1976D2" />
                         <div>
-                          <div className="text-sm font-medium text-[#212121]">Chief Guest</div>
+                          <div className="text-sm font-medium text-[#212121]">{t('awardDetail.chiefGuest')}</div>
                           <div className="text-sm text-[#757575]">{award.chief_guest}</div>
                         </div>
                       </div>
@@ -251,7 +253,7 @@ const AwardDetailPage = () => {
                       <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F5F5F5]">
                         <Star size={20} color="#9C27B0" />
                         <div>
-                          <div className="text-sm font-medium text-[#212121]">Celebrity Guest</div>
+                          <div className="text-sm font-medium text-[#212121]">{t('awardDetail.celebrityGuest')}</div>
                           <div className="text-sm text-[#757575]">{award.celebrity_guest}</div>
                         </div>
                       </div>
@@ -263,7 +265,7 @@ const AwardDetailPage = () => {
                 {(award.website || award.linkedin || award.instagram) && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                      Connect with the Organiser
+                      {t('awardDetail.connect')}
                     </h3>
                     <div className="flex flex-wrap gap-3">
                       {award.website && (
@@ -308,7 +310,7 @@ const AwardDetailPage = () => {
                     className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-lg bg-[#1976D2] hover:bg-[#0D47A1]"
                   >
                     <ExternalLink size={20} />
-                    {award.cta_text || 'Apply for this Award'}
+                    {award.cta_text || t('awardDetail.cta')}
                   </button>
                 </div>
               </div>
@@ -319,23 +321,23 @@ const AwardDetailPage = () => {
               {/* Award Summary Card */}
               <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                  Award Summary
+                  {t('awardDetail.summary.title')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Name</span>
+                    <span className="text-[#757575]">{t('awardDetail.summary.name')}</span>
                     <span className="text-[#212121]">{award.award_name}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Organiser</span>
+                    <span className="text-[#757575]">{t('awardDetail.summary.organiser')}</span>
                     <span className="text-[#212121]">{award.award_organiser_name || 'TBA'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Month</span>
+                    <span className="text-[#757575]">{t('awardDetail.summary.month')}</span>
                     <span className="text-[#212121]">{award.tentative_month || 'TBA'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#757575]">Focus</span>
+                    <span className="text-[#757575]">{t('awardDetail.summary.focus')}</span>
                     <span className="text-[#212121]">{award.company_focused_individual_focused || 'General'}</span>
                   </div>
                 </div>
@@ -344,7 +346,7 @@ const AwardDetailPage = () => {
               {/* Share Actions */}
               <div className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] p-6">
                 <h3 className="text-lg font-semibold mb-4 text-[#212121]">
-                  Share Award
+                  {t('awardDetail.share.title')}
                 </h3>
                 <div className="space-y-3">
                   <button
@@ -352,7 +354,7 @@ const AwardDetailPage = () => {
                     className="w-full flex items-center justify-center gap-2 text-white font-medium py-3 px-4 rounded-lg transition-colors bg-[#9C27B0] hover:opacity-90"
                   >
                     <Share size={16} />
-                    Share Award
+                    {t('awardDetail.share.button')}
                   </button>
                 </div>
               </div>
