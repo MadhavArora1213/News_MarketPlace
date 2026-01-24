@@ -11,10 +11,18 @@ import {
   Globe, Users, Award, Music, Camera, Landmark, Info, X
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useTranslationArray } from '../hooks/useTranslation';
 
 const EventsPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [events, setEvents] = useState([]);
+
+  // Dynamic translation for event content
+  const { translatedItems: translatedEvents, isTranslating } = useTranslationArray(
+    events,
+    ['title', 'description', 'city', 'country'],
+    true
+  );
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
@@ -134,7 +142,10 @@ const EventsPage = () => {
     'Sports Events', 'Music Festival', 'Art Festival'
   ];
 
-  const filteredEvents = events.filter(event =>
+  // Use translated events for display
+  const displayEvents = translatedEvents.length > 0 ? translatedEvents : events;
+
+  const filteredEvents = displayEvents.filter(event =>
     event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -305,7 +316,7 @@ const EventsPage = () => {
               </p>
             </div>
 
-            {loading ? (
+            {(loading || isTranslating) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2">
                 {[1, 2, 3, 4].map(i => (
                   <div key={i} className="bg-white rounded-[2.5rem] h-[500px] animate-pulse border border-slate-100 shadow-sm" />
