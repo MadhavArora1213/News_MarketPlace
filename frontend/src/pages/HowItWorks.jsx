@@ -75,8 +75,11 @@ const HowItWorks = () => {
         <p className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-6">
           {t('howItWorks.hero.badge')}
         </p>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 mb-8">
-          {t('howItWorks.hero.title').split(', ').slice(0, 2).join(', ')},<br className="hidden md:block" /> {t('howItWorks.hero.title').split(', ').slice(2).join(', ')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">secure.</span>
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 mb-8 whitespace-pre-line">
+          {t('howItWorks.hero.titleMain', 'Simple, transparent, and ')}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            {t('howItWorks.hero.titleHighlight', 'secure.')}
+          </span>
         </h1>
         <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
           {t('howItWorks.hero.desc')}
