@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import ReporterSubmissionForm from '../components/user/ReporterSubmissionForm';
+import { useLanguage } from '../context/LanguageContext';
 
 const ReporterRegistrationPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleClose = () => {
     navigate('/');

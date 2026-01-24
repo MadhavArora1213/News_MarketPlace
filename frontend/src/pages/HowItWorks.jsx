@@ -5,8 +5,10 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import { useLanguage } from '../context/LanguageContext';
 
 const HowItWorks = () => {
+  const { t } = useLanguage();
   const [openFAQ, setOpenFAQ] = useState(null);
 
   const toggleFAQ = (index) => {
@@ -16,68 +18,68 @@ const HowItWorks = () => {
   const steps = [
     {
       id: "01",
-      title: "Register & Verify",
-      description: "Begin your journey by creating a secure account. We verify every member—journalists and consumers alike—to ensure a trusted environment.",
+      title: t('howItWorks.steps.1.title'),
+      description: t('howItWorks.steps.1.desc'),
       icon: "user-plus",
-      details: ["Email Validation", "Identity Check", "Portfolio Review", "Instant Approval"]
+      details: [t('howItWorks.steps.1.details.0', 'Email Validation'), t('howItWorks.steps.1.details.1', 'Identity Check'), t('howItWorks.steps.1.details.2', 'Portfolio Review'), t('howItWorks.steps.1.details.3', 'Instant Approval')]
     },
     {
       id: "02",
-      title: "Browse & Discover",
-      description: "Access a curated feed of verified news. Use our smart filters to find exclusive stories, breaking news, or deep-dive investigations.",
+      title: t('howItWorks.steps.2.title'),
+      description: t('howItWorks.steps.2.desc'),
       icon: "globe-alt",
-      details: ["Smart Filters", "Topic Cluster", "Journalist Profiles", "Live Previews"]
+      details: [t('howItWorks.steps.2.details.0', 'Smart Filters'), t('howItWorks.steps.2.details.1', 'Topic Cluster'), t('howItWorks.steps.2.details.2', 'Journalist Profiles'), t('howItWorks.steps.2.details.3', 'Live Previews')]
     },
     {
       id: "03",
-      title: "Purchase & Access",
-      description: "Seamlessly unlock content with our secure payment system. Buy single articles or subscribe to your favorite creators directly.",
+      title: t('howItWorks.steps.3.title'),
+      description: t('howItWorks.steps.3.desc'),
       icon: "currency-dollar",
-      details: ["Secure Checkout", "One-Click Buy", "Manage Subs", "History Log"]
+      details: [t('howItWorks.steps.3.details.0', 'Secure Checkout'), t('howItWorks.steps.3.details.1', 'One-Click Buy'), t('howItWorks.steps.3.details.2', 'Manage Subs'), t('howItWorks.steps.3.details.3', 'History Log')]
     },
     {
       id: "04",
-      title: "Engage & Review",
-      description: "Join the conversation. Rate stories, follow journalists, and contribute to a healthier news ecosystem with your feedback.",
+      title: t('howItWorks.steps.4.title'),
+      description: t('howItWorks.steps.4.desc'),
       icon: "chat-bubble-left",
-      details: ["Rate Content", "Direct Messaging", "Community Hub", "Trust Score"]
+      details: [t('howItWorks.steps.4.details.0', 'Rate Content'), t('howItWorks.steps.4.details.1', 'Direct Messaging'), t('howItWorks.steps.4.details.2', 'Community Hub'), t('howItWorks.steps.4.details.3', 'Trust Score')]
     }
   ];
 
   const faqs = [
     {
-      question: "How long does verification take?",
-      answer: "Our automated systems handle basic verification instantly. Professional journalist credential verification typically takes 24-48 hours ensuring the highest quality standards."
+      question: t('howItWorks.faq.1.q'),
+      answer: t('howItWorks.faq.1.a')
     },
     {
-      question: "Is my payment information secure?",
-      answer: "Absolutely. We partner with industry-leading payment processors that comply with PCI DSS level 1 standards. We never store your raw credit card details."
+      question: t('howItWorks.faq.2.q'),
+      answer: t('howItWorks.faq.2.a')
     },
     {
-      question: "Can I cancel subscriptions anytime?",
-      answer: "Yes, you have full control. You can cancel any subscription instantly from your dashboard with no hidden fees or penalties."
+      question: t('howItWorks.faq.3.q'),
+      answer: t('howItWorks.faq.3.a')
     }
   ];
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
       <SEO
-        title="How It Works | News Marketplace"
-        description="A simple, transparent guide to using our news marketplace."
-        keywords="guide, help, steps, verification"
+        title={t('howItWorks.seo.title', 'How It Works | News Marketplace')}
+        description={t('howItWorks.seo.desc', 'A simple, transparent guide to using our news marketplace.')}
+        keywords={t('howItWorks.seo.keywords', 'guide, help, steps, verification')}
       />
       <UserHeader />
 
       {/* Ultra-Minimal Hero */}
       <div className="pt-12 pb-20 px-6 max-w-5xl mx-auto text-center">
         <p className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-6">
-          Platform Guide
+          {t('howItWorks.hero.badge')}
         </p>
         <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 mb-8">
-          Simple, transparent,<br className="hidden md:block" /> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">secure.</span>
+          {t('howItWorks.hero.title').split(', ').slice(0, 2).join(', ')},<br className="hidden md:block" /> {t('howItWorks.hero.title').split(', ').slice(2).join(', ')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">secure.</span>
         </h1>
         <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
-          Everything you need to know about connecting with the world's best journalism.
+          {t('howItWorks.hero.desc')}
         </p>
       </div>
 
@@ -127,7 +129,7 @@ const HowItWorks = () => {
       {/* Essential FAQ (Minimal) */}
       <div className="bg-slate-50 border-t border-slate-200 py-24">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-slate-900 mb-12 text-center">Common Questions</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-12 text-center">{t('howItWorks.faq.title')}</h2>
           <div className="grid gap-6">
             {faqs.map((faq, index) => (
               <div key={index} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/60 hover:border-slate-300 transition-colors">
@@ -138,10 +140,10 @@ const HowItWorks = () => {
           </div>
 
           <div className="mt-16 text-center">
-            <p className="text-slate-600 mb-6">Still have questions?</p>
+            <p className="text-slate-600 mb-6">{t('howItWorks.cta.title')}</p>
             <Link to="/contact-us">
               <button className="px-8 py-3 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-colors shadow-lg hover:shadow-xl">
-                Visit Help Center
+                {t('howItWorks.cta.button')}
               </button>
             </Link>
           </div>

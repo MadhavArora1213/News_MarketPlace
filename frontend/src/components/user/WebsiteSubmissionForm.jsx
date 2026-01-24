@@ -4,9 +4,11 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../common/Icon';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Website Submission Form Component
 const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
+  const { t } = useLanguage();
   const { isAuthenticated } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
@@ -108,7 +110,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       return;
     }
     if (isAdminAuthenticated) {
-      alert('Admins should submit websites through the admin panel.');
+      alert(t('websiteSubmission.adminErrorAlert'));
       onClose();
       return;
     }
@@ -217,9 +219,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
   const handlePhoneChange = (name, value) => {
     console.log(`=== PHONE CHANGE: ${name} = "${value}" ===`);
-    console.log('Current formData before change:', { 
-      callingCountry: formData.callingCountry, 
-      callingNumber: formData.callingNumber 
+    console.log('Current formData before change:', {
+      callingCountry: formData.callingCountry,
+      callingNumber: formData.callingNumber
     });
 
     // Update form data immediately
@@ -234,9 +236,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
         newData.whatsappNumber = prev.callingNumber; // Also copy the number
       }
 
-      console.log('New formData after change:', { 
-        callingCountry: newData.callingCountry, 
-        callingNumber: newData.callingNumber 
+      console.log('New formData after change:', {
+        callingCountry: newData.callingCountry,
+        callingNumber: newData.callingNumber
       });
       return newData;
     });
@@ -310,7 +312,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     requiredFields.forEach(field => {
       const value = currentFormData[field];
       if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
-        newErrors[field] = 'This field is required';
+        newErrors[field] = t('websiteSubmission.requiredField');
         console.log(`Required field missing: ${field} = "${value}"`);
       }
     });
@@ -318,7 +320,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     // Phone number validation - more specific checking with detailed logging
     const callingCountry = currentFormData.callingCountry;
     const callingNumber = currentFormData.callingNumber;
-    
+
     console.log('Phone validation details:', {
       callingCountry,
       callingNumber,
@@ -330,24 +332,24 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     const hasCallingCountry = callingCountry && typeof callingCountry === 'string' && callingCountry.trim() !== '';
     const hasCallingNumber = callingNumber && typeof callingNumber === 'string' && callingNumber.trim() !== '';
-    
+
     console.log('Final phone validation:', { hasCallingCountry, hasCallingNumber });
 
     if (!hasCallingCountry) {
-      newErrors.callingNumber = 'Country is required for phone number';
+      newErrors.callingNumber = t('websiteSubmission.countryRequired') || 'Country is required for phone number';
       console.log('❌ Country missing');
     } else if (!hasCallingNumber) {
-      newErrors.callingNumber = 'Phone number is required';
+      newErrors.callingNumber = t('websiteSubmission.phoneRequired') || 'Phone number is required';
       console.log('❌ Phone number missing');
     } else {
       // Both fields have values, validate length
       const countryData = countryPhoneData[callingCountry.trim()];
-      console.log('Country data lookup:', { 
-        country: callingCountry.trim(), 
-        found: !!countryData, 
-        countryData 
+      console.log('Country data lookup:', {
+        country: callingCountry.trim(),
+        found: !!countryData,
+        countryData
       });
-      
+
       if (countryData) {
         const numberLength = callingNumber.trim().length;
         console.log('Phone length validation:', {
@@ -356,9 +358,9 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
           required: `${countryData.minLength}-${countryData.maxLength}`,
           valid: numberLength >= countryData.minLength && numberLength <= countryData.maxLength
         });
-        
+
         if (numberLength < countryData.minLength || numberLength > countryData.maxLength) {
-          newErrors.callingNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${callingCountry}`;
+          newErrors.callingNumber = t('websiteSubmission.invalidPhone', { min: countryData.minLength, max: countryData.maxLength, country: callingCountry });
           console.log('❌ Phone length invalid');
         } else {
           console.log('✅ Phone validation passed');
@@ -370,12 +372,12 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     // URL validations
     if (currentFormData.media_website_address && !currentFormData.media_website_address.match(/^https?:\/\/.+/)) {
-      newErrors.media_website_address = 'Please enter a valid URL starting with http:// or https://';
+      newErrors.media_website_address = t('websiteSubmission.invalidUrl');
     }
 
     // Email validations
     if (currentFormData.email && !currentFormData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('websiteSubmission.invalidEmail');
     }
 
     // WhatsApp validation (only if filled)
@@ -384,53 +386,53 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       if (countryData) {
         const length = currentFormData.whatsappNumber.trim().length;
         if (length < countryData.minLength || length > countryData.maxLength) {
-          newErrors.whatsappNumber = `Phone number must be ${countryData.minLength}-${countryData.maxLength} digits for ${currentFormData.whatsappCountry}`;
+          newErrors.whatsappNumber = t('websiteSubmission.invalidPhone', { min: countryData.minLength, max: countryData.maxLength, country: currentFormData.whatsappCountry });
         }
       }
     }
 
     // Number validations
     if (currentFormData.no_of_images_allowed_in_article && isNaN(currentFormData.no_of_images_allowed_in_article)) {
-      newErrors.no_of_images_allowed_in_article = 'Please enter a valid number';
+      newErrors.no_of_images_allowed_in_article = t('websiteSubmission.invalidNumber');
     }
     if (currentFormData.words_limit && isNaN(currentFormData.words_limit)) {
-      newErrors.words_limit = 'Please enter a valid number';
+      newErrors.words_limit = t('websiteSubmission.invalidNumber');
     }
     if (currentFormData.da && (isNaN(currentFormData.da) || currentFormData.da < 0 || currentFormData.da > 100)) {
-      newErrors.da = 'Please enter a valid DA score (0-100)';
+      newErrors.da = t('websiteSubmission.daError') || t('websiteSubmission.invalidScore');
     }
     if (currentFormData.dr && (isNaN(currentFormData.dr) || currentFormData.dr < 0 || currentFormData.dr > 100)) {
-      newErrors.dr = 'Please enter a valid DR score (0-100)';
+      newErrors.dr = t('websiteSubmission.drError') || t('websiteSubmission.invalidScore');
     }
     if (currentFormData.pa && (isNaN(currentFormData.pa) || currentFormData.pa < 0 || currentFormData.pa > 100)) {
-      newErrors.pa = 'Please enter a valid PA score (0-100)';
+      newErrors.pa = t('websiteSubmission.paError') || t('websiteSubmission.invalidScore');
     }
     if (currentFormData.price && isNaN(currentFormData.price)) {
-      newErrors.price = 'Please enter a valid price';
+      newErrors.price = t('websiteSubmission.invalidNumber');
     }
 
     // Terms accepted
     if (!currentFormData.terms_accepted) {
-      newErrors.terms_accepted = 'You must accept the terms and conditions';
+      newErrors.terms_accepted = t('websiteSubmission.termsError') || t('websiteSubmission.acceptTermsError');
     }
 
     // File validations (required)
     const requiredFiles = ['website_registration_document', 'bank_details', 'general_contact_details'];
     requiredFiles.forEach(field => {
       if (!currentFiles[field]) {
-        newErrors[field] = 'This file is required';
+        newErrors[field] = t('websiteSubmission.fileRequired');
         console.log(`Required file missing: ${field}`);
       }
     });
 
     // Textarea limit
     if (currentFormData.any_to_say && currentFormData.any_to_say.length > 500) {
-      newErrors.any_to_say = 'Message cannot exceed 500 characters';
+      newErrors.any_to_say = t('websiteSubmission.messageLimitError') || t('websiteSubmission.messageLimit');
     }
 
     // OTP verification
     if (!otpVerified.email) {
-      newErrors.otp = 'Please verify your email OTP before submitting';
+      newErrors.otp = t('websiteSubmission.otpVerifyError') || t('websiteSubmission.otpRequired');
       console.log('❌ Email OTP not verified');
     } else {
       console.log('✅ Email OTP verified');
@@ -438,7 +440,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     // reCAPTCHA
     if (!recaptchaToken) {
-      newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
+      newErrors.recaptcha = t('websiteSubmission.recaptchaError') || t('websiteSubmission.recaptchaRequired');
       console.log('❌ reCAPTCHA not completed');
     } else {
       console.log('✅ reCAPTCHA completed');
@@ -446,7 +448,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     console.log('Final validation errors:', newErrors);
     console.log('=== FORM VALIDATION END ===');
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -508,7 +510,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
       });
 
       // Show success popup
-      setPopupMessage('Website submitted successfully! Your website has been submitted and is pending review. You will be notified once it\'s approved.');
+      setPopupMessage(t('websiteSubmission.submitSuccessMessage') || t('websiteSubmission.success'));
       setPopupType('success');
       setShowPopup(true);
       setTimeout(() => {
@@ -520,12 +522,12 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     } catch (error) {
       console.error('Error submitting website:', error);
 
-      let errorMessage = 'Failed to submit website. Please try again.';
+      let errorMessage = t('websiteSubmission.genericSubmitError') || t('websiteSubmission.error');
 
       if (error.response?.status === 429) {
         errorMessage = error.response.data.message || 'Rate limit exceeded. Please try again later.';
       } else if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        errorMessage = t('websiteSubmission.inputCheckError') || t('websiteSubmission.inputError');
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
@@ -561,7 +563,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     const value = formData.email;
     if (!value) {
-      setErrors(prev => ({ ...prev, email: 'This field is required to send OTP' }));
+      setErrors(prev => ({ ...prev, email: t('websiteSubmission.emailRequiredOtp') || t('websiteSubmission.requiredField') }));
       return;
     }
 
@@ -575,10 +577,10 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
       console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} OTP:`, response.data.otp);
       setOtpSent(prev => ({ ...prev, [type]: true }));
-      alert(`${type.charAt(0).toUpperCase() + type.slice(1)} OTP sent successfully.`);
+      alert(t('websiteSubmission.otpSentSuccess', { type }));
     } catch (error) {
       console.error('Error sending OTP:', error);
-      alert('Failed to send OTP. Please try again.');
+      alert(t('websiteSubmission.otpSendFail'));
     } finally {
       setOtpSendLoading(prev => ({ ...prev, [type]: false }));
     }
@@ -589,7 +591,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
     const otpValue = otpData.emailOtp;
     if (!otpValue || otpValue.length !== 6) {
-      setOtpErrors(prev => ({ ...prev, emailOtp: 'Please enter a valid 6-digit OTP' }));
+      setOtpErrors(prev => ({ ...prev, emailOtp: t('websiteSubmission.otpInvalidLength') }));
       return;
     }
 
@@ -606,12 +608,12 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
 
       setOtpVerified(prev => ({ ...prev, [type]: true }));
       setOtpErrors(prev => ({ ...prev, emailOtp: '' }));
-      alert(`${type.charAt(0).toUpperCase() + type.slice(1)} verified successfully!`);
+      alert(t('websiteSubmission.otpVerifySuccess', { type }));
       console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} verified successfully.`);
       // Keep form open for user to complete submission
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      const errorMessage = error.response?.data?.error || 'Invalid OTP. Please try again.';
+      const errorMessage = error.response?.data?.error || t('websiteSubmission.otpVerifyFail');
       setOtpErrors(prev => ({ ...prev, emailOtp: errorMessage }));
       console.error(`${type} OTP verification failed:`, errorMessage);
     } finally {
@@ -948,896 +950,901 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-           <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-             Website Submission
-           </h2>
-           <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>
-             ×
-           </button>
-         </div>
+          <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
+            {t('websiteSubmission.title')}
+          </h2>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>
+            ×
+          </button>
+        </div>
 
         <>
-            <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
-              <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-                U r one step away from seen to the masses and amplify your brand presence
-              </p>
+          <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
+            <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
+              {t('websiteSubmission.oneStepAway')}
+            </p>
+          </div>
+
+
+          <form onSubmit={handleSubmit}>
+            {/* Media Details Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('websiteSubmission.mediaDetails')}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.mediaName')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="media_name"
+                    value={formData.media_name}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  />
+                  {errors.media_name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.media_name}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.mediaWebsiteAddress')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="media_website_address"
+                    value={formData.media_website_address}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                    placeholder="https://example.com"
+                  />
+                  {errors.media_website_address && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.media_website_address}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.newsMediaType')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="news_media_type"
+                    value={formData.news_media_type}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  >
+                    <option value="">{t('websiteSubmission.selectType')}</option>
+                    <option value="Blog">{t('websiteSubmission.blog')}</option>
+                    <option value="Local news">{t('websiteSubmission.localNews')}</option>
+                    <option value="News agency">{t('websiteSubmission.newsAgency')}</option>
+                    <option value="News media">{t('websiteSubmission.newsMedia')}</option>
+                    <option value="Just a website">{t('websiteSubmission.justAWebsite')}</option>
+                    <option value="Social media">{t('websiteSubmission.socialMedia')}</option>
+                  </select>
+                  {errors.news_media_type && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.news_media_type}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Language You Publish In</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {['english', 'russian', 'arabic', 'hindi', 'french', 'chinese'].map(lang => (
+                      <label key={lang} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                        <input
+                          type="checkbox"
+                          name="languages"
+                          value={lang}
+                          checked={formData.languages.includes(lang)}
+                          onChange={handleInputChange}
+                          style={checkboxStyle}
+                        />
+                        {t('websiteSubmission.' + lang)}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Do You Cover Any Specific Category?</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {['Tech', 'Marketing', 'Finance', 'Web 3', 'Entrepreneur', 'Hospitality', 'Other'].map(category => (
+                      <label key={category} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+                        <input
+                          type="checkbox"
+                          name="categories"
+                          value={category.toLowerCase()}
+                          checked={formData.categories.includes(category.toLowerCase())}
+                          onChange={handleInputChange}
+                          style={checkboxStyle}
+                        />
+                        {category}
+                      </label>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    name="custom_category"
+                    value={formData.custom_category}
+                    onChange={handleInputChange}
+                    style={{ ...inputStyle, marginTop: '8px' }}
+                    placeholder={t('websiteSubmission.customCategory')}
+                  />
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>Does Your Media Cover a Particular Location or Is It Global?</label>
+                  <select
+                    name="location_type"
+                    value={formData.location_type}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value="Global">{t('websiteSubmission.global')}</option>
+                    <option value="Regional">{t('websiteSubmission.regional')}</option>
+                  </select>
+
+                  {formData.location_type === 'Regional' && (
+                    <div style={{ marginTop: '8px' }}>
+                      <select
+                        name="selected_continent"
+                        onChange={handleInputChange}
+                        multiple
+                        style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
+                      >
+                        {continents.map(continent => (
+                          <option key={continent} value={continent} selected={formData.selected_continent.includes(continent)}>{continent}</option>
+                        ))}
+                      </select>
+                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
+                        {t('websiteSubmission.selectContinents')}
+                      </div>
+
+                      <select
+                        name="selected_country"
+                        onChange={handleInputChange}
+                        multiple
+                        style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
+                      >
+                        {countries.map(country => (
+                          <option key={country} value={country} selected={formData.selected_country.includes(country)}>{country}</option>
+                        ))}
+                      </select>
+                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
+                        {t('websiteSubmission.selectCountries')}
+                      </div>
+
+                      <select
+                        name="selected_state"
+                        onChange={handleInputChange}
+                        multiple
+                        style={{ ...inputStyle, minHeight: '100px' }}
+                      >
+                        {states.map(state => (
+                          <option key={state} value={state} selected={formData.selected_state.includes(state)}>{state}</option>
+                        ))}
+                      </select>
+                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                        {t('websiteSubmission.selectStates')}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-
-            <form onSubmit={handleSubmit}>
-              {/* Media Details Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Media Details</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Media Name <span style={requiredAsterisk}>*</span>
-                    </label>
+            {/* Social Media Links Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                {[
+                  { key: 'ig', label: t('websiteSubmission.instagram'), placeholder: '@instagram_handle' },
+                  { key: 'facebook', label: t('websiteSubmission.facebook'), placeholder: '@facebook_handle' },
+                  { key: 'linkedin', label: t('websiteSubmission.linkedin'), placeholder: '@linkedin_handle' },
+                  { key: 'tiktok', label: t('websiteSubmission.tiktok'), placeholder: '@tiktok_handle' },
+                  { key: 'u_tube', label: t('websiteSubmission.youtube'), placeholder: '@youtube_handle' },
+                  { key: 'snapchat', label: t('websiteSubmission.snapchat'), placeholder: '@snapchat_handle' },
+                  { key: 'twitter', label: t('websiteSubmission.twitter'), placeholder: '@x_handle' }
+                ].map(social => (
+                  <div key={social.key} style={formGroupStyle}>
+                    <label style={labelStyle}>{social.label}</label>
                     <input
                       type="text"
-                      name="media_name"
-                      value={formData.media_name}
+                      name={social.key}
+                      value={formData[social.key]}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      required
-                    />
-                    {errors.media_name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.media_name}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Media Website Address <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="url"
-                      name="media_website_address"
-                      value={formData.media_website_address}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                      placeholder="https://example.com"
-                    />
-                    {errors.media_website_address && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.media_website_address}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      News Media Type <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <select
-                      name="news_media_type"
-                      value={formData.news_media_type}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                    >
-                      <option value="">Select type</option>
-                      <option value="Blog">Blog</option>
-                      <option value="Local news">Local news</option>
-                      <option value="News agency">News agency</option>
-                      <option value="News media">News media</option>
-                      <option value="Just a website">Just a website</option>
-                      <option value="Social media">Social media</option>
-                    </select>
-                    {errors.news_media_type && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.news_media_type}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Language You Publish In</label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {['english', 'russian', 'arabic', 'hindi', 'french', 'chinese'].map(lang => (
-                        <label key={lang} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
-                          <input
-                            type="checkbox"
-                            name="languages"
-                            value={lang}
-                            checked={formData.languages.includes(lang)}
-                            onChange={handleInputChange}
-                            style={checkboxStyle}
-                          />
-                          {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Do You Cover Any Specific Category?</label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {['Tech', 'Marketing', 'Finance', 'Web 3', 'Entrepreneur', 'Hospitality', 'Other'].map(category => (
-                        <label key={category} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
-                          <input
-                            type="checkbox"
-                            name="categories"
-                            value={category.toLowerCase()}
-                            checked={formData.categories.includes(category.toLowerCase())}
-                            onChange={handleInputChange}
-                            style={checkboxStyle}
-                          />
-                          {category}
-                        </label>
-                      ))}
-                    </div>
-                    <input
-                      type="text"
-                      name="custom_category"
-                      value={formData.custom_category}
-                      onChange={handleInputChange}
-                      style={{ ...inputStyle, marginTop: '8px' }}
-                      placeholder="Custom category"
+                      placeholder={social.placeholder}
                     />
                   </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Does Your Media Cover a Particular Location or Is It Global?</label>
-                    <select
-                      name="location_type"
-                      value={formData.location_type}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value="Global">Global</option>
-                      <option value="Regional">Regional</option>
-                    </select>
-
-                    {formData.location_type === 'Regional' && (
-                      <div style={{ marginTop: '8px' }}>
-                        <select
-                          name="selected_continent"
-                          onChange={handleInputChange}
-                          multiple
-                          style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
-                        >
-                          {continents.map(continent => (
-                            <option key={continent} value={continent} selected={formData.selected_continent.includes(continent)}>{continent}</option>
-                          ))}
-                        </select>
-                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
-                          Hold Ctrl/Cmd to select multiple continents
-                        </div>
-
-                        <select
-                          name="selected_country"
-                          onChange={handleInputChange}
-                          multiple
-                          style={{ ...inputStyle, marginBottom: '8px', minHeight: '100px' }}
-                        >
-                          {countries.map(country => (
-                            <option key={country} value={country} selected={formData.selected_country.includes(country)}>{country}</option>
-                          ))}
-                        </select>
-                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginBottom: '8px' }}>
-                          Hold Ctrl/Cmd to select multiple countries
-                        </div>
-
-                        <select
-                          name="selected_state"
-                          onChange={handleInputChange}
-                          multiple
-                          style={{ ...inputStyle, minHeight: '100px' }}
-                        >
-                          {states.map(state => (
-                            <option key={state} value={state} selected={formData.selected_state.includes(state)}>{state}</option>
-                          ))}
-                        </select>
-                        <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                          Hold Ctrl/Cmd to select multiple states/provinces
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                ))}
               </div>
+            </div>
 
-              {/* Social Media Links Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  {[
-                    { key: 'ig', label: 'Instagram', placeholder: '@instagram_handle' },
-                    { key: 'facebook', label: 'Facebook', placeholder: '@facebook_handle' },
-                    { key: 'linkedin', label: 'LinkedIn', placeholder: '@linkedin_handle' },
-                    { key: 'tiktok', label: 'TikTok', placeholder: '@tiktok_handle' },
-                    { key: 'u_tube', label: 'YouTube', placeholder: '@youtube_handle' },
-                    { key: 'snapchat', label: 'Snapchat', placeholder: '@snapchat_handle' },
-                    { key: 'twitter', label: 'X (Formerly known as Twitter)', placeholder: '@x_handle' }
-                  ].map(social => (
-                    <div key={social.key} style={formGroupStyle}>
-                      <label style={labelStyle}>{social.label}</label>
-                      <input
-                        type="text"
-                        name={social.key}
-                        value={formData[social.key]}
-                        onChange={handleInputChange}
-                        style={inputStyle}
-                        placeholder={social.placeholder}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Content Policies Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Content Policies</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Social Media Embedded Allowed</label>
-                    <input
-                      type="checkbox"
-                      name="social_media_embedded_allowed"
-                      checked={formData.social_media_embedded_allowed}
-                      onChange={handleInputChange}
-                      style={checkboxStyle}
-                    />
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Social Media URL in Article Allowed</label>
-                    <input
-                      type="checkbox"
-                      name="social_media_url_in_article_allowed"
-                      checked={formData.social_media_url_in_article_allowed}
-                      onChange={handleInputChange}
-                      style={checkboxStyle}
-                    />
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>External Website Link Allowed</label>
-                    <input
-                      type="checkbox"
-                      name="external_website_link_allowed"
-                      checked={formData.external_website_link_allowed}
-                      onChange={handleInputChange}
-                      style={checkboxStyle}
-                    />
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>No. of Images Allowed in Article</label>
-                    <input
-                      type="number"
-                      name="no_of_images_allowed_in_article"
-                      value={formData.no_of_images_allowed_in_article}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                    />
-                    {errors.no_of_images_allowed_in_article && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.no_of_images_allowed_in_article}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Words Limit</label>
-                    <input
-                      type="number"
-                      name="words_limit"
-                      value={formData.words_limit}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                    />
-                    {errors.words_limit && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.words_limit}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Back Date Allowed</label>
-                    <select
-                      name="back_date_allowed"
-                      value={formData.back_date_allowed}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>DA</label>
-                    <input
-                      type="number"
-                      name="da"
-                      value={formData.da}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                      max="100"
-                    />
-                    {errors.da && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.da}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>DR</label>
-                    <input
-                      type="number"
-                      name="dr"
-                      value={formData.dr}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                      max="100"
-                    />
-                    {errors.dr && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.dr}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>PA</label>
-                    <input
-                      type="number"
-                      name="pa"
-                      value={formData.pa}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                      max="100"
-                    />
-                    {errors.pa && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.pa}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Do Follow Link or No Follow Link</label>
-                    <select
-                      name="do_follow_link"
-                      value={formData.do_follow_link}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value="">Select</option>
-                      <option value="Do Follow">Do Follow</option>
-                      <option value="No Follow">No Follow</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Disclaimer or Non Disclaimer</label>
-                    <select
-                      name="disclaimer"
-                      value={formData.disclaimer}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value="">Select</option>
-                      <option value="Disclaimer">Disclaimer</option>
-                      <option value="Non Disclaimer">Non Disclaimer</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Listicle Allowed or Not</label>
-                    <select
-                      name="listicle_allowed"
-                      value={formData.listicle_allowed}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>Not Allowed</option>
-                      <option value={true}>Allowed</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Turnaround Time</label>
-                    <input
-                      type="text"
-                      name="turnaround_time"
-                      value={formData.turnaround_time}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    />
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Price</label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      min="0"
-                    />
-                    {errors.price && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.price}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Name of the Company Allowed in Title</label>
-                    <select
-                      name="name_of_the_company_allowed_in_title"
-                      value={formData.name_of_the_company_allowed_in_title}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Name of the Individual Allowed in Title</label>
-                    <select
-                      name="name_of_the_individual_allowed_in_title"
-                      value={formData.name_of_the_individual_allowed_in_title}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Sub Heading / Sub Title Allowed</label>
-                    <select
-                      name="sub_heading_sub_title_allowed"
-                      value={formData.sub_heading_sub_title_allowed}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>By Line / Author Name Allowed</label>
-                    <select
-                      name="by_line_author_name_allowed"
-                      value={formData.by_line_author_name_allowed}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Will Article Be Placed Permanently</label>
-                    <select
-                      name="will_article_be_placed_permanently"
-                      value={formData.will_article_be_placed_permanently}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Will the Article Can Be Deleted After Publishing on Our Request</label>
-                    <select
-                      name="will_the_article_can_be_deleted_after_publishing_on_our_request"
-                      value={formData.will_the_article_can_be_deleted_after_publishing_on_our_request}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Will the Article Can Be Modified After Publishing on Our Request</label>
-                    <select
-                      name="will_the_article_can_be_modified_after_publishing_on_our_request"
-                      value={formData.will_the_article_can_be_modified_after_publishing_on_our_request}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                    >
-                      <option value={false}>No</option>
-                      <option value={true}>Yes</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Owner Information Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Owner Information</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Website Owner Name <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="website_owner_name"
-                      value={formData.website_owner_name}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                    />
-                    {errors.website_owner_name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_name}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Website Owner Nationality <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="website_owner_nationality"
-                      value={formData.website_owner_nationality}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                    />
-                    {errors.website_owner_nationality && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_nationality}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Website Owner Gender <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <select
-                      name="website_owner_gender"
-                      value={formData.website_owner_gender}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                    >
-                      <option value="">Select gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    {errors.website_owner_gender && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_gender}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Number <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <select
-                        name="callingCountry"
-                        value={formData.callingCountry}
-                        onChange={(e) => handlePhoneChange('callingCountry', e.target.value)}
-                        style={{ 
-                          ...inputStyle, 
-                          flex: '0 0 120px',
-                          borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
-                        }}
-                        required
-                      >
-                        <option value="">Country</option>
-                        {countries.map(country => (
-                          <option key={country} value={country}>
-                            {country} ({countryPhoneData[country]?.code})
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="tel"
-                        name="callingNumber"
-                        value={formData.callingNumber}
-                        onChange={(e) => handlePhoneChange('callingNumber', e.target.value)}
-                        style={{ 
-                          ...inputStyle, 
-                          flex: 1,
-                          borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
-                        }}
-                        placeholder="Enter phone number"
-                        required
-                      />
-                    </div>
-                    {formData.callingCountry && (
-                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                        Expected length: {countryPhoneData[formData.callingCountry]?.minLength}-{countryPhoneData[formData.callingCountry]?.maxLength} digits
-                      </div>
-                    )}
-                    {errors.callingNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.callingNumber}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>WhatsApp</label>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <select
-                        name="whatsappCountry"
-                        value={formData.whatsappCountry}
-                        onChange={(e) => handlePhoneChange('whatsappCountry', e.target.value)}
-                        style={{ ...inputStyle, flex: '0 0 120px' }}
-                      >
-                        <option value="">Country</option>
-                        {countries.map(country => (
-                          <option key={country} value={country}>
-                            {country} ({countryPhoneData[country]?.code})
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="tel"
-                        name="whatsappNumber"
-                        value={formData.whatsappNumber}
-                        onChange={(e) => handlePhoneChange('whatsappNumber', e.target.value)}
-                        style={{ ...inputStyle, flex: 1 }}
-                        placeholder="Enter WhatsApp number"
-                      />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                      <input
-                        type="checkbox"
-                        id="sameAsCalling"
-                        checked={sameAsCalling}
-                        onChange={(e) => handleSameAsCallingChange(e.target.checked)}
-                        style={checkboxStyle}
-                      />
-                      <label htmlFor="sameAsCalling" style={{ fontSize: '12px', color: theme.textSecondary }}>
-                        Same as calling number
-                      </label>
-                    </div>
-                    {formData.whatsappCountry && (
-                      <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                        Expected length: {countryPhoneData[formData.whatsappCountry]?.minLength}-{countryPhoneData[formData.whatsappCountry]?.maxLength} digits
-                      </div>
-                    )}
-                    {errors.whatsappNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsappNumber}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Email <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          style={{ ...inputStyle, flex: 1 }}
-                          placeholder="Enter email address"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleSendOtp('email')}
-                          disabled={otpSendLoading.email || !formData.email}
-                          style={{
-                            ...buttonStyle,
-                            backgroundColor: otpSent.email ? theme.success : '#1976D2',
-                            color: '#fff',
-                            padding: '8px 16px',
-                            fontSize: '12px',
-                            whiteSpace: 'nowrap',
-                            minWidth: '100px'
-                          }}
-                        >
-                          {otpSendLoading.email ? 'Sending...' : otpSent.email ? 'Sent' : 'Send OTP'}
-                        </button>
-                      </div>
-                      {otpSent.email && !otpVerified.email && (
-                        <div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: `1px solid ${theme.primaryLight}` }}>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                            <input
-                              type="text"
-                              value={otpData.emailOtp}
-                              onChange={(e) => handleOtpChange('emailOtp', e.target.value)}
-                              style={{ ...inputStyle, flex: 1 }}
-                              placeholder="Enter 6-digit OTP"
-                              maxLength="6"
-                              pattern="[0-9]{6}"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleVerifyOtp('email')}
-                              disabled={otpLoading}
-                              style={{
-                                ...buttonStyle,
-                                backgroundColor: '#4CAF50',
-                                color: '#fff',
-                                padding: '8px 16px',
-                                fontSize: '12px',
-                                whiteSpace: 'nowrap',
-                                minWidth: '80px'
-                              }}
-                            >
-                              Verify
-                            </button>
-                          </div>
-                          <p style={{ fontSize: '12px', color: theme.textSecondary, margin: 0, display: 'flex', alignItems: 'flex-start' }}>
-                            <Icon name="information-circle" size="xs" style={{ color: theme.primary, marginRight: '6px', marginTop: '2px', flexShrink: 0 }} />
-                            Check your email for the OTP code. It may take a few minutes to arrive.
-                          </p>
-                        </div>
-                      )}
-                      {otpVerified.email && (
-                        <div style={{ display: 'flex', alignItems: 'center', color: theme.success, fontSize: '14px', marginTop: '8px' }}>
-                          <Icon name="check-circle" size="sm" style={{ color: theme.success, marginRight: '6px' }} />
-                          <span>Email verified successfully!</span>
-                        </div>
-                      )}
-                    </div>
-                    {errors.email && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.email}</div>}
-                    {errors.emailOtp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.emailOtp}</div>}
-                    {errors.otp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.otp}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Telegram</label>
-                    <input
-                      type="text"
-                      name="telegram"
-                      value={formData.telegram}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="@telegram_handle"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* File Uploads */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Documents</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Company Registration Document/Business License Document <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="file"
-                      name="website_registration_document"
-                      onChange={handleFileChange}
-                      style={fileInputStyle}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      required
-                    />
-                    {errors.website_registration_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_registration_document}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Tax Document
-                    </label>
-                    <input
-                      type="file"
-                      name="tax_document"
-                      onChange={handleFileChange}
-                      style={fileInputStyle}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                    />
-                    {errors.tax_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.tax_document}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Bank Details <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="file"
-                      name="bank_details"
-                      onChange={handleFileChange}
-                      style={fileInputStyle}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      required
-                    />
-                    {errors.bank_details && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.bank_details}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      Owner Passport
-                    </label>
-                    <input
-                      type="file"
-                      name="owner_passport"
-                      onChange={handleFileChange}
-                      style={fileInputStyle}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                    />
-                    {errors.owner_passport && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.owner_passport}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      General Contact Details <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <input
-                      type="file"
-                      name="general_contact_details"
-                      onChange={handleFileChange}
-                      style={fileInputStyle}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      required
-                    />
-                    {errors.general_contact_details && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.general_contact_details}</div>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Fields */}
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>
-                      How Did You Hear About Us? <span style={requiredAsterisk}>*</span>
-                    </label>
-                    <select
-                      name="how_did_you_hear"
-                      value={formData.how_did_you_hear}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      required
-                    >
-                      <option value="">Select an option</option>
-                      <option value="Social Media">Social Media</option>
-                      <option value="Search">Search</option>
-                      <option value="Referral">Referral</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    {errors.how_did_you_hear && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_did_you_hear}</div>}
-                  </div>
-
-                  <div style={formGroupStyle}>
-                    <label style={labelStyle}>Message</label>
-                    <textarea
-                      name="any_to_say"
-                      value={formData.any_to_say}
-                      onChange={handleInputChange}
-                      style={textareaStyle}
-                      maxLength="500"
-                      placeholder="Additional comments (max 500 characters)"
-                    />
-                    <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                      {formData.any_to_say.length}/500 characters
-                    </div>
-                    {errors.any_to_say && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.any_to_say}</div>}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px', flexDirection: window.innerWidth < 768 ? 'column' : 'row' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+            {/* Content Policies Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('websiteSubmission.contentPolicies')}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.socialMediaEmbeddedAllowed')}</label>
                   <input
                     type="checkbox"
-                    name="terms_accepted"
-                    id="terms"
-                    checked={formData.terms_accepted}
+                    name="social_media_embedded_allowed"
+                    checked={formData.social_media_embedded_allowed}
                     onChange={handleInputChange}
                     style={checkboxStyle}
                   />
-                  <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                    I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.socialMediaUrlAllowed')}</label>
+                  <input
+                    type="checkbox"
+                    name="social_media_url_in_article_allowed"
+                    checked={formData.social_media_url_in_article_allowed}
+                    onChange={handleInputChange}
+                    style={checkboxStyle}
+                  />
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.externalLinkAllowed')}</label>
+                  <input
+                    type="checkbox"
+                    name="external_website_link_allowed"
+                    checked={formData.external_website_link_allowed}
+                    onChange={handleInputChange}
+                    style={checkboxStyle}
+                  />
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.imagesAllowed')}</label>
+                  <input
+                    type="number"
+                    name="no_of_images_allowed_in_article"
+                    value={formData.no_of_images_allowed_in_article}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                  />
+                  {errors.no_of_images_allowed_in_article && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.no_of_images_allowed_in_article}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.wordsLimit')}</label>
+                  <input
+                    type="number"
+                    name="words_limit"
+                    value={formData.words_limit}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                  />
+                  {errors.words_limit && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.words_limit}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.backDateAllowed')}</label>
+                  <select
+                    name="back_date_allowed"
+                    value={formData.back_date_allowed}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.da')}</label>
+                  <input
+                    type="number"
+                    name="da"
+                    value={formData.da}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                    max="100"
+                  />
+                  {errors.da && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.da}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.dr')}</label>
+                  <input
+                    type="number"
+                    name="dr"
+                    value={formData.dr}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                    max="100"
+                  />
+                  {errors.dr && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.dr}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.pa')}</label>
+                  <input
+                    type="number"
+                    name="pa"
+                    value={formData.pa}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                    max="100"
+                  />
+                  {errors.pa && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.pa}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.linkType')}</label>
+                  <select
+                    name="do_follow_link"
+                    value={formData.do_follow_link}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value="">{t('websiteSubmission.select')}</option>
+                    <option value="Do Follow">{t('websiteSubmission.doFollow')}</option>
+                    <option value="No Follow">{t('websiteSubmission.noFollow')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.disclaimerType')}</label>
+                  <select
+                    name="disclaimer"
+                    value={formData.disclaimer}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value="">{t('websiteSubmission.select')}</option>
+                    <option value="Disclaimer">{t('websiteSubmission.disclaimer')}</option>
+                    <option value="Non Disclaimer">{t('websiteSubmission.nonDisclaimer')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.listicleAllowed')}</label>
+                  <select
+                    name="listicle_allowed"
+                    value={formData.listicle_allowed}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.notAllowed')}</option>
+                    <option value={true}>{t('websiteSubmission.allowed')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.turnaroundTime')}</label>
+                  <input
+                    type="text"
+                    name="turnaround_time"
+                    value={formData.turnaround_time}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.price')}</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    min="0"
+                  />
+                  {errors.price && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.price}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.companyAllowedInTitle')}</label>
+                  <select
+                    name="name_of_the_company_allowed_in_title"
+                    value={formData.name_of_the_company_allowed_in_title}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.individualAllowedInTitle')}</label>
+                  <select
+                    name="name_of_the_individual_allowed_in_title"
+                    value={formData.name_of_the_individual_allowed_in_title}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.subheadingAllowed')}</label>
+                  <select
+                    name="sub_heading_sub_title_allowed"
+                    value={formData.sub_heading_sub_title_allowed}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.bylineAllowed')}</label>
+                  <select
+                    name="by_line_author_name_allowed"
+                    value={formData.by_line_author_name_allowed}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.placedPermanently')}</label>
+                  <select
+                    name="will_article_be_placed_permanently"
+                    value={formData.will_article_be_placed_permanently}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.canBeDeleted')}</label>
+                  <select
+                    name="will_the_article_can_be_deleted_after_publishing_on_our_request"
+                    value={formData.will_the_article_can_be_deleted_after_publishing_on_our_request}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.canBeModified')}</label>
+                  <select
+                    name="will_the_article_can_be_modified_after_publishing_on_our_request"
+                    value={formData.will_the_article_can_be_modified_after_publishing_on_our_request}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                  >
+                    <option value={false}>{t('websiteSubmission.no')}</option>
+                    <option value={true}>{t('websiteSubmission.yes')}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Owner Information Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('websiteSubmission.ownerInformation')}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.ownerName')} <span style={requiredAsterisk}>*</span>
                   </label>
+                  <input
+                    type="text"
+                    name="website_owner_name"
+                    value={formData.website_owner_name}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  />
+                  {errors.website_owner_name && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_name}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.ownerNationality')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="website_owner_nationality"
+                    value={formData.website_owner_nationality}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  />
+                  {errors.website_owner_nationality && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_nationality}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.ownerGender')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="website_owner_gender"
+                    value={formData.website_owner_gender}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  >
+                    <option value="">{t('websiteSubmission.selectGender')}</option>
+                    <option value="Male">{t('websiteSubmission.male')}</option>
+                    <option value="Female">{t('websiteSubmission.female')}</option>
+                    <option value="Other">{t('websiteSubmission.other')}</option>
+                  </select>
+                  {errors.website_owner_gender && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_owner_gender}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.ownerNumber')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <select
+                      name="callingCountry"
+                      value={formData.callingCountry}
+                      onChange={(e) => handlePhoneChange('callingCountry', e.target.value)}
+                      style={{
+                        ...inputStyle,
+                        flex: '0 0 120px',
+                        borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
+                      }}
+                      required
+                    >
+                      <option value="">{t('websiteSubmission.country')}</option>
+                      {countries.map(country => (
+                        <option key={country} value={country}>
+                          {country} ({countryPhoneData[country]?.code})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      name="callingNumber"
+                      value={formData.callingNumber}
+                      onChange={(e) => handlePhoneChange('callingNumber', e.target.value)}
+                      style={{
+                        ...inputStyle,
+                        flex: 1,
+                        borderColor: errors.callingNumber ? theme.danger : '#d1d5db'
+                      }}
+                      placeholder={t('websiteSubmission.enterPhone')}
+                      required
+                    />
+                  </div>
+                  {formData.callingCountry && (
+                    <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                      {t('websiteSubmission.expectedLength', {
+                        min: countryPhoneData[formData.callingCountry]?.minLength,
+                        max: countryPhoneData[formData.callingCountry]?.maxLength
+                      })}
+                    </div>
+                  )}
+                  {errors.callingNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.callingNumber}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.whatsapp')}</label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <select
+                      name="whatsappCountry"
+                      value={formData.whatsappCountry}
+                      onChange={(e) => handlePhoneChange('whatsappCountry', e.target.value)}
+                      style={{ ...inputStyle, flex: '0 0 120px' }}
+                    >
+                      <option value="">{t('websiteSubmission.country')}</option>
+                      {countries.map(country => (
+                        <option key={country} value={country}>
+                          {country} ({countryPhoneData[country]?.code})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      name="whatsappNumber"
+                      value={formData.whatsappNumber}
+                      onChange={(e) => handlePhoneChange('whatsappNumber', e.target.value)}
+                      style={{ ...inputStyle, flex: 1 }}
+                      placeholder={t('websiteSubmission.enterWhatsapp')}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                    <input
+                      type="checkbox"
+                      id="sameAsCalling"
+                      checked={sameAsCalling}
+                      onChange={(e) => handleSameAsCallingChange(e.target.checked)}
+                      style={checkboxStyle}
+                    />
+                    <label htmlFor="sameAsCalling" style={{ fontSize: '12px', color: theme.textSecondary }}>
+                      {t('websiteSubmission.sameAsCalling')}
+                    </label>
+                  </div>
+                  {formData.whatsappCountry && (
+                    <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                      {t('websiteSubmission.expectedLength', {
+                        min: countryPhoneData[formData.whatsappCountry]?.minLength,
+                        max: countryPhoneData[formData.whatsappCountry]?.maxLength
+                      })}
+                    </div>
+                  )}
+                  {errors.whatsappNumber && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsappNumber}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.email')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder={t('websiteSubmission.enterEmail')}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSendOtp('email')}
+                        disabled={otpSendLoading.email || !formData.email}
+                        style={{
+                          ...buttonStyle,
+                          backgroundColor: otpSent.email ? theme.success : '#1976D2',
+                          color: '#fff',
+                          padding: '8px 16px',
+                          fontSize: '12px',
+                          whiteSpace: 'nowrap',
+                          minWidth: '100px'
+                        }}
+                      >
+                        {otpSendLoading.email ? t('websiteSubmission.sending') : otpSent.email ? t('websiteSubmission.sent') : t('websiteSubmission.sendOtp')}
+                      </button>
+                    </div>
+                    {otpSent.email && !otpVerified.email && (
+                      <div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: `1px solid ${theme.primaryLight}` }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                          <input
+                            type="text"
+                            value={otpData.emailOtp}
+                            onChange={(e) => handleOtpChange('emailOtp', e.target.value)}
+                            style={{ ...inputStyle, flex: 1 }}
+                            placeholder={t('websiteSubmission.enterOtp')}
+                            maxLength="6"
+                            pattern="[0-9]{6}"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleVerifyOtp('email')}
+                            disabled={otpLoading}
+                            style={{
+                              ...buttonStyle,
+                              backgroundColor: '#4CAF50',
+                              color: '#fff',
+                              padding: '8px 16px',
+                              fontSize: '12px',
+                              whiteSpace: 'nowrap',
+                              minWidth: '80px'
+                            }}
+                          >
+                            {t('websiteSubmission.verify')}
+                          </button>
+                        </div>
+                        <p style={{ fontSize: '12px', color: theme.textSecondary, margin: 0, display: 'flex', alignItems: 'flex-start' }}>
+                          <Icon name="information-circle" size="xs" style={{ color: theme.primary, marginRight: '6px', marginTop: '2px', flexShrink: 0 }} />
+                          {t('websiteSubmission.checkEmail')}
+                        </p>
+                      </div>
+                    )}
+                    {otpVerified.email && (
+                      <div style={{ display: 'flex', alignItems: 'center', color: theme.success, fontSize: '14px', marginTop: '8px' }}>
+                        <Icon name="check-circle" size="sm" style={{ color: theme.success, marginRight: '6px' }} />
+                        <span>{t('websiteSubmission.emailVerified')}</span>
+                      </div>
+                    )}
+                  </div>
+                  {errors.email && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.email}</div>}
+                  {errors.emailOtp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.emailOtp}</div>}
+                  {errors.otp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.otp}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.telegram')}</label>
+                  <input
+                    type="text"
+                    name="telegram"
+                    value={formData.telegram}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    placeholder={t('websiteSubmission.telegramPlaceholder')}
+                  />
                 </div>
               </div>
-              {errors.terms_accepted && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.terms_accepted}</div>}
+            </div>
 
-              {/* reCAPTCHA */}
-              <div style={{ marginTop: '24px', marginBottom: '24px' }}>
-                <div
-                  id="recaptcha-container-website"
-                  style={{ display: 'inline-block' }}
-                ></div>
-                {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
-                <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
-                  Complete the reCAPTCHA verification to submit your website.
+            {/* File Uploads */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('websiteSubmission.documents')}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.registrationDocument')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="file"
+                    name="website_registration_document"
+                    onChange={handleFileChange}
+                    style={fileInputStyle}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                  />
+                  {errors.website_registration_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_registration_document}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.taxDocument')}
+                  </label>
+                  <input
+                    type="file"
+                    name="tax_document"
+                    onChange={handleFileChange}
+                    style={fileInputStyle}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                  />
+                  {errors.tax_document && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.tax_document}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.bankDetails')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="file"
+                    name="bank_details"
+                    onChange={handleFileChange}
+                    style={fileInputStyle}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                  />
+                  {errors.bank_details && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.bank_details}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.ownerPassport')}
+                  </label>
+                  <input
+                    type="file"
+                    name="owner_passport"
+                    onChange={handleFileChange}
+                    style={fileInputStyle}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                  />
+                  {errors.owner_passport && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.owner_passport}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.contactDetails')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <input
+                    type="file"
+                    name="general_contact_details"
+                    onChange={handleFileChange}
+                    style={fileInputStyle}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                  />
+                  {errors.general_contact_details && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.general_contact_details}</div>}
                 </div>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px', gap: '12px', flexDirection: window.innerWidth < 768 ? 'column' : 'row' }}>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
-                  disabled={loading}
-                >
-                  {loading ? 'Submitting...' : 'Submit Website'}
-                </button>
+            {/* Additional Fields */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>
+                    {t('websiteSubmission.howDidYouHear')} <span style={requiredAsterisk}>*</span>
+                  </label>
+                  <select
+                    name="how_did_you_hear"
+                    value={formData.how_did_you_hear}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    required
+                  >
+                    <option value="">{t('websiteSubmission.selectOption')}</option>
+                    <option value="Social Media">{t('websiteSubmission.socialMediaOption')}</option>
+                    <option value="Search">{t('websiteSubmission.searchOption')}</option>
+                    <option value="Referral">{t('websiteSubmission.referralOption')}</option>
+                    <option value="Other">{t('websiteSubmission.other')}</option>
+                  </select>
+                  {errors.how_did_you_hear && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_did_you_hear}</div>}
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>{t('websiteSubmission.message')}</label>
+                  <textarea
+                    name="any_to_say"
+                    value={formData.any_to_say}
+                    onChange={handleInputChange}
+                    style={textareaStyle}
+                    maxLength="500"
+                    placeholder={t('websiteSubmission.messagePlaceholder')}
+                  />
+                  <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
+                    {formData.any_to_say.length}/500 {t('websiteSubmission.characters')}
+                  </div>
+                  {errors.any_to_say && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.any_to_say}</div>}
+                </div>
               </div>
-            </form>
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px', flexDirection: window.innerWidth < 768 ? 'column' : 'row' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="checkbox"
+                  name="terms_accepted"
+                  id="terms"
+                  checked={formData.terms_accepted}
+                  onChange={handleInputChange}
+                  style={checkboxStyle}
+                />
+                <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
+                  {t('websiteSubmission.iAccept')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('websiteSubmission.termsAndConditions')}</a> <span style={requiredAsterisk}>*</span>
+                </label>
+              </div>
+            </div>
+            {errors.terms_accepted && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.terms_accepted}</div>}
+
+            {/* reCAPTCHA */}
+            <div style={{ marginTop: '24px', marginBottom: '24px' }}>
+              <div
+                id="recaptcha-container-website"
+                style={{ display: 'inline-block' }}
+              ></div>
+              {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
+              <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
+                {t('websiteSubmission.recaptchaVerification')}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px', gap: '12px', flexDirection: window.innerWidth < 768 ? 'column' : 'row' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
+                disabled={loading}
+              >
+                {t('websiteSubmission.cancel')}
+              </button>
+              <button
+                type="submit"
+                style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
+                disabled={loading}
+              >
+                {loading ? t('websiteSubmission.submitting') : t('websiteSubmission.submitWebsite')}
+              </button>
+            </div>
+          </form>
         </>
-
       </div>
 
       {/* Popup for success/error messages */}
@@ -1863,7 +1870,7 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
             />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '600', color: popupType === 'success' ? theme.success : theme.danger, marginBottom: '8px' }}>
-                {popupType === 'success' ? 'Success!' : 'Error!'}
+                {popupType === 'success' ? t('websiteSubmission.successTitle') || 'Success!' : t('websiteSubmission.errorTitle') || 'Error!'}
               </div>
               <div style={{ fontSize: '14px', color: theme.textSecondary, whiteSpace: 'pre-line' }}>
                 {popupMessage}
@@ -1886,7 +1893,6 @@ const WebsiteSubmissionForm = ({ onClose, onSuccess }) => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

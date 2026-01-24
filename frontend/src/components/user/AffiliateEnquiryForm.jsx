@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Affiliate Enquiry Form Component
 const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
@@ -26,6 +27,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
   const [referralCode, setReferralCode] = useState('');
 
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   // Load reCAPTCHA script and render widget
   useEffect(() => {
@@ -75,11 +77,11 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
           },
           'expired-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('affiliate.form.recaptchaExpired', 'reCAPTCHA expired. Please try again.') }));
           },
           'error-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA error. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('affiliate.form.recaptchaError', 'reCAPTCHA error. Please try again.') }));
           }
         });
         console.log('reCAPTCHA rendered with widget ID:', widgetId);
@@ -144,12 +146,12 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
     // Terms accepted
     if (!formData.terms_accepted) {
-      newErrors.terms_accepted = 'You must accept the terms and conditions';
+      newErrors.terms_accepted = t('affiliate.form.acceptTermsError');
     }
 
     // Message character limit
     if (formData.message && formData.message.length > 1000) {
-      newErrors.message = 'Message cannot exceed 1000 characters';
+      newErrors.message = t('affiliate.form.messageLimit');
     }
 
     // Temporarily skip reCAPTCHA validation for testing
@@ -189,10 +191,10 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
     } catch (error) {
       console.error('Error submitting affiliate enquiry:', error);
 
-      let errorMessage = 'Failed to submit affiliate enquiry. Please try again.';
+      let errorMessage = t('affiliate.form.failed');
 
       if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        errorMessage = t('affiliate.form.checkInput');
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
@@ -317,7 +319,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <div style={{ fontWeight: '600', color: theme.success, fontSize: '18px' }}>Enquiry Submitted Successfully!</div>
+            <div style={{ fontWeight: '600', color: theme.success, fontSize: '18px' }}>{t('affiliate.form.success')}</div>
           </div>
         )}
 
@@ -332,9 +334,9 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
             alignItems: 'center',
             gap: '12px'
           }}>
-            <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+            <div style={{ fontWeight: '600', color: theme.danger }}>{t('affiliate.form.failed')}</div>
             <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-              {errors.submit || 'Please check your input and try again.'}
+              {errors.submit || t('affiliate.form.checkInput')}
             </div>
           </div>
         )}
@@ -342,11 +344,11 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
         <form onSubmit={handleSubmit}>
           {/* Personal Information Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Personal Information</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.personalInfo')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Full Name <span style={requiredAsterisk}>*</span>
+                  {t('affiliate.form.fullName')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -360,23 +362,23 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Gender</label>
+                <label style={labelStyle}>{t('affiliate.form.gender')}</label>
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
                   style={getInputStyle('gender')}
                 >
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="">{t('affiliate.form.genderSelect')}</option>
+                  <option value="Male">{t('affiliate.form.male')}</option>
+                  <option value="Female">{t('affiliate.form.female')}</option>
+                  <option value="Other">{t('affiliate.form.other')}</option>
                 </select>
               </div>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Email Address <span style={requiredAsterisk}>*</span>
+                  {t('affiliate.form.email')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="email"
@@ -390,7 +392,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>WhatsApp Number</label>
+                <label style={labelStyle}>{t('affiliate.form.whatsapp')}</label>
                 <input
                   type="tel"
                   name="whatsapp"
@@ -406,10 +408,10 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
           {/* Social Media Links Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.socialMedia')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>LinkedIn Profile</label>
+                <label style={labelStyle}>{t('affiliate.form.linkedin')}</label>
                 <input
                   type="url"
                   name="linkedin"
@@ -422,7 +424,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Instagram Profile</label>
+                <label style={labelStyle}>{t('affiliate.form.instagram')}</label>
                 <input
                   type="url"
                   name="ig"
@@ -435,7 +437,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Facebook Profile</label>
+                <label style={labelStyle}>{t('affiliate.form.facebook')}</label>
                 <input
                   type="url"
                   name="facebook"
@@ -451,10 +453,10 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
           {/* Location Information Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Location Information</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.locationInfo')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Passport Nationality</label>
+                <label style={labelStyle}>{t('affiliate.form.passportNationality')}</label>
                 <input
                   type="text"
                   name="passport_nationality"
@@ -466,7 +468,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Current Residency</label>
+                <label style={labelStyle}>{t('affiliate.form.currentResidency')}</label>
                 <input
                   type="text"
                   name="current_residency"
@@ -483,14 +485,14 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
           <div style={{ marginBottom: '24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>How Did You Hear About Us?</label>
+                <label style={labelStyle}>{t('affiliate.form.howHeard')}</label>
                 <select
                   name="how_did_you_hear"
                   value={formData.how_did_you_hear}
                   onChange={handleInputChange}
                   style={getInputStyle('how_did_you_hear')}
                 >
-                  <option value="">Select an option</option>
+                  <option value="">{t('affiliate.form.selectOption')}</option>
                   <option value="Social Media">Social Media</option>
                   <option value="Search Engine">Search Engine</option>
                   <option value="Referral">Referral</option>
@@ -500,17 +502,17 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Message</label>
+                <label style={labelStyle}>{t('affiliate.form.message')}</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   style={getTextareaStyle('message')}
                   maxLength="1000"
-                  placeholder="Any additional information or questions about the affiliate program (max 1000 characters)"
+                  placeholder={t('affiliate.form.messagePlaceholder')}
                 />
                 <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                  {formData.message.length}/1000 characters
+                  {formData.message.length}/1000 {t('reporterRegistration.characters', 'characters')}
                 </div>
                 {errors.message && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.message}</div>}
               </div>
@@ -528,7 +530,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 style={checkboxStyle}
               />
               <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                {t('affiliate.form.acceptTerms')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('affiliate.form.termsLink')}</a> <span style={requiredAsterisk}>*</span>
               </label>
             </div>
           </div>
@@ -542,7 +544,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
             ></div>
             {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
             <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
-              Complete the reCAPTCHA verification to submit your enquiry.
+              {t('affiliate.form.recaptchaHelp')}
             </div>
           </div>
 
@@ -552,7 +554,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff', width: '100%', maxWidth: '200px' }}
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Submit Enquiry'}
+              {loading ? t('affiliate.form.submitting') : t('affiliate.form.submit')}
             </button>
           </div>
         </form>
@@ -564,7 +566,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
         <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-              Affiliate Program Enquiry
+              {t('affiliate.form.modalTitle')}
             </h2>
             <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }}>
               ×
@@ -573,10 +575,9 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
           {/* Promotional Message */}
           <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', fontWeight: '700', color: theme.primary }}>Earn Passive Income with Our Referral Program!</h3>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', fontWeight: '700', color: theme.primary }}>{t('affiliate.form.promoTitle')}</h3>
             <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-              Join our affiliate program and earn commissions by referring clients to our premium media services.
-              Get paid for every successful referral and build your income stream effortlessly.
+              {t('affiliate.form.promoDesc')}
             </p>
           </div>
 
@@ -591,7 +592,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <div style={{ fontWeight: '600', color: theme.success, fontSize: '18px' }}>Enquiry Submitted Successfully!</div>
+              <div style={{ fontWeight: '600', color: theme.success, fontSize: '18px' }}>{t('affiliate.form.success')}</div>
             </div>
           )}
 
@@ -606,9 +607,9 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
               alignItems: 'center',
               gap: '12px'
             }}>
-              <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+              <div style={{ fontWeight: '600', color: theme.danger }}>{t('affiliate.form.failed')}</div>
               <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                {errors.submit || 'Please check your input and try again.'}
+                {errors.submit || t('affiliate.form.checkInput')}
               </div>
             </div>
           )}
@@ -616,11 +617,11 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
           <form onSubmit={handleSubmit}>
             {/* Personal Information Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Personal Information</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.personalInfo')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Full Name <span style={requiredAsterisk}>*</span>
+                    {t('affiliate.form.fullName')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -634,23 +635,23 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Gender</label>
+                  <label style={labelStyle}>{t('affiliate.form.gender')}</label>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleInputChange}
                     style={getInputStyle('gender')}
                   >
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="">{t('affiliate.form.genderSelect')}</option>
+                    <option value="Male">{t('affiliate.form.male')}</option>
+                    <option value="Female">{t('affiliate.form.female')}</option>
+                    <option value="Other">{t('affiliate.form.other')}</option>
                   </select>
                 </div>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Email Address <span style={requiredAsterisk}>*</span>
+                    {t('affiliate.form.email')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="email"
@@ -664,7 +665,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>WhatsApp Number</label>
+                  <label style={labelStyle}>{t('affiliate.form.whatsapp')}</label>
                   <input
                     type="tel"
                     name="whatsapp"
@@ -680,10 +681,10 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
             {/* Social Media Links Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.socialMedia')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>LinkedIn Profile</label>
+                  <label style={labelStyle}>{t('affiliate.form.linkedin')}</label>
                   <input
                     type="url"
                     name="linkedin"
@@ -696,7 +697,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Instagram Profile</label>
+                  <label style={labelStyle}>{t('affiliate.form.instagram')}</label>
                   <input
                     type="url"
                     name="ig"
@@ -709,7 +710,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Facebook Profile</label>
+                  <label style={labelStyle}>{t('affiliate.form.facebook')}</label>
                   <input
                     type="url"
                     name="facebook"
@@ -725,10 +726,10 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
 
             {/* Location Information Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Location Information</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('affiliate.form.locationInfo')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Passport Nationality</label>
+                  <label style={labelStyle}>{t('affiliate.form.passportNationality')}</label>
                   <input
                     type="text"
                     name="passport_nationality"
@@ -740,7 +741,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Current Residency</label>
+                  <label style={labelStyle}>{t('affiliate.form.currentResidency')}</label>
                   <input
                     type="text"
                     name="current_residency"
@@ -757,14 +758,14 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>How Did You Hear About Us?</label>
+                  <label style={labelStyle}>{t('affiliate.form.howHeard')}</label>
                   <select
                     name="how_did_you_hear"
                     value={formData.how_did_you_hear}
                     onChange={handleInputChange}
                     style={getInputStyle('how_did_you_hear')}
                   >
-                    <option value="">Select an option</option>
+                    <option value="">{t('affiliate.form.selectOption')}</option>
                     <option value="Social Media">Social Media</option>
                     <option value="Search Engine">Search Engine</option>
                     <option value="Referral">Referral</option>
@@ -774,17 +775,17 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Message</label>
+                  <label style={labelStyle}>{t('affiliate.form.message')}</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
                     style={getTextareaStyle('message')}
                     maxLength="1000"
-                    placeholder="Any additional information or questions about the affiliate program (max 1000 characters)"
+                    placeholder={t('affiliate.form.messagePlaceholder')}
                   />
                   <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                    {formData.message.length}/1000 characters
+                    {formData.message.length}/1000 {t('reporterRegistration.characters', 'characters')}
                   </div>
                   {errors.message && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.message}</div>}
                 </div>
@@ -802,7 +803,7 @@ const AffiliateEnquiryForm = ({ onClose, onSuccess, embedded = false }) => {
                   style={checkboxStyle}
                 />
                 <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                  I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                  {t('affiliate.form.acceptTerms')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('affiliate.form.termsLink')}</a> <span style={requiredAsterisk}>*</span>
                 </label>
               </div>
             </div>

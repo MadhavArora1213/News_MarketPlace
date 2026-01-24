@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Play, Bookmark, BookmarkCheck, Clock, Filter, Search, Star, Users, Eye, CheckCircle2, PlayCircle, PauseCircle } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import { useLanguage } from '../context/LanguageContext';
 import { videos } from '../data/videos';
 
 // Custom hook for localStorage persistence
@@ -17,6 +18,7 @@ const useLocalStorage = (key, initialValue) => {
 };
 
 const VideoTutorials = () => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedVideos, setBookmarkedVideos] = useLocalStorage('bookmarkedVideos2', new Set());
@@ -105,10 +107,10 @@ const VideoTutorials = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Video Tutorials
+              {t('videoTutorials.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Access our comprehensive library of educational video content to enhance your journalism and media skills.
+              {t('videoTutorials.hero.desc')}
             </p>
           </motion.div>
         </div>
@@ -123,7 +125,7 @@ const VideoTutorials = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search videos..."
+                placeholder={t('videoTutorials.search.placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
@@ -137,11 +139,10 @@ const VideoTutorials = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${
-                  selectedCategory === category.id
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${selectedCategory === category.id
+                  ? 'bg-[#1976D2] text-white'
+                  : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                  }`}
               >
                 {category.name}
                 {category.completionRate > 0 && (
@@ -162,43 +163,39 @@ const VideoTutorials = () => {
           <div className="mb-6 flex flex-wrap gap-3">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === 'all' && searchQuery === '' && !selectedCategory.includes('progress')
-                  ? 'bg-[#1976D2] text-white'
-                  : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedCategory === 'all' && searchQuery === '' && !selectedCategory.includes('progress')
+                ? 'bg-[#1976D2] text-white'
+                : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
+                }`}
             >
-              All Videos
+              {t('videoTutorials.filter.all')}
             </button>
             <button
               onClick={() => setSelectedCategory('bookmarked')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === 'bookmarked'
-                  ? 'bg-[#1976D2] text-white'
-                  : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedCategory === 'bookmarked'
+                ? 'bg-[#1976D2] text-white'
+                : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
+                }`}
             >
-              Bookmarked ({bookmarkedVideos.size})
+              {t('videoTutorials.filter.bookmarked')} ({bookmarkedVideos.size})
             </button>
             <button
               onClick={() => setSelectedCategory('in-progress')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === 'in-progress'
-                  ? 'bg-[#1976D2] text-white'
-                  : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedCategory === 'in-progress'
+                ? 'bg-[#1976D2] text-white'
+                : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
+                }`}
             >
-              In Progress ({videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length})
+              {t('videoTutorials.filter.inProgress')} ({videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length})
             </button>
             <button
               onClick={() => setSelectedCategory('completed')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === 'completed'
-                  ? 'bg-[#1976D2] text-white'
-                  : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedCategory === 'completed'
+                ? 'bg-[#1976D2] text-white'
+                : 'bg-white text-[#212121] hover:bg-[#F5F5F5] border border-[#E0E0E0]'
+                }`}
             >
-              Completed ({watchedVideos.size})
+              {t('videoTutorials.filter.completed')} ({watchedVideos.size})
             </button>
           </div>
 
@@ -328,10 +325,10 @@ const VideoTutorials = () => {
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#757575]">By {video.instructor}</span>
+                      <span className="text-sm text-[#757575]">{t('videoTutorials.labels.by')} {video.instructor}</span>
                       {progress > 0 && (
                         <span className="text-sm font-medium" style={{ color: getProgressColor(progress) }}>
-                          {progress}% Complete
+                          {progress}% {t('videoTutorials.labels.complete')}
                         </span>
                       )}
                     </div>
@@ -376,7 +373,7 @@ const VideoTutorials = () => {
       {(bookmarkedVideos.size > 0 || watchedVideos.size > 0 || videos.some(v => getVideoProgress(v.id) > 0)) && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-2xl font-semibold text-[#212121] mb-6">Your Learning Progress</h2>
+            <h2 className="text-2xl font-semibold text-[#212121] mb-6">{t('videoTutorials.progress.title')}</h2>
 
             {/* Overall Progress */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
@@ -385,9 +382,9 @@ const VideoTutorials = () => {
                   <div className="text-3xl font-bold text-[#1976D2] mb-2">
                     {Math.round((watchedVideos.size / videos.length) * 100)}%
                   </div>
-                  <div className="text-[#757575] text-sm">Overall Completion</div>
+                  <div className="text-[#757575] text-sm">{t('videoTutorials.progress.overall')}</div>
                   <div className="text-xs text-[#757575] mt-1">
-                    {watchedVideos.size} of {videos.length} videos completed
+                    {watchedVideos.size} {t('videoTutorials.progress.of')} {videos.length} {t('videoTutorials.progress.videosCompleted')}
                   </div>
                 </div>
               )}
@@ -396,9 +393,9 @@ const VideoTutorials = () => {
                   <div className="text-3xl font-bold text-[#00796B] mb-2">
                     {bookmarkedVideos.size}
                   </div>
-                  <div className="text-[#757575] text-sm">Bookmarked Videos</div>
+                  <div className="text-[#757575] text-sm">{t('videoTutorials.progress.bookmarked')}</div>
                   <div className="text-xs text-[#757575] mt-1">
-                    Saved for later viewing
+                    {t('videoTutorials.progress.saved')}
                   </div>
                 </div>
               )}
@@ -407,9 +404,9 @@ const VideoTutorials = () => {
                   <div className="text-3xl font-bold text-[#FF9800] mb-2">
                     {videos.filter(v => getVideoProgress(v.id) > 0 && getVideoProgress(v.id) < 100).length}
                   </div>
-                  <div className="text-[#757575] text-sm">In Progress</div>
+                  <div className="text-[#757575] text-sm">{t('videoTutorials.progress.inProgress')}</div>
                   <div className="text-xs text-[#757575] mt-1">
-                    Currently watching
+                    {t('videoTutorials.progress.currentlyWatching')}
                   </div>
                 </div>
               )}
@@ -418,7 +415,7 @@ const VideoTutorials = () => {
             {/* Category Progress - Only show if there's progress */}
             {watchedVideos.size > 0 && (
               <>
-                <h3 className="text-xl font-semibold text-[#212121] mb-4">Category Progress</h3>
+                <h3 className="text-xl font-semibold text-[#212121] mb-4">{t('videoTutorials.progress.category')}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                   {categoriesWithStats.filter(cat => cat.id !== 'all' && cat.completed > 0).map((category) => (
                     <div key={category.id} className="bg-white rounded-lg p-6 border border-[#E0E0E0] shadow-sm">
@@ -460,7 +457,7 @@ const VideoTutorials = () => {
             {/* Recent Activity - Only show if there's activity */}
             {videos.filter(v => getVideoProgress(v.id) > 0).length > 0 && (
               <div className="mt-8">
-                <h3 className="text-xl font-semibold text-[#212121] mb-4">Recent Activity</h3>
+                <h3 className="text-xl font-semibold text-[#212121] mb-4">{t('videoTutorials.progress.recent')}</h3>
                 <div className="bg-white rounded-lg border border-[#E0E0E0] overflow-hidden">
                   <div className="divide-y divide-[#E0E0E0]">
                     {videos

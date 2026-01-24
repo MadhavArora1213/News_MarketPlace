@@ -4,6 +4,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../common/Icon';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Custom hook for window width
 const useWindowWidth = () => {
@@ -32,6 +33,7 @@ const useWindowWidth = () => {
 
 // Reporter Submission Form Component
 const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) => {
+  const { t } = useLanguage();
   const { isAuthenticated, user } = useAuth();
   const { isAuthenticated: isAdminAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
@@ -80,7 +82,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
       return;
     }
     if (isAdminAuthenticated) {
-      alert('Admins should submit reporters through the admin panel.');
+      alert(t('reporterRegistration.adminErrorAlert'));
       onClose();
       return;
     }
@@ -144,11 +146,11 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
           },
           'expired-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('websiteSubmission.recaptchaError') }));
           },
           'error-callback': () => {
             setRecaptchaToken('');
-            setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA error. Please try again.' }));
+            setErrors(prev => ({ ...prev, recaptcha: t('websiteSubmission.recaptchaError') }));
           }
         });
         console.log('reCAPTCHA rendered with widget ID:', widgetId);
@@ -183,58 +185,58 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
     requiredFields.forEach(field => {
       if (!formData[field] || formData[field].toString().trim() === '') {
-        newErrors[field] = 'This field is required';
+        newErrors[field] = t('websiteSubmission.requiredField');
       }
     });
 
     // URL validations
     if (formData.website_url && !formData.website_url.match(/^https?:\/\/.+/)) {
-      newErrors.website_url = 'Please enter a valid URL starting with http:// or https://';
+      newErrors.website_url = t('websiteSubmission.invalidUrl');
     }
     if (formData.linkedin && !formData.linkedin.match(/^https?:\/\/.+/)) {
-      newErrors.linkedin = 'Please enter a valid LinkedIn URL';
+      newErrors.linkedin = t('websiteSubmission.invalidUrl');
     }
     if (formData.instagram && !formData.instagram.match(/^https?:\/\/.+/)) {
-      newErrors.instagram = 'Please enter a valid Instagram URL';
+      newErrors.instagram = t('websiteSubmission.invalidUrl');
     }
     if (formData.facebook && !formData.facebook.match(/^https?:\/\/.+/)) {
-      newErrors.facebook = 'Please enter a valid Facebook URL';
+      newErrors.facebook = t('websiteSubmission.invalidUrl');
     }
     if (formData.sample_url && !formData.sample_url.match(/^https?:\/\/.+/)) {
-      newErrors.sample_url = 'Please enter a valid sample URL';
+      newErrors.sample_url = t('websiteSubmission.invalidUrl');
     }
 
     // Email validation
     if (formData.email && !formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('websiteSubmission.invalidEmail');
     }
 
     // WhatsApp validation
     if (formData.whatsapp && !formData.whatsapp.match(/^\+?[\d\s\-()]+$/)) {
-      newErrors.whatsapp = 'Invalid WhatsApp number format';
+      newErrors.whatsapp = t('reporterRegistration.whatsappInvalid') || 'Invalid WhatsApp number format';
     }
 
     // Numeric validations
     if (formData.minimum_expectation_usd && isNaN(formData.minimum_expectation_usd)) {
-      newErrors.minimum_expectation_usd = 'Please enter a valid number';
+      newErrors.minimum_expectation_usd = t('websiteSubmission.invalidNumber');
     }
     if (formData.articles_per_month && (isNaN(formData.articles_per_month) || formData.articles_per_month < 0)) {
-      newErrors.articles_per_month = 'Please enter a valid non-negative number';
+      newErrors.articles_per_month = t('websiteSubmission.invalidNumber');
     }
 
     // Terms accepted
     if (!formData.terms_accepted) {
-      newErrors.terms_accepted = 'You must accept the terms and conditions';
+      newErrors.terms_accepted = t('websiteSubmission.acceptTermsError');
     }
 
     // Message character limit
     if (formData.message && formData.message.length > 500) {
-      newErrors.message = 'Message cannot exceed 500 characters';
+      newErrors.message = t('websiteSubmission.messageLimit');
     }
 
     // reCAPTCHA
     if (!recaptchaToken) {
-      newErrors.recaptcha = 'Please complete the reCAPTCHA verification';
+      newErrors.recaptcha = t('websiteSubmission.recaptchaRequired');
     }
 
     setErrors(newErrors);
@@ -251,7 +253,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
     }
 
     if (isAdminAuthenticated) {
-      alert('Admins should submit reporters through the admin panel.');
+      alert(t('reporterRegistration.adminErrorAlert'));
       if (onClose) onClose();
       return;
     }
@@ -280,16 +282,16 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
     } catch (error) {
       console.error('Error submitting reporter:', error);
 
-      let errorMessage = 'Failed to submit reporter profile. Please try again.';
+      let errorMessage = t('reporterRegistration.genericSubmitError');
 
       if (error.response?.status === 401) {
-        errorMessage = 'Authentication required. Please log in and try again.';
+        errorMessage = t('reporterRegistration.authRequiredError');
         navigate('/login');
         return;
       } else if (error.response?.status === 429) {
         errorMessage = error.response.data.message || 'Rate limit exceeded. Please try again later.';
       } else if (error.response?.status === 400) {
-        errorMessage = 'Please check your input and try again.';
+        errorMessage = t('reporterRegistration.inputCheckError');
         if (error.response.data.details) {
           const validationErrors = {};
           error.response.data.details.forEach(detail => {
@@ -414,11 +416,10 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            Reporter Profile Submission
+            {t('reporterRegistration.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Join our network of professional reporters and content creators.
-            Register your profile to start publishing articles and content.
+            {t('reporterRegistration.pageDesc')}
           </p>
         </div>
 
@@ -426,7 +427,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
           {/* Form content */}
           <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
             <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-              Your confidentiality will be maintained all the time in any case.
+              {t('reporterRegistration.confidentialityNote')}
             </p>
           </div>
 
@@ -443,9 +444,9 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
             }}>
               <Icon name="check-circle" size="lg" style={{ color: theme.success }} />
               <div>
-                <div style={{ fontWeight: '600', color: theme.success }}>Reporter Profile Submitted Successfully!</div>
+                <div style={{ fontWeight: '600', color: theme.success }}>{t('reporterRegistration.successMessage')}</div>
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                  Your reporter profile has been submitted and is pending review. You will be notified once it's approved.
+                  {t('reporterRegistration.successDesc')}
                 </div>
               </div>
             </div>
@@ -464,9 +465,9 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
             }}>
               <Icon name="exclamation-triangle" size="lg" style={{ color: theme.danger }} />
               <div>
-                <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+                <div style={{ fontWeight: '600', color: theme.danger }}>{t('reporterRegistration.errorMessage')}</div>
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                  {errors.submit || 'Please check your input and try again.'}
+                  {errors.submit || t('reporterRegistration.inputError')}
                 </div>
               </div>
             </div>
@@ -475,12 +476,12 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
           <form onSubmit={handleSubmit}>
             {/* Personal Information Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Personal Information</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.personalInformation')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 {/* Form fields content - same as modal */}
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Function Department <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.functionDepartment')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <select
                     name="function_department"
@@ -489,19 +490,19 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     style={getInputStyle('function_department')}
                     required
                   >
-                    <option value="">Select department</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Procurement">Procurement</option>
-                    <option value="Publishing">Publishing</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Accounts and Finance">Accounts and Finance</option>
+                    <option value="">{t('reporterRegistration.selectDepartment')}</option>
+                    <option value="Commercial">{t('reporterRegistration.commercial')}</option>
+                    <option value="Procurement">{t('reporterRegistration.procurement')}</option>
+                    <option value="Publishing">{t('reporterRegistration.publishing')}</option>
+                    <option value="Marketing">{t('reporterRegistration.marketing')}</option>
+                    <option value="Accounts and Finance">{t('reporterRegistration.accountsFinance')}</option>
                   </select>
                   {errors.function_department && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.function_department}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Position <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.position')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <select
                     name="position"
@@ -510,18 +511,18 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     style={getInputStyle('position')}
                     required
                   >
-                    <option value="">Select position</option>
-                    <option value="Journalist">Journalist</option>
-                    <option value="Reporter">Reporter</option>
-                    <option value="Contributor">Contributor</option>
-                    <option value="Staff">Staff</option>
+                    <option value="">{t('reporterRegistration.selectPosition')}</option>
+                    <option value="Journalist">{t('reporterRegistration.journalist')}</option>
+                    <option value="Reporter">{t('reporterRegistration.reporter')}</option>
+                    <option value="Contributor">{t('reporterRegistration.contributor')}</option>
+                    <option value="Staff">{t('reporterRegistration.staff')}</option>
                   </select>
                   {errors.position && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.position}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Full Name <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.fullName')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -536,7 +537,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Gender <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.gender')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <select
                     name="gender"
@@ -545,20 +546,20 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     style={getInputStyle('gender')}
                     required
                   >
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="">{t('reporterRegistration.selectGender')}</option>
+                    <option value="Male">{t('reporterRegistration.male')}</option>
+                    <option value="Female">{t('reporterRegistration.female')}</option>
+                    <option value="Other">{t('reporterRegistration.other')}</option>
                   </select>
                   {errors.gender && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.gender}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Email <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.email')} <span style={requiredAsterisk}>*</span>
                     {user?.email && formData.email === user.email && (
                       <span style={{ fontSize: '12px', color: theme.textSecondary, marginLeft: '8px' }}>
-                        (from your account)
+                        {t('reporterRegistration.fromAccount')}
                       </span>
                     )}
                   </label>
@@ -575,14 +576,14 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>WhatsApp</label>
+                  <label style={labelStyle}>{t('reporterRegistration.whatsapp')}</label>
                   <input
                     type="tel"
                     name="whatsapp"
                     value={formData.whatsapp}
                     onChange={handleInputChange}
                     style={getInputStyle('whatsapp')}
-                    placeholder="+1234567890"
+                    placeholder={t('reporterRegistration.whatsappPlaceholder')}
                   />
                   {errors.whatsapp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsapp}</div>}
                 </div>
@@ -591,11 +592,11 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
             {/* Publication Information Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Publication Information</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.publicationInformation')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Publication Name <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.publicationName')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -609,21 +610,21 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Website URL</label>
+                  <label style={labelStyle}>{t('reporterRegistration.websiteUrl')}</label>
                   <input
                     type="url"
                     name="website_url"
                     value={formData.website_url}
                     onChange={handleInputChange}
                     style={getInputStyle('website_url')}
-                    placeholder="https://example.com"
+                    placeholder={t('reporterRegistration.urlPlaceholder')}
                   />
                   {errors.website_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_url}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Publication Industry <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.publicationIndustry')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -631,7 +632,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     value={formData.publication_industry}
                     onChange={handleInputChange}
                     style={getInputStyle('publication_industry')}
-                    placeholder="e.g., Technology, Finance, Health"
+                    placeholder={t('reporterRegistration.industryPlaceholder')}
                     required
                   />
                   {errors.publication_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_industry}</div>}
@@ -639,7 +640,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Publication Location <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.publicationLocation')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -647,7 +648,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     value={formData.publication_location}
                     onChange={handleInputChange}
                     style={getInputStyle('publication_location')}
-                    placeholder="e.g., New York, USA"
+                    placeholder={t('reporterRegistration.locationPlaceholder')}
                     required
                   />
                   {errors.publication_location && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_location}</div>}
@@ -655,7 +656,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    Niche Industry <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.nicheIndustry')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <input
                     type="text"
@@ -663,7 +664,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     value={formData.niche_industry}
                     onChange={handleInputChange}
                     style={getInputStyle('niche_industry')}
-                    placeholder="e.g., AI, Blockchain, Healthcare"
+                    placeholder={t('reporterRegistration.nichePlaceholder')}
                     required
                   />
                   {errors.niche_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.niche_industry}</div>}
@@ -673,43 +674,43 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
             {/* Social Media Links Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.socialMediaLinks')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>LinkedIn</label>
+                  <label style={labelStyle}>{t('reporterRegistration.linkedin')}</label>
                   <input
                     type="url"
                     name="linkedin"
                     value={formData.linkedin}
                     onChange={handleInputChange}
                     style={getInputStyle('linkedin')}
-                    placeholder="https://linkedin.com/in/username"
+                    placeholder={t('reporterRegistration.linkedinPlaceholder')}
                   />
                   {errors.linkedin && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.linkedin}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Instagram</label>
+                  <label style={labelStyle}>{t('reporterRegistration.instagram')}</label>
                   <input
                     type="url"
                     name="instagram"
                     value={formData.instagram}
                     onChange={handleInputChange}
                     style={getInputStyle('instagram')}
-                    placeholder="https://instagram.com/username"
+                    placeholder={t('reporterRegistration.instagramPlaceholder')}
                   />
                   {errors.instagram && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.instagram}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Facebook</label>
+                  <label style={labelStyle}>{t('reporterRegistration.facebook')}</label>
                   <input
                     type="url"
                     name="facebook"
                     value={formData.facebook}
                     onChange={handleInputChange}
                     style={getInputStyle('facebook')}
-                    placeholder="https://facebook.com/username"
+                    placeholder={t('reporterRegistration.facebookPlaceholder')}
                   />
                   {errors.facebook && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.facebook}</div>}
                 </div>
@@ -718,10 +719,10 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
             {/* Content Policies Section */}
             <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Content Policies & Requirements</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.contentPolicies')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Minimum Expectation (USD)</label>
+                  <label style={labelStyle}>{t('reporterRegistration.minExpectation')}</label>
                   <input
                     type="number"
                     name="minimum_expectation_usd"
@@ -735,7 +736,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Articles Per Month</label>
+                  <label style={labelStyle}>{t('reporterRegistration.articlesPerMonth')}</label>
                   <input
                     type="number"
                     name="articles_per_month"
@@ -748,33 +749,33 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Turnaround Time</label>
+                  <label style={labelStyle}>{t('reporterRegistration.turnaroundTime')}</label>
                   <input
                     type="text"
                     name="turnaround_time"
                     value={formData.turnaround_time}
                     onChange={handleInputChange}
                     style={getInputStyle('turnaround_time')}
-                    placeholder="e.g., 24-48 hours"
+                    placeholder={t('reporterRegistration.turnaroundPlaceholder')}
                   />
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Sample URL</label>
+                  <label style={labelStyle}>{t('reporterRegistration.sampleUrl')}</label>
                   <input
                     type="url"
                     name="sample_url"
                     value={formData.sample_url}
                     onChange={handleInputChange}
                     style={getInputStyle('sample_url')}
-                    placeholder="https://example.com/sample-article"
+                    placeholder={t('reporterRegistration.samplePlaceholder')}
                   />
                   {errors.sample_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.sample_url}</div>}
                 </div>
               </div>
 
               <div style={{ marginTop: '16px' }}>
-                <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: theme.textPrimary }}>Article Permissions</h4>
+                <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: theme.textPrimary }}>{t('reporterRegistration.articlePermissions')}</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                   <div style={formGroupStyle}>
                     <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
@@ -785,7 +786,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Company Name Allowed in Title
+                      {t('reporterRegistration.companyInTitle')}
                     </label>
                   </div>
 
@@ -798,7 +799,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Individual Name Allowed in Title
+                      {t('reporterRegistration.individualInTitle')}
                     </label>
                   </div>
 
@@ -811,7 +812,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Subheading Allowed
+                      {t('reporterRegistration.subheadingAllowed')}
                     </label>
                   </div>
 
@@ -824,7 +825,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Will Change Wordings if Required
+                      {t('reporterRegistration.willChangeWordings')}
                     </label>
                   </div>
 
@@ -837,7 +838,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Article Placed Permanently
+                      {t('reporterRegistration.placedPermanently')}
                     </label>
                   </div>
 
@@ -850,7 +851,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Article Can Be Deleted on Request
+                      {t('reporterRegistration.canBeDeleted')}
                     </label>
                   </div>
 
@@ -863,7 +864,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                         onChange={handleInputChange}
                         style={checkboxStyle}
                       />
-                      Article Can Be Modified on Request
+                      {t('reporterRegistration.canBeModified')}
                     </label>
                   </div>
                 </div>
@@ -875,7 +876,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    How Did You Hear About Us? <span style={requiredAsterisk}>*</span>
+                    {t('reporterRegistration.howHeard')} <span style={requiredAsterisk}>*</span>
                   </label>
                   <select
                     name="how_heard_about_us"
@@ -884,28 +885,28 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                     style={getInputStyle('how_heard_about_us')}
                     required
                   >
-                    <option value="">Select an option</option>
-                    <option value="Social Media">Social Media</option>
-                    <option value="Search Engine">Search Engine</option>
-                    <option value="Referral">Referral</option>
-                    <option value="Email">Email</option>
-                    <option value="Other">Other</option>
+                    <option value="">{t('reporterRegistration.selectOption')}</option>
+                    <option value="Social Media">{t('websiteSubmission.socialMediaOption')}</option>
+                    <option value="Search Engine">{t('websiteSubmission.searchOption')}</option>
+                    <option value="Referral">{t('websiteSubmission.referralOption')}</option>
+                    <option value="Email">{t('websiteSubmission.email')}</option>
+                    <option value="Other">{t('websiteSubmission.other')}</option>
                   </select>
                   {errors.how_heard_about_us && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_heard_about_us}</div>}
                 </div>
 
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Message</label>
+                  <label style={labelStyle}>{t('reporterRegistration.message')}</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
                     style={getTextareaStyle('message')}
                     maxLength="500"
-                    placeholder="Additional comments or requirements (max 500 characters)"
+                    placeholder={t('reporterRegistration.messagePlaceholder')}
                   />
                   <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                    {formData.message.length}/500 characters
+                    {formData.message.length}/500 {t('reporterRegistration.characters')}
                   </div>
                   {errors.message && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.message}</div>}
                 </div>
@@ -923,7 +924,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   style={checkboxStyle}
                 />
                 <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                  I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.iAccept')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('reporterRegistration.termsAndConditions')}</a> <span style={requiredAsterisk}>*</span>
                 </label>
               </div>
             </div>
@@ -937,7 +938,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               ></div>
               {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
               <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
-                Complete the reCAPTCHA verification to submit your reporter profile.
+                {t('reporterRegistration.submitProfileNote') || 'Complete the reCAPTCHA verification to submit your reporter profile.'}
               </div>
             </div>
 
@@ -948,14 +949,14 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
                 disabled={loading}
               >
-                Cancel
+                {t('reporterRegistration.cancel')}
               </button>
               <button
                 type="submit"
                 style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
                 disabled={loading}
               >
-                {loading ? 'Submitting...' : 'Submit Reporter Profile'}
+                {loading ? t('reporterRegistration.submitting') : t('reporterRegistration.submitProfile')}
               </button>
             </div>
           </form>
@@ -970,7 +971,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-            Reporter Profile Submission
+            {t('reporterRegistration.title')}
           </h2>
           <button
             onClick={onClose}
@@ -1014,7 +1015,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
         <div style={{ backgroundColor: '#e3f2fd', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: `1px solid ${theme.primaryLight}` }}>
           <p style={{ margin: 0, fontSize: '16px', color: theme.textPrimary, fontWeight: '500' }}>
-            Your confidentiality will be maintained all the time in any case.
+            {t('reporterRegistration.confidentialityNote')}
           </p>
         </div>
 
@@ -1031,9 +1032,9 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
           }}>
             <Icon name="check-circle" size="lg" style={{ color: theme.success }} />
             <div>
-              <div style={{ fontWeight: '600', color: theme.success }}>Reporter Profile Submitted Successfully!</div>
+              <div style={{ fontWeight: '600', color: theme.success }}>{t('reporterRegistration.successMessage')}</div>
               <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                Your reporter profile has been submitted and is pending review. You will be notified once it's approved.
+                {t('reporterRegistration.successDesc')}
               </div>
             </div>
           </div>
@@ -1052,9 +1053,9 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
           }}>
             <Icon name="exclamation-triangle" size="lg" style={{ color: theme.danger }} />
             <div>
-              <div style={{ fontWeight: '600', color: theme.danger }}>Submission Failed</div>
+              <div style={{ fontWeight: '600', color: theme.danger }}>{t('reporterRegistration.errorMessage')}</div>
               <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                {errors.submit || 'Please check your input and try again.'}
+                {errors.submit || t('reporterRegistration.inputError')}
               </div>
             </div>
           </div>
@@ -1063,11 +1064,11 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
         <form onSubmit={handleSubmit}>
           {/* Personal Information Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Personal Information</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.personalInformation')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Function Department <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.functionDepartment')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <select
                   name="function_department"
@@ -1076,19 +1077,19 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   style={getInputStyle('function_department')}
                   required
                 >
-                  <option value="">Select department</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Procurement">Procurement</option>
-                  <option value="Publishing">Publishing</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Accounts and Finance">Accounts and Finance</option>
+                  <option value="">{t('reporterRegistration.selectDepartment')}</option>
+                  <option value="Commercial">{t('reporterRegistration.commercial')}</option>
+                  <option value="Procurement">{t('reporterRegistration.procurement')}</option>
+                  <option value="Publishing">{t('reporterRegistration.publishing')}</option>
+                  <option value="Marketing">{t('reporterRegistration.marketing')}</option>
+                  <option value="Accounts and Finance">{t('reporterRegistration.accountsFinance')}</option>
                 </select>
                 {errors.function_department && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.function_department}</div>}
               </div>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Position <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.position')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <select
                   name="position"
@@ -1097,18 +1098,18 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   style={getInputStyle('position')}
                   required
                 >
-                  <option value="">Select position</option>
-                  <option value="Journalist">Journalist</option>
-                  <option value="Reporter">Reporter</option>
-                  <option value="Contributor">Contributor</option>
-                  <option value="Staff">Staff</option>
+                  <option value="">{t('reporterRegistration.selectPosition')}</option>
+                  <option value="Journalist">{t('reporterRegistration.journalist')}</option>
+                  <option value="Reporter">{t('reporterRegistration.reporter')}</option>
+                  <option value="Contributor">{t('reporterRegistration.contributor')}</option>
+                  <option value="Staff">{t('reporterRegistration.staff')}</option>
                 </select>
                 {errors.position && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.position}</div>}
               </div>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Full Name <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.fullName')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1123,7 +1124,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Gender <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.gender')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <select
                   name="gender"
@@ -1132,10 +1133,10 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   style={getInputStyle('gender')}
                   required
                 >
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="">{t('reporterRegistration.selectGender')}</option>
+                  <option value="Male">{t('reporterRegistration.male')}</option>
+                  <option value="Female">{t('reporterRegistration.female')}</option>
+                  <option value="Other">{t('reporterRegistration.other')}</option>
                 </select>
                 {errors.gender && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.gender}</div>}
               </div>
@@ -1145,7 +1146,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   Email <span style={requiredAsterisk}>*</span>
                   {user?.email && formData.email === user.email && (
                     <span style={{ fontSize: '12px', color: theme.textSecondary, marginLeft: '8px' }}>
-                      (from your account)
+                      {t('reporterRegistration.fromAccount')}
                     </span>
                   )}
                 </label>
@@ -1162,14 +1163,14 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>WhatsApp</label>
+                <label style={labelStyle}>{t('reporterRegistration.whatsapp')}</label>
                 <input
                   type="tel"
                   name="whatsapp"
                   value={formData.whatsapp}
                   onChange={handleInputChange}
                   style={getInputStyle('whatsapp')}
-                  placeholder="+1234567890"
+                  placeholder={t('reporterRegistration.whatsappPlaceholder')}
                 />
                 {errors.whatsapp && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.whatsapp}</div>}
               </div>
@@ -1178,11 +1179,11 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
           {/* Publication Information Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Publication Information</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.publicationInformation')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Publication Name <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.publicationName')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1196,21 +1197,21 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Website URL</label>
+                <label style={labelStyle}>{t('reporterRegistration.websiteUrl')}</label>
                 <input
                   type="url"
                   name="website_url"
                   value={formData.website_url}
                   onChange={handleInputChange}
                   style={getInputStyle('website_url')}
-                  placeholder="https://example.com"
+                  placeholder={t('reporterRegistration.urlPlaceholder')}
                 />
                 {errors.website_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.website_url}</div>}
               </div>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Publication Industry <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.publicationIndustry')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1218,7 +1219,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   value={formData.publication_industry}
                   onChange={handleInputChange}
                   style={getInputStyle('publication_industry')}
-                  placeholder="e.g., Technology, Finance, Health"
+                  placeholder={t('reporterRegistration.industryPlaceholder')}
                   required
                 />
                 {errors.publication_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_industry}</div>}
@@ -1226,7 +1227,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Publication Location <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.publicationLocation')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1234,7 +1235,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   value={formData.publication_location}
                   onChange={handleInputChange}
                   style={getInputStyle('publication_location')}
-                  placeholder="e.g., New York, USA"
+                  placeholder={t('reporterRegistration.locationPlaceholder')}
                   required
                 />
                 {errors.publication_location && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.publication_location}</div>}
@@ -1242,7 +1243,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  Niche Industry <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.nicheIndustry')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1250,7 +1251,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   value={formData.niche_industry}
                   onChange={handleInputChange}
                   style={getInputStyle('niche_industry')}
-                  placeholder="e.g., AI, Blockchain, Healthcare"
+                  placeholder={t('reporterRegistration.nichePlaceholder')}
                   required
                 />
                 {errors.niche_industry && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.niche_industry}</div>}
@@ -1260,43 +1261,43 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
           {/* Social Media Links Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Social Media Links</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.socialMediaLinks')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>LinkedIn</label>
+                <label style={labelStyle}>{t('reporterRegistration.linkedin')}</label>
                 <input
                   type="url"
                   name="linkedin"
                   value={formData.linkedin}
                   onChange={handleInputChange}
                   style={getInputStyle('linkedin')}
-                  placeholder="https://linkedin.com/in/username"
+                  placeholder={t('reporterRegistration.linkedinPlaceholder')}
                 />
                 {errors.linkedin && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.linkedin}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Instagram</label>
+                <label style={labelStyle}>{t('reporterRegistration.instagram')}</label>
                 <input
                   type="url"
                   name="instagram"
                   value={formData.instagram}
                   onChange={handleInputChange}
                   style={getInputStyle('instagram')}
-                  placeholder="https://instagram.com/username"
+                  placeholder={t('reporterRegistration.instagramPlaceholder')}
                 />
                 {errors.instagram && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.instagram}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Facebook</label>
+                <label style={labelStyle}>{t('reporterRegistration.facebook')}</label>
                 <input
                   type="url"
                   name="facebook"
                   value={formData.facebook}
                   onChange={handleInputChange}
                   style={getInputStyle('facebook')}
-                  placeholder="https://facebook.com/username"
+                  placeholder={t('reporterRegistration.facebookPlaceholder')}
                 />
                 {errors.facebook && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.facebook}</div>}
               </div>
@@ -1305,10 +1306,10 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
 
           {/* Content Policies Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>Content Policies & Requirements</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: theme.textPrimary }}>{t('reporterRegistration.contentPolicies')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Minimum Expectation (USD)</label>
+                <label style={labelStyle}>{t('reporterRegistration.minExpectation')}</label>
                 <input
                   type="number"
                   name="minimum_expectation_usd"
@@ -1322,7 +1323,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Articles Per Month</label>
+                <label style={labelStyle}>{t('reporterRegistration.articlesPerMonth')}</label>
                 <input
                   type="number"
                   name="articles_per_month"
@@ -1335,33 +1336,33 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Turnaround Time</label>
+                <label style={labelStyle}>{t('reporterRegistration.turnaroundTime')}</label>
                 <input
                   type="text"
                   name="turnaround_time"
                   value={formData.turnaround_time}
                   onChange={handleInputChange}
                   style={getInputStyle('turnaround_time')}
-                  placeholder="e.g., 24-48 hours"
+                  placeholder={t('reporterRegistration.turnaroundPlaceholder')}
                 />
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Sample URL</label>
+                <label style={labelStyle}>{t('reporterRegistration.sampleUrl')}</label>
                 <input
                   type="url"
                   name="sample_url"
                   value={formData.sample_url}
                   onChange={handleInputChange}
                   style={getInputStyle('sample_url')}
-                  placeholder="https://example.com/sample-article"
+                  placeholder={t('reporterRegistration.samplePlaceholder')}
                 />
                 {errors.sample_url && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.sample_url}</div>}
               </div>
             </div>
 
             <div style={{ marginTop: '16px' }}>
-              <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: theme.textPrimary }}>Article Permissions</h4>
+              <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: theme.textPrimary }}>{t('reporterRegistration.articlePermissions')}</h4>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
                   <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
@@ -1372,7 +1373,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Company Name Allowed in Title
+                    {t('reporterRegistration.companyInTitle')}
                   </label>
                 </div>
 
@@ -1385,7 +1386,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Individual Name Allowed in Title
+                    {t('reporterRegistration.individualInTitle')}
                   </label>
                 </div>
 
@@ -1398,7 +1399,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Subheading Allowed
+                    {t('reporterRegistration.subheadingAllowed')}
                   </label>
                 </div>
 
@@ -1411,7 +1412,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Will Change Wordings if Required
+                    {t('reporterRegistration.willChangeWordings')}
                   </label>
                 </div>
 
@@ -1424,7 +1425,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Article Placed Permanently
+                    {t('reporterRegistration.placedPermanently')}
                   </label>
                 </div>
 
@@ -1437,7 +1438,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Article Can Be Deleted on Request
+                    {t('reporterRegistration.canBeDeleted')}
                   </label>
                 </div>
 
@@ -1450,7 +1451,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                       onChange={handleInputChange}
                       style={checkboxStyle}
                     />
-                    Article Can Be Modified on Request
+                    {t('reporterRegistration.canBeModified')}
                   </label>
                 </div>
               </div>
@@ -1462,7 +1463,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
                 <label style={labelStyle}>
-                  How Did You Hear About Us? <span style={requiredAsterisk}>*</span>
+                  {t('reporterRegistration.howHeard')} <span style={requiredAsterisk}>*</span>
                 </label>
                 <select
                   name="how_heard_about_us"
@@ -1471,28 +1472,28 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                   style={getInputStyle('how_heard_about_us')}
                   required
                 >
-                  <option value="">Select an option</option>
-                  <option value="Social Media">Social Media</option>
-                  <option value="Search Engine">Search Engine</option>
-                  <option value="Referral">Referral</option>
-                  <option value="Email">Email</option>
-                  <option value="Other">Other</option>
+                  <option value="">{t('reporterRegistration.selectOption')}</option>
+                  <option value="Social Media">{t('websiteSubmission.socialMediaOption')}</option>
+                  <option value="Search Engine">{t('websiteSubmission.searchOption')}</option>
+                  <option value="Referral">{t('websiteSubmission.referralOption')}</option>
+                  <option value="Email">{t('websiteSubmission.email')}</option>
+                  <option value="Other">{t('websiteSubmission.other')}</option>
                 </select>
                 {errors.how_heard_about_us && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_heard_about_us}</div>}
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Message</label>
+                <label style={labelStyle}>{t('reporterRegistration.message')}</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   style={getTextareaStyle('message')}
                   maxLength="500"
-                  placeholder="Additional comments or requirements (max 500 characters)"
+                  placeholder={t('reporterRegistration.messagePlaceholder')}
                 />
                 <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '4px' }}>
-                  {formData.message.length}/500 characters
+                  {formData.message.length}/500 {t('reporterRegistration.characters')}
                 </div>
                 {errors.message && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.message}</div>}
               </div>
@@ -1510,7 +1511,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
                 style={checkboxStyle}
               />
               <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                {t('reporterRegistration.iAccept')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('reporterRegistration.termsAndConditions')}</a> <span style={requiredAsterisk}>*</span>
               </label>
             </div>
           </div>
@@ -1524,7 +1525,7 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
             ></div>
             {errors.recaptcha && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.recaptcha}</div>}
             <div style={{ fontSize: '12px', color: theme.textSecondary, marginTop: '8px' }}>
-              Complete the reCAPTCHA verification to submit your reporter profile.
+              {t('reporterRegistration.submitProfileNote') || 'Complete the reCAPTCHA verification to submit your reporter profile.'}
             </div>
           </div>
 
@@ -1535,14 +1536,14 @@ const ReporterSubmissionForm = ({ onClose, onSuccess, renderAsModal = true }) =>
               style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
               disabled={loading}
             >
-              Cancel
+              {t('reporterRegistration.cancel')}
             </button>
             <button
               type="submit"
               style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Submit Reporter Profile'}
+              {loading ? t('reporterRegistration.submitting') : t('reporterRegistration.submitProfile')}
             </button>
           </div>
         </form>

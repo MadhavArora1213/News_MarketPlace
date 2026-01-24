@@ -10,8 +10,10 @@ import {
   MapPin, Calendar, Tag, DollarSign, Search, Filter, ArrowRight,
   Globe, Users, Award, Music, Camera, Landmark, Info, X
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const EventsPage = () => {
+  const { t } = useLanguage();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -163,15 +165,15 @@ const EventsPage = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              <span className="text-sm font-medium text-blue-700 uppercase tracking-widest">Explore Opportunities</span>
+              <span className="text-sm font-medium text-blue-700 uppercase tracking-widest">{t('events.hero.badge')}</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-8 tracking-tight font-primary">
-              Global <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Event Marketplace</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 truncate">{t('events.hero.title')}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light mb-12 font-secondary">
-              Unlock sponsorships, guest appearances, and speaking opportunities at top business, lifestyle, and government events worldwide. Connect with the top 1% of professionals.
+              {t('events.hero.desc')}
             </p>
 
             {/* Premium Search Bar */}
@@ -181,7 +183,7 @@ const EventsPage = () => {
                 <Search className="ml-4 text-slate-400" size={20} />
                 <input
                   type="text"
-                  placeholder="Search events, cities, or industry types..."
+                  placeholder={t('events.search.placeholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1 px-4 py-3 bg-transparent border-none focus:ring-0 text-slate-900 placeholder-slate-400 text-lg outline-none"
@@ -190,14 +192,14 @@ const EventsPage = () => {
                   onClick={() => fetchEvents()}
                   className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all hover:scale-105 active:scale-95 hidden md:block shadow-lg shadow-blue-500/20 uppercase tracking-wide text-sm"
                 >
-                  Find Events
+                  {t('events.search.button')}
                 </button>
               </div>
             </div>
 
             <p className="text-sm font-medium text-amber-600 mt-8 flex items-center justify-center space-x-2 bg-amber-50 rounded-full px-4 py-2 w-fit mx-auto border border-amber-100 shadow-sm font-primary">
               <Info size={16} />
-              <span>Full event catalog launching soon. Currently displaying curated previews.</span>
+              <span>{t('events.catalog.notice')}</span>
             </p>
           </motion.div>
         </div>
@@ -217,43 +219,43 @@ const EventsPage = () => {
               <div className="flex items-center justify-between mb-8">
                 <h3 className="font-bold text-slate-900 flex items-center space-x-3 text-lg font-primary">
                   <Filter size={20} className="text-blue-600" />
-                  <span>Refine Feed</span>
+                  <span>{t('events.filters.title')}</span>
                 </h3>
                 <button
                   onClick={clearFilters}
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest hover:bg-blue-50 px-3 py-1 rounded-full transition-colors"
                 >
-                  Clear
+                  {t('events.filters.clear')}
                 </button>
               </div>
 
               <div className="space-y-8">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Location</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">{t('events.filters.location')}</label>
                   <input
                     type="text"
                     value={filters.country}
                     onChange={(e) => handleFilterChange('country', e.target.value)}
-                    placeholder="Country"
+                    placeholder={t('events.filters.country')}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none mb-3 font-secondary"
                   />
                   <input
                     type="text"
                     value={filters.city}
                     onChange={(e) => handleFilterChange('city', e.target.value)}
-                    placeholder="City"
+                    placeholder={t('events.filters.city')}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none font-secondary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Category</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">{t('events.filters.category')}</label>
                   <select
                     value={filters.event_type}
                     onChange={(e) => handleFilterChange('event_type', e.target.value)}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none font-secondary appearance-none cursor-pointer"
                   >
-                    <option value="">All Categories</option>
+                    <option value="">{t('events.filters.allCategories')}</option>
                     {eventTypes.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
@@ -261,33 +263,33 @@ const EventsPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Timing</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">{t('events.filters.timing')}</label>
                   <select
                     value={filters.month}
                     onChange={(e) => handleFilterChange('month', e.target.value)}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none font-secondary appearance-none cursor-pointer"
                   >
-                    <option value="">Any Month</option>
+                    <option value="">{t('events.filters.anyMonth')}</option>
                     {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((m, i) => (
-                      <option key={m} value={(i + 1).toString().padStart(2, '0')}>{m}</option>
+                      <option key={m} value={(i + 1).toString().padStart(2, '0')}>{t(`months.${m}`, m)}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Investment</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">{t('events.filters.investment')}</label>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleFilterChange('is_free', filters.is_free === 'true' ? '' : 'true')}
                       className={`flex-1 py-3 rounded-xl text-xs font-bold transition-all border uppercase tracking-widest ${filters.is_free === 'true' ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20 scale-[1.02]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                     >
-                      Free
+                      {t('events.filters.free')}
                     </button>
                     <button
                       onClick={() => handleFilterChange('is_free', filters.is_free === 'false' ? '' : 'false')}
                       className={`flex-1 py-3 rounded-xl text-xs font-bold transition-all border uppercase tracking-widest ${filters.is_free === 'false' ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20 scale-[1.02]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                     >
-                      Paid
+                      {t('events.filters.paid')}
                     </button>
                   </div>
                 </div>
@@ -299,7 +301,7 @@ const EventsPage = () => {
           <main className="flex-1">
             <div className="flex justify-between items-center mb-10 px-2">
               <p className="text-slate-500 text-sm font-medium font-secondary">
-                Found <span className="text-slate-900 font-bold">{filteredEvents.length}</span> luxury curated events
+                {t('events.results.found')} <span className="text-slate-900 font-bold">{filteredEvents.length}</span> {t('events.results.luxuryCurated')}
               </p>
             </div>
 
@@ -336,7 +338,7 @@ const EventsPage = () => {
                             <span>{event.event_type}</span>
                           </div>
                           <div className={`px-4 py-2 rounded-2xl text-[10px] font-black tracking-[0.2em] font-primary uppercase shadow-sm ${event.is_free ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
-                            {event.is_free ? 'GUEST PASS' : 'EXCLUSIVE'}
+                            {event.is_free ? t('events.results.guestPass') : t('events.results.exclusive')}
                           </div>
                         </div>
 
@@ -354,14 +356,14 @@ const EventsPage = () => {
                           <div className="flex items-center p-4 bg-slate-50 rounded-2xl group-hover:bg-blue-50/50 transition-colors border border-transparent group-hover:border-blue-100/50">
                             <MapPin className="text-blue-500 mr-3 shrink-0" size={18} />
                             <div>
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Location</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{t('events.results.locations')}</p>
                               <p className="text-xs font-bold text-slate-700 truncate font-secondary">{event.city || 'TBA'}</p>
                             </div>
                           </div>
                           <div className="flex items-center p-4 bg-slate-50 rounded-2xl group-hover:bg-indigo-50/50 transition-colors border border-transparent group-hover:border-indigo-100/50">
                             <Calendar className="text-indigo-500 mr-3 shrink-0" size={18} />
                             <div>
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Date</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{t('events.results.date')}</p>
                               <p className="text-xs font-bold text-slate-700 font-secondary">{formatDate(event.start_date)}</p>
                             </div>
                           </div>
@@ -374,7 +376,7 @@ const EventsPage = () => {
                               onClick={() => handleRegisterInterest(event)}
                               className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs tracking-[0.2em] uppercase hover:bg-black transition-all flex items-center justify-center space-x-3 shadow-lg shadow-slate-900/10 group-hover:shadow-slate-900/20 hover:scale-[1.02] active:scale-95 font-primary"
                             >
-                              <span>Register Interest</span>
+                              <span>{t('events.results.registerInterest')}</span>
                               <ArrowRight size={14} />
                             </button>
                           )}
@@ -385,7 +387,7 @@ const EventsPage = () => {
                                 onClick={() => handleApplyRole(event, 'sponsor')}
                                 className="py-3 bg-white border border-slate-200 text-slate-900 rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-slate-50 hover:border-slate-300 transition-all font-primary active:scale-95"
                               >
-                                Sponsor
+                                {t('events.results.sponsor')}
                               </button>
                             )}
                             {event.enable_media_partner && (
@@ -393,7 +395,7 @@ const EventsPage = () => {
                                 onClick={() => handleApplyRole(event, 'media_partner')}
                                 className="py-3 bg-white border border-slate-200 text-slate-900 rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-slate-50 hover:border-slate-300 transition-all font-primary active:scale-95"
                               >
-                                Media
+                                {t('events.results.media')}
                               </button>
                             )}
                             {event.enable_speaker && (
@@ -401,7 +403,7 @@ const EventsPage = () => {
                                 onClick={() => handleApplyRole(event, 'speaker')}
                                 className="py-3 bg-white border border-slate-200 text-slate-900 rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-slate-50 hover:border-slate-300 transition-all font-primary active:scale-95"
                               >
-                                Speaker
+                                {t('events.results.speaker')}
                               </button>
                             )}
                             {event.enable_guest && (
@@ -409,7 +411,7 @@ const EventsPage = () => {
                                 onClick={() => handleApplyRole(event, 'guest')}
                                 className="py-3 bg-white border border-slate-200 text-slate-900 rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-slate-50 hover:border-slate-300 transition-all font-primary active:scale-95"
                               >
-                                Guest
+                                {t('events.results.guest')}
                               </button>
                             )}
                           </div>
@@ -428,13 +430,13 @@ const EventsPage = () => {
                 <div className="w-28 h-28 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-10 border border-slate-100 shadow-inner">
                   <Search size={44} className="text-slate-300" />
                 </div>
-                <h3 className="text-3xl font-bold text-slate-900 mb-4 font-primary">No exclusive events found</h3>
-                <p className="text-slate-500 max-w-sm mx-auto mb-12 font-secondary">We couldn't find any events matching your selected refinements. Try adjusting your search query or filters.</p>
+                <h3 className="text-3xl font-bold text-slate-900 mb-4 font-primary">{t('events.noResults.title')}</h3>
+                <p className="text-slate-500 max-w-sm mx-auto mb-12 font-secondary">{t('events.noResults.desc')}</p>
                 <button
                   onClick={clearFilters}
                   className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/25 font-primary hover:scale-105 active:scale-95"
                 >
-                  Reset Experience
+                  {t('events.noResults.reset')}
                 </button>
               </motion.div>
             )}

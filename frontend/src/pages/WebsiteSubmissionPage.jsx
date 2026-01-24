@@ -4,9 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import WebsiteSubmissionForm from '../components/user/WebsiteSubmissionForm';
+import { useLanguage } from '../context/LanguageContext';
 
 const WebsiteSubmissionPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { isAuthenticated, hasAnyRole } = useAuth();
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const WebsiteSubmissionPage = () => {
       <UserHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Upload Your Website</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('websiteSubmission.uploadYourWebsite')}</h1>
         </div>
         <WebsiteSubmissionForm onClose={handleClose} onSuccess={handleSuccess} renderAsModal={false} />
       </div>

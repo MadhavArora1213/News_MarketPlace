@@ -280,7 +280,7 @@ const HowToGuides = () => {
   const filteredGuides = guides.filter(guide => {
     const matchesCategory = selectedCategory === 'all' || guide.category === selectedCategory;
     const matchesSearch = guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          guide.description.toLowerCase().includes(searchQuery.toLowerCase());
+      guide.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -354,7 +354,7 @@ const HowToGuides = () => {
                     {guide.difficulty}
                   </span>
                   <span className="text-[#757575] text-sm">{guide.readTime}</span>
-                  <span className="text-[#757575] text-sm">{guide.steps} steps</span>
+                  <span className="text-[#757575] text-sm">{guide.steps} {t('howToGuides.labels.steps')}</span>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-semibold text-[#212121] mb-4">{guide.title}</h1>
                 <p className="text-lg text-[#757575] mb-6">{guide.description}</p>
@@ -365,11 +365,11 @@ const HowToGuides = () => {
                   </span>
                   <span className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Updated {guide.lastUpdated}
+                    {t('howToGuides.labels.updated')} {guide.lastUpdated}
                   </span>
                   <span className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-[#FF9800] fill-current" />
-                    {guide.rating} ({guide.reviews} reviews)
+                    {guide.rating} ({guide.reviews} {t('howToGuides.labels.reviews')})
                   </span>
                 </div>
               </div>
@@ -391,37 +391,33 @@ const HowToGuides = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`relative p-8 rounded-2xl border-2 transition-all duration-300 ${
-                      isCompleted
-                        ? 'bg-[#E8F5E8] border-[#4CAF50] shadow-lg'
-                        : 'bg-white border-[#E0E0E0] hover:border-[#1976D2] hover:shadow-md'
-                    }`}
+                    className={`relative p-8 rounded-2xl border-2 transition-all duration-300 ${isCompleted
+                      ? 'bg-[#E8F5E8] border-[#4CAF50] shadow-lg'
+                      : 'bg-white border-[#E0E0E0] hover:border-[#1976D2] hover:shadow-md'
+                      }`}
                   >
                     {/* Step Number */}
                     <div className="flex items-start gap-6">
                       <div className="flex-shrink-0">
                         <button
                           onClick={() => toggleStepCompletion(guide.id, item.step)}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-200 ${
-                            isCompleted
-                              ? 'bg-[#4CAF50] text-white'
-                              : 'bg-[#F5F5F5] text-[#757575] hover:bg-[#E0E0E0]'
-                          }`}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-200 ${isCompleted
+                            ? 'bg-[#4CAF50] text-white'
+                            : 'bg-[#F5F5F5] text-[#757575] hover:bg-[#E0E0E0]'
+                            }`}
                         >
                           {isCompleted ? <CheckCircle className="w-6 h-6" /> : item.step}
                         </button>
                       </div>
 
                       <div className="flex-1">
-                        <h3 className={`text-2xl font-bold mb-3 ${
-                          isCompleted ? 'text-[#4CAF50]' : 'text-[#212121]'
-                        }`}>
+                        <h3 className={`text-2xl font-bold mb-3 ${isCompleted ? 'text-[#4CAF50]' : 'text-[#212121]'
+                          }`}>
                           {item.title}
                         </h3>
 
-                        <p className={`text-lg leading-relaxed mb-4 ${
-                          isCompleted ? 'text-[#4CAF50]' : 'text-[#757575]'
-                        }`}>
+                        <p className={`text-lg leading-relaxed mb-4 ${isCompleted ? 'text-[#4CAF50]' : 'text-[#757575]'
+                          }`}>
                           {item.description}
                         </p>
 
@@ -435,7 +431,7 @@ const HowToGuides = () => {
                           <div className="bg-[#FFF3E0] rounded-lg p-4 border-l-4 border-[#FF9800]">
                             <h4 className="font-semibold text-[#E65100] mb-2 flex items-center gap-2">
                               <Zap className="w-4 h-4" />
-                              Pro Tips
+                              {t('howToGuides.labels.proTips')}
                             </h4>
                             <ul className="space-y-1">
                               {item.tips.map((tip, tipIndex) => (
@@ -455,7 +451,7 @@ const HowToGuides = () => {
                       <div className="absolute top-4 right-4">
                         <div className="bg-[#4CAF50] text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1">
                           <CheckCircle className="w-4 h-4" />
-                          Completed
+                          {t('howToGuides.labels.completed')}
                         </div>
                       </div>
                     )}
@@ -466,13 +462,13 @@ const HowToGuides = () => {
 
             {/* Progress Summary */}
             <div className="mt-12 bg-white rounded-lg border border-[#E0E0E0] p-8">
-              <h3 className="text-2xl font-semibold text-[#212121] mb-6">Your Progress</h3>
+              <h3 className="text-2xl font-semibold text-[#212121] mb-6">{t('howToGuides.progress.title')}</h3>
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-3xl font-bold text-[#1976D2]">
                   {guide.content.filter(item => completedSteps.has(`${guide.id}-${item.step}`)).length}
                 </div>
                 <div className="text-[#757575]">
-                  of {guide.steps} steps completed
+                  {t('howToGuides.progress.of')} {guide.steps} {t('howToGuides.progress.completed')}
                 </div>
               </div>
               <div className="w-full bg-[#E0E0E0] rounded-full h-3">
@@ -513,10 +509,10 @@ const HowToGuides = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              How-To Guides
+              {t('howToGuides.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Access our comprehensive library of educational guides to enhance your journalism and media skills.
+              {t('howToGuides.hero.desc')}
             </p>
           </motion.div>
         </div>
@@ -531,7 +527,7 @@ const HowToGuides = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search guides..."
+                placeholder={t('howToGuides.search.placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
@@ -545,11 +541,10 @@ const HowToGuides = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${
-                  selectedCategory === category.id
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${selectedCategory === category.id
+                  ? 'bg-[#1976D2] text-white'
+                  : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                  }`}
               >
                 {category.name} ({category.count})
               </button>
@@ -603,7 +598,7 @@ const HowToGuides = () => {
                         <Clock className="w-4 h-4" />
                         {guide.readTime}
                       </span>
-                      <span>{guide.steps} steps</span>
+                      <span>{guide.steps} {t('howToGuides.labels.steps')}</span>
                     </div>
 
                     <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
@@ -615,7 +610,7 @@ const HowToGuides = () => {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#757575]">By {guide.author}</span>
+                      <span className="text-sm text-[#757575]">{t('howToGuides.labels.by')} {guide.author}</span>
                       <span className="text-sm text-[#757575]">{guide.lastUpdated}</span>
                     </div>
                   </div>

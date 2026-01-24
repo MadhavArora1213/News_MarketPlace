@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Search, Filter, Eye, Globe, MapPin, Building,
   DollarSign, FileText, ExternalLink, Package, Grid, List,
@@ -40,6 +41,7 @@ const theme = {
 };
 
 const OrdersDeliveredPage = () => {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPublication, setSelectedPublication] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
@@ -219,31 +221,30 @@ const OrdersDeliveredPage = () => {
             <div className="flex items-center justify-center gap-3 mb-6">
               <Award size={48} style={{ color: theme.primary }} />
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] tracking-tight">
-                Orders Delivered
+                {t('ordersDelivered.hero.title')}
               </h1>
             </div>
             <p className="text-lg md:text-xl text-[#757575] max-w-4xl mx-auto leading-relaxed font-light mb-8">
-              Real articles published in India's leading media outlets - showcasing our content distribution success.
-              These articles are currently live and accessible on the respective publication websites.
+              {t('ordersDelivered.hero.desc')}
             </p>
 
             {/* Stats Section */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-8">
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold mb-2" style={{ color: theme.primary }}>6</div>
-                <div className="text-sm" style={{ color: theme.textSecondary }}>Articles Published</div>
+                <div className="text-sm" style={{ color: theme.textSecondary }}>{t('ordersDelivered.stats.articles')}</div>
               </div>
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold mb-2" style={{ color: theme.success }}>594K</div>
-                <div className="text-sm" style={{ color: theme.textSecondary }}>Total Views</div>
+                <div className="text-sm" style={{ color: theme.textSecondary }}>{t('ordersDelivered.stats.views')}</div>
               </div>
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold mb-2" style={{ color: theme.warning }}>12.3K</div>
-                <div className="text-sm" style={{ color: theme.textSecondary }}>Social Shares</div>
+                <div className="text-sm" style={{ color: theme.textSecondary }}>{t('ordersDelivered.stats.shares')}</div>
               </div>
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl font-bold mb-2" style={{ color: theme.info }}>8.8%</div>
-                <div className="text-sm" style={{ color: theme.textSecondary }}>Avg Engagement</div>
+                <div className="text-sm" style={{ color: theme.textSecondary }}>{t('ordersDelivered.stats.engagement')}</div>
               </div>
             </div>
 
@@ -253,7 +254,7 @@ const OrdersDeliveredPage = () => {
                 <div className="flex-1 relative">
                   <input
                     type="text"
-                    placeholder="Search articles by title, publication, or category..."
+                    placeholder={t('ordersDelivered.search.placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
@@ -274,7 +275,7 @@ const OrdersDeliveredPage = () => {
                   onChange={(e) => setSelectedPublication(e.target.value)}
                   className="px-6 py-4 border border-[#E0E0E0] rounded-lg text-lg bg-white focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] min-w-[200px]"
                 >
-                  <option value="all">All Publications</option>
+                  <option value="all">{t('ordersDelivered.filter.all')}</option>
                   {getUniquePublications().filter(pub => pub !== 'all').map(publication => (
                     <option key={publication} value={publication}>{publication}</option>
                   ))}
@@ -291,7 +292,7 @@ const OrdersDeliveredPage = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold" style={{ color: theme.textPrimary }}>
-              Featured Publications ({filteredOrders.length})
+              {t('ordersDelivered.list.title')} ({filteredOrders.length})
             </h2>
             {searchTerm && (
               <span className="text-sm" style={{ color: theme.textSecondary }}>
@@ -303,21 +304,19 @@ const OrdersDeliveredPage = () => {
           <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === 'grid'
-                  ? 'bg-white shadow-sm text-[#1976D2]'
-                  : 'text-[#757575] hover:text-[#212121]'
-              }`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                ? 'bg-white shadow-sm text-[#1976D2]'
+                : 'text-[#757575] hover:text-[#212121]'
+                }`}
             >
               <Grid size={16} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-white shadow-sm text-[#1976D2]'
-                  : 'text-[#757575] hover:text-[#212121]'
-              }`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                ? 'bg-white shadow-sm text-[#1976D2]'
+                : 'text-[#757575] hover:text-[#212121]'
+                }`}
             >
               <List size={16} />
             </button>
@@ -401,15 +400,15 @@ const OrdersDeliveredPage = () => {
                       <div className="grid grid-cols-3 gap-2 mb-4 p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                         <div className="text-center">
                           <div className="text-sm font-bold" style={{ color: theme.primary }}>{order.metrics.views}</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Views</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>{t('ordersDelivered.list.views')}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-sm font-bold" style={{ color: theme.success }}>{order.metrics.shares}</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Shares</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>{t('ordersDelivered.list.shares')}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-sm font-bold" style={{ color: theme.warning }}>{order.metrics.engagement}</div>
-                          <div className="text-xs" style={{ color: theme.textSecondary }}>Engagement</div>
+                          <div className="text-xs" style={{ color: theme.textSecondary }}>{t('ordersDelivered.list.engagement')}</div>
                         </div>
                       </div>
 
@@ -436,7 +435,7 @@ const OrdersDeliveredPage = () => {
                         onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                       >
                         <ExternalLink size={16} />
-                        Read Full Article
+                        {t('ordersDelivered.list.readMore')}
                       </a>
                     </div>
                   </motion.div>
@@ -534,7 +533,7 @@ const OrdersDeliveredPage = () => {
                             onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                           >
                             <ExternalLink size={16} />
-                            Read Article
+                            {t('ordersDelivered.list.readMore')}
                           </a>
                         </div>
                       </div>
@@ -553,10 +552,10 @@ const OrdersDeliveredPage = () => {
               <Newspaper size={48} style={{ color: theme.textDisabled }} />
             </div>
             <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-              No articles found
+              {t('ordersDelivered.noResults.title')}
             </h3>
             <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-              We couldn't find any articles matching your search criteria.
+              {t('ordersDelivered.noResults.desc')}
             </p>
             <button
               onClick={() => {
@@ -568,7 +567,7 @@ const OrdersDeliveredPage = () => {
               onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
               onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
             >
-              Clear Filters
+              {t('ordersDelivered.noResults.clear')}
             </button>
           </div>
         )}

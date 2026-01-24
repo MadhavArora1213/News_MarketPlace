@@ -4,16 +4,18 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import { useLanguage } from '../context/LanguageContext';
 import { Handshake, TrendingUp, Users, Globe, Zap, Target, Star, Award, CheckCircle, ArrowRight, Mail, Phone, MessageSquare } from 'lucide-react';
 
 const MediaPartnerships = () => {
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="Media Partnerships"
-        description="Partner with News Marketplace for media collaborations, brand partnerships, and content marketing opportunities. Reach our engaged audience."
-        keywords="media partnerships, brand partnerships, content marketing, influencer marketing, advertising, sponsorships"
+        title={t('mediaPartnerships.seo.title', 'Media Partnerships')}
+        description={t('mediaPartnerships.seo.desc', 'Partner with News Marketplace for media collaborations, brand partnerships, and content marketing opportunities. Reach our engaged audience.')}
+        keywords={t('mediaPartnerships.seo.keywords', 'media partnerships, brand partnerships, content marketing, influencer marketing, advertising, sponsorships')}
       />
       <UserHeader />
 
@@ -27,10 +29,10 @@ const MediaPartnerships = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Media Partnerships
+              {t('mediaPartnerships.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Partner with us to reach our engaged audience through strategic media collaborations and brand partnerships.
+              {t('mediaPartnerships.hero.desc')}
             </p>
           </motion.div>
         </div>
@@ -48,10 +50,10 @@ const MediaPartnerships = () => {
               className="text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6 bg-gradient-to-r from-[#1976D2] to-[#9C27B0] bg-clip-text text-transparent">
-                Partnership Opportunities
+                {t('mediaPartnerships.opportunities.title')}
               </h2>
               <p className="text-xl text-[#757575] max-w-3xl mx-auto">
-                Discover the perfect partnership model for your brand and marketing goals
+                {t('mediaPartnerships.opportunities.desc')}
               </p>
             </motion.div>
 
@@ -59,57 +61,57 @@ const MediaPartnerships = () => {
               {[
                 {
                   icon: Handshake,
-                  title: "Brand Partnerships",
-                  description: "Collaborate with brands for co-branded content, sponsored articles, and integrated marketing campaigns that resonate with our audience.",
+                  title: t('mediaPartnerships.types.brand.title'),
+                  description: t('mediaPartnerships.types.brand.desc'),
                   gradient: "from-blue-500 to-purple-600",
                   bgColor: "bg-blue-50",
                   iconColor: "#1976D2",
-                  features: ["Co-branded Content", "Sponsored Articles", "Integrated Campaigns"]
+                  features: ["Co-branded Content", "Sponsored Articles", "Integrated Campaigns"].map((f, i) => t(`mediaPartnerships.types.brand.features.${i}`, f))
                 },
                 {
                   icon: Target,
-                  title: "Content Marketing",
-                  description: "Create compelling content together through guest posts, sponsored content, and thought leadership articles.",
+                  title: t('mediaPartnerships.types.content.title'),
+                  description: t('mediaPartnerships.types.content.desc'),
                   gradient: "from-orange-500 to-red-500",
                   bgColor: "bg-orange-50",
                   iconColor: "#FF9800",
-                  features: ["Guest Posts", "Sponsored Content", "Thought Leadership"]
+                  features: ["Guest Posts", "Sponsored Content", "Thought Leadership"].map((f, i) => t(`mediaPartnerships.types.content.features.${i}`, f))
                 },
                 {
                   icon: Award,
-                  title: "Event Sponsorship",
-                  description: "Sponsor our events, webinars, and virtual summits to connect with industry leaders and decision-makers.",
+                  title: t('mediaPartnerships.types.event.title'),
+                  description: t('mediaPartnerships.types.event.desc'),
                   gradient: "from-green-500 to-teal-600",
                   bgColor: "bg-green-50",
                   iconColor: "#4CAF50",
-                  features: ["Event Sponsorship", "Webinar Access", "VIP Networking"]
+                  features: ["Event Sponsorship", "Webinar Access", "VIP Networking"].map((f, i) => t(`mediaPartnerships.types.event.features.${i}`, f))
                 },
                 {
                   icon: Globe,
-                  title: "Media Buying",
-                  description: "Reach our targeted audience through strategic media buying and advertising placements across our platforms.",
+                  title: t('mediaPartnerships.types.buying.title'),
+                  description: t('mediaPartnerships.types.buying.desc'),
                   gradient: "from-purple-500 to-pink-600",
                   bgColor: "bg-purple-50",
                   iconColor: "#9C27B0",
-                  features: ["Targeted Ads", "Multi-platform Reach", "Performance Tracking"]
+                  features: ["Targeted Ads", "Multi-platform Reach", "Performance Tracking"].map((f, i) => t(`mediaPartnerships.types.buying.features.${i}`, f))
                 },
                 {
                   icon: Users,
-                  title: "Influencer Marketing",
-                  description: "Partner with our network of influencers and thought leaders for authentic brand endorsements and collaborations.",
+                  title: t('mediaPartnerships.types.influencer.title'),
+                  description: t('mediaPartnerships.types.influencer.desc'),
                   gradient: "from-red-500 to-pink-500",
                   bgColor: "bg-red-50",
                   iconColor: "#F44336",
-                  features: ["Influencer Network", "Authentic Endorsements", "Brand Collaborations"]
+                  features: ["Influencer Network", "Authentic Endorsements", "Brand Collaborations"].map((f, i) => t(`mediaPartnerships.types.influencer.features.${i}`, f))
                 },
                 {
                   icon: TrendingUp,
-                  title: "Affiliate Programs",
-                  description: "Join our affiliate program to earn commissions by promoting our content and driving traffic to your business.",
+                  title: t('mediaPartnerships.types.affiliate.title'),
+                  description: t('mediaPartnerships.types.affiliate.desc'),
                   gradient: "from-indigo-500 to-purple-600",
                   bgColor: "bg-indigo-50",
                   iconColor: "#673AB7",
-                  features: ["Commission Based", "Performance Rewards", "Easy Integration"]
+                  features: ["Commission Based", "Performance Rewards", "Easy Integration"].map((f, i) => t(`mediaPartnerships.types.affiliate.features.${i}`, f))
                 }
               ].map((partnership, index) => (
                 <motion.div
@@ -160,7 +162,7 @@ const MediaPartnerships = () => {
                   {/* CTA */}
                   <div className="px-6 pb-6">
                     <button className="w-full bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-lg">
-                      Learn More
+                      {t('mediaPartnerships.labels.learnMore', 'Learn More')}
                       <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -184,10 +186,10 @@ const MediaPartnerships = () => {
                 className="text-center mb-16"
               >
                 <h2 className="text-4xl md:text-5xl font-bold text-[#212121] mb-6 bg-gradient-to-r from-[#1976D2] to-[#9C27B0] bg-clip-text text-transparent">
-                  Why Partner With Us?
+                  {t('mediaPartnerships.why.title')}
                 </h2>
                 <p className="text-xl text-[#757575] max-w-3xl mx-auto">
-                  Discover the advantages that make News Marketplace the perfect partner for your brand's success
+                  {t('mediaPartnerships.why.desc')}
                 </p>
               </motion.div>
 
@@ -195,50 +197,50 @@ const MediaPartnerships = () => {
                 {[
                   {
                     icon: Users,
-                    title: "Engaged Audience",
-                    description: "Our audience consists of industry professionals, decision-makers, and engaged readers who actively consume and share content.",
+                    title: t('mediaPartnerships.benefits.audience.title', 'Engaged Audience'),
+                    description: t('mediaPartnerships.benefits.audience.desc', 'Our audience consists of industry professionals, decision-makers, and engaged readers who actively consume and share content.'),
                     gradient: "from-blue-500 to-cyan-500",
-                    stats: "50K+ Active Users",
+                    stats: t('mediaPartnerships.benefits.audience.stats', '50K+ Active Users'),
                     color: "#1976D2"
                   },
                   {
                     icon: TrendingUp,
-                    title: "Proven Results",
-                    description: "Our partnerships have delivered measurable results with increased brand awareness, lead generation, and ROI for our partners.",
+                    title: t('mediaPartnerships.benefits.results.title', 'Proven Results'),
+                    description: t('mediaPartnerships.benefits.results.desc', 'Our partnerships have delivered measurable results with increased brand awareness, lead generation, and ROI for our partners.'),
                     gradient: "from-orange-500 to-red-500",
-                    stats: "300% Avg. ROI",
+                    stats: t('mediaPartnerships.benefits.results.stats', '300% Avg. ROI'),
                     color: "#FF9800"
                   },
                   {
                     icon: Award,
-                    title: "Expert Team",
-                    description: "Work with our experienced team of content creators, marketers, and media professionals who understand your industry.",
+                    title: t('mediaPartnerships.benefits.expert.title', 'Expert Team'),
+                    description: t('mediaPartnerships.benefits.expert.desc', 'Work with our experienced team of content creators, marketers, and media professionals who understand your industry.'),
                     gradient: "from-green-500 to-emerald-600",
-                    stats: "15+ Years Experience",
+                    stats: t('mediaPartnerships.benefits.expert.stats', '15+ Years Experience'),
                     color: "#4CAF50"
                   },
                   {
                     icon: Globe,
-                    title: "Multi-Platform Reach",
-                    description: "Extend your reach across our website, social media channels, newsletters, and partner networks.",
+                    title: t('mediaPartnerships.benefits.reach.title', 'Multi-Platform Reach'),
+                    description: t('mediaPartnerships.benefits.reach.desc', 'Extend your reach across our website, social media channels, newsletters, and partner networks.'),
                     gradient: "from-purple-500 to-pink-600",
-                    stats: "Global Coverage",
+                    stats: t('mediaPartnerships.benefits.reach.stats', 'Global Coverage'),
                     color: "#9C27B0"
                   },
                   {
                     icon: Zap,
-                    title: "Fast Turnaround",
-                    description: "Quick campaign setup and execution with dedicated account management and regular performance reporting.",
+                    title: t('mediaPartnerships.benefits.turnaround.title', 'Fast Turnaround'),
+                    description: t('mediaPartnerships.benefits.turnaround.desc', 'Quick campaign setup and execution with dedicated account management and regular performance reporting.'),
                     gradient: "from-red-500 to-pink-500",
-                    stats: "< 48hrs Setup",
+                    stats: t('mediaPartnerships.benefits.turnaround.stats', '< 48hrs Setup'),
                     color: "#F44336"
                   },
                   {
                     icon: CheckCircle,
-                    title: "Transparent Reporting",
-                    description: "Clear metrics, detailed analytics, and comprehensive reporting to track the success of your partnership campaigns.",
+                    title: t('mediaPartnerships.benefits.reporting.title', 'Transparent Reporting'),
+                    description: t('mediaPartnerships.benefits.reporting.desc', 'Clear metrics, detailed analytics, and comprehensive reporting to track the success of your partnership campaigns.'),
                     gradient: "from-indigo-500 to-purple-600",
-                    stats: "Real-time Analytics",
+                    stats: t('mediaPartnerships.benefits.reporting.stats', 'Real-time Analytics'),
                     color: "#673AB7"
                   }
                 ].map((benefit, index) => (
@@ -260,7 +262,7 @@ const MediaPartnerships = () => {
                           <benefit.icon size={32} className="text-white" />
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-bold text-gray-600 mb-1">Impact</div>
+                          <div className="text-sm font-bold text-gray-600 mb-1">{t('mediaPartnerships.labels.impact', 'Impact')}</div>
                           <div className="text-lg font-bold" style={{ color: benefit.color }}>{benefit.stats}</div>
                         </div>
                       </div>
@@ -282,7 +284,7 @@ const MediaPartnerships = () => {
                           style={{ width: `${Math.floor(Math.random() * 30) + 70}%` }}
                         ></div>
                       </div>
-                      <div className="text-xs text-gray-500 text-center">Performance Rating</div>
+                      <div className="text-xs text-gray-500 text-center">{t('mediaPartnerships.labels.performanceRating', 'Performance Rating')}</div>
                     </div>
 
                     {/* Decorative Elements */}
@@ -318,10 +320,10 @@ const MediaPartnerships = () => {
                   </div>
 
                   <h2 className="text-3xl md:text-4xl font-bold text-[#212121] mb-4">
-                    Ready to Partner With Us?
+                    {t('mediaPartnerships.ready.title')}
                   </h2>
                   <p className="text-lg text-[#757575] mb-8 max-w-2xl mx-auto leading-relaxed">
-                    Contact our partnerships team to discuss collaboration opportunities and explore how we can work together to achieve your marketing goals.
+                    {t('mediaPartnerships.ready.desc')}
                   </p>
                 </div>
 
@@ -339,8 +341,8 @@ const MediaPartnerships = () => {
                         <Mail size={24} className="text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-[#212121]">Email Us</h3>
-                        <p className="text-sm text-[#757575]">Get a response within 24 hours</p>
+                        <h3 className="text-lg font-semibold text-[#212121]">{t('mediaPartnerships.labels.emailUs', 'Email Us')}</h3>
+                        <p className="text-sm text-[#757575]">{t('mediaPartnerships.labels.emailDesc', 'Get a response within 24 hours')}</p>
                       </div>
                     </div>
                     <a
@@ -364,15 +366,15 @@ const MediaPartnerships = () => {
                         <MessageSquare size={24} className="text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-[#212121]">Contact Form</h3>
-                        <p className="text-sm text-[#757575]">Detailed inquiry form</p>
+                        <h3 className="text-lg font-semibold text-[#212121]">{t('mediaPartnerships.labels.contactForm', 'Contact Form')}</h3>
+                        <p className="text-sm text-[#757575]">{t('mediaPartnerships.labels.formDesc', 'Detailed inquiry form')}</p>
                       </div>
                     </div>
                     <a
                       href="/contact-us"
                       className="inline-flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 w-full justify-center"
                     >
-                      Fill Contact Form
+                      {t('mediaPartnerships.labels.fillForm', 'Fill Contact Form')}
                       <ArrowRight size={16} />
                     </a>
                   </motion.div>
@@ -386,7 +388,7 @@ const MediaPartnerships = () => {
                   viewport={{ once: true }}
                   className="bg-gray-50 rounded-2xl p-6 border border-gray-200"
                 >
-                  <h3 className="text-lg font-semibold text-[#212121] mb-4 text-center">Additional Contact Information</h3>
+                  <h3 className="text-lg font-semibold text-[#212121] mb-4 text-center">{t('mediaPartnerships.labels.additionalContact', 'Additional Contact Information')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
                     <div className="flex items-center justify-center gap-3">
                       <Mail size={20} className="text-[#1976D2]" />
@@ -408,7 +410,7 @@ const MediaPartnerships = () => {
                   className="text-center mt-8"
                 >
                   <p className="text-[#757575] mb-4">
-                    💡 <strong>Pro Tip:</strong> Mention your specific partnership goals in your inquiry for faster response!
+                    💡 <strong>{t('mediaPartnerships.labels.proTip', 'Pro Tip')}:</strong> {t('mediaPartnerships.labels.proTipDesc', 'Mention your specific partnership goals in your inquiry for faster response!')}
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Brand Partnerships</span>

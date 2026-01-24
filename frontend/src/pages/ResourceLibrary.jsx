@@ -3,27 +3,29 @@ import { motion } from 'framer-motion';
 import { BookOpen, FileText, Lightbulb, TrendingUp, Search, Filter, Tag, Calendar, User, Eye, Download } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import { useLanguage } from '../context/LanguageContext';
 
 const ResourceLibrary = () => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const categories = [
-    { id: 'all', name: 'All Resources', count: 48 },
-    { id: 'templates', name: 'Templates', count: 15 },
-    { id: 'best-practices', name: 'Best Practices', count: 12 },
-    { id: 'industry-insights', name: 'Industry Insights', count: 10 },
-    { id: 'case-studies', name: 'Case Studies', count: 8 },
-    { id: 'whitepapers', name: 'Whitepapers', count: 3 }
+    { id: 'all', name: t('resources.categories.all'), count: 48 },
+    { id: 'templates', name: t('resources.categories.templates'), count: 15 },
+    { id: 'best-practices', name: t('resources.categories.bestPractices'), count: 12 },
+    { id: 'industry-insights', name: t('resources.categories.industryInsights'), count: 10 },
+    { id: 'case-studies', name: t('resources.categories.caseStudies'), count: 8 },
+    { id: 'whitepapers', name: t('resources.categories.whitepapers'), count: 3 }
   ];
 
   const resourceTypes = [
-    { id: 'all', name: 'All Types' },
-    { id: 'document', name: 'Documents' },
-    { id: 'template', name: 'Templates' },
-    { id: 'guide', name: 'Guides' },
-    { id: 'report', name: 'Reports' }
+    { id: 'all', name: t('resources.types.all') },
+    { id: 'document', name: t('resources.types.document') },
+    { id: 'template', name: t('resources.types.template') },
+    { id: 'guide', name: t('resources.types.guide') },
+    { id: 'report', name: t('resources.types.report') }
   ];
 
   const resources = [
@@ -213,8 +215,8 @@ const ResourceLibrary = () => {
     const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
     const matchesType = selectedType === 'all' || resource.type === selectedType;
     const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesType && matchesSearch;
   });
 
@@ -235,10 +237,10 @@ const ResourceLibrary = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Resource Library
+              {t('resources.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Comprehensive collection of documents, templates, best practices, and industry insights to support your work.
+              {t('resources.hero.desc')}
             </p>
           </motion.div>
         </div>
@@ -252,7 +254,7 @@ const ResourceLibrary = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search resources, tags, or keywords..."
+                placeholder={t('resources.search.placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
@@ -265,11 +267,10 @@ const ResourceLibrary = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedCategory === category.id
-                    ? 'bg-[#9C27B0] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedCategory === category.id
+                  ? 'bg-[#9C27B0] text-white'
+                  : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                  }`}
               >
                 {category.name} ({category.count})
               </button>
@@ -281,11 +282,10 @@ const ResourceLibrary = () => {
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedType === type.id
-                    ? 'bg-[#1976D2] text-white'
-                    : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedType === type.id
+                  ? 'bg-[#1976D2] text-white'
+                  : 'bg-[#F5F5F5] text-[#212121] hover:bg-[#E0E0E0]'
+                  }`}
               >
                 {type.name}
               </button>
@@ -298,7 +298,7 @@ const ResourceLibrary = () => {
       {featuredResources.length > 0 && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA] border-b border-[#E0E0E0]">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-2xl font-semibold text-[#212121] mb-6">Featured Resources</h2>
+            <h2 className="text-2xl font-semibold text-[#212121] mb-6">{t('resources.featured.title')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredResources.map((resource) => {
                 const IconComponent = resource.icon;
@@ -318,7 +318,7 @@ const ResourceLibrary = () => {
                         <IconComponent className="w-6 h-6" />
                       </div>
                       <span className="px-2 py-1 bg-[#9C27B0] text-white text-xs font-medium rounded">
-                        Featured
+                        {t('resources.labels.featured')}
                       </span>
                     </div>
                     <h3 className="text-xl font-semibold text-[#212121] mb-2">{resource.title}</h3>
@@ -357,7 +357,7 @@ const ResourceLibrary = () => {
       {/* All Resources */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-semibold text-[#212121] mb-6">All Resources</h2>
+          <h2 className="text-2xl font-semibold text-[#212121] mb-6">{t('resources.all.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularResources.map((resource) => {
               const IconComponent = resource.icon;
@@ -419,7 +419,7 @@ const ResourceLibrary = () => {
 
           {filteredResources.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-[#757575] text-lg">No resources found matching your criteria.</p>
+              <p className="text-[#757575] text-lg">{t('resources.noResults')}</p>
             </div>
           )}
         </div>
@@ -428,31 +428,31 @@ const ResourceLibrary = () => {
       {/* Statistics */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-semibold text-[#212121] mb-6">Library Statistics</h2>
+          <h2 className="text-2xl font-semibold text-[#212121] mb-6">{t('resources.stats.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-[#E3F2FD] rounded-lg p-6 border border-[#E0E0E0]">
               <div className="text-3xl font-bold text-[#1976D2] mb-2">
                 {resources.length}
               </div>
-              <div className="text-[#757575]">Total Resources</div>
+              <div className="text-[#757575]">{t('resources.stats.total')}</div>
             </div>
             <div className="bg-[#E0F2F1] rounded-lg p-6 border border-[#E0E0E0]">
               <div className="text-3xl font-bold text-[#00796B] mb-2">
                 {resources.filter(r => r.type === 'template').length}
               </div>
-              <div className="text-[#757575]">Templates</div>
+              <div className="text-[#757575]">{t('resources.stats.templates')}</div>
             </div>
             <div className="bg-[#F3E5F5] rounded-lg p-6 border border-[#E0E0E0]">
               <div className="text-3xl font-bold text-[#9C27B0] mb-2">
                 {resources.filter(r => r.type === 'guide').length}
               </div>
-              <div className="text-[#757575]">Guides</div>
+              <div className="text-[#757575]">{t('resources.stats.guides')}</div>
             </div>
             <div className="bg-[#FFF3E0] rounded-lg p-6 border border-[#E0E0E0]">
               <div className="text-3xl font-bold text-[#FF9800] mb-2">
                 {resources.reduce((sum, r) => sum + r.downloads, 0).toLocaleString()}
               </div>
-              <div className="text-[#757575]">Total Downloads</div>
+              <div className="text-[#757575]">{t('resources.stats.downloads')}</div>
             </div>
           </div>
         </div>

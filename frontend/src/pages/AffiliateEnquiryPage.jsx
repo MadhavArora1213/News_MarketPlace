@@ -2,8 +2,11 @@ import React from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import AffiliateEnquiryForm from '../components/user/AffiliateEnquiryForm';
+import { useLanguage } from '../context/LanguageContext';
 
 const AffiliateEnquiryPage = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-white">
       <UserHeader />
@@ -13,10 +16,10 @@ const AffiliateEnquiryPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Affiliate enquiry form
+              {t('affiliate.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              Passive income is always better when it comes with no investment, use your network to increase your networth. For every client u refer we will give u 10% of total revenue once cash is received and work is done and payment is processed within 2 working days. Once u submit the form, we will share the referral code, ask ur network to always mention ur referral code while placing the order
+              {t('affiliate.hero.desc')}
             </p>
           </div>
         </div>
