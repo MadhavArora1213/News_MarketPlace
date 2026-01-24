@@ -807,7 +807,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency City <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.city')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="text"
@@ -837,7 +837,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agency Owner LinkedIn</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.ownerLinkedin')}</label>
               <input
                 type="url"
                 name="agency_owner_linkedin"
@@ -851,7 +851,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Founded Year <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.foundedYear')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="number"
@@ -868,7 +868,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Owner Passport Nationality <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.passportNationality')} <span style={requiredAsterisk}>*</span>
               </label>
               <select
                 name="agency_owner_passport_nationality"
@@ -877,7 +877,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={inputStyle}
                 required
               >
-                <option value="">Select Nationality</option>
+                <option value="">{t('agencyRegistration.form.selectCountry')}</option>
                 <option value="Afghanistan">Afghanistan</option>
                 <option value="Albania">Albania</option>
                 <option value="Algeria">Algeria</option>
@@ -944,7 +944,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Email <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.email')} <span style={requiredAsterisk}>*</span>
               </label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -971,7 +971,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                       minWidth: '100px'
                     }}
                   >
-                    {otpSendLoading.email ? 'Sending...' : otpSent.email ? 'Sent' : 'Send OTP'}
+                    {otpSendLoading.email ? t('agencyRegistration.form.submitting') : otpSent.email ? t('agencyRegistration.form.verified') : t('agencyRegistration.form.sendOtp')}
                   </button>
                 </div>
                 {otpSent.email && !otpVerified.email && (
@@ -982,7 +982,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                         value={otpData.emailOtp}
                         onChange={(e) => handleOtpChange('emailOtp', e.target.value)}
                         style={{ ...inputStyle, flex: 1 }}
-                        placeholder="Enter 6-digit OTP"
+                        placeholder={t('agencyRegistration.form.enterOtp')}
                         maxLength="6"
                         pattern="[0-9]{6}"
                       />
@@ -1000,7 +1000,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                           minWidth: '80px'
                         }}
                       >
-                        Verify
+                        {t('agencyRegistration.form.verifyOtp')}
                       </button>
                     </div>
                     <p style={{ fontSize: '12px', color: theme.textSecondary, margin: 0, display: 'flex', alignItems: 'flex-start' }}>
@@ -1012,7 +1012,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 {otpVerified.email && (
                   <div style={{ display: 'flex', alignItems: 'center', color: theme.success, fontSize: '14px', marginTop: '8px' }}>
                     <Icon name="check-circle" size="sm" style={{ color: theme.success, marginRight: '6px' }} />
-                    <span>Email verified successfully!</span>
+                    <span>{t('agencyRegistration.form.verified')}!</span>
                   </div>
                 )}
               </div>
@@ -1021,7 +1021,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agency Alternate Email</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.alternateEmail')}</label>
               <input
                 type="email"
                 name="agency_alternate_email"
@@ -1035,7 +1035,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Contact Number <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.contactNumber')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="tel"
@@ -1050,7 +1050,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agency Alternate Contact Number</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.alternateContactNumber')}</label>
               <input
                 type="tel"
                 name="agency_alternate_contact_number"
@@ -1064,7 +1064,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Owner Email <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.ownerEmail')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="email"
@@ -1078,7 +1078,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agency Owner Alternate Email</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.ownerAlternateEmail')}</label>
               <input
                 type="email"
                 name="agency_owner_alternate_email"
@@ -1092,7 +1092,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Owner Contact Number <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.ownerContactNumber')} <span style={requiredAsterisk}>*</span>
               </label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <select
@@ -1329,7 +1329,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agency Owner WhatsApp Number</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.ownerWhatsapp')}</label>
               <input
                 type="tel"
                 name="agency_owner_whatsapp_number"
@@ -1342,7 +1342,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Telegram</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.telegram')}</label>
               <input
                 type="text"
                 name="telegram"
@@ -1356,7 +1356,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                How Did You Hear About Us? <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.howDidYouHear.label')} <span style={requiredAsterisk}>*</span>
               </label>
               <select
                 name="how_did_you_hear"
@@ -1365,12 +1365,12 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={inputStyle}
                 required
               >
-                <option value="">Select an option</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Referral">Referral</option>
-                <option value="Search Engine">Search Engine</option>
-                <option value="Advertisement">Advertisement</option>
-                <option value="Other">Other</option>
+                <option value="">{t('agencyRegistration.form.howDidYouHear.label')}</option>
+                <option value="Social Media">{t('agencyRegistration.form.howDidYouHear.social')}</option>
+                <option value="Referral">{t('agencyRegistration.form.howDidYouHear.referral')}</option>
+                <option value="Search Engine">{t('agencyRegistration.form.howDidYouHear.google')}</option>
+                <option value="Advertisement">{t('agencyRegistration.form.howDidYouHear.other')}</option>
+                <option value="Other">{t('agencyRegistration.form.howDidYouHear.other')}</option>
               </select>
               {errors.how_did_you_hear && <div style={{ color: theme.danger, fontSize: '12px', marginTop: '4px' }}>{errors.how_did_you_hear}</div>}
             </div>
@@ -1379,7 +1379,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
           <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Address <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.address')} <span style={requiredAsterisk}>*</span>
               </label>
               <textarea
                 name="agency_address"
@@ -1393,7 +1393,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Any to Say</label>
+              <label style={labelStyle}>{t('agencyRegistration.form.anythingToSay')}</label>
               <textarea
                 name="any_to_say"
                 value={formData.any_to_say}
@@ -1412,7 +1412,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
           <div style={{ marginTop: '16px' }}>
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Company Incorporation or Trade License <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.files.tradeLicense')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="file"
@@ -1424,7 +1424,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 disabled={files.company_incorporation_trade_license.uploading}
               />
               {files.company_incorporation_trade_license.uploading && (
-                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>{t('agencyRegistration.form.files.uploading')}</div>
               )}
               {files.company_incorporation_trade_license.url && (
                 <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
@@ -1434,7 +1434,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Tax Registration Document
+                {t('agencyRegistration.form.files.taxDocument')}
               </label>
               <input
                 type="file"
@@ -1445,7 +1445,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 disabled={files.tax_registration_document.uploading}
               />
               {files.tax_registration_document.uploading && (
-                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>{t('agencyRegistration.form.files.uploading')}</div>
               )}
               {files.tax_registration_document.url && (
                 <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
@@ -1455,7 +1455,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Bank Details <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.files.bankDetails')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="file"
@@ -1467,7 +1467,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 disabled={files.agency_bank_details.uploading}
               />
               {files.agency_bank_details.uploading && (
-                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>{t('agencyRegistration.form.files.uploading')}</div>
               )}
               {files.agency_bank_details.url && (
                 <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
@@ -1477,7 +1477,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Owner Passport <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.files.ownerPassport')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="file"
@@ -1489,7 +1489,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 disabled={files.agency_owner_passport.uploading}
               />
               {files.agency_owner_passport.uploading && (
-                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>{t('agencyRegistration.form.files.uploading')}</div>
               )}
               {files.agency_owner_passport.url && (
                 <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
@@ -1499,7 +1499,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>
-                Agency Owner Photo <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.files.ownerPhoto')} <span style={requiredAsterisk}>*</span>
               </label>
               <input
                 type="file"
@@ -1511,7 +1511,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 disabled={files.agency_owner_photo.uploading}
               />
               {files.agency_owner_photo.uploading && (
-                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>Uploading...</div>
+                <div style={{ color: theme.info, fontSize: '12px', marginTop: '4px' }}>{t('agencyRegistration.form.files.uploading')}</div>
               )}
               {files.agency_owner_photo.url && (
                 <div style={{ color: theme.success, fontSize: '12px', marginTop: '4px' }}>✓ File uploaded successfully</div>
@@ -1531,7 +1531,7 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
                 style={checkboxStyle}
               />
               <label htmlFor="terms" style={{ fontSize: '14px', color: '#212121' }}>
-                I accept the <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> <span style={requiredAsterisk}>*</span>
+                {t('agencyRegistration.form.terms.label')} <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">{t('agencyRegistration.form.terms.link')}</a> <span style={requiredAsterisk}>*</span>
               </label>
             </div>
           </div>
@@ -1556,14 +1556,14 @@ const AgencyRegistrationForm = ({ onClose, onSuccess }) => {
               style={{ ...buttonStyle, backgroundColor: '#f3f4f6', color: '#374151' }}
               disabled={loading}
             >
-              Cancel
+              {t('paparazziDetails.orderModal.cancel')}
             </button>
             <button
               type="submit"
               style={{ ...buttonStyle, backgroundColor: '#1976D2', color: '#fff' }}
               disabled={loading}
             >
-              {loading ? 'Registering...' : 'Register Agency'}
+              {loading ? t('agencyRegistration.form.submitting') : t('agencyRegistration.form.submit')}
             </button>
           </div>
         </form>
