@@ -2310,5 +2310,151 @@
             "button": "分享奖项"
         },
         "cta": "申请此奖项"
+    },
+    "realEstateProfessionals": {
+        "title": "创作者",
+        "desc": "与您所在地区值得信赖的创作者和专家联系。",
+        "disclaimer": "当前页面仅用于展示目的，完整列表即将推出",
+        "searchPlaceholder": "搜索专业人士...",
+        "loading": "正在加载创作者...",
+        "filters": {
+            "title": "筛选和排序",
+            "mobileTitle": "筛选",
+            "basicFilters": "基本筛选",
+            "professionType": "职业类型",
+            "allTypes": "所有类型",
+            "agencyOwner": "代理机构所有者",
+            "agent": "房地产经纪人",
+            "developerEmployee": "开发商员工",
+            "gender": "性别",
+            "allGenders": "所有性别",
+            "male": "男",
+            "female": "女",
+            "other": "其他",
+            "languages": "语言",
+            "allLanguages": "所有语言",
+            "location": "位置",
+            "allLocations": "所有位置",
+            "clear": "清除所有筛选"
+        },
+        "controls": {
+            "found": "找到 {{count}} 位创作者",
+            "for": "对于",
+            "sortBy": "排序方式：",
+            "sortOptions": {
+                "nameAsc": "姓名 (A-Z)",
+                "nameDesc": "姓名 (Z-A)",
+                "followersDesc": "粉丝数 (高到低)",
+                "followersAsc": "粉丝数 (低到高)",
+                "nationalityAsc": "国籍 (A-Z)",
+                "genderAsc": "性别 (A-Z)",
+                "locationAsc": "位置 (A-Z)"
+            }
+        },
+        "list": {
+            "professional": "专业人士",
+            "type": "类型",
+            "location": "位置",
+            "nationality": "国籍",
+            "gender": "性别",
+            "followers": "粉丝",
+            "languages": "语言",
+            "action": "操作",
+            "view": "查看",
+            "verified": "已认证",
+            "notSpecified": "未指定",
+            "none": "无"
+        },
+        "empty": {
+            "title": "未找到创作者",
+            "desc": "我们找不到符合您搜索条件的任何创作者。",
+            "clear": "清除所有筛选"
+        },
+        "card": {
+            "viewProfile": "查看个人资料",
+            "followers": "粉丝",
+            "verified": "已认证",
+            "genderNotSpecified": "性别未指定",
+            "locationNotSpecified": "位置未指定",
+            "languagesNotSpecified": "语言未指定"
+        }
+    },
+    "realEstateProfessionalDetail": {
+        "loading": "正在加载创作者详情...",
+        "notFound": {
+            "title": "未找到专业人士",
+            "desc": "您查找的专业人士不存在或已被移除。",
+            "back": "返回专业人士列表"
+        },
+        "breadcrumb": {
+            "back": "返回专业人士列表",
+            "current": "创作者详情"
+        },
+        "locationNotSpecified": "位置未指定",
+        "languagesNotSpecified": "语言未指定",
+        "roles": {
+            "agencyOwner": "代理机构所有者",
+            "agent": "房地产经纪人",
+            "developerEmployee": "开发商员工",
+            "professional": "专业人士"
+        },
+        "about": {
+            "title": "关于此创作者",
+            "socialPresence": "社交媒体影响力："
+        },
+        "info": {
+            "title": "创作者信息",
+            "personalDetails": "个人详细信息",
+            "professionalStatus": "职业状态",
+            "gender": "性别",
+            "nationality": "国籍",
+            "currentCity": "当前城市",
+            "verified": "已认证",
+            "followers": "粉丝",
+            "languages": "语言",
+            "notSpecified": "未指定",
+            "yes": "是",
+            "no": "否"
+        },
+        "social": {
+            "title": "社交媒体和联系方式"
+        },
+        "languages": {
+            "title": "所说语言"
+        },
+        "contact": {
+            "title": "联系创作者",
+            "desc": "联系以获取创作者服务",
+            "status": "状态",
+            "active": "活跃",
+            "processing": "正在处理...",
+            "addToCart": "加入购物车",
+            "signInToOrder": "登录以订购",
+            "success": "联系请求提交成功！专业人士将很快与您联系。",
+            "error": "提交联系请求时出错。请重试。"
+        },
+        "stats": {
+            "title": "创作者统计",
+            "instagramFollowers": "Instagram 粉丝",
+            "languages": "语言"
+        },
+        "quickInfo": {
+            "title": "快速信息",
+            "verification": "认证",
+            "verified": "已认证",
+            "unverified": "未认证",
+            "memberSince": "加入时间",
+            "type": "职业类型"
+        },
+        "actions": {
+            "save": "保存",
+            "saved": "已保存",
+            "share": "分享",
+            "linkCopied": "链接已复制到剪贴板！"
+        },
+        "order": {
+            "success": "订单提交成功！您将很快收到确认邮件。",
+            "error": "提交订单时出错。请重试。"
+        }
     }
 }

@@ -15,6 +15,7 @@ import {
   ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Newspaper, Plus,
   User, Building, Building2, Crown
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -47,6 +48,7 @@ const theme = {
 
 const RealEstateProfessionalsList = () => {
   const { isAuthenticated, hasRole, hasAnyRole, getRoleLevel } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [professionals, setProfessionals] = useState([]);
   const [allProfessionals, setAllProfessionals] = useState([]); // Store unfiltered list for filter options
@@ -245,10 +247,10 @@ const RealEstateProfessionalsList = () => {
   };
 
   const getProfessionTypeLabel = (professional) => {
-    if (professional.real_estate_agency_owner) return 'Agency Owner';
-    if (professional.real_estate_agent) return 'Real Estate Agent';
-    if (professional.developer_employee) return 'Developer Employee';
-    return 'Professional';
+    if (professional.real_estate_agency_owner) return t('realEstateProfessionals.filters.agencyOwner');
+    if (professional.real_estate_agent) return t('realEstateProfessionals.filters.agent');
+    if (professional.developer_employee) return t('realEstateProfessionals.filters.developerEmployee');
+    return t('realEstateProfessionals.list.professional');
   };
 
   if (loading) {
@@ -264,7 +266,7 @@ const RealEstateProfessionalsList = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading Creators...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('realEstateProfessionals.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -286,13 +288,13 @@ const RealEstateProfessionalsList = () => {
             className="text-center"
           >
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#212121] mb-4 tracking-tight">
-              Creators
+              {t('realEstateProfessionals.title')}
             </h1>
             <p className="text-base md:text-lg text-[#757575] max-w-2xl mx-auto leading-relaxed font-light mb-6">
-              Connect with trusted Creators and experts in your area.
+              {t('realEstateProfessionals.desc')}
             </p>
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4 mb-6">
-              The current page is for representation purpose only, the comprehensive list will be live soon
+              {t('realEstateProfessionals.disclaimer')}
             </p>
 
             {/* Search Bar */}
@@ -300,7 +302,7 @@ const RealEstateProfessionalsList = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search professionals..."
+                  placeholder={t('realEstateProfessionals.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-10 py-3 border border-[#E0E0E0] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
@@ -336,7 +338,7 @@ const RealEstateProfessionalsList = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
                 <Filter size={20} className="text-[#1976D2]" />
-                Filters & Sort
+                {t('realEstateProfessionals.filters.title')}
               </h3>
               {isMobile && (
                 <button
@@ -353,24 +355,24 @@ const RealEstateProfessionalsList = () => {
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
                   <User size={16} className="text-[#1976D2]" />
-                  Basic Filters
+                  {t('realEstateProfessionals.filters.basicFilters')}
                 </h4>
 
                 <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
                   {/* Profession Type Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Profession Type
+                      {t('realEstateProfessionals.filters.professionType')}
                     </label>
                     <select
                       value={professionTypeFilter}
                       onChange={(e) => setProfessionTypeFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Types</option>
-                      <option value="agency_owner">Agency Owner</option>
-                      <option value="agent">Real Estate Agent</option>
-                      <option value="developer_employee">Developer Employee</option>
+                      <option value="">{t('realEstateProfessionals.filters.allTypes')}</option>
+                      <option value="agency_owner">{t('realEstateProfessionals.filters.agencyOwner')}</option>
+                      <option value="agent">{t('realEstateProfessionals.filters.agent')}</option>
+                      <option value="developer_employee">{t('realEstateProfessionals.filters.developerEmployee')}</option>
                     </select>
                   </div>
 
@@ -378,31 +380,31 @@ const RealEstateProfessionalsList = () => {
                   {/* Gender Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Gender
+                      {t('realEstateProfessionals.filters.gender')}
                     </label>
                     <select
                       value={genderFilter}
                       onChange={(e) => setGenderFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Genders</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
+                      <option value="">{t('realEstateProfessionals.filters.allGenders')}</option>
+                      <option value="Male">{t('realEstateProfessionals.filters.male')}</option>
+                      <option value="Female">{t('realEstateProfessionals.filters.female')}</option>
+                      <option value="Other">{t('realEstateProfessionals.filters.other')}</option>
                     </select>
                   </div>
 
                   {/* Languages Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Languages
+                      {t('realEstateProfessionals.filters.languages')}
                     </label>
                     <select
                       value={languagesFilter}
                       onChange={(e) => setLanguagesFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Languages</option>
+                      <option value="">{t('realEstateProfessionals.filters.allLanguages')}</option>
                       {getUniqueLanguages().map(language => (
                         <option key={language} value={language}>{language}</option>
                       ))}
@@ -413,14 +415,14 @@ const RealEstateProfessionalsList = () => {
                   {/* Location Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
-                      Location
+                      {t('realEstateProfessionals.filters.location')}
                     </label>
                     <select
                       value={locationFilter}
                       onChange={(e) => setLocationFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2] bg-white text-[#212121]"
                     >
-                      <option value="">All Locations</option>
+                      <option value="">{t('realEstateProfessionals.filters.allLocations')}</option>
                       {getUniqueLocations().map(location => (
                         <option key={location} value={location}>{location}</option>
                       ))}
@@ -457,7 +459,8 @@ const RealEstateProfessionalsList = () => {
                     style={{ borderColor: theme.borderLight }}
                   >
                     <Filter size={16} />
-                    <span className="text-[#212121]">Filters</span>
+                    <Filter size={16} />
+                    <span className="text-[#212121]">{t('realEstateProfessionals.filters.mobileTitle')}</span>
                   </button>
                 )}
 
@@ -484,10 +487,10 @@ const RealEstateProfessionalsList = () => {
                 </div>
 
                 <span className="text-sm font-medium text-[#212121]">
-                  {sortedProfessionals.length} Creators found
+                  {t('realEstateProfessionals.controls.found', { count: sortedProfessionals.length })}
                   {searchTerm && (
                     <span className="ml-2 text-[#757575]">
-                      for "{searchTerm}"
+                      {t('realEstateProfessionals.controls.for')} "{searchTerm}"
                     </span>
                   )}
                 </span>
@@ -495,7 +498,7 @@ const RealEstateProfessionalsList = () => {
 
               {/* Enhanced Sort Dropdown */}
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-[#757575]">Sort by:</span>
+                <span className="text-sm font-medium text-[#757575]">{t('realEstateProfessionals.controls.sortBy')}</span>
                 <select
                   value={`${sortField}-${sortDirection}`}
                   onChange={(e) => {
@@ -505,13 +508,13 @@ const RealEstateProfessionalsList = () => {
                   }}
                   className="px-4 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white text-[#212121] focus:ring-2 focus:ring-[#1976D2] focus:border-[#1976D2]"
                 >
-                  <option value="first_name-asc">Name (A-Z)</option>
-                  <option value="first_name-desc">Name (Z-A)</option>
-                  <option value="no_of_followers-desc">Followers (High to Low)</option>
-                  <option value="no_of_followers-asc">Followers (Low to High)</option>
-                  <option value="nationality-asc">Nationality (A-Z)</option>
-                  <option value="gender-asc">Gender (A-Z)</option>
-                  <option value="current_residence_city-asc">Location (A-Z)</option>
+                  <option value="first_name-asc">{t('realEstateProfessionals.controls.sortOptions.nameAsc')}</option>
+                  <option value="first_name-desc">{t('realEstateProfessionals.controls.sortOptions.nameDesc')}</option>
+                  <option value="no_of_followers-desc">{t('realEstateProfessionals.controls.sortOptions.followersDesc')}</option>
+                  <option value="no_of_followers-asc">{t('realEstateProfessionals.controls.sortOptions.followersAsc')}</option>
+                  <option value="nationality-asc">{t('realEstateProfessionals.controls.sortOptions.nationalityAsc')}</option>
+                  <option value="gender-asc">{t('realEstateProfessionals.controls.sortOptions.genderAsc')}</option>
+                  <option value="current_residence_city-asc">{t('realEstateProfessionals.controls.sortOptions.locationAsc')}</option>
                 </select>
               </div>
             </div>
@@ -549,11 +552,11 @@ const RealEstateProfessionalsList = () => {
                             </div>
                             <div className="flex items-center text-sm mb-2" style={{ color: theme.textSecondary }}>
                               <User size={14} className="mr-2" />
-                              <span>{professional.gender || 'Gender not specified'}</span>
+                              <span>{professional.gender || t('realEstateProfessionals.card.genderNotSpecified')}</span>
                             </div>
                             <div className="flex items-center text-sm mb-3" style={{ color: theme.textSecondary }}>
                               <MapPin size={14} className="mr-2" />
-                              <span>{professional.current_residence_city || 'Location not specified'}</span>
+                              <span>{professional.current_residence_city || t('realEstateProfessionals.card.locationNotSpecified')}</span>
                             </div>
                           </div>
                           <div className="w-20 h-12 flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-50 rounded-lg p-1 shadow-sm">
@@ -580,13 +583,13 @@ const RealEstateProfessionalsList = () => {
                         <div className="grid grid-cols-2 gap-2 text-center mb-4 p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                           <div>
                             <div className="text-lg font-bold" style={{ color: theme.primary }}>{professional.no_of_followers || 0}</div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Followers</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>{t('realEstateProfessionals.card.followers')}</div>
                           </div>
                           <div>
                             <div className="text-lg font-bold" style={{ color: professional.verified_tick ? '#4CAF50' : '#F44336' }}>
                               {professional.verified_tick ? '✓' : '✗'}
                             </div>
-                            <div className="text-xs" style={{ color: theme.textSecondary }}>Verified</div>
+                            <div className="text-xs" style={{ color: theme.textSecondary }}>{t('realEstateProfessionals.card.verified')}</div>
                           </div>
                         </div>
 
@@ -600,7 +603,7 @@ const RealEstateProfessionalsList = () => {
                             ))
                           ) : (
                             <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF3E0', color: theme.warning }}>
-                              Languages not specified
+                              {t('realEstateProfessionals.card.languagesNotSpecified')}
                             </span>
                           )}
                         </div>
@@ -613,7 +616,7 @@ const RealEstateProfessionalsList = () => {
                           onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                         >
                           <Eye size={16} />
-                          View Profile
+                          {t('realEstateProfessionals.card.viewProfile')}
                           <ExternalLink size={14} />
                         </button>
                       </div>
@@ -638,11 +641,11 @@ const RealEstateProfessionalsList = () => {
                             onClick={() => handleSort('first_name')}
                           >
                             <div className="flex items-center gap-2">
-                              Professional {getSortIcon('first_name')}
+                              {t('realEstateProfessionals.list.professional')} {getSortIcon('first_name')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Type
+                            {t('realEstateProfessionals.list.type')}
                           </th>
                           <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
@@ -650,7 +653,7 @@ const RealEstateProfessionalsList = () => {
                             onClick={() => handleSort('current_residence_city')}
                           >
                             <div className="flex items-center gap-2">
-                              Location {getSortIcon('current_residence_city')}
+                              {t('realEstateProfessionals.list.location')} {getSortIcon('current_residence_city')}
                             </div>
                           </th>
                           <th
@@ -659,11 +662,11 @@ const RealEstateProfessionalsList = () => {
                             onClick={() => handleSort('nationality')}
                           >
                             <div className="flex items-center gap-2">
-                              Nationality {getSortIcon('nationality')}
+                              {t('realEstateProfessionals.list.nationality')} {getSortIcon('nationality')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Gender
+                            {t('realEstateProfessionals.list.gender')}
                           </th>
                           <th
                             className="px-6 py-4 text-left text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors"
@@ -671,14 +674,14 @@ const RealEstateProfessionalsList = () => {
                             onClick={() => handleSort('no_of_followers')}
                           >
                             <div className="flex items-center gap-2">
-                              Followers {getSortIcon('no_of_followers')}
+                              {t('realEstateProfessionals.list.followers')} {getSortIcon('no_of_followers')}
                             </div>
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Languages
+                            {t('realEstateProfessionals.list.languages')}
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.textPrimary }}>
-                            Action
+                            {t('realEstateProfessionals.list.action')}
                           </th>
                         </tr>
                       </thead>
@@ -715,7 +718,7 @@ const RealEstateProfessionalsList = () => {
                                     {professional.first_name} {professional.last_name}
                                   </div>
                                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                                    {professional.verified_tick && <span className="text-green-600">✓ Verified</span>}
+                                    {professional.verified_tick && <span className="text-green-600">✓ {t('realEstateProfessionals.list.verified')}</span>}
                                   </div>
                                 </div>
                               </div>
@@ -730,17 +733,17 @@ const RealEstateProfessionalsList = () => {
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {professional.current_residence_city || 'Not specified'}
+                                {professional.current_residence_city || t('realEstateProfessionals.list.notSpecified')}
                               </span>
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {professional.nationality || 'Not specified'}
+                                {professional.nationality || t('realEstateProfessionals.list.notSpecified')}
                               </span>
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                {professional.gender || 'Not specified'}
+                                {professional.gender || t('realEstateProfessionals.list.notSpecified')}
                               </span>
                             </td>
                             <td className="px-6 py-4">
@@ -757,7 +760,7 @@ const RealEstateProfessionalsList = () => {
                                     </span>
                                   ))
                                 ) : (
-                                  <span className="text-xs text-gray-500">None</span>
+                                  <span className="text-xs text-gray-500">{t('realEstateProfessionals.list.none')}</span>
                                 )}
                               </div>
                             </td>
@@ -769,7 +772,7 @@ const RealEstateProfessionalsList = () => {
                                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                               >
                                 <Eye size={14} className="inline mr-1" />
-                                View
+                                {t('realEstateProfessionals.list.view')}
                               </button>
                             </td>
                           </tr>
@@ -789,10 +792,10 @@ const RealEstateProfessionalsList = () => {
                 <User size={48} style={{ color: theme.textDisabled }} />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                No Creators found
+                {t('realEstateProfessionals.empty.title')}
               </h3>
               <p className="mb-6 max-w-md mx-auto" style={{ color: theme.textSecondary }}>
-                We couldn't find any Creators matching your search criteria.
+                {t('realEstateProfessionals.empty.desc')}
               </p>
               <button
                 onClick={() => {
@@ -804,7 +807,7 @@ const RealEstateProfessionalsList = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                 onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
               >
-                Clear All Filters
+                {t('realEstateProfessionals.empty.clear')}
               </button>
             </div>
           )}

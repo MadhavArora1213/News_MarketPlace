@@ -2316,5 +2316,151 @@
             "button": "Share Award"
         },
         "cta": "Apply for this Award"
+    },
+    "realEstateProfessionals": {
+        "title": "Creators",
+        "desc": "Connect with trusted Creators and experts in your area.",
+        "disclaimer": "The current page is for representation purpose only, the comprehensive list will be live soon",
+        "searchPlaceholder": "Search professionals...",
+        "loading": "Loading Creators...",
+        "filters": {
+            "title": "Filters & Sort",
+            "mobileTitle": "Filters",
+            "basicFilters": "Basic Filters",
+            "professionType": "Profession Type",
+            "allTypes": "All Types",
+            "agencyOwner": "Agency Owner",
+            "agent": "Real Estate Agent",
+            "developerEmployee": "Developer Employee",
+            "gender": "Gender",
+            "allGenders": "All Genders",
+            "male": "Male",
+            "female": "Female",
+            "other": "Other",
+            "languages": "Languages",
+            "allLanguages": "All Languages",
+            "location": "Location",
+            "allLocations": "All Locations",
+            "clear": "Clear All Filters"
+        },
+        "controls": {
+            "found": "{{count}} Creators found",
+            "for": "for",
+            "sortBy": "Sort by:",
+            "sortOptions": {
+                "nameAsc": "Name (A-Z)",
+                "nameDesc": "Name (Z-A)",
+                "followersDesc": "Followers (High to Low)",
+                "followersAsc": "Followers (Low to High)",
+                "nationalityAsc": "Nationality (A-Z)",
+                "genderAsc": "Gender (A-Z)",
+                "locationAsc": "Location (A-Z)"
+            }
+        },
+        "list": {
+            "professional": "Professional",
+            "type": "Type",
+            "location": "Location",
+            "nationality": "Nationality",
+            "gender": "Gender",
+            "followers": "Followers",
+            "languages": "Languages",
+            "action": "Action",
+            "view": "View",
+            "verified": "Verified",
+            "notSpecified": "Not specified",
+            "none": "None"
+        },
+        "empty": {
+            "title": "No Creators found",
+            "desc": "We couldn't find any Creators matching your search criteria.",
+            "clear": "Clear All Filters"
+        },
+        "card": {
+            "viewProfile": "View Profile",
+            "followers": "Followers",
+            "verified": "Verified",
+            "genderNotSpecified": "Gender not specified",
+            "locationNotSpecified": "Location not specified",
+            "languagesNotSpecified": "Languages not specified"
+        }
+    },
+    "realEstateProfessionalDetail": {
+        "loading": "Loading Creator details...",
+        "notFound": {
+            "title": "Professional Not Found",
+            "desc": "The professional you're looking for doesn't exist or has been removed.",
+            "back": "Back to Professionals"
+        },
+        "breadcrumb": {
+            "back": "Back to Professionals",
+            "current": "Creator Details"
+        },
+        "locationNotSpecified": "Location not specified",
+        "languagesNotSpecified": "Languages not specified",
+        "roles": {
+            "agencyOwner": "Agency Owner",
+            "agent": "Real Estate Agent",
+            "developerEmployee": "Developer Employee",
+            "professional": "Professional"
+        },
+        "about": {
+            "title": "About This Creator",
+            "socialPresence": "Social Media Presence:"
+        },
+        "info": {
+            "title": "Creator Information",
+            "personalDetails": "Personal Details",
+            "professionalStatus": "Professional Status",
+            "gender": "Gender",
+            "nationality": "Nationality",
+            "currentCity": "Current City",
+            "verified": "Verified",
+            "followers": "Followers",
+            "languages": "Languages",
+            "notSpecified": "Not specified",
+            "yes": "Yes",
+            "no": "No"
+        },
+        "social": {
+            "title": "Social Media & Contact"
+        },
+        "languages": {
+            "title": "Languages Spoken"
+        },
+        "contact": {
+            "title": "Contact Creator",
+            "desc": "Get in touch for Creator services",
+            "status": "Status",
+            "active": "Active",
+            "processing": "Processing...",
+            "addToCart": "Add to Cart",
+            "signInToOrder": "Sign In to Order",
+            "success": "Contact request submitted successfully! The professional will contact you soon.",
+            "error": "Error submitting contact request. Please try again."
+        },
+        "stats": {
+            "title": "Creator Stats",
+            "instagramFollowers": "Instagram Followers",
+            "languages": "Languages"
+        },
+        "quickInfo": {
+            "title": "Quick Info",
+            "verification": "Verification",
+            "verified": "Verified",
+            "unverified": "Unverified",
+            "memberSince": "Member Since",
+            "type": "Professional Type"
+        },
+        "actions": {
+            "save": "Save",
+            "saved": "Saved",
+            "share": "Share",
+            "linkCopied": "Link copied to clipboard!"
+        },
+        "order": {
+            "success": "Order submitted successfully! You will receive a confirmation email shortly.",
+            "error": "Error submitting order. Please try again."
+        }
     }
 }

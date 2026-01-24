@@ -2308,5 +2308,151 @@
             "button": "पुरस्कार साझा करें"
         },
         "cta": "इस पुरस्कार के लिए आवेदन करें"
+    },
+    "realEstateProfessionals": {
+        "title": "रचनाकार",
+        "desc": "अपने क्षेत्र में विश्वसनीय रचनाकारों और विशेषज्ञों से जुड़ें।",
+        "disclaimer": "वर्तमान पृष्ठ केवल प्रतिनिधित्व उद्देश्य के लिए है, व्यापक सूची जल्द ही लाइव होगी",
+        "searchPlaceholder": "पेशेवरों को खोजें...",
+        "loading": "रचनाकारों को लोड किया जा रहा है...",
+        "filters": {
+            "title": "फ़िल्टर और सॉर्ट",
+            "mobileTitle": "फ़िल्टर",
+            "basicFilters": "मूल फ़िल्टर",
+            "professionType": "पेशा प्रकार",
+            "allTypes": "सभी प्रकार",
+            "agencyOwner": "एजेंसी मालिक",
+            "agent": "रियल एस्टेट एजेंट",
+            "developerEmployee": "डेवलपर कर्मचारी",
+            "gender": "लिंग",
+            "allGenders": "सभी लिंग",
+            "male": "पुरुष",
+            "female": "महिला",
+            "other": "अन्य",
+            "languages": "भाषाएं",
+            "allLanguages": "सभी भाषाएं",
+            "location": "स्थान",
+            "allLocations": "सभी स्थान",
+            "clear": "सभी फ़िल्टर साफ़ करें"
+        },
+        "controls": {
+            "found": "{{count}} रचनाकार मिले",
+            "for": "के लिए",
+            "sortBy": "द्वारा सॉर्ट करें:",
+            "sortOptions": {
+                "nameAsc": "नाम (A-Z)",
+                "nameDesc": "नाम (Z-A)",
+                "followersDesc": "फॉलोअर्स (उच्च से निम्न)",
+                "followersAsc": "फॉलोअर्स (निम्न से उच्च)",
+                "nationalityAsc": "राष्ट्रीयता (A-Z)",
+                "genderAsc": "लिंग (A-Z)",
+                "locationAsc": "स्थान (A-Z)"
+            }
+        },
+        "list": {
+            "professional": "पेशेवर",
+            "type": "प्रकार",
+            "location": "स्थान",
+            "nationality": "राष्ट्रीयता",
+            "gender": "लिंग",
+            "followers": "फॉलोअर्स",
+            "languages": "भाषाएं",
+            "action": "कार्रवाई",
+            "view": "देखें",
+            "verified": "सत्यापित",
+            "notSpecified": "निर्दिष्ट नहीं",
+            "none": "कोई नहीं"
+        },
+        "empty": {
+            "title": "कोई रचनाकार नहीं मिला",
+            "desc": "हम आपके खोज मानदंडों से मेल खाने वाले कोई भी रचनाकार नहीं ढूंढ सके।",
+            "clear": "सभी फ़िल्टर साफ़ करें"
+        },
+        "card": {
+            "viewProfile": "प्रोफ़ाइल देखें",
+            "followers": "फॉलोअर्स",
+            "verified": "सत्यापित",
+            "genderNotSpecified": "लिंग निर्दिष्ट नहीं",
+            "locationNotSpecified": "स्थान निर्दिष्ट नहीं",
+            "languagesNotSpecified": "भाषाएं निर्दिष्ट नहीं"
+        }
+    },
+    "realEstateProfessionalDetail": {
+        "loading": "रचनाकार विवरण लोड हो रहा है...",
+        "notFound": {
+            "title": "पेशेवर नहीं मिला",
+            "desc": "आप जिस पेशेवर की तलाश कर रहे हैं वह मौजूद नहीं है या हटा दिया गया है।",
+            "back": "पेशेवरों पर वापस जाएं"
+        },
+        "breadcrumb": {
+            "back": "पेशेवरों पर वापस जाएं",
+            "current": "रचनाकार विवरण"
+        },
+        "locationNotSpecified": "स्थान निर्दिष्ट नहीं",
+        "languagesNotSpecified": "भाषाएं निर्दिष्ट नहीं",
+        "roles": {
+            "agencyOwner": "एजेंसी मालिक",
+            "agent": "रियल एस्टेट एजेंट",
+            "developerEmployee": "डेवलपर कर्मचारी",
+            "professional": "पेशेवर"
+        },
+        "about": {
+            "title": "इस रचनाकार के बारे में",
+            "socialPresence": "सोशल मीडिया उपस्थिति:"
+        },
+        "info": {
+            "title": "रचनाकार जानकारी",
+            "personalDetails": "व्यक्तिगत विवरण",
+            "professionalStatus": "पेशेवर स्थिति",
+            "gender": "लिंग",
+            "nationality": "राष्ट्रीयता",
+            "currentCity": "वर्तमान शहर",
+            "verified": "सत्यापित",
+            "followers": "फॉलोअर्स",
+            "languages": "भाषाएं",
+            "notSpecified": "निर्दिष्ट नहीं",
+            "yes": "हाँ",
+            "no": "नहीं"
+        },
+        "social": {
+            "title": "सोशल मीडिया और संपर्क"
+        },
+        "languages": {
+            "title": "बोली जाने वाली भाषाएं"
+        },
+        "contact": {
+            "title": "रचनाकार से संपर्क करें",
+            "desc": "रचनाकार सेवाओं के लिए संपर्क करें",
+            "status": "स्थिति",
+            "active": "सक्रिय",
+            "processing": "प्रक्रिया जारी है...",
+            "addToCart": "कार्ट में जोड़ें",
+            "signInToOrder": "ऑर्डर करने के लिए साइन इन करें",
+            "success": "संपर्क अनुरोध सफलतापूर्वक सबमिट किया गया! पेशेवर जल्द ही आपसे संपर्क करेगा।",
+            "error": "संपर्क अनुरोध सबमिट करने में त्रुटि। कृपया पुन: प्रयास करें।"
+        },
+        "stats": {
+            "title": "रचनाकार आँकड़े",
+            "instagramFollowers": "इंस्टाग्राम फॉलोअर्स",
+            "languages": "भाषाएं"
+        },
+        "quickInfo": {
+            "title": "त्वरित जानकारी",
+            "verification": "सत्यापन",
+            "verified": "सत्यापित",
+            "unverified": "असत्यापित",
+            "memberSince": "तारीख से सदस्य",
+            "type": "पेशा प्रकार"
+        },
+        "actions": {
+            "save": "सहेजें",
+            "saved": "सहेजा गया",
+            "share": "साझा करें",
+            "linkCopied": "लिंक क्लिपबोर्ड पर कॉपी किया गया!"
+        },
+        "order": {
+            "success": "ऑर्डर सफलतापूर्वक सबमिट किया गया! आपको जल्द ही एक पुष्टिकरण ईमेल प्राप्त होगा।",
+            "error": "ऑर्डर सबमिट करने में त्रुटि। कृपया पुन: प्रयास करें।"
+        }
     }
 }

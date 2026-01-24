@@ -2272,5 +2272,151 @@
             "button": "Partager le prix"
         },
         "cta": "Postuler pour ce prix"
+    },
+    "realEstateProfessionals": {
+        "title": "Créateurs",
+        "desc": "Connectez-vous avec des créateurs de confiance et des experts dans votre région.",
+        "disclaimer": "La page actuelle est uniquement à des fins de représentation, la liste complète sera bientôt disponible",
+        "searchPlaceholder": "Rechercher des professionnels...",
+        "loading": "Chargement des créateurs...",
+        "filters": {
+            "title": "Filtres et tri",
+            "mobileTitle": "Filtres",
+            "basicFilters": "Filtres de base",
+            "professionType": "Type de profession",
+            "allTypes": "Tous les types",
+            "agencyOwner": "Propriétaire d'agence",
+            "agent": "Agent immobilier",
+            "developerEmployee": "Employé de promoteur",
+            "gender": "Genre",
+            "allGenders": "Tous les genres",
+            "male": "Homme",
+            "female": "Femme",
+            "other": "Autre",
+            "languages": "Langues",
+            "allLanguages": "Toutes les langues",
+            "location": "Emplacement",
+            "allLocations": "Tous les emplacements",
+            "clear": "Effacer tous les filtres"
+        },
+        "controls": {
+            "found": "{{count}} créateurs trouvés",
+            "for": "pour",
+            "sortBy": "Trier par :",
+            "sortOptions": {
+                "nameAsc": "Nom (A-Z)",
+                "nameDesc": "Nom (Z-A)",
+                "followersDesc": "Abonnés (Haut à Bas)",
+                "followersAsc": "Abonnés (Bas à Haut)",
+                "nationalityAsc": "Nationalité (A-Z)",
+                "genderAsc": "Genre (A-Z)",
+                "locationAsc": "Emplacement (A-Z)"
+            }
+        },
+        "list": {
+            "professional": "Professionnel",
+            "type": "Type",
+            "location": "Emplacement",
+            "nationality": "Nationalité",
+            "gender": "Genre",
+            "followers": "Abonnés",
+            "languages": "Langues",
+            "action": "Action",
+            "view": "Voir",
+            "verified": "Vérifié",
+            "notSpecified": "Non spécifié",
+            "none": "Aucun"
+        },
+        "empty": {
+            "title": "Aucun créateur trouvé",
+            "desc": "Nous n'avons trouvé aucun créateur correspondant à vos critères de recherche.",
+            "clear": "Effacer tous les filtres"
+        },
+        "card": {
+            "viewProfile": "Voir le profil",
+            "followers": "Abonnés",
+            "verified": "Vérifié",
+            "genderNotSpecified": "Genre non spécifié",
+            "locationNotSpecified": "Emplacement non spécifié",
+            "languagesNotSpecified": "Langues non spécifiées"
+        }
+    },
+    "realEstateProfessionalDetail": {
+        "loading": "Chargement des détails du créateur...",
+        "notFound": {
+            "title": "Professionnel non trouvé",
+            "desc": "Le professionnel que vous recherchez n'existe pas ou a été supprimé.",
+            "back": "Retour aux professionnels"
+        },
+        "breadcrumb": {
+            "back": "Retour aux professionnels",
+            "current": "Détails du créateur"
+        },
+        "locationNotSpecified": "Emplacement non spécifié",
+        "languagesNotSpecified": "Langues non spécifiées",
+        "roles": {
+            "agencyOwner": "Propriétaire d'agence",
+            "agent": "Agent immobilier",
+            "developerEmployee": "Employé de promoteur",
+            "professional": "Professionnel"
+        },
+        "about": {
+            "title": "À propos de ce créateur",
+            "socialPresence": "Présence sur les réseaux sociaux :"
+        },
+        "info": {
+            "title": "Informations sur le créateur",
+            "personalDetails": "Détails personnels",
+            "professionalStatus": "Statut professionnel",
+            "gender": "Genre",
+            "nationality": "Nationalité",
+            "currentCity": "Ville actuelle",
+            "verified": "Vérifié",
+            "followers": "Abonnés",
+            "languages": "Langues",
+            "notSpecified": "Non spécifié",
+            "yes": "Oui",
+            "no": "Non"
+        },
+        "social": {
+            "title": "Réseaux sociaux et contact"
+        },
+        "languages": {
+            "title": "Langues parlées"
+        },
+        "contact": {
+            "title": "Contacter le créateur",
+            "desc": "Contactez pour les services de créateur",
+            "status": "Statut",
+            "active": "Actif",
+            "processing": "Traitement...",
+            "addToCart": "Ajouter au panier",
+            "signInToOrder": "Connectez-vous pour commander",
+            "success": "Demande de contact soumise avec succès ! Le professionnel vous contactera bientôt.",
+            "error": "Erreur lors de la soumission de la demande de contact. Veuillez réessayer."
+        },
+        "stats": {
+            "title": "Statistiques du créateur",
+            "instagramFollowers": "Abonnés Instagram",
+            "languages": "Langues"
+        },
+        "quickInfo": {
+            "title": "Infos rapides",
+            "verification": "Vérification",
+            "verified": "Vérifié",
+            "unverified": "Non vérifié",
+            "memberSince": "Membre depuis",
+            "type": "Type de profession"
+        },
+        "actions": {
+            "save": "Enregistrer",
+            "saved": "Enregistré",
+            "share": "Partager",
+            "linkCopied": "Lien copié dans le presse-papiers !"
+        },
+        "order": {
+            "success": "Commande soumise avec succès ! Vous recevrez bientôt un e-mail de confirmation.",
+            "error": "Erreur lors de la soumission de la commande. Veuillez réessayer."
+        }
     }
 }

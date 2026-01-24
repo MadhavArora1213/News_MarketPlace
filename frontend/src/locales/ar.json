@@ -2272,5 +2272,151 @@
             "button": "مشاركة الجائزة"
         },
         "cta": "تقدم لهذه الجائزة"
+    },
+    "realEstateProfessionals": {
+        "title": "المبدعون",
+        "desc": "تواصل مع مبدعين وخبراء موثوقين في منطقتك.",
+        "disclaimer": "الصفحة الحالية لغرض التمثيل فقط، القائمة الشاملة ستكون متاحة قريباً",
+        "searchPlaceholder": "ابحث عن المحترفين...",
+        "loading": "جاري تحميل المبدعين...",
+        "filters": {
+            "title": "فلاتر وترتيب",
+            "mobileTitle": "فلاتر",
+            "basicFilters": "فلاتر أساسية",
+            "professionType": "نوع المهنة",
+            "allTypes": "جميع الأنواع",
+            "agencyOwner": "صاحب وكالة",
+            "agent": "وكيل عقاري",
+            "developerEmployee": "موظف مطور",
+            "gender": "الجنس",
+            "allGenders": "جميع الأجناس",
+            "male": "ذكر",
+            "female": "أنثى",
+            "other": "آخر",
+            "languages": "اللغات",
+            "allLanguages": "جميع اللغات",
+            "location": "الموقع",
+            "allLocations": "جميع المواقع",
+            "clear": "مسح جميع الفلاتر"
+        },
+        "controls": {
+            "found": "تم العثور على {{count}} مبدعين",
+            "for": "لـ",
+            "sortBy": "فرز حسب:",
+            "sortOptions": {
+                "nameAsc": "الاسم (أ-ي)",
+                "nameDesc": "الاسم (ي-أ)",
+                "followersDesc": "المتابعون (من الأعلى إلى الأقل)",
+                "followersAsc": "المتابعون (من الأقل إلى الأعلى)",
+                "nationalityAsc": "الجنسية (أ-ي)",
+                "genderAsc": "الجنس (أ-ي)",
+                "locationAsc": "الموقع (أ-ي)"
+            }
+        },
+        "list": {
+            "professional": "محترف",
+            "type": "النوع",
+            "location": "الموقع",
+            "nationality": "الجنسية",
+            "gender": "الجنس",
+            "followers": "المتابعون",
+            "languages": "اللغات",
+            "action": "إجراء",
+            "view": "عرض",
+            "verified": "موثق",
+            "notSpecified": "غير محدد",
+            "none": "لا يوجد"
+        },
+        "empty": {
+            "title": "لم يتم العثور على مبدعين",
+            "desc": "لم نتمكن من العثور على أي مبدعين يطابقون معايير البحث الخاصة بك.",
+            "clear": "مسح جميع الفلاتر"
+        },
+        "card": {
+            "viewProfile": "عرض الملف الشخصي",
+            "followers": "المتابعون",
+            "verified": "موثق",
+            "genderNotSpecified": "الجنس غير محدد",
+            "locationNotSpecified": "الموقع غير محدد",
+            "languagesNotSpecified": "اللغات غير محددة"
+        }
+    },
+    "realEstateProfessionalDetail": {
+        "loading": "جاري تحميل تفاصيل المبدع...",
+        "notFound": {
+            "title": "المحترف غير موجود",
+            "desc": "المحترف الذي تبحث عنه غير موجود أو تمت إزالته.",
+            "back": "العودة إلى المحترفين"
+        },
+        "breadcrumb": {
+            "back": "العودة إلى المحترفين",
+            "current": "تفاصيل المبدع"
+        },
+        "locationNotSpecified": "الموقع غير محدد",
+        "languagesNotSpecified": "اللغات غير محددة",
+        "roles": {
+            "agencyOwner": "صاحب وكالة",
+            "agent": "وكيل عقاري",
+            "developerEmployee": "موظف مطور",
+            "professional": "محترف"
+        },
+        "about": {
+            "title": "عن هذا المبدع",
+            "socialPresence": "التواجد على وسائل التواصل الاجتماعي:"
+        },
+        "info": {
+            "title": "معلومات المبدع",
+            "personalDetails": "تفاصيل شخصية",
+            "professionalStatus": "الحالة المهنية",
+            "gender": "الجنس",
+            "nationality": "الجنسية",
+            "currentCity": "المدينة الحالية",
+            "verified": "موثق",
+            "followers": "المتابعون",
+            "languages": "اللغات",
+            "notSpecified": "غير محدد",
+            "yes": "نعم",
+            "no": "لا"
+        },
+        "social": {
+            "title": "وسائل التواصل الاجتماعي والاتصال"
+        },
+        "languages": {
+            "title": "اللغات المتحدثة"
+        },
+        "contact": {
+            "title": "اتصل بالمبدع",
+            "desc": "تواصل لخدمات المبدعين",
+            "status": "الحالة",
+            "active": "نشط",
+            "processing": "جاري المعالجة...",
+            "addToCart": "أضف إلى السلة",
+            "signInToOrder": "سجل الدخول للطلب",
+            "success": "تم إرسال طلب الاتصال بنجاح! سيتصل بك المحترف قريباً.",
+            "error": "خطأ في إرسال طلب الاتصال. يرجى المحاولة مرة أخرى."
+        },
+        "stats": {
+            "title": "إحصائيات المبدع",
+            "instagramFollowers": "متابعي انستغرام",
+            "languages": "اللغات"
+        },
+        "quickInfo": {
+            "title": "معلومات سريعة",
+            "verification": "التحقق",
+            "verified": "موثق",
+            "unverified": "غير موثق",
+            "memberSince": "عضو منذ",
+            "type": "نوع المهنة"
+        },
+        "actions": {
+            "save": "حفظ",
+            "saved": "محفوظ",
+            "share": "مشاركة",
+            "linkCopied": "تم نسخ الرابط إلى الحافظة!"
+        },
+        "order": {
+            "success": "تم إرسال الطلب بنجاح! ستتلقى رسالة تأكيد إلكترونية قريباً.",
+            "error": "خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى."
+        }
     }
 }

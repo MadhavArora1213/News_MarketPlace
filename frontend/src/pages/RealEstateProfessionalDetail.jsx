@@ -17,6 +17,7 @@ import {
   Instagram, Facebook, Twitter, Linkedin, Youtube, MessageCircle,
   Languages, Building, UserCheck, Crown
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -44,6 +45,7 @@ const theme = {
 const RealEstateProfessionalDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
   const [professional, setProfessional] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -104,7 +106,7 @@ const RealEstateProfessionalDetail = () => {
       } else {
         // Handle error - maybe navigate back or show error message
         console.error('Failed to load professional details');
-        navigate('/real-estate-professionals');
+        navigate('/creators');
       }
     } finally {
       setLoading(false);
@@ -157,7 +159,7 @@ const RealEstateProfessionalDetail = () => {
     } else {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link copied to clipboard!');
+        alert(t('realEstateProfessionalDetail.actions.linkCopied'));
       }).catch(() => {
         // Ultimate fallback
         const textArea = document.createElement('textarea');
@@ -166,7 +168,7 @@ const RealEstateProfessionalDetail = () => {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert('Link copied to clipboard!');
+        alert(t('realEstateProfessionalDetail.actions.linkCopied'));
       });
     }
   };
@@ -230,7 +232,7 @@ const RealEstateProfessionalDetail = () => {
       const response = await api.post('/real-estate-orders', orderData);
 
       if (response.data.success !== false) {
-        alert('Order submitted successfully! You will receive a confirmation email shortly.');
+        alert(t('realEstateProfessionalDetail.order.success'));
         setShowOrderModal(false);
         setOrderFormData({
           customer_name: '',
@@ -254,7 +256,7 @@ const RealEstateProfessionalDetail = () => {
       }
     } catch (error) {
       console.error('Error submitting order:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Error submitting order. Please try again.';
+      const errorMessage = error.response?.data?.message || error.message || t('realEstateProfessionalDetail.order.error');
       alert(errorMessage);
     } finally {
       setIsSubmittingOrder(false);
@@ -310,7 +312,7 @@ const RealEstateProfessionalDetail = () => {
       const response = await api.post('/real-estate-professionals/contact', contactData);
 
       if (response.data.success) {
-        alert('Contact request submitted successfully! The professional will contact you soon.');
+        alert(t('realEstateProfessionalDetail.contact.success'));
         setShowContactModal(false);
         setContactFormData({ fullName: '', email: '', phone: '', message: '' });
       } else {
@@ -319,7 +321,7 @@ const RealEstateProfessionalDetail = () => {
 
     } catch (error) {
       console.error('Error submitting contact request:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Error submitting contact request. Please try again.';
+      const errorMessage = error.response?.data?.message || error.message || t('realEstateProfessionalDetail.contact.error');
       alert(errorMessage);
     } finally {
       setIsContacting(false);
@@ -339,7 +341,7 @@ const RealEstateProfessionalDetail = () => {
                 borderRight: `2px solid transparent`
               }}
             ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>Loading Creator details...</p>
+            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.loading')}</p>
           </div>
         </div>
         <UserFooter />
@@ -360,18 +362,18 @@ const RealEstateProfessionalDetail = () => {
               <User size={48} style={{ color: theme.textDisabled }} />
             </div>
             <h1 className="text-2xl font-semibold mb-4" style={{ color: theme.textPrimary }}>
-              Professional Not Found
+              {t('realEstateProfessionalDetail.notFound.title')}
             </h1>
             <p className="mb-8" style={{ color: theme.textSecondary }}>
-              The professional you're looking for doesn't exist or has been removed.
+              {t('realEstateProfessionalDetail.notFound.desc')}
             </p>
             <button
-              onClick={() => navigate('/real-estate-professionals')}
+              onClick={() => navigate('/creators')}
               className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               style={{ backgroundColor: theme.primary }}
             >
               <ArrowLeft size={16} />
-              Back to Professionals
+              {t('realEstateProfessionalDetail.notFound.back')}
             </button>
           </div>
         </div>
@@ -397,14 +399,14 @@ const RealEstateProfessionalDetail = () => {
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm mb-6" style={{ color: theme.textSecondary }}>
             <button
-              onClick={() => navigate('/real-estate-professionals')}
+              onClick={() => navigate('/creators')}
               className="flex items-center gap-1 hover:opacity-80"
             >
               <ArrowLeft size={16} />
-              Back to Professionals
+              {t('realEstateProfessionalDetail.breadcrumb.back')}
             </button>
             <span>/</span>
-            <span>Creator Details</span>
+            <span>{t('realEstateProfessionalDetail.breadcrumb.current')}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -443,11 +445,11 @@ const RealEstateProfessionalDetail = () => {
                     <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
                       <div className="flex items-center gap-2">
                         <MapPin size={16} />
-                        <span>{professional.current_residence_city || 'Location not specified'}</span>
+                        <span>{professional.current_residence_city || t('realEstateProfessionalDetail.locationNotSpecified')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Languages size={16} />
-                        <span>{professional.languages?.length ? professional.languages.join(', ') : 'Languages not specified'}</span>
+                        <span>{professional.languages?.length ? professional.languages.join(', ') : t('realEstateProfessionalDetail.languagesNotSpecified')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
@@ -459,19 +461,19 @@ const RealEstateProfessionalDetail = () => {
                       {professional.real_estate_agency_owner && (
                         <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.primaryLight, color: theme.primaryDark }}>
                           <Crown size={14} className="inline mr-1" />
-                          Agency Owner
+                          {t('realEstateProfessionalDetail.roles.agencyOwner')}
                         </span>
                       )}
                       {professional.real_estate_agent && (
                         <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.secondaryLight, color: theme.secondaryDark }}>
                           <UserCheck size={14} className="inline mr-1" />
-                          Real Estate Agent
+                          {t('realEstateProfessionalDetail.roles.agent')}
                         </span>
                       )}
                       {professional.developer_employee && (
                         <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: theme.info + '20', color: theme.info }}>
                           <Building size={14} className="inline mr-1" />
-                          Developer Employee
+                          {t('realEstateProfessionalDetail.roles.developerEmployee')}
                         </span>
                       )}
                     </div>
@@ -481,7 +483,7 @@ const RealEstateProfessionalDetail = () => {
                 {/* About Section */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    About This Creator
+                    {t('realEstateProfessionalDetail.about.title')}
                   </h3>
                   <div className="prose max-w-none" style={{ color: theme.textSecondary }}>
                     <p>
@@ -492,7 +494,7 @@ const RealEstateProfessionalDetail = () => {
                     </p>
                     {professional.no_of_followers > 0 && (
                       <p className="mt-4">
-                        <strong>Social Media Presence:</strong> {professional.no_of_followers.toLocaleString()} followers on Instagram
+                        <strong>{t('realEstateProfessionalDetail.about.socialPresence')}</strong> {professional.no_of_followers.toLocaleString()} {t('realEstateProfessionalDetail.info.followers')}
                       </p>
                     )}
                   </div>
@@ -501,40 +503,40 @@ const RealEstateProfessionalDetail = () => {
                 {/* Professional Information */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                    Creator Information
+                    {t('realEstateProfessionalDetail.info.title')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Personal Details</h4>
+                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>{t('realEstateProfessionalDetail.info.personalDetails')}</h4>
                       <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
                         <li className="flex items-center gap-2">
                           <User size={14} />
-                          <span>Gender: {professional.gender || 'Not specified'}</span>
+                          <span>{t('realEstateProfessionalDetail.info.gender')}: {professional.gender || t('realEstateProfessionalDetail.info.notSpecified')}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <MapPin size={14} />
-                          <span>Nationality: {professional.nationality || 'Not specified'}</span>
+                          <span>{t('realEstateProfessionalDetail.info.nationality')}: {professional.nationality || t('realEstateProfessionalDetail.info.notSpecified')}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <MapPin size={14} />
-                          <span>Current City: {professional.current_residence_city || 'Not specified'}</span>
+                          <span>{t('realEstateProfessionalDetail.info.currentCity')}: {professional.current_residence_city || t('realEstateProfessionalDetail.info.notSpecified')}</span>
                         </li>
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Professional Status</h4>
+                      <h4 className="font-medium mb-3" style={{ color: theme.textPrimary }}>{t('realEstateProfessionalDetail.info.professionalStatus')}</h4>
                       <ul className="space-y-2 text-sm" style={{ color: theme.textSecondary }}>
                         <li className="flex items-center gap-2">
                           <CheckCircle size={14} style={{ color: professional.verified_tick ? theme.success : theme.textDisabled }} />
-                          <span>Verified: {professional.verified_tick ? 'Yes' : 'No'}</span>
+                          <span>{t('realEstateProfessionalDetail.info.verified')}: {professional.verified_tick ? t('realEstateProfessionalDetail.info.yes') : t('realEstateProfessionalDetail.info.no')}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <Users size={14} />
-                          <span>Followers: {professional.no_of_followers?.toLocaleString() || 0}</span>
+                          <span>{t('realEstateProfessionalDetail.info.followers')}: {professional.no_of_followers?.toLocaleString() || 0}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <Languages size={14} />
-                          <span>Languages: {professional.languages?.length || 0}</span>
+                          <span>{t('realEstateProfessionalDetail.info.languages')}: {professional.languages?.length || 0}</span>
                         </li>
                       </ul>
                     </div>
@@ -544,7 +546,7 @@ const RealEstateProfessionalDetail = () => {
                 {/* Social Media Links */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                    Social Media & Contact
+                    {t('realEstateProfessionalDetail.social.title')}
                   </h3>
                   <div className="flex items-center gap-2">
                     {professional.ig_url && (
@@ -643,7 +645,7 @@ const RealEstateProfessionalDetail = () => {
                 {professional.languages && professional.languages.length > 0 && (
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textPrimary }}>
-                      Languages Spoken
+                      {t('realEstateProfessionalDetail.languages.title')}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {professional.languages.map((language, index) => (
@@ -667,28 +669,28 @@ const RealEstateProfessionalDetail = () => {
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center mb-6">
                   <div className="text-2xl font-bold mb-2" style={{ color: theme.success }}>
-                    Contact Creator
+                    {t('realEstateProfessionalDetail.contact.title')}
                   </div>
                   <div className="text-sm" style={{ color: theme.textSecondary }}>
-                    Get in touch for Creator services
+                    {t('realEstateProfessionalDetail.contact.desc')}
                   </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Status</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.contact.status')}</span>
                     <span className="font-medium" style={{ color: professional.verified_tick ? theme.success : theme.textSecondary }}>
-                      {professional.verified_tick ? 'Verified' : 'Active'}
+                      {professional.verified_tick ? t('realEstateProfessionalDetail.quickInfo.verified') : t('realEstateProfessionalDetail.contact.active')}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Languages</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.stats.languages')}</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
                       {professional.languages?.length || 0}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: theme.textSecondary }}>Location</span>
+                    <span className="text-sm" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.list.location')}</span>
                     <span className="font-medium" style={{ color: theme.textPrimary }}>
                       {professional.current_residence_city || 'N/A'}
                     </span>
@@ -704,27 +706,27 @@ const RealEstateProfessionalDetail = () => {
                   disabled={isSubmittingOrder}
                 >
                   <MessageCircle size={16} />
-                  {isSubmittingOrder ? 'Processing...' : (isAuthenticated ? 'Add to Cart' : 'Sign In to Order')}
+                  {isSubmittingOrder ? t('realEstateProfessionalDetail.contact.processing') : (isAuthenticated ? t('realEstateProfessionalDetail.contact.addToCart') : t('realEstateProfessionalDetail.contact.signInToOrder'))}
                 </button>
               </div>
 
               {/* Professional Stats */}
               <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Creator Stats
+                  {t('realEstateProfessionalDetail.stats.title')}
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                     <div className="text-2xl font-bold mb-1" style={{ color: theme.primary }}>
                       {professional.no_of_followers?.toLocaleString() || 0}
                     </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Instagram Followers</div>
+                    <div className="text-xs" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.stats.instagramFollowers')}</div>
                   </div>
                   <div className="p-3 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
                     <div className="text-2xl font-bold mb-1" style={{ color: theme.success }}>
                       {professional.languages?.length || 0}
                     </div>
-                    <div className="text-xs" style={{ color: theme.textSecondary }}>Languages</div>
+                    <div className="text-xs" style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.stats.languages')}</div>
                   </div>
                 </div>
               </div>
@@ -732,25 +734,25 @@ const RealEstateProfessionalDetail = () => {
               {/* Quick Info */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                  Quick Info
+                  {t('realEstateProfessionalDetail.quickInfo.title')}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2">
                     <Award size={16} style={{ color: professional.verified_tick ? theme.success : theme.textDisabled }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Verification: {professional.verified_tick ? 'Verified' : 'Unverified'}
+                      {t('realEstateProfessionalDetail.quickInfo.verification')}: {professional.verified_tick ? t('realEstateProfessionalDetail.quickInfo.verified') : t('realEstateProfessionalDetail.quickInfo.unverified')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <TrendingUp size={16} style={{ color: theme.primary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Member Since: {formatDate(professional.created_at)}
+                      {t('realEstateProfessionalDetail.quickInfo.memberSince')}: {formatDate(professional.created_at)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} style={{ color: theme.secondary }} />
                     <span style={{ color: theme.textSecondary }}>
-                      Professional Type: {professional.real_estate_agency_owner ? 'Agency Owner' : professional.real_estate_agent ? 'Agent' : professional.developer_employee ? 'Developer' : 'Professional'}
+                      {t('realEstateProfessionalDetail.quickInfo.type')}: {professional.real_estate_agency_owner ? t('realEstateProfessionalDetail.roles.agencyOwner') : professional.real_estate_agent ? t('realEstateProfessionalDetail.roles.agent') : professional.developer_employee ? t('realEstateProfessionalDetail.roles.developerEmployee') : t('realEstateProfessionalDetail.roles.professional')}
                     </span>
                   </div>
                 </div>
@@ -775,7 +777,7 @@ const RealEstateProfessionalDetail = () => {
             >
               <Heart size={16} style={{ color: isSaved ? theme.danger : theme.danger, fill: isSaved ? theme.danger : 'none' }} />
               <span style={{ color: isSaved ? theme.danger : theme.textSecondary }}>
-                {isSaved ? 'Saved' : 'Save'}
+                {isSaved ? t('realEstateProfessionalDetail.actions.saved') : t('realEstateProfessionalDetail.actions.save')}
               </span>
             </button>
             <button
@@ -787,7 +789,7 @@ const RealEstateProfessionalDetail = () => {
               }}
             >
               <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>Share</span>
+              <span style={{ color: theme.textSecondary }}>{t('realEstateProfessionalDetail.actions.share')}</span>
             </button>
           </div>
         </div>
