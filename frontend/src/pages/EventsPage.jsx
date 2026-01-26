@@ -10,11 +10,14 @@ import {
   MapPin, Calendar, Tag, DollarSign, Search, Filter, ArrowRight,
   Globe, Users, Award, Music, Camera, Landmark, Info, X
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
+import { createSlugPath } from '../utils/slugify';
 
 const EventsPage = () => {
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
 
   // Dynamic translation for event content
@@ -100,6 +103,10 @@ const EventsPage = () => {
     setShowApplicationModal(false);
     setSelectedEvent(null);
     setApplicationRoleType(null);
+  };
+
+  const handleEventClick = (event) => {
+    navigate(`/events/${createSlugPath(event.title, event.id)}`);
   };
 
   const formatDate = (dateString) => {
@@ -358,7 +365,10 @@ const EventsPage = () => {
                       className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_50px_rgba(8,112,184,0.12)] transition-all duration-700 flex flex-col h-full relative"
                     >
                       {/* Event Banner Placeholder / Image */}
-                      <div className="h-40 bg-gradient-to-br from-slate-50 to-slate-100 relative group-hover:h-32 transition-all duration-700 ease-in-out">
+                      <div
+                        className="h-40 bg-gradient-to-br from-slate-50 to-slate-100 relative group-hover:h-32 transition-all duration-700 ease-in-out cursor-pointer"
+                        onClick={() => handleEventClick(event)}
+                      >
                         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500 via-transparent to-transparent" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           {getEventTypeIcon(event.event_type)}
@@ -376,7 +386,10 @@ const EventsPage = () => {
                           </div>
                         </div>
 
-                        <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors leading-tight font-primary">
+                        <h3
+                          className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors leading-tight font-primary cursor-pointer"
+                          onClick={() => handleEventClick(event)}
+                        >
                           {event.title}
                         </h3>
 

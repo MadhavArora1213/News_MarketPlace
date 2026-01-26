@@ -120,6 +120,7 @@ import RadioOrders from './pages/admin/RadioOrders';
 import Icon from './components/common/Icon';
 import PaparazziCreations from './pages/admin/PaparazziCreations';
 import EventCreationPage from './pages/admin/EventCreation';
+import EventDetailPage from './pages/EventDetailPage';
 import AwardCreationPage from './pages/admin/AwardCreation';
 import PressPackCreationPage from './pages/admin/PressPackCreation';
 import RealEstateManagement from './pages/admin/RealEstateManagement';
@@ -575,6 +576,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <EventsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/events/:id"
+                    element={
+                      <ProtectedRoute>
+                        <EventDetailPage />
                       </ProtectedRoute>
                     }
                   />
