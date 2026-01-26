@@ -37,6 +37,9 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Admin Event Creation test route working!' });
 });
 
+// Public route for sitemap
+router.get('/public', adminEventCreationController.getPublicEventCreations);
+
 // Bulk/CSV Routes
 router.get('/download-template',
   verifyAdminToken,

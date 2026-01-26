@@ -3,8 +3,37 @@ const Ticket = require('../models/Ticket');
 const EventRegistration = require('../models/EventRegistration');
 const EventDisclaimer = require('../models/EventDisclaimer');
 const { body, validationResult } = require('express-validator');
+const { exec } = require('child_process');
+const path = require('path');
 
 class EventController {
+  // Helper to trigger SEO regeneration and auto-push
+  async triggerAutoPush() {
+    try {
+      // Resolve path to the script in the root scripts folder
+      // __dirname is backend/src/controllers
+      // We need to go up to root: ../../../
+      const scriptPath = path.resolve(__dirname, '../../../../scripts/auto_push_master.sh');
+
+      console.log('🔄 Triggering auto-push and SEO regeneration from EventController...');
+
+      const command = process.platform === 'win32' ? `bash "${scriptPath}"` : `"${scriptPath}"`;
+
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`❌ Auto-push execution error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`⚠️ Auto-push stderr: ${stderr}`);
+        }
+        console.log(`✅ Auto-push output: ${stdout}`);
+      });
+    } catch (err) {
+      console.error('❌ Failed to trigger auto-push:', err);
+    }
+  }
+
   // Validation rules
   createValidation = [
     body('title').trim().isLength({ min: 1 }).withMessage('Title is required'),
@@ -274,6 +303,9 @@ class EventController {
         message: 'Event created successfully',
         event: event.toJSON()
       });
+
+      // Trigger auto-push
+      this.triggerAutoPush();
     } catch (error) {
       console.error('Create event error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -381,6 +413,9 @@ class EventController {
         message: 'Event updated successfully',
         event: updatedEvent.toJSON()
       });
+
+      // Trigger auto-push
+      this.triggerAutoPush();
     } catch (error) {
       console.error('Update event error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -399,6 +434,9 @@ class EventController {
 
       await event.delete();
       res.json({ message: 'Event deleted successfully' });
+
+      // Trigger auto-push
+      this.triggerAutoPush();
     } catch (error) {
       console.error('Delete event error:', error);
       res.status(500).json({ error: 'Internal server error' });

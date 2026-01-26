@@ -302,6 +302,24 @@ class AdminEventCreationController {
     }
   }
 
+  // Get all event creations (public)
+  async getPublicEventCreations(req, res) {
+    try {
+      // Fetch all records for sitemap/public display
+      const { rows } = await EventCreation.findAndCountAll({
+        limit: 1000, // Reasonable limit for sitemap
+        order: [['created_at', 'DESC']]
+      });
+
+      res.json({
+        eventCreations: rows.map(ec => ec.toJSON())
+      });
+    } catch (error) {
+      console.error('Get public event creations error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // Get event creation by ID
   async getEventCreationById(req, res) {
     try {

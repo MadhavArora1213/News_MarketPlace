@@ -13,11 +13,12 @@ async function generateFiles() {
         console.log('🚀 Starting SEO file regeneration...');
 
         // 1. Fetch Dynamic Data
-        const [publications, blogs, events, powerlists] = await Promise.all([
+        const [publications, blogs, events, powerlists, eventCreations] = await Promise.all([
             axios.get(`${API_URL}/publications/public`).then(res => res.data.publications || []),
             axios.get(`${API_URL}/blogs`).then(res => res.data.blogs || []),
             axios.get(`${API_URL}/events`).then(res => res.data.events || []),
-            axios.get(`${API_URL}/powerlist-nominations/public`).then(res => res.data.nominations || [])
+            axios.get(`${API_URL}/powerlist-nominations/public`).then(res => res.data.nominations || []),
+            axios.get(`${API_URL}/admin/event-creations/public`).then(res => res.data.eventCreations || [])
         ]);
 
         const lastMod = new Date().toISOString().split('T')[0];
@@ -33,8 +34,33 @@ async function generateFiles() {
 
         // Add dynamic publications
         publications.forEach(pub => {
-            const slug = pub.publication_name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            const slug = (pub.publication_name || '').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
             sitemap += `  <url>\n    <loc>${SITE_URL}/publications/${slug}-${pub.id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <priority>0.6</priority>\n  </url>\n`;
+        });
+
+        // Add dynamic blogs
+        blogs.forEach(blog => {
+            const slug = (blog.title || '').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            sitemap += `  <url>\n    <loc>${SITE_URL}/blog/${slug}-${blog.id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+        });
+
+        // Add dynamic events
+        events.forEach(event => {
+            const slug = (event.title || '').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            sitemap += `  <url>\n    <loc>${SITE_URL}/events/${slug}-${event.id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+        });
+
+        // Add dynamic powerlists
+        powerlists.forEach(pl => {
+            const slug = (pl.power_list_name || '').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            sitemap += `  <url>\n    <loc>${SITE_URL}/power-lists/${slug}-${pl.id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+        });
+
+        // Add dynamic event creations
+        eventCreations.forEach(ec => {
+            const slug = (ec.event_name || '').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            // Using /event-directory/ as a placeholder path for these items since they come from 'Event Creation' module
+            sitemap += `  <url>\n    <loc>${SITE_URL}/event-directory/${slug}-${ec.id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
         });
 
         sitemap += `</urlset>`;

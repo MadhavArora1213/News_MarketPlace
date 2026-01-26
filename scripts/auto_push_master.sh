@@ -57,7 +57,7 @@ main() {
     cd "$PROJECT_ROOT" || exit 1
 
     # Optional: Regenerate before checking (uncomment if you want auto-regen on every run)
-    # regenerate_seo
+    regenerate_seo
 
     if ! has_changes; then
         echo "No changes detected in monitored paths. Skipping push."
