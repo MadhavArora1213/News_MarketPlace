@@ -363,27 +363,34 @@ export default function FloatingLines({
 
     const setSize = () => {
       const el = containerRef.current;
-      if (!el) return;
+      if (!el || !renderer || !renderer.domElement) return;
 
       const width = el.clientWidth || 1;
       const height = el.clientHeight || 1;
 
       renderer.setSize(width, height, false);
 
-      const canvasWidth = renderer.domElement.width;
-      const canvasHeight = renderer.domElement.height;
-      uniforms.iResolution.value.set(canvasWidth, canvasHeight, 1);
+      if (renderer.domElement) {
+        const canvasWidth = renderer.domElement.width;
+        const canvasHeight = renderer.domElement.height;
+        uniforms.iResolution.value.set(canvasWidth, canvasHeight, 1);
+      }
     };
 
     setSize();
 
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(setSize) : null;
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver((entries) => {
+      if (entries && entries.length > 0) {
+        setSize();
+      }
+    }) : null;
 
     if (ro && containerRef.current) {
       ro.observe(containerRef.current);
     }
 
     const handlePointerMove = event => {
+      if (!renderer || !renderer.domElement) return;
       const rect = renderer.domElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -405,13 +412,14 @@ export default function FloatingLines({
       targetInfluenceRef.current = 0.0;
     };
 
-    if (interactive) {
+    if (interactive && renderer.domElement) {
       renderer.domElement.addEventListener('pointermove', handlePointerMove);
       renderer.domElement.addEventListener('pointerleave', handlePointerLeave);
     }
 
     let raf = 0;
     const renderLoop = () => {
+      if (!renderer) return;
       uniforms.iTime.value = clock.getElapsedTime();
 
       if (interactive) {
@@ -434,32 +442,33 @@ export default function FloatingLines({
 
     return () => {
       cancelAnimationFrame(raf);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+
       if (ro) {
         ro.disconnect();
       }
 
-      if (interactive) {
+      if (interactive && renderer.domElement) {
         renderer.domElement.removeEventListener('pointermove', handlePointerMove);
         renderer.domElement.removeEventListener('pointerleave', handlePointerLeave);
       }
 
       geometry.dispose();
       material.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentElement) {
+
+      if (renderer.domElement && renderer.domElement.parentElement) {
         renderer.domElement.parentElement.removeChild(renderer.domElement);
       }
+      renderer.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     linesGradient,
-    enabledWaves,
-    lineCount,
-    lineDistance,
-    topWavePosition,
-    middleWavePosition,
-    bottomWavePosition,
+    JSON.stringify(enabledWaves),
+    JSON.stringify(lineCount),
+    JSON.stringify(lineDistance),
+    JSON.stringify(topWavePosition),
+    JSON.stringify(middleWavePosition),
+    JSON.stringify(bottomWavePosition),
     animationSpeed,
     interactive,
     bendRadius,
