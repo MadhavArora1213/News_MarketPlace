@@ -73,7 +73,7 @@ const Home = () => {
         <FeatureSlider loading={loading} />
 
         {/* Articles Section */}
-        <Articles />
+        {/* <Articles /> */}
 
         {/* About Section */}
         <AboutSimplified loading={loading} />
