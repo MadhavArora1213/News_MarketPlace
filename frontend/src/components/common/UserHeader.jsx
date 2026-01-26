@@ -475,7 +475,7 @@ const UserHeader = () => {
             </div>
 
             {/* Language and Contact Icons */}
-            <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20">
+            <div className="bg-white/40 backdrop-blur-md rounded-xl p-3 border border-white/20 md:hidden">
               <div className="mb-4">
                 <div className="flex flex-wrap justify-center gap-2">
                   {languages.map((lang) => (
