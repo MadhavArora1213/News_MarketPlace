@@ -14,6 +14,7 @@ import {
   Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
   DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
   MapPin, Calendar, Users, Zap, Eye, Heart, Share,
+  Instagram, Facebook, Twitter, Linkedin, Youtube, MessageCircle,
   Languages, Building, UserCheck, Crown
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
