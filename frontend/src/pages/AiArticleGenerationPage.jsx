@@ -6,6 +6,8 @@ import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import { ArrowLeft, RefreshCw, Send, CheckCircle, XCircle, Download, X, Mail, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 const AiArticleGenerationPage = () => {
   const { id } = useParams();
@@ -54,14 +56,14 @@ const AiArticleGenerationPage = () => {
 
       // Check if it's a rate limit error
       const errorMessage = error.response?.data?.message ||
-                           error.response?.data?.error ||
-                           'Failed to generate article. Please try again.';
+        error.response?.data?.error ||
+        'Failed to generate article. Please try again.';
 
       // Check for rate limit related keywords
       if (errorMessage.toLowerCase().includes('rate limit') ||
-          errorMessage.toLowerCase().includes('limit exceeded') ||
-          errorMessage.toLowerCase().includes('too many requests') ||
-          errorMessage.toLowerCase().includes('quota exceeded')) {
+        errorMessage.toLowerCase().includes('limit exceeded') ||
+        errorMessage.toLowerCase().includes('too many requests') ||
+        errorMessage.toLowerCase().includes('quota exceeded')) {
         setShowRateLimitPopup(true);
         return;
       }
@@ -143,6 +145,18 @@ const AiArticleGenerationPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
+      <SEO
+        title="AI Article Generation | News Marketplace"
+        description="Review and refine your AI-generated article with our advanced AI writing tools."
+      />
+      <Schema
+        type="service"
+        data={{
+          name: "AI Article Generation Service",
+          description: "Advanced AI-powered journalism and article writing assistant.",
+          provider: "News Marketplace"
+        }}
+      />
       <UserHeader />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

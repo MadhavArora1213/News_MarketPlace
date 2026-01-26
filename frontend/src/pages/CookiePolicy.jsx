@@ -4,6 +4,8 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const CookiePolicy = () => {
@@ -67,6 +69,11 @@ const CookiePolicy = () => {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+            <SEO
+                title={t('cookie.seo.title', 'Cookie Policy | News Marketplace')}
+                description={t('cookie.seo.desc', 'Learn about how we use cookies to improve your experience.')}
+            />
+            <Schema type="webpage" data={{ title: "Cookie Policy", description: "Cookie Policy details" }} />
             <UserHeader />
 
             {/* Dark Premium Hero */}

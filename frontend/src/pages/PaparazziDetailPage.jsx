@@ -13,6 +13,8 @@ import {
   BarChart3, Target, Award, TrendingUp, MapPin, Calendar,
   Users, Zap, Eye, Heart, Share, Instagram, Youtube, Twitter, Filter
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationObject } from '../hooks/useTranslation';
 import { getIdFromSlug } from '../utils/slugify';
@@ -371,6 +373,23 @@ const PaparazziDetailPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${translatedPaparazzi?.instagram_page_name || 'Paparazzi'} - News Marketplace`}
+        description={t('paparazziDetails.aboutDesc')}
+        image={translatedPaparazzi?.profile_dp_logo}
+        type="profile"
+      />
+      <Schema
+        type="person"
+        data={{
+          name: translatedPaparazzi?.instagram_page_name,
+          jobTitle: "Paparazzi / Content Creator",
+          description: translatedPaparazzi?.category,
+          image: translatedPaparazzi?.profile_dp_logo,
+          url: translatedPaparazzi?.instagram_url,
+          socialLinks: [translatedPaparazzi?.instagram_url]
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

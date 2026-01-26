@@ -3,6 +3,8 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const TermsAndConditions = () => {
@@ -65,6 +67,11 @@ const TermsAndConditions = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+      <SEO
+        title={t('terms.heroTitle')}
+        description={t('terms.heroDesc')}
+      />
+      <Schema type="organization" />
       <UserHeader />
 
       {/* Subtle Textured Background */}

@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -255,6 +257,25 @@ const PowerlistDetailPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${nomination.publication_name} - Media Power List Profile | News Marketplace`}
+        description={nomination.description || `View the profile of ${nomination.publication_name} in the ${nomination.power_list_name} group.`}
+        image={nomination.image}
+        type="profile"
+      />
+      <Schema
+        type="service"
+        data={{
+          name: nomination.publication_name,
+          description: nomination.description,
+          areaServed: nomination.location_region,
+          catalogName: nomination.power_list_name,
+          services: [
+            { name: nomination.industry },
+            { name: nomination.company_or_individual }
+          ]
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

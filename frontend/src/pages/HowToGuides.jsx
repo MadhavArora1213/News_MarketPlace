@@ -4,6 +4,7 @@ import { BookOpen, Search, Star, MessageCircle, Clock, User, ThumbsUp, Filter, C
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 
@@ -330,6 +331,18 @@ const HowToGuides = () => {
           description={guide.description}
           keywords={`guide, tutorial, ${guide.category}, ${guide.difficulty.toLowerCase()}`}
         />
+        <Schema
+          type="how-to"
+          data={{
+            name: guide.title,
+            description: guide.description,
+            steps: guide.content.map(item => ({
+              name: item.title,
+              text: item.description,
+              image: null // Should be added if available
+            }))
+          }}
+        />
 
         <UserHeader />
 
@@ -508,6 +521,18 @@ const HowToGuides = () => {
         title="How-To Guides - News Marketplace"
         description="Step-by-step guides and tutorials to help you master the News Marketplace platform and improve your skills."
         keywords="guides, tutorials, how-to, news marketplace, content creation, marketing"
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "How-To Guides",
+          description: "A collection of step-by-step tutorials and manuals for News Marketplace platform and content creation.",
+          items: displayGuides.map(guide => ({
+            name: guide.title,
+            description: guide.description,
+            url: window.location.origin + `/how-to-guides?guide=${guide.id}`
+          }))
+        }}
       />
 
       <UserHeader />

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -100,6 +102,15 @@ const ResellingAgreement = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
+            <SEO
+                title={t('reselling.heroTitle')}
+                description={t('reselling.heroDesc')}
+                keywords={t('reselling agreement, news marketplace, partner program')}
+            />
+            <Schema type="article" data={{
+                headline: t('reselling.heroTitle'),
+                description: t('reselling.heroDesc')
+            }} />
             <UserHeader />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">

@@ -5,6 +5,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const ContactUs = () => {
@@ -253,6 +254,13 @@ const ContactUs = () => {
         title={t('contact.title')}
         description={t('contact.desc')}
         keywords={t('contact.keywords')}
+      />
+      <Schema
+        type="contact"
+        data={{
+          title: t('contact.title'),
+          description: t('contact.desc')
+        }}
       />
       <UserHeader />
       <Toaster />

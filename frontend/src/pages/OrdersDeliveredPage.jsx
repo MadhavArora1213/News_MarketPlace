@@ -5,6 +5,8 @@ import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import {
   Search, Filter, Eye, Globe, MapPin, Building,
   DollarSign, FileText, ExternalLink, Package, Grid, List,
@@ -218,6 +220,22 @@ const OrdersDeliveredPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Recent Success Stories | Published Media Placements | News Marketplace"
+        description="Explore our latest delivered orders and published articles across major global publications."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Delivered Media Placements",
+          description: "A showcase of recently published articles and successful media campaigns.",
+          items: deliveredOrders.map(order => ({
+            name: order.title,
+            description: order.excerpt,
+            url: order.link
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Enhanced Hero Section */}

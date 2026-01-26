@@ -15,6 +15,8 @@ import {
   MessageCircle, Mail
 } from 'lucide-react';
 import { getIdFromSlug } from '../utils/slugify';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -263,6 +265,30 @@ const PodcasterDetail = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${podcaster.podcast_name} - ${podcaster.podcast_host}`}
+        description={podcaster.cta || t('podcasterDetail.about')}
+        image={podcaster.image} // Assuming podcaster object has an image property, otherwise fallback or remove
+        url={window.location.href}
+        type="profile"
+      />
+      <Schema
+        type="person"
+        data={{
+          name: podcaster.podcast_host,
+          jobTitle: "Podcaster",
+          description: podcaster.cta,
+          image: podcaster.image, // Check if image exists in podcaster object
+          url: podcaster.podcast_website || window.location.href,
+          socialLinks: [
+            podcaster.podcast_ig,
+            podcaster.podcast_linkedin,
+            podcaster.podcast_facebook,
+            podcaster.youtube_channel_url,
+            podcaster.twitter
+          ].filter(Boolean)
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

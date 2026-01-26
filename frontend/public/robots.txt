@@ -2,3 +2,4 @@ User-agent: *
 Disallow:
 
 Sitemap: https://vaas.solutions/sitemap.xml
+RSS: https://vaas.solutions/rss.xml

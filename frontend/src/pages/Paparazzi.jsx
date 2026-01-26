@@ -8,6 +8,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { createSlugPath } from '../utils/slugify';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useTranslationArray } from '../hooks/useTranslation';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -138,6 +140,23 @@ const PaparazziPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('paparazzi.seo.title', 'Paparazzi & Social Media Pages | News Marketplace')}
+        description={t('paparazzi.seo.desc', 'Explore influential paparazzi and social media pages for high-impact social media placements.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('paparazzi.hero.title'),
+          description: t('paparazzi.hero.subtitle'),
+          items: filteredPaparazzi.map(p => ({
+            name: p.instagram_page_name,
+            description: `Social media page in ${p.category} category with ${formatFollowers(p.no_of_followers)} followers.`,
+            url: window.location.origin + `/paparazzi/${createSlugPath(p.instagram_page_name, p.id)}`,
+            image: p.profile_dp_logo
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Enhanced Hero Section */}

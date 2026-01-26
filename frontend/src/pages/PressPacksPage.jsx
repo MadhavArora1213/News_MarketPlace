@@ -14,6 +14,8 @@ import {
   Newspaper
 } from 'lucide-react';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -357,6 +359,23 @@ const PressPacksPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('pressPacks.seo.title', 'Press Release Packages | News Marketplace')}
+        description={t('pressPacks.seo.desc', 'Discover guaranteed press release distribution packages for maximum media exposure.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('pressPacks.title'),
+          description: t('pressPacks.desc'),
+          items: sortedPressPacks.map(pack => ({
+            name: pack.name,
+            description: pack.description,
+            url: window.location.origin + `/press-packs/${createSlugPath(pack.name, pack.id)}`,
+            image: pack.image_logo
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

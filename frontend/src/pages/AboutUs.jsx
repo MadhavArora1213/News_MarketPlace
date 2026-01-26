@@ -3,6 +3,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -124,6 +125,7 @@ const AboutUs = () => {
         description={t('about.seo.desc')}
         keywords={t('about.seo.keywords')}
       />
+      <Schema type="organization" />
       <UserHeader />
 
       {/* Header / Intro */}

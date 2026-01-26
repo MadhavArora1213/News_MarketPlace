@@ -4,6 +4,8 @@ import { Download, FileText, FileSpreadsheet, FileImage, Search, Filter, Calenda
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 
@@ -264,6 +266,22 @@ const DownloadCenter = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('downloadCenter.seo.title', 'Download Center | News Marketplace')}
+        description={t('downloadCenter.seo.desc', 'Access and download essential resources, templates, and guides for PR and journalism.')}
+        keywords={t('downloadCenter.seo.keywords', 'downloads, templates, guides, PR resources, journalism tools')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('downloadCenter.hero.title'),
+          description: t('downloadCenter.hero.desc'),
+          items: displayResources.map(r => ({
+             title: r.title,
+             url: window.location.href // Ideally download link or detail page
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Hero Section */}

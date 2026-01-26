@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -256,6 +258,23 @@ const AwardsPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('awards.seo.title', 'Awards & Recognition | News Marketplace')}
+        description={t('awards.seo.desc', 'Explore prestigious awards and recognition programs across various industries.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('awards.title'),
+          description: t('awards.desc'),
+          items: awards.map(award => ({
+            name: award.award_name,
+            description: award.description,
+            url: window.location.origin + `/awards/${createSlugPath(award.award_name, award.id)}`,
+            image: award.image
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

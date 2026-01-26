@@ -4,6 +4,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { Handshake, TrendingUp, Users, Globe, Zap, Target, Star, Award, CheckCircle, ArrowRight, Mail, Phone, MessageSquare } from 'lucide-react';
@@ -60,6 +61,22 @@ const MediaPartnerships = () => {
         title={t('mediaPartnerships.seo.title', 'Media Partnerships')}
         description={t('mediaPartnerships.seo.desc', 'Partner with News Marketplace for media collaborations, brand partnerships, and content marketing opportunities. Reach our engaged audience.')}
         keywords={t('mediaPartnerships.seo.keywords', 'media partnerships, brand partnerships, content marketing, influencer marketing, advertising, sponsorships')}
+      />
+      <Schema
+        type="service"
+        data={{
+          name: t('mediaPartnerships.hero.title'),
+          description: t('mediaPartnerships.hero.desc'),
+          catalogName: "Partnership Opportunities",
+          services: [
+            { name: "Brand Partnerships" },
+            { name: "Content Marketing" },
+            { name: "Event Sponsorship" },
+            { name: "Media Buying" },
+            { name: "Influencer Marketing" },
+            { name: "Affiliate Program" }
+          ]
+        }}
       />
       <UserHeader />
 

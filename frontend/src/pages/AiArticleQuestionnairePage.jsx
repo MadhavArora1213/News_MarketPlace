@@ -8,6 +8,8 @@ import Icon from '../components/common/Icon';
 import AiArticleQuestionnaireForm from '../components/forms/AiArticleQuestionnaireForm';
 import { Download, X, Mail, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Theme colors
 const theme = {
@@ -78,6 +80,18 @@ const AiArticleQuestionnairePage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="AI Article Questionnaire | Content Strategy | News Marketplace"
+        description="Fill out our detailed questionnaire to help our AI create high-quality, targeted articles for your brand."
+      />
+      <Schema
+        type="service"
+        data={{
+          name: "AI Content Strategy Questionnaire",
+          description: "A structured questionnaire to define article requirements for AI generation.",
+          provider: "News Marketplace"
+        }}
+      />
       <UserHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

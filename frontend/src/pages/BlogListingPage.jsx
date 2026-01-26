@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 import { createSlugPath } from '../utils/slugify';
@@ -112,6 +114,23 @@ const BlogListingPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('blogs.pageTitle', 'Blogs | News Marketplace')}
+        description={t('blogs.heroSubtitle', 'Stay updated with the latest news, journalism trends, and PR strategies.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('blogs.pageTitle', 'Blogs'),
+          description: t('blogs.heroSubtitle'),
+          items: translatedBlogs.map(blog => ({
+            name: blog.title,
+            description: blog.excerpt,
+            url: window.location.origin + `/blog/${createSlugPath(blog.title, blog.id)}`,
+            image: blog.image
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Hero Section */}

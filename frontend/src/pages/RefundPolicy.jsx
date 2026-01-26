@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -149,6 +151,15 @@ const RefundPolicy = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-800 selection:bg-blue-100">
+            <SEO
+                title={t('refund.heroTitle')}
+                description={t('refund.heroDesc')}
+                keywords={t('refund policy, news marketplace, guarantees')}
+            />
+            <Schema type="article" data={{
+                headline: t('refund.heroTitle'),
+                description: t('refund.heroDesc')
+            }} />
             <UserHeader />
 
             <AuroraBackground />

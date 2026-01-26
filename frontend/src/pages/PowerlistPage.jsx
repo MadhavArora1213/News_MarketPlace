@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -370,6 +372,22 @@ const PowerlistPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Media Power Lists | Influential Personalities & Brands | News Marketplace"
+        description="Discover and nominate influential personalities and brands across various industries in our curated Media Power Lists."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Media Power Lists",
+          description: "A directory of the most influential people and companies in the media industry.",
+          items: powerlists.slice(0, 10).map(item => ({
+            name: item.power_list_name,
+            description: item.description,
+            url: window.location.origin + `/power-lists/${createSlugPath(item.power_list_name, item.id)}`
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

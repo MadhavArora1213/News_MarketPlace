@@ -14,6 +14,8 @@ import {
   FileText, ExternalLink, CheckCircle, ShoppingCart,
   Eye, Star, Calendar, Users, Heart, Share
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { getIdFromSlug } from '../utils/slugify';
 
 const PressPackDetailPage = () => {
@@ -365,6 +367,24 @@ const PressPackDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={`${pressPack.name} - Press Release Package - News Marketplace`}
+        description={pressPack.description || `Get your press release published on ${pressPack.distribution_media_websites}+ websites.`}
+        image={pressPack.image}
+        type="product"
+      />
+      <Schema
+        type="service"
+        data={{
+          name: pressPack.name,
+          description: pressPack.description,
+          areaServed: pressPack.region,
+          catalogName: "Press Release Components",
+          services: includedPublications.map(pub => ({
+            name: pub.publication_name
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

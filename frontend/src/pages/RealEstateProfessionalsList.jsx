@@ -18,6 +18,8 @@ import {
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { createSlugPath } from '../utils/slugify';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -326,6 +328,22 @@ const RealEstateProfessionalsList = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Real Estate Professionals | Industry Experts | News Marketplace"
+        description="Connect with leading real estate professionals, agency owners, and agents from around the world."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Real Estate Professionals Directory",
+          description: "A directory of verified real estate professionals and industry experts.",
+          items: sortedProfessionals.slice(0, 10).map(pro => ({
+            name: `${pro.first_name} ${pro.last_name}`,
+            description: getProfessionTypeLabel(pro),
+            url: window.location.origin + `/real-estate-professionals/${createSlugPath(`${pro.first_name} ${pro.last_name}`, pro.id)}`
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

@@ -9,6 +9,8 @@ import AuthModal from '../components/auth/AuthModal';
 import {
   ArrowLeft, ExternalLink, Globe, Calendar, Building, User, MapPin, Tag
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -149,6 +151,21 @@ const PublishedWorkDetailPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${publishedWork.publication_name} | Published Work | News Marketplace`}
+        description={`Details about the work "${publishedWork.publication_name}" published on ${formatDate(publishedWork.article_date)} for ${publishedWork.company_name}.`}
+      />
+      <Schema
+        type="article"
+        data={{
+          headline: publishedWork.publication_name,
+          description: publishedWork.description || `Article published on ${publishedWork.publication_name}`,
+          datePublished: publishedWork.article_date,
+          author: publishedWork.person_name,
+          publisher: publishedWork.publication_name,
+          url: publishedWork.article_link || window.location.href
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

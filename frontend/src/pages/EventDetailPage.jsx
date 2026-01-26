@@ -16,6 +16,8 @@ import {
     Camera, Landmark, Info, ArrowLeft, Share, Heart, ExternalLink,
     CheckCircle, Clock, Zap, Shield, Target
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 const theme = {
     primary: '#1976D2',
@@ -201,6 +203,23 @@ const EventDetailPage = () => {
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
+            <SEO
+                title={`${currentEvent.title} - News Marketplace`}
+                description={currentEvent.description || `Join us for ${currentEvent.title} in ${currentEvent.city}.`}
+                type="event"
+            />
+            <Schema
+                type="event"
+                data={{
+                    name: currentEvent.title,
+                    startDate: currentEvent.start_date,
+                    endDate: currentEvent.end_date,
+                    description: currentEvent.description,
+                    locationName: currentEvent.venue_name || "Online",
+                    location: `${currentEvent.city}, ${currentEvent.country}`,
+                    image: currentEvent.image
+                }}
+            />
             <UserHeader onShowAuth={() => setShowAuth(true)} />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

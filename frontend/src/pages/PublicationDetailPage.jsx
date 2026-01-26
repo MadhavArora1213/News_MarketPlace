@@ -14,6 +14,8 @@ import {
   MapPin, Calendar, Users, Zap, Eye, Heart, Share,
   Instagram, Facebook, Twitter, Linkedin
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { getIdFromSlug } from '../utils/slugify';
 
 // Updated theme colors matching the color pal
@@ -259,6 +261,25 @@ const PublicationDetailPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${publication.publication_name} - News Marketplace`}
+        description={publication.other_remarks || `Publish on ${publication.publication_name} with News Marketplace.`}
+        image={publication.image}
+        type="product"
+      />
+      <Schema
+        type="service"
+        data={{
+          name: `PR Service on ${publication.publication_name}`,
+          description: publication.other_remarks,
+          areaServed: publication.region,
+          catalogName: "Publication Components",
+          services: [
+            { name: publication.sponsored_or_not ? "Sponsored Article" : "Editorial" },
+            { name: publication.live_on_platform ? "Instant Publication" : "Standard Publication" }
+          ]
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

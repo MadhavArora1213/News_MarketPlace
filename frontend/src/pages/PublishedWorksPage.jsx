@@ -10,6 +10,8 @@ import {
   ExternalLink, Eye
 } from 'lucide-react';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 
 const PublishedWorksPage = () => {
@@ -142,6 +144,22 @@ const PublishedWorksPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
+      <SEO
+        title="Published Works | Global Journalism Database | News Marketplace"
+        description="Explore our extensive database of published journalistic works from around the globe. Filter by year, industry, and country."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Published Works Database",
+          description: "A comprehensive collection of published articles and journalistic works verified by News Marketplace.",
+          items: filteredWorks.slice(0, 10).map(work => ({
+            name: work.publication_name,
+            description: `Published on ${formatDate(work.article_date)} in ${work.industry} industry.`,
+            url: window.location.origin + `/published-works/${work.id}`
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Disclaimer Ticker */}

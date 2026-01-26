@@ -13,6 +13,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
 
 const EventsPage = () => {
@@ -161,6 +163,23 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
+      <SEO
+        title={t('events.seo.title', 'Luxury Events & Media Placements | News Marketplace')}
+        description={t('events.seo.desc', 'Register interest for exclusive luxury events, speaker opportunities, and media partnerships.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('events.hero.title'),
+          description: t('events.hero.desc'),
+          items: filteredEvents.map(event => ({
+            name: event.title,
+            description: event.description,
+            url: window.location.origin + `/events/${createSlugPath(event.title, event.id)}`,
+            image: event.image
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Modern Hero Section */}

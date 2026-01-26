@@ -5,6 +5,8 @@ import { ArrowLeft, Calendar, User, ArrowRight, Clock } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationObject, useTranslationArray } from '../hooks/useTranslation';
 import { getIdFromSlug, createSlugPath } from '../utils/slugify';
@@ -258,6 +260,24 @@ const BlogDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={translatedBlog.title}
+        description={getExcerpt(translatedBlog.content)}
+        image={translatedBlog.image}
+        url={window.location.href}
+        type="article"
+      />
+      <Schema
+        type="article"
+        data={{
+          headline: translatedBlog.title,
+          description: getExcerpt(translatedBlog.content),
+          image: translatedBlog.image,
+          datePublished: translatedBlog.publishDate,
+          author: "News Marketplace",
+          url: window.location.href
+        }}
+      />
       <UserHeader />
 
       {/* Hero Section */}

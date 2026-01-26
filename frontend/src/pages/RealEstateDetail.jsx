@@ -12,6 +12,8 @@ import {
   Phone, MessageCircle, Calendar, Eye, Star, BookOpen, Target,
   TrendingUp, Award, Zap, Users, Globe, FileText, BarChart3
 } from 'lucide-react';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -303,6 +305,23 @@ const RealEstateDetail = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${realEstate.first_name} ${realEstate.last_name} - Real Estate Professional`}
+        description={realEstate.description || `Connect with ${realEstate.first_name} ${realEstate.last_name}, a verified real estate professional.`}
+        image={realEstate.image}
+        type="profile"
+      />
+      <Schema
+        type="real-estate"
+        data={{
+          title: `${realEstate.first_name} ${realEstate.last_name}`,
+          description: realEstate.description,
+          image: realEstate.image,
+          datePosted: realEstate.created_at,
+          price: 0, // Profile doesn't have a single price
+          location: realEstate.current_residence_city || realEstate.location
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

@@ -4,6 +4,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -82,6 +83,10 @@ const CSR = () => {
         description={t('csr.seo.desc')}
         keywords={t('csr.seo.keywords')}
       />
+      <Schema type="article" data={{
+        headline: t('csr.hero.title'),
+        description: t('csr.hero.desc')
+      }} />
       <UserHeader />
 
       {/* Impact Hero */}

@@ -8,6 +8,8 @@ import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import AwardSubmissionForm from '../components/user/AwardSubmissionForm';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import {
   ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield,
   Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
@@ -198,6 +200,22 @@ const AwardDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
+      <SEO
+        title={`${award.award_name} - News Marketplace`}
+        description={award.description || `Nominate for ${award.award_name} organized by ${award.award_organiser_name}.`}
+        image={award.image}
+        type="event"
+      />
+      <Schema
+        type="event"
+        data={{
+          name: award.award_name,
+          description: award.description,
+          startDate: award.tentative_month, // Schema.org expects ISO date, but we can pass string
+          location: award.award_city || "Global",
+          image: award.image
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

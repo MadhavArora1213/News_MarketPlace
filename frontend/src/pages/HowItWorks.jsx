@@ -5,6 +5,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -106,6 +107,17 @@ const HowItWorks = () => {
         title={t('howItWorks.seo.title', 'How It Works | News Marketplace')}
         description={t('howItWorks.seo.desc', 'A simple, transparent guide to using our news marketplace.')}
         keywords={t('howItWorks.seo.keywords', 'guide, help, steps, verification')}
+      />
+      <Schema
+        type="howto"
+        data={{
+          title: t('howItWorks.seo.title', 'How It Works | News Marketplace'),
+          description: t('howItWorks.seo.desc', 'A simple, transparent guide to using our news marketplace.'),
+          steps: steps.map(s => ({
+            title: s.title,
+            description: s.description
+          }))
+        }}
       />
       <UserHeader />
 

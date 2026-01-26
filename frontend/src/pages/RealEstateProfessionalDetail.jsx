@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -455,6 +457,22 @@ const RealEstateProfessionalDetail = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title={`${professional.first_name} ${professional.last_name} | Real Estate Professional | News Marketplace`}
+        description={`Professional profile of ${professional.first_name} ${professional.last_name}, a verified real estate expert in ${professional.current_residence_city}.`}
+        image={professional.image}
+      />
+      <Schema
+        type="person"
+        data={{
+          name: `${professional.first_name} ${professional.last_name}`,
+          jobTitle: "Real Estate Professional",
+          address: professional.current_residence_city,
+          nationality: professional.nationality,
+          image: professional.image,
+          url: window.location.href
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}

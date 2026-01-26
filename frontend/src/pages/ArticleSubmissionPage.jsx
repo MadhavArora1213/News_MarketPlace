@@ -7,6 +7,8 @@ import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import api from '../services/api';
 import ReCAPTCHA from 'react-google-recaptcha';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Theme colors
 const theme = {
@@ -421,6 +423,18 @@ const ArticleSubmissionPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Submit an Article | News Marketplace"
+        description="Share your story with the world. Submit your article to our network of premium publications."
+      />
+      <Schema
+        type="service"
+        data={{
+          name: "Article Submission Service",
+          description: "A platform for journalists and writers to submit articles to premium publications.",
+          provider: "News Marketplace"
+        }}
+      />
       <UserHeader />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

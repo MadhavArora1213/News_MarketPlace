@@ -3,6 +3,7 @@ import Icon from '../components/common/Icon';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -80,6 +81,17 @@ const PressGuidelines = () => {
         title={t('press.seo.title')}
         description={t('press.seo.desc')}
         keywords={t('press.seo.keywords')}
+      />
+      <Schema
+        type="howto"
+        data={{
+          title: t('press.main.title'),
+          description: t('press.main.desc'),
+          steps: distributionProcess.map((step, idx) => ({
+            title: `Step ${idx + 1}`,
+            description: step
+          }))
+        }}
       />
       <UserHeader />
 

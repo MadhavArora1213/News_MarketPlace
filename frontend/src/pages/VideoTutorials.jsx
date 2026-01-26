@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Play, Bookmark, BookmarkCheck, Clock, Filter, Search, Star, Users, Eye, CheckCircle2, PlayCircle, PauseCircle } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 import { videos } from '../data/videos';
@@ -106,6 +108,22 @@ const VideoTutorials = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('videoTutorials.seo.title', 'Video Tutorials | News Marketplace')}
+        description={t('videoTutorials.seo.desc', 'Watch expert video tutorials on journalism, content creation, and marketing.')}
+        keywords={t('videoTutorials.seo.keywords', 'tutorials, video guides, journalism training, content creation tips')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('videoTutorials.hero.title'),
+          description: t('videoTutorials.hero.desc'),
+          items: displayVideos.map(v => ({
+            title: v.title,
+            url: window.location.href // Ideally link to specific video if routes existed
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Hero Section */}

@@ -16,6 +16,8 @@ import {
   Home, Bed, Bath, Square
 } from 'lucide-react';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -332,6 +334,23 @@ const RealEstateList = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Real Estate Professional Influencers | News Marketplace"
+        description="Connect with a diverse network of real estate agency owners, agents, and marketing experts to amplify your brand equity and drive sales."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Real Estate Professional Influencers",
+          description: "Diverse network of real estate professionals including agency owners, agents, and marketing experts.",
+          items: sortedRealEstates.map(estate => ({
+            name: estate.name,
+            description: `${estate.profession} in ${estate.location} with ${formatFollowers(estate.followers)} followers.`,
+            url: window.location.origin + `/real-estates/${estate.id}`,
+            image: estate.images?.[0]
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

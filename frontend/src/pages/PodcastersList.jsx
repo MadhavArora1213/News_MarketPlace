@@ -9,6 +9,8 @@ import PodcasterSubmissionForm from '../components/user/PodcasterSubmissionForm'
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
 
 // Global error handler for ResizeObserver
@@ -334,6 +336,23 @@ const PodcastersList = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={t('podcasters.seo.title', 'Top Podcast Hosts & Influencers | News Marketplace')}
+        description={t('podcasters.seo.desc', 'Discover and connect with top podcast hosts across various industries for high-impact media placements.')}
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: t('podcasters.hero.title'),
+          description: t('podcasters.hero.desc'),
+          items: filteredPodcasters.map(podcaster => ({
+            name: podcaster.podcast_name,
+            description: `Podcast by ${podcaster.podcast_host} in ${podcaster.podcast_focus_industry} focused on ${podcaster.podcast_region}.`,
+            url: window.location.origin + `/podcasters/${createSlugPath(podcaster.podcast_name, podcaster.id)}`,
+            image: null // Podcasters might not have images in listing
+          }))
+        }}
+      />
       <UserHeader />
 
       {/* Enhanced Hero Section */}

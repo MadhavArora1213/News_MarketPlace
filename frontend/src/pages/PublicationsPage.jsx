@@ -18,6 +18,8 @@ import {
   ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Newspaper, Plus
 } from 'lucide-react';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -357,6 +359,22 @@ const PublicationsPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
+      <SEO
+        title="Browse Premium Publications | Global Media Reach | News Marketplace"
+        description="Explore thousands of premium publications across various regions, languages, and industries. Guaranteed placement for your content."
+      />
+      <Schema
+        type="collection"
+        data={{
+          title: "Premium Publications Directory",
+          description: "A comprehensive directory of global publications with verified SEO metrics.",
+          items: publications.slice(0, 10).map(pub => ({
+            name: pub.publication_name,
+            description: pub.publication_primary_focus,
+            url: window.location.origin + `/publications/${createSlugPath(pub.publication_name, pub.id)}`
+          }))
+        }}
+      />
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Enhanced Hero Section */}

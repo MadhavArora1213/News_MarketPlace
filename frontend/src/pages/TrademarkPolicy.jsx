@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -89,6 +91,15 @@ const TrademarkPolicy = () => {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
+            <SEO
+                title={t('trademark.heroTitle')}
+                description={t('trademark.heroDesc')}
+                keywords={t('trademark policy, news marketplace, brand assets')}
+            />
+            <Schema type="article" data={{
+                headline: t('trademark.heroTitle'),
+                description: t('trademark.heroDesc')
+            }} />
             <UserHeader />
 
             {/* Abstract Background Shapes */}

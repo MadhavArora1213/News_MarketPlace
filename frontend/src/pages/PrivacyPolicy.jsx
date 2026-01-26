@@ -4,6 +4,8 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const PrivacyPolicy = () => {
@@ -155,6 +157,11 @@ const PrivacyPolicy = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-800 selection:bg-blue-100">
+            <SEO
+                title={t('privacy.pageTitle', 'Privacy Policy')}
+                description={t('privacy.heroDesc')}
+            />
+            <Schema type="organization" />
             <UserHeader />
 
             <AuroraBackground />

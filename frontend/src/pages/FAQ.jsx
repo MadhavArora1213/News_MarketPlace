@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
+import Schema from '../components/common/Schema';
+import SEO from '../components/common/SEO';
 import { useLanguage } from '../context/LanguageContext';
 
 const FAQ = ({ loading: externalLoading }) => {
@@ -133,6 +135,12 @@ const FAQ = ({ loading: externalLoading }) => {
 
   return (
     <div className={`min-h-screen bg-[#E3F2FD] ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <SEO
+        title={t('FAQ - News Marketplace')}
+        description={t('Find answers to frequently asked questions about News Marketplace services, guaranteed publications, pricing, and media placement.')}
+        keywords={t('faq, news marketplace, guaranteed publication, pr services, media placement')}
+      />
+      <Schema type="faq" data={faqData} />
       {/* FAQ Content */}
       <section className="py-10">
         <div className="max-w-7xl mx-auto px-4">

@@ -3,6 +3,8 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
+import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const DataProtection = () => {
@@ -87,6 +89,11 @@ const DataProtection = () => {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-emerald-100 selection:text-emerald-900">
+            <SEO
+                title={t('dataProtection.seo.title', 'Data Protection (GDPR) | News Marketplace')}
+                description={t('dataProtection.seo.desc', 'Understand your data rights and our protection measures under GDPR.')}
+            />
+            <Schema type="webpage" data={{ title: "Data Protection", description: "GDPR and Data Protection Policy" }} />
             <UserHeader />
 
             {/* Geometric Accent Background - Light Theme */}
