@@ -172,11 +172,11 @@ const UserHeader = () => {
 
           {/* Center: Logo */}
           <Link to="/" className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4 group cursor-pointer">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter transition-all duration-300 bg-gradient-to-r from-[#1976D2] via-[#42A5F5] to-[#1976D2] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x group-hover:scale-105">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter leading-none transition-all duration-300 bg-gradient-to-r from-[#1976D2] via-[#42A5F5] to-[#1976D2] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x group-hover:scale-105">
               VaaS Solutions
             </h1>
             <div className="hidden sm:block w-px h-8 bg-gray-200/80" />
-            <span className="text-[10px] sm:text-xs md:text-sm font-bold text-gray-400/80 tracking-[0.15em] uppercase opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <span className="text-[10px] sm:text-xs md:text-sm font-bold text-gray-400/80 tracking-[0.15em] uppercase leading-none opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Vision to Visibility, Instantly
             </span>
           </Link>
