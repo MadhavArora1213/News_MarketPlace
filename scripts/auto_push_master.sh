@@ -61,7 +61,7 @@ main() {
 
     if ! has_changes; then
         echo "No changes detected in monitored paths. Skipping push."
-        exit 0
+        return 0
     fi
 
     log_message "🚀 Changes detected. Starting auto-push..."
