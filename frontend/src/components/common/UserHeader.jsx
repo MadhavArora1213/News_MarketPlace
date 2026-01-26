@@ -274,20 +274,14 @@ const UserHeader = () => {
                   <span className="whitespace-nowrap">{service.name}</span>
                 </button>
               ) : (
-                <a
+                <Link
                   key={`service-${index}`}
-                  href={service.href}
+                  to={service.href}
                   className="group relative flex items-center gap-x-1.5 px-2 xl:px-2.5 py-1.5 text-sm font-medium text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-lg transition-all duration-300 border border-transparent hover:border-white/20 hover:shadow-md"
-                  onClick={(e) => {
-                    if (!isAuthenticated && !service.bypassAuth) {
-                      e.preventDefault();
-                      showAuthModal();
-                    }
-                  }}
                 >
                   <Icon name={service.icon} size="sm" className="text-gray-500 group-hover:text-[#1976D2] transition-colors" />
                   <span className="whitespace-nowrap">{service.name}</span>
-                </a>
+                </Link>
               )
             ))}
 
@@ -305,26 +299,33 @@ const UserHeader = () => {
                     <div className="mb-4">
                       <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('More Actions')}</h4>
                       <div className="grid grid-cols-1 gap-2">
-                        {overflowServices.map((service, index) => (
-                          <a
-                            key={`overflow-${index}`}
-                            href={service.href}
-                            className="flex items-center gap-x-3 px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
-                            onClick={(e) => {
-                              if (service.onClick) {
-                                e.preventDefault();
-                                if (!isAuthenticated) showAuthModal();
-                                else service.onClick();
-                              } else if (!isAuthenticated && !service.bypassAuth) {
-                                e.preventDefault();
-                                showAuthModal();
-                              }
-                            }}
-                          >
-                            <Icon name={service.icon} size="xs" className="text-gray-500 flex-shrink-0" />
-                            <span className="text-left">{service.name}</span>
-                          </a>
-                        ))}
+                        {overflowServices.map((service, index) => {
+                          if (service.onClick) {
+                            return (
+                              <button
+                                key={`overflow-${index}`}
+                                onClick={(e) => {
+                                  if (!isAuthenticated) showAuthModal();
+                                  else service.onClick();
+                                }}
+                                className="w-full flex items-center gap-x-3 px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
+                              >
+                                <Icon name={service.icon} size="xs" className="text-gray-500 flex-shrink-0" />
+                                <span className="text-left">{service.name}</span>
+                              </button>
+                            );
+                          }
+                          return (
+                            <Link
+                              key={`overflow-${index}`}
+                              to={service.href}
+                              className="flex items-center gap-x-3 px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
+                            >
+                              <Icon name={service.icon} size="xs" className="text-gray-500 flex-shrink-0" />
+                              <span className="text-left">{service.name}</span>
+                            </Link>
+                          );
+                        })}
                       </div>
                       <div className="my-3 border-t border-gray-100"></div>
                     </div>
@@ -333,20 +334,14 @@ const UserHeader = () => {
                   <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('Resources')}</h4>
                   <div className="grid grid-cols-1 gap-2">
                     {menuItems.map((item, index) => (
-                      <a
+                      <Link
                         key={index}
-                        href={item.href}
+                        to={item.href}
                         className="flex items-center gap-x-3 px-3 py-2.5 text-xs text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded transition-all duration-200"
-                        onClick={(e) => {
-                          if (!isAuthenticated && !item.bypassAuth && item.hasAuthCheck !== false) {
-                            e.preventDefault();
-                            showAuthModal();
-                          }
-                        }}
                       >
                         <Icon name={item.icon} size="xs" className="text-gray-500 flex-shrink-0" />
                         <span className="text-left">{item.text}</span>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -379,20 +374,14 @@ const UserHeader = () => {
               <div className="pb-2">
                 <div className="grid grid-cols-3 gap-1">
                   {mobileShowAllItems ? allItems.map((item, index) => (
-                    <a
+                    <Link
                       key={index}
-                      href={item.href}
+                      to={item.href}
                       className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
-                      onClick={(e) => {
-                        if (!isAuthenticated && !item.bypassAuth && item.hasAuthCheck !== false) {
-                          e.preventDefault();
-                          showAuthModal();
-                        }
-                      }}
                     >
                       <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
                       <span className="text-xs leading-tight truncate w-full">{item.name}</span>
-                    </a>
+                    </Link>
                   )) : allItems.slice(0, 5).map((item, index) => {
                     const serviceItem = services.find(s => s.name === item.name);
                     if (serviceItem && serviceItem.onClick) {
@@ -414,20 +403,14 @@ const UserHeader = () => {
                       );
                     }
                     return (
-                      <a
+                      <Link
                         key={index}
-                        href={item.href}
+                        to={item.href}
                         className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
-                        onClick={(e) => {
-                          if (!isAuthenticated && !item.bypassAuth) {
-                            e.preventDefault();
-                            showAuthModal();
-                          }
-                        }}
                       >
                         <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
                         <span className="text-xs leading-tight truncate w-full">{item.name}</span>
-                      </a>
+                      </Link>
                     );
                   })}
                   {!mobileShowAllItems && allItems.length > 5 && (
