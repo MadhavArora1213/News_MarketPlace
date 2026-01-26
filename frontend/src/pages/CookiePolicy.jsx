@@ -1,12 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const CookiePolicy = () => {
     const { t } = useLanguage();
+    const [loading, setLoading] = useState(true);
     // Mock state for the interactive visual
     const [toggles, setToggles] = useState({
         essential: true,
@@ -15,10 +17,53 @@ const CookiePolicy = () => {
         marketing: false
     });
 
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1500);
+        return () => clearTimeout(timer);
+    }, []);
+
     const handleToggle = (key) => {
         if (key === 'essential') return; // Essential always on
         setToggles(prev => ({ ...prev, [key]: !prev[key] }));
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+                <UserHeader />
+                <div className="bg-[#0f172a] text-white pt-20 pb-32 relative overflow-hidden">
+                    <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+                        <Skeleton className="w-16 h-16 rounded-full mx-auto mb-8 bg-white/10" />
+                        <Skeleton className="h-20 w-3/4 mx-auto mb-8 bg-white/10" />
+                        <Skeleton className="h-6 w-1/2 mx-auto bg-white/10" />
+                    </div>
+                </div>
+                <div className="relative z-20 max-w-5xl mx-auto px-4 -mt-20 pb-24">
+                    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                        <div className="bg-slate-50 px-8 py-6 border-b border-slate-200 flex justify-between items-center">
+                            <Skeleton className="w-20 h-4" />
+                            <Skeleton className="w-32 h-4" />
+                        </div>
+                        <div className="divide-y divide-slate-100">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="p-8">
+                                    <div className="flex justify-between">
+                                        <div className="flex-1">
+                                            <Skeleton className="h-8 w-1/3 mb-4" />
+                                            <Skeleton className="h-4 w-3/4 mb-4" />
+                                            <Skeleton className="h-4 w-20" />
+                                        </div>
+                                        <Skeleton className="w-14 h-8 rounded-full" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <UserFooter />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -210,3 +255,4 @@ const CookiePolicy = () => {
 };
 
 export default CookiePolicy;
+

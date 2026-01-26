@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, FileText, FileSpreadsheet, FileImage, Search, Filter, Calendar, User, CheckCircle2 } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
-
-
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 
@@ -13,6 +12,12 @@ const DownloadCenter = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadedItems, setDownloadedItems] = useState(new Set(['1', '3', '5']));
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const categories = [
     { id: 'all', name: t('downloadCenter.categories.all'), count: 10 },
@@ -210,8 +215,6 @@ const DownloadCenter = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    console.log(`Downloading resource ${resourceId}: ${resource.title}`);
   };
 
   const getFileTypeColor = (fileType) => {
@@ -224,6 +227,40 @@ const DownloadCenter = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-[#FFF3E0] to-white">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto" />
+          </div>
+        </section>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Skeleton className="h-12 w-full mb-6" />
+          <div className="flex gap-3 mb-8">
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-32" />)}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white p-6 border rounded-lg">
+                <div className="flex justify-between mb-4">
+                  <Skeleton className="w-12 h-12" />
+                  <Skeleton className="w-5 h-5" />
+                </div>
+                <Skeleton className="h-6 w-16 mb-2" />
+                <Skeleton className="h-8 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-4" />
+                <Skeleton className="h-12 w-full mt-4 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -405,4 +442,5 @@ const DownloadCenter = () => {
 };
 
 export default DownloadCenter;
+
 

@@ -6,6 +6,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
+import Skeleton from '../components/common/Skeleton';
 import {
   ArrowLeft, Camera, Globe, Star, ExternalLink, Shield,
   Link as LinkIcon, FileText, CheckCircle, DollarSign, Clock,
@@ -246,20 +247,58 @@ const PaparazziDetailPage = () => {
     return count.toString();
   };
 
-  if (loading) {
+  if (loading && !paparazzi) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('paparazziDetails.loading')}</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Skeleton className="h-6 w-48 mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-lg border p-8 space-y-8">
+                <div className="flex gap-6">
+                  <Skeleton className="h-20 w-20 rounded-xl" />
+                  <div className="flex-1 space-y-4">
+                    <Skeleton className="h-10 w-3/4" />
+                    <div className="flex gap-4">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-10 w-40" />
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+                <div className="space-y-4 text-center">
+                  <Skeleton className="h-6 w-32 mx-auto" />
+                  <Skeleton className="h-32 w-32 rounded-full mx-auto" />
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-white rounded-lg border p-6 space-y-6">
+                <div className="text-center space-y-2">
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                  <Skeleton className="h-4 w-20 mx-auto" />
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+                <Skeleton className="h-12 w-full" />
+              </div>
+              <div className="bg-white rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-24 w-24 rounded-full mx-auto" />
+              </div>
+            </div>
           </div>
         </div>
         <UserFooter />

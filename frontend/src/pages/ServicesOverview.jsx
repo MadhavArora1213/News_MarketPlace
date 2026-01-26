@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const ServicesOverview = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const services = [
     {
@@ -72,6 +79,30 @@ const ServicesOverview = () => {
       icon: "star",
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <UserHeader />
+        <div className="pt-20 pb-16 text-center px-4 max-w-4xl mx-auto">
+          <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+          <Skeleton className="h-16 w-3/4 mx-auto mb-4" />
+          <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i}>
+                <Skeleton className="w-28 h-28 rounded-full mx-auto mb-6" />
+                <Skeleton className="h-[400px] w-full rounded-3xl" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">

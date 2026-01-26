@@ -16,6 +16,7 @@ import {
   Link as LinkIcon, Image as ImageIcon, FileText, Shield,
   ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Newspaper, Plus
 } from 'lucide-react';
+import Skeleton from '../components/common/Skeleton';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -291,21 +292,62 @@ const PublicationsPage = () => {
     return numPrice > 0 ? `$${numPrice.toFixed(2)}` : 'Contact for pricing';
   };
 
-  if (loading) {
+  if (loading && publications.length === 0) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('publications.loading')}</p>
+        <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-[#E3F2FD] to-white">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto mb-8" />
+            <Skeleton className="h-14 w-full max-w-xl mx-auto rounded-lg" />
           </div>
+        </section>
+        <div className="flex max-w-7xl mx-auto p-6 gap-6">
+          <aside className="w-1/4 hidden md:block">
+            <Skeleton className="h-10 w-1/2 mb-6" />
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg space-y-4">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="p-4 border border-orange-200 rounded-lg space-y-4">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="p-4 border border-blue-200 rounded-lg space-y-4">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </aside>
+          <main className="flex-1">
+            <Skeleton className="h-20 w-full mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white p-6 border rounded-lg">
+                  <div className="flex justify-between mb-4">
+                    <div className="flex-1">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-2" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                    <Skeleton className="h-12 w-20 rounded-lg" />
+                  </div>
+                  <Skeleton className="h-16 w-full mb-4" />
+                  <div className="flex justify-between mb-4">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <Skeleton className="h-12 w-full rounded-lg" />
+                </div>
+              ))}
+            </div>
+          </main>
         </div>
         <UserFooter />
       </div>

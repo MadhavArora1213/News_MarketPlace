@@ -9,6 +9,7 @@ import AuthModal from '../components/auth/AuthModal';
 import {
   ExternalLink, Eye
 } from 'lucide-react';
+import Skeleton from '../components/common/Skeleton';
 
 
 const PublishedWorksPage = () => {
@@ -92,10 +93,46 @@ const PublishedWorksPage = () => {
     return (
       <div className="min-h-screen bg-[#FAFAFA]">
         <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 mx-auto mb-4 border-4 border-[#1976D2] border-t-transparent"></div>
-            <p className="text-lg text-[#757575]">Loading published works...</p>
+        <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-[#E3F2FD] to-white border-b">
+          <div className="max-w-7xl mx-auto text-center space-y-6">
+            <Skeleton className="h-16 w-3/4 mx-auto" />
+            <Skeleton className="h-6 w-1/2 mx-auto" />
+          </div>
+        </section>
+        <div className="max-w-7xl mx-auto p-6 space-y-8">
+          <div className="flex gap-4">
+            <Skeleton className="h-10 flex-1" />
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <Skeleton className="h-10 w-40" />
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-10 w-40" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white p-6 border rounded-lg space-y-4">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-6 w-3/4" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+                <Skeleton className="h-12 w-full rounded-lg" />
+              </div>
+            ))}
           </div>
         </div>
         <UserFooter />

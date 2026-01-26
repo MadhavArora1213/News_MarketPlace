@@ -4,6 +4,7 @@ import { Radio, Search, Filter, Globe, MapPin, User, Grid, List, ExternalLink, B
 import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import api from '../services/api';
 
 // Enhanced theme colors inspired by VideoTutorials
@@ -185,6 +186,53 @@ const RadioPage = () => {
     navigate(`/radio/${radio.id}`);
   };
 
+  if (loading && radios.length === 0) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-[#E3F2FD] to-white">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto mb-8" />
+            <Skeleton className="h-14 w-full max-w-2xl mx-auto rounded-lg" />
+          </div>
+        </section>
+        <div className="flex max-w-7xl mx-auto p-6 gap-6">
+          <aside className="w-1/4 hidden md:block">
+            <Skeleton className="h-10 w-1/2 mb-6" />
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg space-y-4">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </aside>
+          <main className="flex-1">
+            <Skeleton className="h-20 w-full mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border p-6 h-80 flex flex-col justify-end">
+                  <div className="space-y-3">
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <UserHeader />
@@ -323,7 +371,7 @@ const RadioPage = () => {
           {/* Enhanced Controls Bar */}
           <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
             borderColor: theme.borderLight,
-            boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+            boxShadow: '0 8px 10px rgba(2,6,23,0.06)'
           }}>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">

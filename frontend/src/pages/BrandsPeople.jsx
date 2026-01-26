@@ -1,12 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from '../components/common/Icon';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const BrandsPeople = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <UserHeader />
+        <div className="pt-20 pb-16 text-center px-4 max-w-4xl mx-auto">
+          <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+          <Skeleton className="h-16 w-3/4 mx-auto mb-4" />
+          <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                <Skeleton className="w-12 h-12 rounded-xl mb-6" />
+                <Skeleton className="h-8 w-1/2 mb-3" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-16">
+            <Skeleton className="h-64 w-full rounded-3xl" />
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">

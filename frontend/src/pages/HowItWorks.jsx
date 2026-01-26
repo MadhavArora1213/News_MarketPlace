@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const HowItWorks = () => {
   const { t } = useLanguage();
   const [openFAQ, setOpenFAQ] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleFAQ = (index) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -60,6 +67,38 @@ const HowItWorks = () => {
       answer: t('howItWorks.faq.3.a')
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <div className="pt-12 pb-20 px-6 max-w-5xl mx-auto text-center">
+          <Skeleton className="h-4 w-32 mx-auto mb-6" />
+          <Skeleton className="h-20 w-3/4 mx-auto mb-8" />
+          <Skeleton className="h-10 w-1/2 mx-auto" />
+        </div>
+        <div className="max-w-5xl mx-auto px-6 pb-24">
+          <div className="space-y-16">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex gap-20">
+                <Skeleton className="w-28 h-28 rounded-[2rem]" />
+                <div className="flex-1">
+                  <Skeleton className="h-10 w-1/2 mb-4" />
+                  <Skeleton className="h-6 w-full mb-8" />
+                  <div className="flex gap-3">
+                    <Skeleton className="h-8 w-24 rounded-full" />
+                    <Skeleton className="h-8 w-24 rounded-full" />
+                    <Skeleton className="h-8 w-24 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">

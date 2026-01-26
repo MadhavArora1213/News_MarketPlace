@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const RefundPolicy = () => {
     const { t } = useLanguage();
     const [activeSection, setActiveSection] = useState(0);
+    const [loading, setLoading] = useState(true);
     const observerRefs = useRef([]);
 
     const sections = [
@@ -65,6 +67,8 @@ const RefundPolicy = () => {
     ];
 
     useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1500);
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -81,7 +85,10 @@ const RefundPolicy = () => {
             if (ref) observer.observe(ref);
         });
 
-        return () => observer.disconnect();
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
     }, []);
 
     // Custom "Aurora" Background Component
@@ -93,6 +100,52 @@ const RefundPolicy = () => {
             <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
         </div>
     );
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white font-sans text-slate-800">
+                <UserHeader />
+                <main className="relative z-10">
+                    <section className="min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center items-center text-center px-4 relative pt-12 pb-12">
+                        <div className="max-w-4xl mx-auto w-full">
+                            <Skeleton className="h-20 w-3/4 mx-auto mb-6" />
+                            <Skeleton className="h-10 w-1/2 mx-auto" />
+                        </div>
+                    </section>
+                    <div className="relative max-w-7xl mx-auto px-4 lg:px-8 pb-20 md:pb-40">
+                        <div className="lg:grid lg:grid-cols-2 gap-10 lg:gap-20">
+                            <div className="hidden lg:block relative">
+                                <div className="sticky top-1/4 h-[auto] min-h-[400px] flex flex-col justify-start gap-8">
+                                    <Skeleton className="w-full aspect-square max-w-[250px] rounded-[2rem]" />
+                                    <div className="space-y-4">
+                                        {[...Array(4)].map((_, i) => (
+                                            <Skeleton key={i} className="h-8 w-full rounded-lg" />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-16">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className="bg-white/80 p-8 rounded-[2rem] border border-slate-100">
+                                        <Skeleton className="h-12 w-3/4 mb-6" />
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-2/3 mb-8" />
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <Skeleton className="h-16 rounded-xl" />
+                                            <Skeleton className="h-16 rounded-xl" />
+                                            <Skeleton className="h-16 rounded-xl" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <UserFooter />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-800 selection:bg-blue-100">
@@ -213,3 +266,4 @@ const RefundPolicy = () => {
 };
 
 export default RefundPolicy;
+

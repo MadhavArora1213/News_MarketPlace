@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const AboutUs = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const aboutSections = [
     {
@@ -83,6 +90,32 @@ const AboutUs = () => {
     t('about.values.4'),
     t('about.values.5')
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <UserHeader />
+        <div className="pt-12 pb-16 text-center px-4">
+          <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+          <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+          <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+          <div className="space-y-12 md:space-y-24">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className={`flex flex-col md:flex-row gap-8 md:gap-16 ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
+                <div className="w-full md:w-1/2">
+                  <Skeleton className="h-48 w-full rounded-3xl" />
+                </div>
+                <div className="w-full md:w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">

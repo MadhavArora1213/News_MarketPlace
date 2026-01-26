@@ -23,7 +23,7 @@ import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 
 const Home = () => {
-  const [showAuth, setSowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 

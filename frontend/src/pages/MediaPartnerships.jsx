@@ -1,14 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 import { Handshake, TrendingUp, Users, Globe, Zap, Target, Star, Award, CheckCircle, ArrowRight, Mail, Phone, MessageSquare } from 'lucide-react';
 
 const MediaPartnerships = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white border-b border-[#E0E0E0]">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto" />
+          </div>
+        </section>
+        <main className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <Skeleton className="h-12 w-1/3 mx-auto mb-6" />
+              <Skeleton className="h-6 w-1/2 mx-auto" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                  <Skeleton className="w-14 h-14 rounded-2xl mb-6" />
+                  <Skeleton className="h-8 w-1/2 mb-3" />
+                  <Skeleton className="h-4 w-full mb-4" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                  </div>
+                  <Skeleton className="h-12 w-full mt-6 rounded-xl" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const TermsAndConditions = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const termsPoints = Array.from({ length: 28 }, (_, i) => ({
     title: t(`terms.point${i + 1}.title`),
@@ -22,6 +29,39 @@ const TermsAndConditions = () => {
     term.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     term.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <UserHeader />
+        <div className="relative z-10 pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-6 w-1/2 mx-auto mb-10" />
+            <Skeleton className="h-12 w-full max-w-lg mx-auto rounded-full" />
+          </div>
+          <div className="space-y-8">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+                  <div className="md:w-1/3">
+                    <Skeleton className="h-6 w-full mb-4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                  <div className="md:w-2/3">
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">

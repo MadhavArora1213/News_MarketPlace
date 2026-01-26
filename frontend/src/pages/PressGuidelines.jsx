@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from '../components/common/Icon';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const PressGuidelines = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const contentRequirements = [
     t('press.content.list.0'),
@@ -31,6 +38,41 @@ const PressGuidelines = () => {
     t('press.process.list.3'),
     t('press.process.list.4')
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <UserHeader />
+        <div className="pt-20 pb-16 text-center px-4 max-w-4xl mx-auto">
+          <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+          <Skeleton className="h-16 w-3/4 mx-auto mb-4" />
+          <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                <Skeleton className="w-12 h-12 rounded-xl mb-6" />
+                <Skeleton className="h-8 w-1/2 mb-6" />
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, j) => (
+                    <div key={j} className="flex items-center gap-3">
+                      <Skeleton className="h-5 w-5 rounded-full" />
+                      <Skeleton className="h-4 flex-1" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-16">
+            <Skeleton className="h-48 w-full rounded-3xl" />
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, FileText, Lightbulb, TrendingUp, Search, Filter, Tag, Calendar, User, Eye, Download } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const ResourceLibrary = () => {
@@ -10,6 +11,12 @@ const ResourceLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const categories = [
     { id: 'all', name: t('resources.categories.all'), count: 48 },
@@ -222,6 +229,43 @@ const ResourceLibrary = () => {
 
   const featuredResources = filteredResources.filter(r => r.featured);
   const regularResources = filteredResources.filter(r => !r.featured);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-[#F3E5F5] to-white">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto" />
+          </div>
+        </section>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Skeleton className="h-12 w-full mb-6" />
+          <div className="flex gap-3 mb-4">
+            {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-10 w-32" />)}
+          </div>
+          <div className="flex gap-3 mb-8">
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-24" />)}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white p-6 border rounded-lg">
+                <Skeleton className="w-12 h-12 mb-4" />
+                <Skeleton className="h-8 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-4" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-6 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -464,4 +508,5 @@ const ResourceLibrary = () => {
 };
 
 export default ResourceLibrary;
+
 

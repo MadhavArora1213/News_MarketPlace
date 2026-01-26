@@ -14,6 +14,7 @@ import {
   Calendar, Award, Link as LinkIcon, Bookmark
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import Skeleton from '../components/common/Skeleton';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -319,17 +320,47 @@ const PowerlistPage = () => {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader onShowAuth={handleShowAuth} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('powerlist.loading')}</p>
+        <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-[#E3F2FD] to-white">
+          <div className="max-w-7xl mx-auto text-center space-y-6">
+            <Skeleton className="h-16 w-3/4 mx-auto" />
+            <Skeleton className="h-6 w-1/2 mx-auto" />
+            <Skeleton className="h-14 w-full max-w-2xl mx-auto rounded-lg" />
+            <Skeleton className="h-12 w-48 mx-auto rounded-lg mt-4" />
           </div>
+        </section>
+        <div className="flex max-w-7xl mx-auto p-6 gap-6">
+          <aside className="w-1/4 hidden md:block">
+            <Skeleton className="h-10 w-1/2 mb-6" />
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg space-y-4">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </aside>
+          <main className="flex-1">
+            <Skeleton className="h-20 w-full mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border overflow-hidden h-80 relative">
+                  <Skeleton className="h-full w-full" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5 space-y-3">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
         </div>
         <UserFooter />
       </div>

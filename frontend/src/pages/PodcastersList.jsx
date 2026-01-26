@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Filter, Mic, Users, MapPin, Globe, Instagram, Youtube, ExternalLink, Plus, Clock, CheckCircle, Headphones, TrendingUp, Star, Play, Radio, Award, BarChart3, Target, Zap } from 'lucide-react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Skeleton from '../components/common/Skeleton';
 import PodcasterSubmissionForm from '../components/user/PodcasterSubmissionForm';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -270,17 +271,49 @@ const PodcastersList = () => {
     return (
       <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
         <UserHeader />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-16 w-16 mx-auto mb-4"
-              style={{
-                borderBottom: `2px solid ${theme.primary}`,
-                borderRight: `2px solid transparent`
-              }}
-            ></div>
-            <p className="text-lg" style={{ color: theme.textSecondary }}>{t('podcasters.loading')}</p>
+        <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-[#E3F2FD] to-white">
+          <div className="max-w-7xl mx-auto text-center">
+            <Skeleton className="h-16 w-3/4 mx-auto mb-6" />
+            <Skeleton className="h-10 w-1/2 mx-auto mb-8" />
+            <Skeleton className="h-14 w-full max-w-2xl mx-auto rounded-lg" />
           </div>
+        </section>
+        <div className="flex max-w-7xl mx-auto p-6 gap-6">
+          <aside className="w-1/4 hidden md:block">
+            <Skeleton className="h-10 w-1/2 mb-6" />
+            <div className="space-y-4">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </aside>
+          <main className="flex-1">
+            <Skeleton className="h-20 w-full mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white p-6 border rounded-lg">
+                  <div className="flex justify-between mb-4">
+                    <div className="flex-1">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-2" />
+                      <Skeleton className="h-4 w-1/3" />
+                    </div>
+                    <Skeleton className="h-12 w-12 rounded-lg" />
+                  </div>
+                  <Skeleton className="h-16 w-full mb-4" />
+                  <div className="flex justify-between mb-4">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <div className="flex gap-2 mb-4">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                  <Skeleton className="h-12 w-full rounded-lg" />
+                </div>
+              ))}
+            </div>
+          </main>
         </div>
         <UserFooter />
       </div>
@@ -429,8 +462,8 @@ const PodcastersList = () => {
                     <button
                       onClick={() => setActiveTab('approved')}
                       className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${activeTab === 'approved'
-                          ? 'bg-white text-[#1976D2] shadow-sm'
-                          : 'text-[#757575] hover:text-[#212121] hover:bg-white'
+                        ? 'bg-white text-[#1976D2] shadow-sm'
+                        : 'text-[#757575] hover:text-[#212121] hover:bg-white'
                         }`}
                     >
                       {t('podcasters.filters.approved')}
@@ -438,8 +471,8 @@ const PodcastersList = () => {
                     <button
                       onClick={() => setActiveTab('my-submissions')}
                       className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${activeTab === 'my-submissions'
-                          ? 'bg-white text-[#1976D2] shadow-sm'
-                          : 'text-[#757575] hover:text-[#212121] hover:bg-white'
+                        ? 'bg-white text-[#1976D2] shadow-sm'
+                        : 'text-[#757575] hover:text-[#212121] hover:bg-white'
                         }`}
                     >
                       {t('podcasters.filters.mySubmissions')}

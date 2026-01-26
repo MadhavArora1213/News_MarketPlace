@@ -8,6 +8,13 @@ const FeatureSlider = ({ loading = false }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { language, t } = useLanguage();
 
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    if (loading) return;
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, [features.length, loading]);
+
   if (loading) {
     return (
       <section className="pb-4 relative overflow-hidden">
@@ -206,12 +213,6 @@ const FeatureSlider = ({ loading = false }) => {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + features.length) % features.length);
   };
-
-  // Auto-slide every 5 seconds
-  useEffect(() => {
-    const timer = setInterval(nextSlide, 5000);
-    return () => clearInterval(timer);
-  }, [features.length]);
 
   const isRTL = language === 'ar';
 

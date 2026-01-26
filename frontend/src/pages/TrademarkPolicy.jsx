@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const TrademarkPolicy = () => {
     const { t } = useLanguage();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const policies = [
         {
@@ -50,6 +57,35 @@ const TrademarkPolicy = () => {
             text: "text-amber-600"
         }
     ];
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+                <UserHeader />
+                <div className="relative z-10 pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div className="text-center mb-20 max-w-3xl mx-auto">
+                        <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+                        <Skeleton className="h-20 w-3/4 mx-auto mb-8" />
+                        <Skeleton className="h-8 w-1/2 mx-auto" />
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div className="lg:col-span-8">
+                            <Skeleton className="h-[400px] w-full rounded-[2.5rem]" />
+                        </div>
+                        <div className="lg:col-span-4">
+                            <Skeleton className="h-[400px] w-full rounded-[2.5rem]" />
+                        </div>
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="lg:col-span-4">
+                                <Skeleton className="h-[300px] w-full rounded-[2.5rem]" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <UserFooter />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
@@ -188,3 +224,4 @@ const TrademarkPolicy = () => {
 };
 
 export default TrademarkPolicy;
+

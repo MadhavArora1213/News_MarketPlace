@@ -3,12 +3,30 @@ import Icon from '../components/common/Icon';
 import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
-const FAQ = ({ loading = false }) => {
+const FAQ = ({ loading: externalLoading }) => {
   const { t, language } = useLanguage();
   const [openItems, setOpenItems] = useState(new Set());
+  const [internalLoading, setInternalLoading] = useState(true);
   const contentRefs = useRef([]);
 
   const isRTL = language === 'ar';
+  const loading = externalLoading !== undefined ? externalLoading : internalLoading;
+
+  useEffect(() => {
+    if (externalLoading === undefined) {
+      const timer = setTimeout(() => setInternalLoading(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [externalLoading]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setOpenItems(new Set(openItems));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [openItems]);
 
   if (loading) {
     return (
@@ -112,15 +130,6 @@ const FAQ = ({ loading = false }) => {
     }
     setOpenItems(newOpenItems);
   };
-
-  useEffect(() => {
-    const handleResize = () => {
-      setOpenItems(new Set(openItems));
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [openItems]);
 
   return (
     <div className={`min-h-screen bg-[#E3F2FD] ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>

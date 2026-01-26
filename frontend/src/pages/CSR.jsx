@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const CSR = () => {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const initiatives = [
     {
@@ -32,6 +39,41 @@ const CSR = () => {
       delay: 0.3
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <UserHeader />
+        <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto text-center border-b border-slate-100">
+          <Skeleton className="h-10 w-48 mx-auto mb-8 rounded-full" />
+          <Skeleton className="h-20 w-3/4 mx-auto mb-8" />
+          <Skeleton className="h-8 w-1/2 mx-auto" />
+        </div>
+        <div className="py-24 px-6 bg-slate-50">
+          <div className="max-w-4xl mx-auto text-center">
+            <Skeleton className="h-8 w-1/3 mx-auto mb-8" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-3/4 mx-auto" />
+          </div>
+        </div>
+        <div className="py-24 px-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm">
+                <Skeleton className="w-16 h-16 rounded-2xl mb-8" />
+                <Skeleton className="h-8 w-3/4 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <UserFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">

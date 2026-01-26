@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const ResellingAgreement = () => {
     // Scroll progress for sidebar interaction (optional visual flair)
     const [scrolled, setScrolled] = useState(0);
+    const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
 
     useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1500);
+
         const handleScroll = () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -18,7 +22,10 @@ const ResellingAgreement = () => {
             setScrolled(scrolled);
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     const agreementPoints = [
@@ -58,6 +65,38 @@ const ResellingAgreement = () => {
             content: t('reselling.points.termination.content')
         }
     ];
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white font-sans text-slate-900">
+                <UserHeader />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+                        <div className="lg:w-1/3">
+                            <Skeleton className="h-6 w-32 mb-8" />
+                            <Skeleton className="h-24 w-full mb-8" />
+                            <Skeleton className="h-20 w-3/4 mb-10" />
+                            <Skeleton className="h-10 w-48 rounded-full" />
+                        </div>
+                        <div className="lg:w-2/3 space-y-12">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="flex gap-12">
+                                    <Skeleton className="h-6 w-8 mt-2" />
+                                    <div className="flex-1">
+                                        <Skeleton className="h-10 w-1/2 mb-6" />
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-3/4" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <UserFooter />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
@@ -160,3 +199,4 @@ const ResellingAgreement = () => {
 };
 
 export default ResellingAgreement;
+

@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Icon from '../components/common/Icon';
+import Skeleton from '../components/common/Skeleton';
 import { useLanguage } from '../context/LanguageContext';
 
 const DataProtection = () => {
     const [openCard, setOpenCard] = useState(3); // Default open "Your Rights"
+    const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const policies = [
         {
@@ -54,6 +61,29 @@ const DataProtection = () => {
             icon: "globe-alt"
         }
     ];
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+                <UserHeader />
+                <div className="relative z-10 pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16">
+                        <div className="w-full">
+                            <Skeleton className="h-6 w-32 mb-4" />
+                            <Skeleton className="h-20 w-3/4 mb-2" />
+                        </div>
+                        <Skeleton className="h-20 w-64 md:ml-8" />
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        {[...Array(5)].map((_, i) => (
+                            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+                        ))}
+                    </div>
+                </div>
+                <UserFooter />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-emerald-100 selection:text-emerald-900">
@@ -165,3 +195,4 @@ const DataProtection = () => {
 };
 
 export default DataProtection;
+
