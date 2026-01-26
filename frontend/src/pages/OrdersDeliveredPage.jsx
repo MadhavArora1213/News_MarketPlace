@@ -335,7 +335,32 @@ const OrdersDeliveredPage = () => {
         </div>
 
         {/* Articles Display */}
-        {filteredOrders.length > 0 ? (
+        {isTranslating ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="bg-white rounded-lg border border-[#E0E0E0] overflow-hidden animate-pulse">
+                <div className="h-48 bg-slate-100" />
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-6 bg-slate-100 rounded" />
+                    <div className="space-y-1">
+                      <div className="w-24 h-3 bg-slate-100 rounded" />
+                      <div className="w-16 h-2 bg-slate-50 rounded" />
+                    </div>
+                  </div>
+                  <div className="w-full h-5 bg-slate-100 rounded mb-3" />
+                  <div className="w-full h-5 bg-slate-100 rounded mb-4" />
+                  <div className="h-20 bg-slate-50 rounded-lg mb-4" />
+                  <div className="flex justify-between mb-4">
+                    <div className="w-16 h-3 bg-slate-100 rounded" />
+                    <div className="w-16 h-3 bg-slate-100 rounded" />
+                  </div>
+                  <div className="h-10 bg-slate-200 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredOrders.length > 0 ? (
           <>
             {/* Grid View */}
             {viewMode === 'grid' && (

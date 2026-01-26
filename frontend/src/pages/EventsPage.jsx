@@ -316,10 +316,33 @@ const EventsPage = () => {
               </p>
             </div>
 
-            {(loading || isTranslating) ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="bg-white rounded-[2.5rem] h-[500px] animate-pulse border border-slate-100 shadow-sm" />
+            {loading || isTranslating ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 px-2">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden flex flex-col h-[550px] animate-pulse">
+                    <div className="h-40 bg-slate-100" />
+                    <div className="p-8 pt-6 flex-1 bg-white rounded-t-[2.5rem] -mt-8">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="w-28 h-8 bg-slate-100 rounded-2xl" />
+                        <div className="w-24 h-8 bg-slate-100 rounded-2xl" />
+                      </div>
+                      <div className="w-11/12 h-7 bg-slate-100 rounded-lg mb-4" />
+                      <div className="w-full h-4 bg-slate-50 rounded mb-2" />
+                      <div className="w-full h-4 bg-slate-50 rounded mb-2" />
+                      <div className="w-3/4 h-4 bg-slate-50 rounded mb-8" />
+                      <div className="grid grid-cols-2 gap-4 mb-10 mt-auto">
+                        <div className="h-14 bg-slate-50 rounded-2xl" />
+                        <div className="h-14 bg-slate-50 rounded-2xl" />
+                      </div>
+                      <div className="space-y-4">
+                        <div className="w-full h-12 bg-slate-200 rounded-2xl" />
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="h-10 bg-slate-50 rounded-xl" />
+                          <div className="h-10 bg-slate-50 rounded-xl" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : filteredEvents.length > 0 ? (
@@ -442,7 +465,7 @@ const EventsPage = () => {
                   <Search size={44} className="text-slate-300" />
                 </div>
                 <h3 className="text-3xl font-bold text-slate-900 mb-4 font-primary">{t('events.noResults.title')}</h3>
-                <p className="text-slate-500 max-w-sm mx-auto mb-12 font-secondary">{t('events.noResults.desc')}</p>
+                <p className="text-slate-500 max-sm mx-auto mb-12 font-secondary">{t('events.noResults.desc')}</p>
                 <button
                   onClick={clearFilters}
                   className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/25 font-primary hover:scale-105 active:scale-95"

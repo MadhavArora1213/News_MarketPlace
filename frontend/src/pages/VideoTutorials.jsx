@@ -210,169 +210,192 @@ const VideoTutorials = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {filteredVideos.map((video) => {
-              const progress = getVideoProgress(video.id);
-              const isPlaying = currentPlayingVideo === video.id;
-
-              return (
-                <motion.div
-                  key={video.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  {/* Video Player or Thumbnail */}
-                  <div className="relative aspect-video bg-[#E0E0E0]">
-                    {isPlaying ? (
-                      <iframe
-                        src={`${video.videoUrl}?autoplay=1&rel=0`}
-                        title={video.title}
-                        className="w-full h-full"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <>
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-opacity cursor-pointer">
-                          <button
-                            onClick={() => setCurrentPlayingVideo(video.id)}
-                            className="bg-white rounded-full p-4 shadow-lg hover:bg-gray-100 transition-colors"
-                          >
-                            <Play className="w-8 h-8 text-[#1976D2] ml-1" fill="currentColor" />
-                          </button>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Controls Overlay */}
-                    <div className="absolute top-3 right-3 flex gap-2">
-                      <button
-                        onClick={() => toggleBookmark(video.id)}
-                        className="bg-white rounded-full p-2 shadow-md hover:bg-[#F5F5F5] transition-colors"
-                      >
-                        {bookmarkedVideos.has(video.id) ? (
-                          <BookmarkCheck className="w-5 h-5 text-[#1976D2]" fill="currentColor" />
-                        ) : (
-                          <Bookmark className="w-5 h-5 text-[#757575]" />
-                        )}
-                      </button>
-                      {isPlaying && (
-                        <button
-                          onClick={() => setCurrentPlayingVideo(null)}
-                          className="bg-white rounded-full p-2 shadow-md hover:bg-[#F5F5F5] transition-colors"
-                        >
-                          <PauseCircle className="w-5 h-5 text-[#757575]" />
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="absolute bottom-3 left-3">
-                      <div className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {video.duration}
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    {progress > 0 && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#E0E0E0]">
-                        <div
-                          className="h-full transition-all"
-                          style={{
-                            width: `${progress}%`,
-                            backgroundColor: getProgressColor(progress)
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
+          {isTranslating ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <div key={i} className="bg-white rounded-lg border border-[#E0E0E0] overflow-hidden animate-pulse">
+                  <div className="aspect-video bg-slate-100" />
                   <div className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-lg font-semibold text-[#212121] line-clamp-2 flex-1">
-                        {video.title}
-                      </h3>
-                      {watchedVideos.has(video.id) && (
-                        <CheckCircle2 className="w-5 h-5 text-[#4CAF50] flex-shrink-0" />
-                      )}
+                    <div className="w-3/4 h-5 bg-slate-100 rounded mb-3" />
+                    <div className="w-full h-3 bg-slate-100 rounded mb-2" />
+                    <div className="w-full h-3 bg-slate-100 rounded mb-4" />
+                    <div className="flex gap-2 mb-4">
+                      <div className="w-12 h-5 bg-slate-50 rounded-full" />
+                      <div className="w-12 h-5 bg-slate-50 rounded-full" />
                     </div>
-                    <p className="text-sm text-[#757575] mb-3 line-clamp-2">
-                      {video.description}
-                    </p>
+                    <div className="flex justify-between">
+                      <div className="w-20 h-4 bg-slate-50 rounded" />
+                      <div className="w-16 h-4 bg-slate-50 rounded" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {filteredVideos.map((video) => {
+                const progress = getVideoProgress(video.id);
+                const isPlaying = currentPlayingVideo === video.id;
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {video.tags.slice(0, 3).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="text-xs bg-[#E3F2FD] text-[#1976D2] px-2 py-1 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {video.views.toLocaleString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-[#FF9800] fill-current" />
-                        {video.rating}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        {video.reviews}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#757575]">{t('videoTutorials.labels.by')} {video.instructor}</span>
-                      {progress > 0 && (
-                        <span className="text-sm font-medium" style={{ color: getProgressColor(progress) }}>
-                          {progress}% {t('videoTutorials.labels.complete')}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Progress Controls */}
-                    {progress > 0 && progress < 100 && (
-                      <div className="mt-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-[#757575]">{t('videoTutorials.labels.updateProgress')}:</span>
-                          <div className="flex gap-1">
+                return (
+                  <motion.div
+                    key={video.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow"
+                  >
+                    {/* Video Player or Thumbnail */}
+                    <div className="relative aspect-video bg-[#E0E0E0]">
+                      {isPlaying ? (
+                        <iframe
+                          src={`${video.videoUrl}?autoplay=1&rel=0`}
+                          title={video.title}
+                          className="w-full h-full"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src={video.thumbnail}
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-opacity cursor-pointer">
                             <button
-                              onClick={() => updateVideoProgress(video.id, progress + 25)}
-                              className="text-xs bg-[#1976D2] text-white px-2 py-1 rounded hover:bg-[#1565C0]"
+                              onClick={() => setCurrentPlayingVideo(video.id)}
+                              className="bg-white rounded-full p-4 shadow-lg hover:bg-gray-100 transition-colors"
                             >
-                              +25%
-                            </button>
-                            <button
-                              onClick={() => updateVideoProgress(video.id, 100)}
-                              className="text-xs bg-[#4CAF50] text-white px-2 py-1 rounded hover:bg-[#388E3C]"
-                            >
-                              {t('videoTutorials.labels.finished')}
+                              <Play className="w-8 h-8 text-[#1976D2] ml-1" fill="currentColor" />
                             </button>
                           </div>
+                        </>
+                      )}
+
+                      {/* Controls Overlay */}
+                      <div className="absolute top-3 right-3 flex gap-2">
+                        <button
+                          onClick={() => toggleBookmark(video.id)}
+                          className="bg-white rounded-full p-2 shadow-md hover:bg-[#F5F5F5] transition-colors"
+                        >
+                          {bookmarkedVideos.has(video.id) ? (
+                            <BookmarkCheck className="w-5 h-5 text-[#1976D2]" fill="currentColor" />
+                          ) : (
+                            <Bookmark className="w-5 h-5 text-[#757575]" />
+                          )}
+                        </button>
+                        {isPlaying && (
+                          <button
+                            onClick={() => setCurrentPlayingVideo(null)}
+                            className="bg-white rounded-full p-2 shadow-md hover:bg-[#F5F5F5] transition-colors"
+                          >
+                            <PauseCircle className="w-5 h-5 text-[#757575]" />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="absolute bottom-3 left-3">
+                        <div className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {video.duration}
                         </div>
                       </div>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
 
-          {filteredVideos.length === 0 && (
+                      {/* Progress Bar */}
+                      {progress > 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#E0E0E0]">
+                          <div
+                            className="h-full transition-all"
+                            style={{
+                              width: `${progress}%`,
+                              backgroundColor: getProgressColor(progress)
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-lg font-semibold text-[#212121] line-clamp-2 flex-1">
+                          {video.title}
+                        </h3>
+                        {watchedVideos.has(video.id) && (
+                          <CheckCircle2 className="w-5 h-5 text-[#4CAF50] flex-shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-sm text-[#757575] mb-3 line-clamp-2">
+                        {video.description}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {video.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="text-xs bg-[#E3F2FD] text-[#1976D2] px-2 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm text-[#757575] mb-3">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-4 h-4" />
+                          {video.views.toLocaleString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-[#FF9800] fill-current" />
+                          {video.rating}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          {video.reviews}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-[#757575]">{t('videoTutorials.labels.by')} {video.instructor}</span>
+                        {progress > 0 && (
+                          <span className="text-sm font-medium" style={{ color: getProgressColor(progress) }}>
+                            {progress}% {t('videoTutorials.labels.complete')}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Progress Controls */}
+                      {progress > 0 && progress < 100 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs text-[#757575]">{t('videoTutorials.labels.updateProgress')}:</span>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => updateVideoProgress(video.id, progress + 25)}
+                                className="text-xs bg-[#1976D2] text-white px-2 py-1 rounded hover:bg-[#1565C0]"
+                              >
+                                +25%
+                              </button>
+                              <button
+                                onClick={() => updateVideoProgress(video.id, 100)}
+                                className="text-xs bg-[#4CAF50] text-white px-2 py-1 rounded hover:bg-[#388E3C]"
+                              >
+                                {t('videoTutorials.labels.finished')}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+
+          {!isTranslating && filteredVideos.length === 0 && (
             <div className="text-center py-12">
               <p className="text-[#757575] text-lg">{t('videoTutorials.noResults')}</p>
             </div>
