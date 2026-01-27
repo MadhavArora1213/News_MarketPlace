@@ -216,10 +216,15 @@ app.get([
 
   try {
     const html = await getMetaData(route, id);
-    // Add custom headers to verify it's the metadata service responding
+    const body = Buffer.from(html, 'utf-8');
+
+    // Explicit headers to prevent 206 Partial Content issues
     res.set('X-VaaS-Source', 'metadata-service');
     res.set('Content-Type', 'text/html; charset=utf-8');
-    return res.send(html);
+    res.set('Content-Length', body.length);
+    res.set('Cache-Control', 'public, max-age=3600');
+
+    return res.status(200).send(body);
   } catch (error) {
     console.error(`[SHARE-ERROR] Failed to serve metadata for ${req.path}:`, error);
     next();
