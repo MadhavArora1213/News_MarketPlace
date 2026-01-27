@@ -189,11 +189,11 @@ app.get('/simple-test', (req, res) => {
 // Routes
 const { getMetaData } = require('./src/utils/metaTags');
 
-// Crawler Metadata Routes - These are hit when Nginx detects a crawler and proxies the request
 app.get([
   '/publications/:id',
   '/events/:id',
   '/blog/:id',
+  '/blogs/:id',
   '/careers/:id',
   '/themes/:id',
   '/power-lists/:id',
@@ -205,19 +205,21 @@ app.get([
   '/press-packs/:id'
 ], async (req, res, next) => {
   const userAgent = req.headers['user-agent'] || '';
-  const isCrawler = /facebookexternalhit|Facebot|LinkedInBot|Twitterbot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|Googlebot|bingbot|Applebot/i.test(userAgent);
+  const isCrawler = /facebookexternalhit|Facebot|LinkedIn|LinkedInBot|Twitterbot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|Googlebot|bingbot|Applebot/i.test(userAgent);
 
-  if (isCrawler) {
+  // Extra check: if it's hit via Nginx proxy but somehow UA is missing, we still serve it
+  // because these routes shouldn't be reached by humans directly in the backend anyway
+  try {
     const route = req.path.split('/')[1];
     const id = req.params.id;
-    console.log(`Serving metadata for crawler: ${userAgent} on route: ${route}, id: ${id}`);
+    console.log(`[Metadata] Request for ${route}/${id} from UA: ${userAgent}`);
+
     const html = await getMetaData(route, id);
     return res.send(html);
+  } catch (error) {
+    console.error('[Metadata] Error serving metadata:', error);
+    next();
   }
-
-  // If not a crawler, this shouldn't normally happen if Nginx is configured correctly,
-  // but we'll return 404 or let the API routes handle it if they overlap
-  next();
 });
 
 // Existing routes

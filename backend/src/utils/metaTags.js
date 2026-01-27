@@ -28,6 +28,16 @@ const getMetaData = async (route, idOrSlug) => {
     const id = getIdFromSlug(idOrSlug);
     let url = `https://vaas.solutions/${route}/${idOrSlug}`;
 
+    // Improve fallback title from slug
+    if (idOrSlug && typeof idOrSlug === 'string' && idOrSlug.includes('-')) {
+        const parts = idOrSlug.split('-');
+        if (!isNaN(parts[parts.length - 1])) {
+            parts.pop(); // Remove the ID if it's a number
+        }
+        const slugTitle = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+        if (slugTitle) title = slugTitle;
+    }
+
     try {
         switch (route) {
             case 'publications': {
