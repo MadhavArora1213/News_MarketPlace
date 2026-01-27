@@ -90,11 +90,32 @@ const PublicationsPage = () => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 768);
+    const onResize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 1024);
+    };
     window.addEventListener('resize', onResize);
     onResize();
+
+    // Set initial sidebar state based on width
+    if (window.innerWidth < 1280) {
+      setSidebarOpen(false);
+    }
+
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Handle body scroll locking when mobile sidebar is open
+  useEffect(() => {
+    if (isMobile && sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobile, sidebarOpen]);
 
   useEffect(() => {
     fetchGroups();
@@ -432,18 +453,23 @@ const PublicationsPage = () => {
       </section>
 
       {/* Main Content with Enhanced Layout */}
-      <div className={`max-w-[1600px] mx-auto ${isMobile ? 'flex flex-col' : 'flex'}`}>
-        {/* Enhanced Filters Sidebar */}
-        <aside className={`${sidebarOpen ? (isMobile ? 'block' : 'block') : 'hidden'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
-          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
-          position: isMobile ? 'static' : 'sticky',
-          top: isMobile ? 'auto' : '80px',
-          zIndex: 40,
-          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
-          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
-          width: isMobile ? '100%' : '300px',
-          flexShrink: 0
-        }}>
+      <div className={`max-w-[1600px] mx-auto flex flex-col lg:flex-row relative`}>
+        {/* Enhanced Filters Sidebar - Slide over on Mobile/Tablet, Sticky on Desktop */}
+        <div
+          className={`fixed inset-0 bg-black/50 transition-opacity duration-300 lg:hidden ${sidebarOpen ? 'opacity-100 z-[100]' : 'opacity-0 pointer-events-none z-[-1]'}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        <aside
+          className={`
+            fixed lg:sticky lg:top-20 top-0 left-0 h-full lg:h-[calc(100vh-80px)] 
+            bg-white shadow-2xl lg:shadow-none z-[110] lg:z-40
+            transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:hidden'}
+            w-[280px] sm:w-[320px] lg:w-[300px] flex-shrink-0
+            border-r border-gray-100
+          `}
+        >
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
@@ -673,7 +699,7 @@ const PublicationsPage = () => {
         </aside>
 
         {/* Main Content - Enhanced */}
-        <main className={`flex-1 p-6 min-w-0 ${isMobile ? 'order-1' : ''}`}>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
           {/* Enhanced Controls Bar */}
           <div className="bg-white rounded-lg shadow-lg border p-6 mb-6" style={{
             borderColor: theme.borderLight,
@@ -759,7 +785,7 @@ const PublicationsPage = () => {
             <>
               {/* Enhanced Grid View */}
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                   {publications.map((publication, index) => (
                     <motion.div
                       key={publication.id}
@@ -769,7 +795,7 @@ const PublicationsPage = () => {
                       onClick={() => handlePublicationClick(publication)}
                       onMouseEnter={() => setActiveCardId(publication.id)}
                       onMouseLeave={() => setActiveCardId(null)}
-                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group relative"
+                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group relative h-full flex flex-col"
                       style={{
                         borderColor: theme.borderLight,
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)',

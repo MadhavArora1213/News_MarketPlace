@@ -153,15 +153,22 @@ const getMetaData = async (route, idOrSlug) => {
     }
 
     // Sanitize description (remove HTML tags and newlines)
-    description = description ? description
+    const cleanDescription = description ? description
         .replace(/<[^>]*>?/gm, '')
         .replace(/\n/g, ' ')
         .replace(/\s+/g, ' ')
         .trim() : 'Your one-stop destination for news and industry insights.';
 
-    if (description.length > 160) {
-        description = description.substring(0, 157) + '...';
+    let metaDescription = cleanDescription;
+    if (metaDescription.length > 200) {
+        metaDescription = metaDescription.substring(0, 197) + '...';
     }
+
+    // Determine image type
+    let imageType = 'image/jpeg';
+    if (image.toLowerCase().endsWith('.png')) imageType = 'image/png';
+    else if (image.toLowerCase().endsWith('.gif')) imageType = 'image/gif';
+    else if (image.toLowerCase().endsWith('.webp')) imageType = 'image/webp';
 
     return `
 <!DOCTYPE html>
@@ -170,46 +177,52 @@ const getMetaData = async (route, idOrSlug) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} | News Marketplace</title>
-    <meta name="description" content="${description}">
+    <meta name="description" content="${metaDescription}">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="article">
+    <meta property="og:type" content="website">
     <meta property="og:url" content="${url}">
     <meta property="og:title" content="${title}">
-    <meta property="og:description" content="${description}">
+    <meta property="og:description" content="${metaDescription}">
     <meta property="og:image" content="${image}">
     <meta property="og:image:secure_url" content="${image}">
-    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:type" content="${imageType}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="${title}">
     <meta property="og:site_name" content="VaaS Solutions">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="${url}">
     <meta name="twitter:title" content="${title}">
-    <meta name="twitter:description" content="${description}">
+    <meta name="twitter:description" content="${metaDescription}">
     <meta name="twitter:image" content="${image}">
+    <meta name="twitter:image:alt" content="${title}">
 
     <link rel="canonical" href="${url}">
 
-    <!-- Redirect to actual page for humans after a short delay -->
+    <!-- Redirect for humans -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=${url}">
+    </noscript>
     <script>
         window.location.href = "${url}";
     </script>
 </head>
 <body style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-    <div style="max-width: 600px; width: 90%; background: white; padding: 40px; border-radius: 20px; shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center;">
+    <div style="max-width: 600px; width: 90%; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center;">
         <img src="${image}" alt="${title}" style="max-width: 240px; height: auto; margin-bottom: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
         <h1 style="color: #212121; font-size: 24px; margin-bottom: 16px;">${title}</h1>
-        <p style="color: #757575; line-height: 1.6; font-size: 16px; margin-bottom: 32px;">${description}</p>
+        <p style="color: #757575; line-height: 1.6; font-size: 16px; margin-bottom: 32px;">${metaDescription}</p>
         <a href="${url}" style="display: inline-block; background-color: #1976D2; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.2s;">
             Continue to Site
         </a>
     </div>
 </body>
 </html>
-  `;
+    `;
 };
 
 module.exports = { getMetaData };
