@@ -142,13 +142,20 @@ const getMetaData = async (route, idOrSlug) => {
         console.error('Error fetching metadata (db):', error);
     }
 
-    // Ensure absolute image URL
+    // Ensure absolute image URL with improved logic
     if (image && typeof image === 'string' && image.length > 0) {
         if (!image.startsWith('http')) {
-            const cleanSource = image.startsWith('/') ? image.substring(1) : image;
-            image = `https://vaas.solutions/${cleanSource}`;
+            // Handle protocol-relative URLs (//example.com)
+            if (image.startsWith('//')) {
+                image = `https:${image}`;
+            } else {
+                // Remove leading slash if present to avoid double slashes
+                const cleanSource = image.startsWith('/') ? image.substring(1) : image;
+                image = `https://vaas.solutions/${cleanSource}`;
+            }
         }
     } else {
+        // Fallback to high-resolution logo if possible, or standard logo
         image = 'https://vaas.solutions/logo.png';
     }
 
