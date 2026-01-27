@@ -11,6 +11,7 @@ import AuthModal from '../components/auth/AuthModal';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationObject } from '../hooks/useTranslation';
 import { getIdFromSlug } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 import {
   MapPin, Calendar, DollarSign, Building, User, Clock,
@@ -379,14 +380,11 @@ const CareerDetailPage = () => {
                   <ExternalLink size={18} />
                   {t('careers.applyNow')}
                 </button>
-                <button
-                  onClick={handleShare}
-                  className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                  style={{ color: theme.textPrimary }}
-                >
-                  <Share size={18} />
-                  {t('careers.share')}
-                </button>
+                <ShareButtons
+                  url={window.location.href}
+                  title={`${career.title} - ${career.company || 'Company'}`}
+                  description={translatedCareer.description}
+                />
                 <button
                   onClick={handleSave}
                   className={`px-6 py-3 border rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${isSaved ? 'bg-red-50 border-red-300 text-red-600' : 'border-gray-300 hover:bg-gray-50'

@@ -10,6 +10,7 @@ import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationArray } from '../hooks/useTranslation';
 import { createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 
 const BlogListingPage = () => {
@@ -155,16 +156,27 @@ const BlogListingPage = () => {
       {/* Search and Filter Section */}
       <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4 mb-6 items-center">
             {/* Search Bar */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
               <input
                 type="text"
                 placeholder={t('blogs.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121]"
+                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121] shadow-sm"
+              />
+            </div>
+            <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
+              <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+              <ShareButtons
+                url={window.location.href}
+                title={t('blogs.pageTitle')}
+                description={t('blogs.heroSubtitle')}
+                showLabel={false}
+                variant="ghost"
+                size="sm"
               />
             </div>
           </div>
@@ -258,13 +270,26 @@ const BlogListingPage = () => {
                       </div>
 
                       {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6 gap-2">
                         <Link
                           to={`/blog/${createSlugPath(blog.title, blog.id)}`}
                           className="bg-white text-[#1976D2] px-6 py-3 rounded-full font-semibold hover:bg-[#1976D2] hover:text-white transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-lg"
                         >
                           {t('blogs.readArticle')}
                         </Link>
+                        <div
+                          className="bg-white text-[#1976D2] p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ShareButtons
+                            url={`${window.location.origin}/blog/${createSlugPath(blog.title, blog.id)}`}
+                            title={blog.title}
+                            description={blog.excerpt}
+                            showLabel={false}
+                            variant="ghost"
+                            size="sm"
+                          />
+                        </div>
                       </div>
                     </div>
 

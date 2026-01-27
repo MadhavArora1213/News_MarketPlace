@@ -17,6 +17,7 @@ import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -394,15 +395,15 @@ const PressPacksPage = () => {
               {t('pressPacks.desc')}
             </p>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="relative">
+            {/* Search Bar & Share Button */}
+            <div className="max-w-4xl mx-auto mt-8 flex flex-col md:flex-row items-center gap-4">
+              <div className="relative flex-1 w-full">
                 <input
                   type="text"
                   placeholder={t('pressPacks.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white shadow-sm"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
                 {searchTerm && (
@@ -413,6 +414,17 @@ const PressPacksPage = () => {
                     ×
                   </button>
                 )}
+              </div>
+              <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
+                <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('pressPacks.title')}
+                  description={t('pressPacks.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
             </div>
           </motion.div>
@@ -757,16 +769,28 @@ const PressPacksPage = () => {
                           </div>
                         </div>
 
-                        {/* Enhanced Features */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {pack.content_writing_assistance && (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E8F5E8', color: theme.success }}>
-                              {t('pressPacks.card.contentWriting')}
+                        {/* Enhanced Features & Share */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                          <div className="flex flex-wrap gap-2">
+                            {pack.content_writing_assistance && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#E8F5E8', color: theme.success }}>
+                                {t('pressPacks.card.contentWriting')}
+                              </span>
+                            )}
+                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF3E0', color: theme.warning }}>
+                              {pack.niche}
                             </span>
-                          )}
-                          <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF3E0', color: theme.warning }}>
-                            {pack.niche}
-                          </span>
+                          </div>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <ShareButtons
+                              url={`${window.location.origin}/press-packs/${createSlugPath(pack.name, pack.id)}`}
+                              title={pack.name}
+                              description={pack.description}
+                              showLabel={false}
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </div>
                         </div>
 
                         {/* Enhanced CTA Button */}
@@ -904,15 +928,27 @@ const PressPacksPage = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <button
-                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                style={{ backgroundColor: theme.primary }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                              >
-                                <Eye size={14} className="inline mr-1" />
-                                {t('pressPacks.list.viewDetails')}
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                  onClick={() => handlePackClick(pack)}
+                                >
+                                  <Eye size={14} />
+                                  {t('pressPacks.list.viewDetails')}
+                                </button>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ShareButtons
+                                    url={`${window.location.origin}/press-packs/${createSlugPath(pack.name, pack.id)}`}
+                                    title={pack.name}
+                                    showLabel={false}
+                                    variant="ghost"
+                                    size="sm"
+                                  />
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         ))}

@@ -16,6 +16,7 @@ import { useTranslationArray } from '../hooks/useTranslation';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 const EventsPage = () => {
   const { t, language } = useLanguage();
@@ -232,6 +233,19 @@ const EventsPage = () => {
                   {t('events.search.button')}
                 </button>
               </div>
+              <div className="mt-4 flex justify-center">
+                <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r pr-3">{t('common.share', 'Share')}</span>
+                  <ShareButtons
+                    url={window.location.href}
+                    title={t('events.hero.title')}
+                    description={t('events.hero.desc')}
+                    showLabel={false}
+                    variant="ghost"
+                    size="sm"
+                  />
+                </div>
+              </div>
             </div>
 
             <p className="text-sm font-medium text-amber-600 mt-8 flex items-center justify-center space-x-2 bg-amber-50 rounded-full px-4 py-2 w-fit mx-auto border border-amber-100 shadow-sm font-primary">
@@ -402,6 +416,16 @@ const EventsPage = () => {
                           </div>
                           <div className={`px-4 py-2 rounded-2xl text-[10px] font-black tracking-[0.2em] font-primary uppercase shadow-sm ${event.is_free ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
                             {event.is_free ? t('events.results.guestPass') : t('events.results.exclusive')}
+                          </div>
+                          <div onClick={(e) => e.stopPropagation()} className="ml-2">
+                            <ShareButtons
+                              url={`${window.location.origin}/events/${createSlugPath(event.title, event.id)}`}
+                              title={event.title}
+                              description={event.description}
+                              showLabel={false}
+                              variant="outline"
+                              size="sm"
+                            />
                           </div>
                         </div>
 

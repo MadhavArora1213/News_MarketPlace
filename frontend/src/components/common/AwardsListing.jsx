@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Eye, ExternalLink, Award, Calendar, Building } from 'lucide-react';
+import { Eye, ExternalLink, Award, Calendar, Building, Share2 } from 'lucide-react';
+import ShareButtons from './ShareButtons';
+import { createSlugPath } from '../../utils/slugify';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -87,7 +89,7 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             className="flex-1 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             style={{ backgroundColor: theme.primary }}
@@ -100,7 +102,6 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
           >
             <Eye size={16} />
             View Details
-            <ExternalLink size={14} />
           </button>
           <button
             className="px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
@@ -114,6 +115,15 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
           >
             Apply
           </button>
+          <div onClick={(e) => e.stopPropagation()}>
+            <ShareButtons
+              url={window.location.origin + `/awards/${createSlugPath(award.award_name, award.id)}`}
+              title={award.award_name}
+              description={award.description}
+              showLabel={false}
+              variant="outline"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

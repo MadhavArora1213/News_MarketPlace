@@ -11,11 +11,12 @@ import {
   ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield,
   Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
   DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
-  MapPin, Calendar, Users, Zap, Eye, Heart, Share,
+  MapPin, Calendar, Users, Zap, Eye, Heart,
   Instagram, Facebook, Twitter, Linkedin
 } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 import { getIdFromSlug } from '../utils/slugify';
 
 // Updated theme colors matching the color pal
@@ -129,31 +130,6 @@ const PublicationDetailPage = () => {
     }
   };
 
-  const handleShare = () => {
-    const shareData = {
-      title: publication.publication_name,
-      text: `Check out this publication: ${publication.publication_name}`,
-      url: window.location.href
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData);
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert(t('publicationDetail.actions.linkCopied'));
-      }).catch(() => {
-        // Ultimate fallback
-        const textArea = document.createElement('textarea');
-        textArea.value = window.location.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert(t('publicationDetail.actions.linkCopied'));
-      });
-    }
-  };
 
 
   const handlePlaceOrder = () => {
@@ -685,17 +661,11 @@ const PublicationDetailPage = () => {
                 {isSaved ? t('publicationDetail.actions.saved') : t('publicationDetail.actions.save')}
               </span>
             </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: theme.borderLight,
-                color: theme.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>{t('publicationDetail.actions.share')}</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={publication.publication_name}
+              description={publication.other_remarks}
+            />
           </div>
         </div>
       </section>

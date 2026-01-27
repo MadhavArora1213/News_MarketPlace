@@ -20,6 +20,7 @@ import {
 import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -394,15 +395,15 @@ const PublicationsPage = () => {
             </p>
 
 
-            {/* Search Bar */}
-            <div className="max-w-xl mx-auto">
-              <div className="relative">
+            {/* Search Bar & Share Button */}
+            <div className="max-w-4xl mx-auto mt-6 flex flex-col md:flex-row items-center gap-4">
+              <div className="relative flex-1 w-full">
                 <input
                   type="text"
                   placeholder={t('publications.search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 border border-[#E0E0E0] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-10 pr-10 py-3 border border-[#E0E0E0] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white shadow-sm"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} style={{ color: theme.textSecondary }} />
                 {searchTerm && (
@@ -413,6 +414,17 @@ const PublicationsPage = () => {
                     ×
                   </button>
                 )}
+              </div>
+              <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
+                <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('publications.hero.title')}
+                  description={t('publications.hero.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
             </div>
           </motion.div>
@@ -889,16 +901,30 @@ const PublicationsPage = () => {
                         </div>
 
                         {/* Enhanced CTA Button */}
-                        <button
-                          className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                          style={{ backgroundColor: theme.primary }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                        >
-                          <Eye size={16} />
-                          {t('publications.table.viewDetails')}
-                          <ExternalLink size={14} />
-                        </button>
+                        <div className="flex gap-2 items-center">
+                          <button
+                            className="flex-1 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                            style={{ backgroundColor: theme.primary }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePublicationClick(publication);
+                            }}
+                          >
+                            <Eye size={16} />
+                            {t('publications.table.viewDetails')}
+                          </button>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <ShareButtons
+                              url={window.location.origin + `/publications/${createSlugPath(publication.publication_name, publication.id)}`}
+                              title={publication.publication_name}
+                              description={publication.publication_primary_focus}
+                              showLabel={false}
+                              variant="outline"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -1070,15 +1096,30 @@ const PublicationsPage = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <button
-                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                style={{ backgroundColor: theme.primary }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                              >
-                                <Eye size={14} className="inline mr-1" />
-                                {t('publications.table.view')}
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePublicationClick(publication);
+                                  }}
+                                >
+                                  <Eye size={14} className="inline mr-1" />
+                                  {t('publications.table.view')}
+                                </button>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ShareButtons
+                                    url={window.location.origin + `/publications/${createSlugPath(publication.publication_name, publication.id)}`}
+                                    title={publication.publication_name}
+                                    description={publication.publication_primary_focus}
+                                    showLabel={false}
+                                    variant="outline"
+                                  />
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         ))}

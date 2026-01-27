@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -372,6 +373,19 @@ const PublishedWorkDetailPage = () => {
                       Read Article
                     </a>
                   )}
+
+                  <div className="pt-4 mt-4 border-t">
+                    <h4 className="text-sm font-semibold mb-3 text-center" style={{ color: theme.textSecondary }}>
+                      Share this work
+                    </h4>
+                    <div className="flex justify-center">
+                      <ShareButtons
+                        url={window.location.href}
+                        title={publishedWork.publication_name}
+                        description={publishedWork.description}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

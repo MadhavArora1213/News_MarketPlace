@@ -17,6 +17,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -608,17 +609,11 @@ const PowerlistDetailPage = () => {
                 {isSaved ? t('powerlistDetail.buttons.saved') : t('powerlistDetail.buttons.save')}
               </span>
             </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: theme.borderLight,
-                color: theme.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>{t('powerlistDetail.buttons.share')}</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={powerlistNomination?.publication_name || 'Powerlist Nomination'}
+              description={powerlistNomination?.description || ''}
+            />
           </div>
         </div>
       </section>

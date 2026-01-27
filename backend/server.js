@@ -187,6 +187,40 @@ app.get('/simple-test', (req, res) => {
 });
 
 // Routes
+const { getMetaData } = require('./src/utils/metaTags');
+
+// Crawler Metadata Routes - These are hit when Nginx detects a crawler and proxies the request
+app.get([
+  '/publications/:id',
+  '/events/:id',
+  '/blog/:id',
+  '/careers/:id',
+  '/themes/:id',
+  '/power-lists/:id',
+  '/paparazzi/:id',
+  '/awards/:id',
+  '/real-estate-professionals/:id',
+  '/radio/:id',
+  '/podcasters/:id',
+  '/press-packs/:id'
+], async (req, res, next) => {
+  const userAgent = req.headers['user-agent'] || '';
+  const isCrawler = /facebookexternalhit|Facebot|LinkedInBot|Twitterbot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|Googlebot|bingbot|Applebot/i.test(userAgent);
+
+  if (isCrawler) {
+    const route = req.path.split('/')[1];
+    const id = req.params.id;
+    console.log(`Serving metadata for crawler: ${userAgent} on route: ${route}, id: ${id}`);
+    const html = await getMetaData(route, id);
+    return res.send(html);
+  }
+
+  // If not a crawler, this shouldn't normally happen if Nginx is configured correctly,
+  // but we'll return 404 or let the API routes handle it if they overlap
+  next();
+});
+
+// Existing routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthLimiter, adminAuthRoutes);
 // Test direct route mounting

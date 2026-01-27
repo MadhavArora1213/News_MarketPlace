@@ -12,6 +12,7 @@ import api from '../services/api';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Global error handler for ResizeObserver
 const resizeObserverErrHandler = (error) => {
@@ -374,15 +375,15 @@ const PodcastersList = () => {
               {t('podcasters.hero.disclaimer')}
             </p>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="relative">
+            {/* Search Bar & Share Button */}
+            <div className="max-w-4xl mx-auto mt-8 flex flex-col md:flex-row items-center gap-4">
+              <div className="relative flex-1 w-full">
                 <input
                   type="text"
                   placeholder={t('podcasters.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white shadow-sm"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
                 {searchQuery && (
@@ -393,6 +394,17 @@ const PodcastersList = () => {
                     ×
                   </button>
                 )}
+              </div>
+              <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
+                <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('podcasters.hero.title')}
+                  description={t('podcasters.hero.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
             </div>
 
@@ -646,17 +658,29 @@ const PodcastersList = () => {
                           </span>
                         </div>
 
-                        {/* Enhanced CTA Button */}
-                        <button
-                          className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                          style={{ backgroundColor: theme.primary }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                        >
-                          <Play size={16} />
-                          {t('podcasters.card.listenNow')}
-                          <ExternalLink size={14} />
-                        </button>
+                        {/* Enhanced CTA Button & Share */}
+                        <div className="flex gap-2 items-center">
+                          <button
+                            className="flex-1 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                            style={{ backgroundColor: theme.primary }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                          >
+                            <Play size={16} />
+                            {t('podcasters.card.listenNow')}
+                            <ExternalLink size={14} />
+                          </button>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <ShareButtons
+                              url={`${window.location.origin}/podcasters/${createSlugPath(podcaster.podcast_name, podcaster.id)}`}
+                              title={podcaster.podcast_name}
+                              description={podcaster.podcast_focus_industry}
+                              showLabel={false}
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   </Link>

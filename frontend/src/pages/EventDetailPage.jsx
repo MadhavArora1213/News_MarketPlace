@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 const theme = {
     primary: '#1976D2',
@@ -329,13 +330,11 @@ const EventDetailPage = () => {
                                         <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} className={isSaved ? 'animate-pulse' : ''} />
                                         {isSaved ? t('events.details.saved', 'Saved') : t('events.details.save', 'Save Event')}
                                     </button>
-                                    <button
-                                        onClick={handleShare}
-                                        className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all font-primary text-xs font-black uppercase tracking-widest"
-                                    >
-                                        <Share size={16} />
-                                        {t('events.details.share', 'Share')}
-                                    </button>
+                                    <ShareButtons
+                                        url={window.location.href}
+                                        title={currentEvent.title}
+                                        description={currentEvent.description}
+                                    />
                                 </div>
                             </div>
                         </motion.div>

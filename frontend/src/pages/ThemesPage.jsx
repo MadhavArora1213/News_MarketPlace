@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Skeleton from '../components/common/Skeleton';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -652,13 +653,23 @@ const ThemesPage = () => {
                         )}
 
                         {/* CTA Button */}
-                        <button
-                          className="w-full bg-gradient-to-r from-[#1976D2] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
-                        >
-                          <Eye size={16} />
-                          {t('themes.card.viewProfile')}
-                          <ExternalLink size={14} />
-                        </button>
+                        <div className="flex gap-2 items-center">
+                          <button
+                            className="flex-1 bg-gradient-to-r from-[#1976D2] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                          >
+                            <Eye size={16} />
+                            {t('themes.card.viewProfile')}
+                          </button>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <ShareButtons
+                              url={window.location.origin + `/themes/${createSlugPath(theme.page_name, theme.id)}`}
+                              title={theme.page_name}
+                              description={theme.collaboration}
+                              showLabel={false}
+                              variant="outline"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Hover Effect Border */}
@@ -775,19 +786,30 @@ const ThemesPage = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4">
-                              <button
-                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                style={{ backgroundColor: theme.primary }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleThemeClick(theme);
-                                }}
-                              >
-                                <Eye size={14} className="inline mr-1" />
-                                {t('themes.table.view')}
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleThemeClick(theme);
+                                  }}
+                                >
+                                  <Eye size={14} className="inline mr-1" />
+                                  {t('themes.table.view')}
+                                </button>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ShareButtons
+                                    url={window.location.origin + `/themes/${createSlugPath(theme.page_name, theme.id)}`}
+                                    title={theme.page_name}
+                                    description={theme.collaboration}
+                                    showLabel={false}
+                                    variant="outline"
+                                  />
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         ))}

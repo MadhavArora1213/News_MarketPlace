@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -751,17 +752,11 @@ const RealEstateDetail = () => {
                 {isSaved ? 'Saved' : 'Save'}
               </span>
             </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: theme.borderLight,
-                color: theme.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>Share</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={`${realEstate.first_name} ${realEstate.last_name}`}
+              description={realEstate.description}
+            />
           </div>
         </div>
       </section>

@@ -14,9 +14,10 @@ import {
   ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield,
   Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
   DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
-  MapPin, Calendar, Users, Zap, Eye, Heart, Share, User, Building,
+  MapPin, Calendar, Users, Zap, Eye, Heart, User, Building,
   Mail, Phone, MessageSquare
 } from 'lucide-react';
+import ShareButtons from '../components/common/ShareButtons';
 import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
 
@@ -85,31 +86,6 @@ const AwardDetailPage = () => {
     // Could refresh or show success message
   };
 
-  const handleShare = () => {
-    const shareData = {
-      title: award.award_name,
-      text: `Check out this award: ${award.award_name}`,
-      url: window.location.href
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData);
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert(t('share.copied'));
-      }).catch(() => {
-        // Ultimate fallback
-        const textArea = document.createElement('textarea');
-        textArea.value = window.location.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert(t('share.copied'));
-      });
-    }
-  };
 
   if (loading) {
     return (
@@ -405,14 +381,12 @@ const AwardDetailPage = () => {
                 <h3 className="text-lg font-semibold mb-4 text-[#212121]">
                   {t('awardDetail.share.title')}
                 </h3>
-                <div className="space-y-3">
-                  <button
-                    onClick={handleShare}
-                    className="w-full flex items-center justify-center gap-2 text-white font-medium py-3 px-4 rounded-lg transition-colors bg-[#9C27B0] hover:opacity-90"
-                  >
-                    <Share size={16} />
-                    {t('awardDetail.share.button')}
-                  </button>
+                <div className="flex justify-center">
+                  <ShareButtons
+                    url={window.location.href}
+                    title={award?.award_name || 'Award'}
+                    description={award?.description || ''}
+                  />
                 </div>
               </div>
             </div>

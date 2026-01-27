@@ -17,6 +17,7 @@ import {
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { getIdFromSlug } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 const PressPackDetailPage = () => {
   const { id } = useParams();
@@ -685,17 +686,11 @@ const PressPackDetailPage = () => {
                 {isSaved ? t('pressPackDetail.actions.saved') : t('pressPackDetail.actions.save')}
               </span>
             </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: themeColors.borderLight,
-                color: themeColors.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: themeColors.primary }} />
-              <span style={{ color: themeColors.textSecondary }}>{t('pressPackDetail.actions.share')}</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={pressPack?.name || 'Press Pack'}
+              description={pressPack?.description || ''}
+            />
           </div>
         </div>
       </section>

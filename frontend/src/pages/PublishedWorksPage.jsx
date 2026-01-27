@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import { useLanguage } from '../context/LanguageContext';
+import ShareButtons from '../components/common/ShareButtons';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import {
@@ -15,6 +17,7 @@ import Schema from '../components/common/Schema';
 
 
 const PublishedWorksPage = () => {
+  const { t } = useLanguage();
   const { isAuthenticated, hasRole, hasAnyRole, getRoleLevel } = useAuth();
   const navigate = useNavigate();
   const [publishedWorks, setPublishedWorks] = useState([]);
@@ -145,14 +148,14 @@ const PublishedWorksPage = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <SEO
-        title="Published Works | Global Journalism Database | News Marketplace"
-        description="Explore our extensive database of published journalistic works from around the globe. Filter by year, industry, and country."
+        title={t('publishedWorks.seo.title', 'Published Works | Global Journalism Database | News Marketplace')}
+        description={t('publishedWorks.seo.desc', 'Explore our extensive database of published journalistic works from around the globe. Filter by year, industry, and country.')}
       />
       <Schema
         type="collection"
         data={{
-          title: "Published Works Database",
-          description: "A comprehensive collection of published articles and journalistic works verified by News Marketplace.",
+          title: t('publishedWorks.title', 'Published Works Database'),
+          description: t('publishedWorks.desc', 'A comprehensive collection of published articles and journalistic works verified by News Marketplace.'),
           items: filteredWorks.slice(0, 10).map(work => ({
             name: work.publication_name,
             description: `Published on ${formatDate(work.article_date)} in ${work.industry} industry.`,
@@ -195,11 +198,24 @@ const PublishedWorksPage = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-[#212121] mb-6 tracking-tight">
-              Published Works
+              {t('publishedWorks.title', 'Published Works')}
             </h1>
-            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light">
-              {filteredWorks.length} Published Articles Available
+            <p className="text-lg md:text-xl text-[#757575] max-w-3xl mx-auto leading-relaxed font-light mb-8">
+              {filteredWorks.length} {t('publishedWorks.articlesAvailable', 'Published Articles Available')}
             </p>
+            <div className="flex justify-center">
+              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r pr-3">{t('common.share', 'Share')}</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('publishedWorks.title')}
+                  description={t('publishedWorks.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -340,13 +356,28 @@ const PublishedWorksPage = () => {
                       </a>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handlePublishedWorkClick(work)}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm bg-[#1976D2] text-white hover:bg-[#0D47A1]"
-                  >
-                    <Eye size={14} />
-                    View Details
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handlePublishedWorkClick(work)}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm bg-[#1976D2] text-white hover:bg-[#0D47A1]"
+                    >
+                      <Eye size={14} />
+                      {t('common.viewDetails', 'View Details')}
+                    </button>
+                    <div
+                      className="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ShareButtons
+                        url={`${window.location.origin}/published-works/${work.id}`}
+                        title={work.publication_name}
+                        description={`Check out this published work: ${work.publication_name}`}
+                        showLabel={false}
+                        variant="ghost"
+                        size="sm"
+                      />
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>

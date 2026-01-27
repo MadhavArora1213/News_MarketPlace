@@ -10,6 +10,7 @@ import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
 import { useTranslationObject, useTranslationArray } from '../hooks/useTranslation';
 import { getIdFromSlug, createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 
 // Custom styles for blog content
@@ -364,6 +365,15 @@ const BlogDetailPage = () => {
               }}
               dangerouslySetInnerHTML={{ __html: translatedBlog.content }}
             />
+
+            {/* Share Buttons */}
+            <div className="mt-12 pt-8 border-t border-gray-100 flex justify-center">
+              <ShareButtons
+                url={window.location.href}
+                title={translatedBlog.title}
+                description={getExcerpt(translatedBlog.content)}
+              />
+            </div>
           </article>
 
           {/* Article Meta Footer */}

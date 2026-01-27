@@ -11,6 +11,7 @@ import { useLanguage } from '../context/LanguageContext';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { useTranslationArray } from '../hooks/useTranslation';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -178,7 +179,7 @@ const PaparazziPage = () => {
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
               {t('paparazzi.hero.disclaimer')}
             </p>
-            <div className="mt-8">
+            <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4">
               <button
                 onClick={handleSubmitNew}
                 className="inline-flex items-center gap-2 bg-[#1976D2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#1565C0] transition-colors"
@@ -186,6 +187,18 @@ const PaparazziPage = () => {
                 <Plus className="w-5 h-5" />
                 {t('paparazzi.submitNew')}
               </button>
+
+              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r pr-3">{t('common.share', 'Share')}</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('paparazzi.hero.title')}
+                  description={t('paparazzi.hero.subtitle')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
+              </div>
             </div>
           </motion.div>
         </div>
@@ -446,11 +459,23 @@ const PaparazziPage = () => {
                             </div>
                           )}
                           {p.instagram_url && (
-                            <div className="flex items-center gap-2 pt-2 border-t border-[#E0E0E0]">
-                              <Globe className="w-4 h-4" />
-                              <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-[#1976D2] hover:underline">
-                                {t('paparazzi.card.viewProfile')}
-                              </a>
+                            <div className="flex items-center justify-between pt-2 border-t border-[#E0E0E0]">
+                              <div className="flex items-center gap-2">
+                                <Globe className="w-4 h-4" />
+                                <a href={p.instagram_url} target="_blank" rel="noopener noreferrer" className="text-[#1976D2] hover:underline">
+                                  {t('paparazzi.card.viewProfile')}
+                                </a>
+                              </div>
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <ShareButtons
+                                  url={`${window.location.origin}/paparazzi/${createSlugPath(p.instagram_page_name, p.id)}`}
+                                  title={p.instagram_page_name}
+                                  description={`Check out this paparazzi: ${p.instagram_page_name}`}
+                                  showLabel={false}
+                                  variant="ghost"
+                                  size="sm"
+                                />
+                              </div>
                             </div>
                           )}
                         </div>
@@ -556,14 +581,26 @@ const PaparazziPage = () => {
                               />
                             </td>
                             <td className="px-6 py-4">
-                              <button
-                                className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                style={{ backgroundColor: theme.primary }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                              >
-                                {t('paparazzi.table.viewDetails')}
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+                                  style={{ backgroundColor: theme.primary }}
+                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                >
+                                  {t('paparazzi.table.viewDetails')}
+                                </button>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <ShareButtons
+                                    url={`${window.location.origin}/paparazzi/${createSlugPath(p.instagram_page_name, p.id)}`}
+                                    title={p.instagram_page_name}
+                                    description={`Check out this paparazzi: ${p.instagram_page_name}`}
+                                    showLabel={false}
+                                    variant="ghost"
+                                    size="sm"
+                                  />
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         ))}

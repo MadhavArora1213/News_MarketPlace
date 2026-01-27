@@ -19,6 +19,7 @@ import { useLanguage } from '../context/LanguageContext';
 import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -295,6 +296,20 @@ const AwardsPage = () => {
             <p className="text-sm md:text-base text-[#FF9800] max-w-2xl mx-auto leading-relaxed font-medium mt-4">
               {t('awards.disclaimer')}
             </p>
+            {/* Hero Share Section */}
+            <div className="mt-8 flex justify-center">
+              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r pr-3">{t('common.share', 'Share')}</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('awards.title')}
+                  description={t('awards.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>

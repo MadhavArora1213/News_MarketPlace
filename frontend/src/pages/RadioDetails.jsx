@@ -8,6 +8,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import { getIdFromSlug } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Updated theme colors matching the color palette from PDF
 const theme = {
@@ -363,24 +364,13 @@ const RadioDetails = () => {
                     {isOrdering ? t('radioDetails.processing') : (isAuthenticated ? t('radioDetails.checkout') : t('radioDetails.signInOrder'))}
                   </button>
 
-                  <button
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: translatedRadio.radio_name,
-                          text: `Check out ${translatedRadio.radio_name} on ${translatedRadio.frequency}`,
-                          url: window.location.href,
-                        });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert(t('radioDetails.alerts.linkCopied'));
-                      }
-                    }}
-                    className="w-full flex items-center justify-center gap-2 text-white font-medium py-3 px-4 rounded-lg transition-colors bg-[#9C27B0] hover:bg-[#7B1FA2]"
-                  >
-                    <Share2 size={16} />
-                    {t('radioDetails.shareStation')}
-                  </button>
+                  <div className="flex justify-center">
+                    <ShareButtons
+                      url={window.location.href}
+                      title={translatedRadio?.radio_name || 'Radio Station'}
+                      description={translatedRadio?.description || ''}
+                    />
+                  </div>
 
                   <button
                     onClick={handleBack}

@@ -18,6 +18,7 @@ import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -255,34 +256,41 @@ const PowerlistPage = () => {
   // Image URL helper function
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
+    if (imagePath.startsWith('http')) return imagePath;
 
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-
-    // If it's a local path, construct full URL
-    if (imagePath.startsWith('/uploads/')) {
-      return `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${imagePath}`;
-    }
-
-    return imagePath;
+    // Construct full URL using api baseURL or fallback
+    const baseUrl = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:5000';
+    return `${baseUrl}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 
-  // Generate fallback image
-  const generateFallbackImage = (publicationName) => {
-    const colors = [
-      'from-blue-400 to-blue-600',
-      'from-purple-400 to-purple-600',
-      'from-green-400 to-green-600',
-      'from-red-400 to-red-600',
-      'from-yellow-400 to-yellow-600',
-      'from-pink-400 to-pink-600',
-      'from-indigo-400 to-indigo-600'
-    ];
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
 
-    const colorIndex = publicationName.length % colors.length;
-    return colors[colorIndex];
+  const getFallbackColor = (name) => {
+    const colors = [
+      '#1976D2', // blue
+      '#00796B', // teal
+      '#7B1FA2', // purple
+      '#C2185B', // pink
+      '#E64A19', // deep orange
+      '#388E3C', // green
+      '#F57C00', // orange
+      '#455A64', // blue grey
+    ];
+    let hash = 0;
+    if (name) {
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+    }
+    return colors[Math.abs(hash) % colors.length];
   };
 
   // Status badge component
@@ -410,15 +418,15 @@ const PowerlistPage = () => {
               {t('powerlist.hero.disclaimer')}
             </p>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="relative">
+            {/* Search Bar & Share Buttons */}
+            <div className="max-w-4xl mx-auto mt-8 flex flex-col md:flex-row items-center gap-4">
+              <div className="relative flex-1 w-full">
                 <input
                   type="text"
                   placeholder={t('powerlist.hero.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white"
+                  className="w-full pl-12 pr-12 py-4 border border-[#E0E0E0] rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white shadow-md shadow-slate-200/50"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.textSecondary }} />
                 {searchTerm && (
@@ -429,6 +437,17 @@ const PowerlistPage = () => {
                     ×
                   </button>
                 )}
+              </div>
+              <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-md shadow-slate-200/50 flex items-center gap-2">
+                <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('powerlist.hero.title')}
+                  description={t('powerlist.hero.desc')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
             </div>
 
@@ -696,29 +715,26 @@ const PowerlistPage = () => {
                               alt={nomination.publication_name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
-                                // Fallback to logo if image fails to load
                                 e.target.style.display = 'none';
-                                e.target.nextElementSibling.style.display = 'block';
-                              }}
-                              onLoad={(e) => {
-                                // Hide fallback if image loads successfully
                                 if (e.target.nextElementSibling) {
-                                  e.target.nextElementSibling.style.display = 'none';
+                                  e.target.nextElementSibling.style.display = 'flex';
                                 }
                               }}
                             />
                           ) : null}
 
-                          {/* Fallback logo */}
+                          {/* Fallback Initials UI (more premium than generic logo) */}
                           <div
-                            className={`w-full h-full ${imageUrl ? 'hidden' : 'block'}`}
-                            style={{ display: imageUrl ? 'none' : 'block' }}
+                            className="w-full h-full items-center justify-center flex flex-col gap-4 text-white"
+                            style={{
+                              backgroundColor: getFallbackColor(nomination.publication_name),
+                              display: imageUrl ? 'none' : 'flex'
+                            }}
                           >
-                            <img
-                              src="/logo.png"
-                              alt="Logo"
-                              className="w-full h-full object-contain"
-                            />
+                            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-4xl font-bold">
+                              {getInitials(nomination.publication_name)}
+                            </div>
+                            <span className="text-lg font-medium opacity-80">{nomination.publication_name}</span>
                           </div>
 
                           {/* Dark overlay for better text readability */}
@@ -763,17 +779,30 @@ const PowerlistPage = () => {
                               <span>{nomination.location_region || t('powerlist.defaults.global')}</span>
                             </div>
 
-                            <div className="text-right">
-                              <div className="text-sm font-medium text-white">
-                                {nomination.tentative_month && (
-                                  <div className="flex items-center gap-1">
-                                    <Calendar size={12} />
-                                    {nomination.tentative_month}
-                                  </div>
-                                )}
+                            <div className="flex items-center gap-3">
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <ShareButtons
+                                  url={`${window.location.origin}/power-lists/${createSlugPath(nomination.power_list_name, nomination.id)}`}
+                                  title={nomination.power_list_name}
+                                  description={`${nomination.publication_name} - ${nomination.power_list_name}`}
+                                  showLabel={false}
+                                  variant="ghost"
+                                  size="sm"
+                                  iconColor="white"
+                                />
                               </div>
-                              <div className="text-xs text-white/70">
-                                {nomination.company_or_individual}
+                              <div className="text-right">
+                                <div className="text-sm font-medium text-white">
+                                  {nomination.tentative_month && (
+                                    <div className="flex items-center gap-1">
+                                      <Calendar size={12} />
+                                      {nomination.tentative_month}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-xs text-white/70">
+                                  {nomination.company_or_individual}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -929,15 +958,27 @@ const PowerlistPage = () => {
                                 <StatusBadge status={nomination.status} />
                               </td>
                               <td className="px-6 py-4">
-                                <button
-                                  className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
-                                  style={{ backgroundColor: theme.primary }}
-                                  onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                                  onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                                >
-                                  <Eye size={14} className="inline mr-1" />
-                                  {t('powerlist.table.view')}
-                                </button>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                                    style={{ backgroundColor: theme.primary }}
+                                    onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                                    onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                                    onClick={() => handlePowerlistClick(nomination)}
+                                  >
+                                    <Eye size={14} />
+                                    {t('powerlist.table.view')}
+                                  </button>
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <ShareButtons
+                                      url={`${window.location.origin}/power-lists/${createSlugPath(nomination.power_list_name, nomination.id)}`}
+                                      title={nomination.power_list_name}
+                                      showLabel={false}
+                                      variant="ghost"
+                                      size="sm"
+                                    />
+                                  </div>
+                                </div>
                               </td>
                             </tr>
                           );

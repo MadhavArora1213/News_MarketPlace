@@ -15,6 +15,7 @@ import {
   MessageCircle, Mail
 } from 'lucide-react';
 import { getIdFromSlug } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 
@@ -641,17 +642,11 @@ const PodcasterDetail = () => {
                 {isSaved ? t('podcasterDetail.actions.saved') : t('podcasterDetail.actions.save')}
               </span>
             </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: theme.borderLight,
-                color: theme.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: theme.primary }} />
-              <span style={{ color: theme.textSecondary }}>{t('podcasterDetail.actions.share')}</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={podcaster?.podcast_name || 'Podcast'}
+              description={podcaster?.cta || ''}
+            />
           </div>
         </div>
       </section>

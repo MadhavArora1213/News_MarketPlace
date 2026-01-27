@@ -14,6 +14,7 @@ import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import CareersSidebar from '../components/user/CareersSidebar';
 import CareerSubmissionForm from '../components/user/CareerSubmissionForm';
+import ShareButtons from '../components/common/ShareButtons';
 import {
   Search, Filter, Eye, Heart, Share, Grid, List, Star, Clock,
   TrendingUp, Globe, BookOpen, Award, Target, Zap, CheckCircle,
@@ -172,16 +173,29 @@ const CareersPage = () => {
             <p className="text-lg mb-8" style={{ color: theme.textSecondary }}>
               {careers.length} {t('careers.openings')}
             </p>
-            <button
-              onClick={handleShowCareerSubmission}
-              className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              style={{ backgroundColor: theme.primary }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <button
+                onClick={handleShowCareerSubmission}
+                className="text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                style={{ backgroundColor: theme.primary }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+              >
+                {t('careers.submitOpportunity')}
+              </button>
 
-              onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-            >
-              {t('careers.submitOpportunity')}
-            </button>
+              <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
+                <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+                <ShareButtons
+                  url={window.location.href}
+                  title={t('careers.pageTitle')}
+                  description={t('careers.heroSubtitle', 'Explore exciting career opportunities in the media and PR industry.')}
+                  showLabel={false}
+                  variant="ghost"
+                  size="sm"
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -285,17 +299,32 @@ const CareersPage = () => {
                           {career.description || t('careers.noDescription', 'No description available.')}
                         </p>
 
-                        {/* CTA Button */}
-                        <button
-                          className="w-full text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                          style={{ backgroundColor: theme.primary }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                        >
-                          <Eye size={16} />
-                          {t('ViewDetails', 'View Details')}
-                          <ExternalLink size={14} />
-                        </button>
+                        {/* CTA Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            className="flex-1 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                            style={{ backgroundColor: theme.primary }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                          >
+                            <Eye size={16} />
+                            {t('ViewDetails', 'View Details')}
+                            <ExternalLink size={14} />
+                          </button>
+                          <div
+                            className="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ShareButtons
+                              url={`${window.location.origin}/careers/${createSlugPath(career.title, career.id)}`}
+                              title={career.title}
+                              description={career.description}
+                              showLabel={false}
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   ))}

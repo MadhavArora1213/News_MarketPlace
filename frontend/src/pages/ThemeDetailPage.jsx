@@ -9,10 +9,11 @@ import AuthModal from '../components/auth/AuthModal';
 import {
   ArrowLeft, Globe, MapPin, Users, Star, ExternalLink,
   Instagram, Youtube, Twitter, Facebook, Hash, DollarSign,
-  Calendar, Eye, Heart, Share
+  Calendar, Eye, Heart
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
+import ShareButtons from '../components/common/ShareButtons';
 
 const ThemeDetailPage = () => {
   const { id } = useParams();
@@ -205,29 +206,6 @@ const ThemeDetailPage = () => {
     }
   };
 
-  const handleShare = () => {
-    const shareData = {
-      title: theme.page_name,
-      text: `Check out this social media theme: ${theme.page_name}`,
-      url: window.location.href
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData);
-    } else {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert(t('themeDetails.share.copied'));
-      }).catch(() => {
-        const textArea = document.createElement('textarea');
-        textArea.value = window.location.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert(t('themeDetails.share.copied'));
-      });
-    }
-  };
 
   const themeColors = {
     primary: '#1976D2',
@@ -584,17 +562,11 @@ const ThemeDetailPage = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-6" style={{ backgroundColor: themeColors.background }}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center gap-4">
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                borderColor: themeColors.borderLight,
-                color: themeColors.textSecondary
-              }}
-            >
-              <Share size={16} style={{ color: themeColors.primary }} />
-              <span style={{ color: themeColors.textSecondary }}>{t('themeDetails.sections.share')}</span>
-            </button>
+            <ShareButtons
+              url={window.location.href}
+              title={theme.page_name}
+              description={theme.collaboration}
+            />
           </div>
         </div>
       </section>
