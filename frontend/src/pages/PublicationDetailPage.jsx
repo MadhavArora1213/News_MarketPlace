@@ -653,28 +653,29 @@ const PublicationDetailPage = () => {
       {/* Social Actions */}
       <section className="px-4 sm:px-6 lg:px-8 py-8 mb-12" style={{ backgroundColor: 'transparent' }}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6">
             <button
               onClick={handleSave}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl border-2 transition-all duration-200 font-bold"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-xl border-2 transition-all duration-300 font-bold whitespace-nowrap min-w-[140px]"
               style={{
                 borderColor: isSaved ? theme.danger : theme.borderLight,
                 backgroundColor: isSaved ? theme.danger + '10' : 'white',
                 color: isSaved ? theme.danger : theme.textSecondary,
-                boxShadow: isSaved ? `0 4px 12px ${theme.danger}20` : 'none'
+                boxShadow: isSaved ? `0 8px 20px ${theme.danger}20` : 'none'
               }}
             >
-              <Heart size={20} style={{ color: isSaved ? theme.danger : theme.danger, fill: isSaved ? theme.danger : 'none' }} />
+              <Heart size={20} style={{ fill: isSaved ? theme.danger : 'none' }} />
               <span>
                 {isSaved ? t('publicationDetail.actions.saved') : t('publicationDetail.actions.save')}
               </span>
             </button>
-            <div className="w-full sm:w-auto flex justify-center bg-white p-1 rounded-xl border-2 border-gray-100 shadow-sm">
+            <div className="flex-1 sm:flex-none flex justify-center min-w-[140px]">
               <ShareButtons
                 url={window.location.href}
                 title={publication.publication_name}
-                description={publication.other_remarks}
-                variant="ghost"
+                description={publication.remarks}
+                variant="outline"
+                fullWidth={true}
               />
             </div>
           </div>

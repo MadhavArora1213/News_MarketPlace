@@ -29,7 +29,7 @@ const TelegramIcon = ({ size = 20 }) => (
     </svg>
 );
 
-const ShareButtons = ({ url, title, description, variant = 'default', showLabel = true }) => {
+const ShareButtons = ({ url, title, description, variant = 'default', showLabel = true, className = "", fullWidth = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -79,18 +79,19 @@ const ShareButtons = ({ url, title, description, variant = 'default', showLabel 
     };
 
     const getTriggerStyles = () => {
+        const base = `flex flex-row items-center justify-center gap-2 transition-all duration-300 font-bold whitespace-nowrap ${fullWidth ? 'w-full' : 'w-auto'} ${className}`;
         switch (variant) {
             case 'outline':
-                return "px-4 py-2 border border-slate-200 rounded-lg flex items-center gap-2 text-slate-600 hover:bg-slate-50 transition-colors";
+                return `${base} px-6 py-3.5 border-2 border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:border-slate-300`;
             case 'ghost':
-                return "p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all";
+                return `${base} px-4 py-3 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl`;
             default:
                 return "w-12 h-12 bg-white rounded-full shadow-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:shadow-xl transition-all duration-300 active:scale-95";
         }
     };
 
     return (
-        <div className="relative inline-block">
+        <div className={`relative ${fullWidth ? 'w-full' : 'inline-block'}`}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={getTriggerStyles()}
@@ -106,30 +107,31 @@ const ShareButtons = ({ url, title, description, variant = 'default', showLabel 
                         initial={{ opacity: 0, scale: 0.8, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: -10 }}
                         exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                        className="absolute bottom-full mb-4 bg-white rounded-2xl shadow-2xl border border-slate-100 p-3 flex flex-row items-center gap-3 backdrop-blur-xl bg-white/95 z-50 right-0 md:right-auto"
-                        style={{ minWidth: '320px' }}
+                        className="absolute bottom-full mb-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 sm:p-3 flex flex-row items-center gap-1 sm:gap-2 z-[150] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 flex-nowrap"
+                        style={{ width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}
                     >
-                        {shareLinks.map((plat) => (
-                            <a
-                                key={plat.name}
-                                href={plat.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 hover:shadow-lg active:scale-90"
-                                style={{ backgroundColor: plat.color }}
-                                title={`Share on ${plat.name}`}
+                        <div className="flex flex-row items-center gap-1.5 sm:gap-2 px-1">
+                            {shareLinks.map((plat) => (
+                                <a
+                                    key={plat.name}
+                                    href={plat.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90"
+                                    style={{ backgroundColor: plat.color }}
+                                    title={`Share on ${plat.name}`}
+                                >
+                                    {plat.icon}
+                                </a>
+                            ))}
+                            <button
+                                onClick={copyToClipboard}
+                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                title="Copy link"
                             >
-                                {plat.icon}
-                            </a>
-                        ))}
-                        <div className="w-px h-8 bg-slate-200 mx-1" />
-                        <button
-                            onClick={copyToClipboard}
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                            title="Copy link"
-                        >
-                            {copied ? <CheckCircle size={18} /> : <Link2 size={18} />}
-                        </button>
+                                {copied ? <CheckCircle size={18} /> : <Link2 size={18} />}
+                            </button>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

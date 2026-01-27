@@ -42,6 +42,7 @@ const PaparazziPage = () => {
   const { translatedItems: translatedPaparazzi, isTranslating } = useTranslationArray(paparazzi, ['category', 'region_focused']);
   const [filteredPaparazzi, setFilteredPaparazzi] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCardId, setActiveCardId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -418,7 +419,12 @@ const PaparazziPage = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4 }}
-                      className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                      onMouseEnter={() => setActiveCardId(p.id)}
+                      onMouseLeave={() => setActiveCardId(null)}
+                      className="bg-white rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition-shadow cursor-pointer relative"
+                      style={{
+                        zIndex: activeCardId === p.id ? 100 : 1
+                      }}
                       onClick={() => handleCardClick(p)}
                     >
                       <div className="p-6">

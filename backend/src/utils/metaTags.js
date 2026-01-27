@@ -143,8 +143,13 @@ const getMetaData = async (route, idOrSlug) => {
     }
 
     // Ensure absolute image URL
-    if (image && !image.startsWith('http')) {
-        image = `https://vaas.solutions${image.startsWith('/') ? '' : '/'}${image}`;
+    if (image && typeof image === 'string' && image.length > 0) {
+        if (!image.startsWith('http')) {
+            const cleanSource = image.startsWith('/') ? image.substring(1) : image;
+            image = `https://vaas.solutions/${cleanSource}`;
+        }
+    } else {
+        image = 'https://vaas.solutions/logo.png';
     }
 
     // Sanitize description (remove HTML tags and newlines)
@@ -160,7 +165,7 @@ const getMetaData = async (route, idOrSlug) => {
 
     return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -168,33 +173,39 @@ const getMetaData = async (route, idOrSlug) => {
     <meta name="description" content="${description}">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="article">
     <meta property="og:url" content="${url}">
     <meta property="og:title" content="${title}">
     <meta property="og:description" content="${description}">
     <meta property="og:image" content="${image}">
+    <meta property="og:image:secure_url" content="${image}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="VaaS Solutions">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="${url}">
-    <meta property="twitter:title" content="${title}">
-    <meta property="twitter:description" content="${description}">
-    <meta property="twitter:image" content="${image}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="${url}">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:description" content="${description}">
+    <meta name="twitter:image" content="${image}">
 
-    <!-- Redirect to actual page for humans -->
+    <link rel="canonical" href="${url}">
+
+    <!-- Redirect to actual page for humans after a short delay -->
     <script>
-        setTimeout(function() {
-            window.location.href = "${url}";
-        }, 500);
+        window.location.href = "${url}";
     </script>
 </head>
-<body>
-    <div style="font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; text-align: center;">
-        <img src="${image}" alt="${title}" style="max-width: 200px; height: auto; margin-bottom: 20px; border-radius: 8px;">
-        <h1 style="color: #1a1a1a;">${title}</h1>
-        <p style="color: #666; line-height: 1.6;">${description}</p>
-        <p style="margin-top: 30px;"><a href="${url}" style="color: #1976D2; text-decoration: none; font-weight: bold;">Loading content...</a></p>
+<body style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div style="max-width: 600px; width: 90%; background: white; padding: 40px; border-radius: 20px; shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center;">
+        <img src="${image}" alt="${title}" style="max-width: 240px; height: auto; margin-bottom: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <h1 style="color: #212121; font-size: 24px; margin-bottom: 16px;">${title}</h1>
+        <p style="color: #757575; line-height: 1.6; font-size: 16px; margin-bottom: 32px;">${description}</p>
+        <a href="${url}" style="display: inline-block; background-color: #1976D2; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.2s;">
+            Continue to Site
+        </a>
     </div>
 </body>
 </html>

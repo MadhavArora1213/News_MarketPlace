@@ -34,7 +34,7 @@ const AwardsListing = ({ award, index, onAwardClick, onApplyClick }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
       onClick={() => onAwardClick(award)}
-      className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer group overflow-hidden"
+      className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer group relative"
     >
       {/* Award Header */}
       <div className="p-6">

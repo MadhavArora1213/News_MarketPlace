@@ -65,6 +65,7 @@ const AwardsPage = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [showAwardForm, setShowAwardForm] = useState(false);
   const [selectedAward, setSelectedAward] = useState(null);
+  const [activeCardId, setActiveCardId] = useState(null);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -321,9 +322,9 @@ const AwardsPage = () => {
           minHeight: 'calc(100vh - 200px)',
           position: 'sticky',
           top: '80px',
-          zIndex: 10,
+          zIndex: 40,
           borderRight: `1px solid ${theme.borderLight}`,
-          width: '25%'
+          width: isMobile ? '100%' : '300px'
         }}>
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
@@ -530,6 +531,9 @@ const AwardsPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
+                    onMouseEnter={() => setActiveCardId(award.id)}
+                    onMouseLeave={() => setActiveCardId(null)}
+                    style={{ zIndex: activeCardId === award.id ? 100 : 1, position: 'relative' }}
                   >
                     <AwardsListing
                       award={award}

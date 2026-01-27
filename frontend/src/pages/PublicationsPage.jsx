@@ -61,10 +61,10 @@ const PublicationsPage = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
-  // View mode and layout state
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeCardId, setActiveCardId] = useState(null);
 
   // Filter states
   const [regionFilter, setRegionFilter] = useState('');
@@ -438,7 +438,7 @@ const PublicationsPage = () => {
           minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
           position: isMobile ? 'static' : 'sticky',
           top: isMobile ? 'auto' : '80px',
-          zIndex: 10,
+          zIndex: 40,
           borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
           borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
           width: isMobile ? '100%' : '300px',
@@ -767,10 +767,13 @@ const PublicationsPage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       onClick={() => handlePublicationClick(publication)}
-                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden relative"
+                      onMouseEnter={() => setActiveCardId(publication.id)}
+                      onMouseLeave={() => setActiveCardId(null)}
+                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group relative"
                       style={{
                         borderColor: theme.borderLight,
-                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
+                        boxShadow: '0 8px 20px rgba(2,6,23,0.06)',
+                        zIndex: activeCardId === publication.id ? 100 : 1
                       }}
                     >
                       {/* Rating Type or NEW Badge - Angled at top left */}
@@ -1017,8 +1020,13 @@ const PublicationsPage = () => {
                         {publications.map((publication, index) => (
                           <tr
                             key={publication.id}
-                            className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
-                            style={{ borderColor: theme.borderLight }}
+                            className="border-t hover:bg-gray-50 cursor-pointer transition-colors relative"
+                            style={{
+                              borderColor: theme.borderLight,
+                              zIndex: activeCardId === publication.id ? 100 : 1
+                            }}
+                            onMouseEnter={() => setActiveCardId(publication.id)}
+                            onMouseLeave={() => setActiveCardId(null)}
                             onClick={() => handlePublicationClick(publication)}
                           >
                             <td className="px-6 py-4">

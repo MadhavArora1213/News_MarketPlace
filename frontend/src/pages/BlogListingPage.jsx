@@ -227,7 +227,10 @@ const BlogListingPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     onClick={() => navigate(`/blog/${createSlugPath(blog.title, blog.id)}`)}
-                    className="group bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-[#1976D2]/40 transition-all duration-700 hover:-translate-y-3 relative cursor-pointer"
+                    onMouseEnter={() => setActiveCardId(blog.id)}
+                    onMouseLeave={() => setActiveCardId(null)}
+                    className="group bg-white rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl hover:border-[#1976D2]/40 transition-all duration-700 hover:-translate-y-3 relative cursor-pointer"
+                    style={{ zIndex: activeCardId === blog.id ? 100 : 1 }}
                   >
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#1976D2]/5 via-transparent to-[#9C27B0]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
