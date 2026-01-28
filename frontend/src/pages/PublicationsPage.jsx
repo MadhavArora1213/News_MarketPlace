@@ -382,8 +382,8 @@ const PublicationsPage = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
       <SEO
-        title="Browse Premium Publications | Global Media Reach | News Marketplace"
-        description="Explore thousands of premium publications across various regions, languages, and industries. Guaranteed placement for your content."
+        title="Verified Media Publications | Global Reach"
+        description="Explore thousands of premium publications across various regions, languages, and industries. Connect with industry leaders and grow your presence with VaaS Solutions."
       />
       <Schema
         type="collection"

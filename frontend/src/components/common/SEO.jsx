@@ -22,7 +22,13 @@ const SEO = ({
   const metaTitle = title ? `${title} | ${siteName}` : siteName;
   const metaDescription = description || 'Discover, create, and share premium news content. Join our community of writers and readers.';
   const metaKeywords = keywords || 'news, marketplace, articles, journalism, writers, readers, content creation';
-  const metaImage = image || defaultImage;
+
+  // Normalize image URL
+  let metaImage = image || defaultImage;
+  if (metaImage && !metaImage.startsWith('http') && !metaImage.startsWith('data:')) {
+    metaImage = `${defaultUrl}${metaImage.startsWith('/') ? '' : '/'}${metaImage}`;
+  }
+
   const metaUrl = url || `${defaultUrl}${currentPath}`;
 
   const robots = `${noindex ? 'noindex' : 'index'}, ${nofollow ? 'nofollow' : 'follow'}`;

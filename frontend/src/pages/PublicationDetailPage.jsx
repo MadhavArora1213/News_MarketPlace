@@ -238,10 +238,10 @@ const PublicationDetailPage = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: theme.backgroundAlt }}>
       <SEO
-        title={`${publication.publication_name} - News Marketplace`}
-        description={publication.other_remarks || `Publish on ${publication.publication_name} with News Marketplace.`}
-        image={publication.image ? (publication.image.startsWith('http') ? publication.image : `https://vaas.solutions${publication.image.startsWith('/') ? '' : '/'}${publication.image}`) : 'https://vaas.solutions/logo.png'}
-        type="product"
+        title={`${publication.publication_name} | Verified Publication`}
+        description={publication.remarks || publication.other_remarks || `Publish on ${publication.publication_name} with VaaS Solutions. Explore top media reach and industry insights.`}
+        image={publication.image || 'https://vaas.solutions/logo.png'}
+        type="article"
       />
       <Schema
         type="service"
