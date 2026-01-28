@@ -17,10 +17,14 @@ const pool = new Pool({
 const getIdFromSlug = (slugId) => {
     if (!slugId) return null;
     // Remove trailing slash if present
-    const cleanId = slugId.endsWith('/') ? slugId.slice(0, -1) : slugId;
-    if (!isNaN(cleanId)) return cleanId; // If it's just a number
-    const parts = cleanId.split('-');
-    return parts[parts.length - 1];
+    const cleanId = typeof slugId === 'string' && slugId.endsWith('/') ? slugId.slice(0, -1) : slugId;
+    if (!isNaN(cleanId)) return parseInt(cleanId); // If it's just a number
+    if (typeof cleanId === 'string' && cleanId.includes('-')) {
+        const parts = cleanId.split('-');
+        const lastPart = parts[parts.length - 1];
+        if (!isNaN(lastPart)) return parseInt(lastPart);
+    }
+    return null;
 };
 
 const getMetaData = async (route, idOrSlug) => {
@@ -31,12 +35,19 @@ const getMetaData = async (route, idOrSlug) => {
     let url = `https://vaas.solutions/${route}/${idOrSlug}`;
 
     // Improve fallback title from slug
-    if (idOrSlug && typeof idOrSlug === 'string' && idOrSlug.includes('-')) {
-        const parts = idOrSlug.split('-');
-        if (!isNaN(parts[parts.length - 1])) {
-            parts.pop(); // Remove the ID if it's a number
+    if (idOrSlug && typeof idOrSlug === 'string') {
+        let slugPart = idOrSlug;
+        if (slugPart.includes('-')) {
+            const parts = slugPart.split('-');
+            if (!isNaN(parts[parts.length - 1])) {
+                parts.pop(); // Remove the ID if it's a number
+            }
+            slugPart = parts.join(' ');
         }
-        const slugTitle = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+        const slugTitle = slugPart
+            .split(' ')
+            .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+            .join(' ');
         if (slugTitle) title = slugTitle;
     }
 
@@ -48,6 +59,14 @@ const getMetaData = async (route, idOrSlug) => {
                     title = res.rows[0].publication_name;
                     description = res.rows[0].remarks || description;
                     image = res.rows[0].image || image;
+                } else {
+                    // Fallback to publications table
+                    const resPub = await pool.query('SELECT publication_name, other_remarks FROM publications WHERE id = $1', [id]);
+                    if (resPub.rows[0]) {
+                        title = resPub.rows[0].publication_name;
+                        description = resPub.rows[0].other_remarks || description;
+                        // publications table doesn't have an image column in migration 007
+                    }
                 }
                 break;
             }

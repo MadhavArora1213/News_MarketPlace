@@ -206,7 +206,7 @@ app.get([
 ], async (req, res, next) => {
   const userAgent = req.headers['user-agent'] || '';
   // Extremely permissive bot check for sharing debugging
-  const isBotLike = /facebookexternalhit|Facebot|LinkedIn|LinkedInBot|Twitterbot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|Googlebot|bingbot|Applebot|bot|crawler|spider/i.test(userAgent);
+  const isBotLike = /bot|crawler|spider|facebookexternalhit|Facebot|LinkedIn|LinkedInBot|Twitterbot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|Googlebot|bingbot|Applebot/i.test(userAgent);
 
   const route = req.path.split('/')[1];
   const id = req.params.id;

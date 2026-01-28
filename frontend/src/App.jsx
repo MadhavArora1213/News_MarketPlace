@@ -339,7 +339,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/contact-us" element={<ContactUs />} />
-                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/faq" element={<FAQ isPage={true} />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/cookie-policy" element={<CookiePolicy />} />
