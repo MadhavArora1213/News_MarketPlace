@@ -206,7 +206,7 @@ app.get([
   '/published-works', '/published-works/:id'
 ], async (req, res, next) => {
   const userAgent = req.headers['user-agent'] || '';
-  const isBotLike = /bot|crawler|spider|facebook|linkedin|twitter|whatsapp|slack|discord|pinterest|google|bing|apple|telegram/i.test(userAgent);
+  const isBotLike = /bot|crawler|spider|facebookexternalhit|linkedin|twitterbot|whatsapp|slack|discord|pinterest|googlebot|bingbot|applebot|telegram/i.test(userAgent);
 
   const route = req.path.split('/')[1];
   const idOrSlug = req.params.id;
