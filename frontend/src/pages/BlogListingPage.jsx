@@ -19,6 +19,7 @@ const BlogListingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [blogs, setBlogs] = useState([]);
+  const [activeCardId, setActiveCardId] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -281,7 +282,7 @@ const BlogListingPage = () => {
                           {t('blogs.readArticle')}
                         </Link>
                         <div
-                          className="bg-white text-[#1976D2] p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white"
+                          className="bg-white text-[#1976D2] p-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ShareButtons
