@@ -58,125 +58,127 @@ const getMetaData = async (route, idOrSlug) => {
     }
 
     try {
-        switch (route) {
-            case 'publications': {
-                const res = await pool.query('SELECT publication_name, remarks, image FROM publication_managements WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].publication_name;
-                    description = res.rows[0].remarks || description;
-                    image = res.rows[0].image || image;
-                } else {
-                    // Fallback to publications table
-                    const resPub = await pool.query('SELECT publication_name, other_remarks FROM publications WHERE id = $1', [id]);
-                    if (resPub.rows[0]) {
-                        title = resPub.rows[0].publication_name;
-                        description = resPub.rows[0].other_remarks || description;
-                        // publications table doesn't have an image column in migration 007
+        if (id) {
+            switch (route) {
+                case 'publications': {
+                    const res = await pool.query('SELECT publication_name, remarks, image FROM publication_managements WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].publication_name;
+                        description = res.rows[0].remarks || description;
+                        image = res.rows[0].image || image;
+                    } else {
+                        // Fallback to publications table
+                        const resPub = await pool.query('SELECT publication_name, other_remarks FROM publications WHERE id = $1', [id]);
+                        if (resPub.rows[0]) {
+                            title = resPub.rows[0].publication_name;
+                            description = resPub.rows[0].other_remarks || description;
+                        }
                     }
+                    break;
                 }
-                break;
-            }
-            case 'events': {
-                const res = await pool.query('SELECT event_name, event_description, event_image FROM events WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].event_name;
-                    description = res.rows[0].event_description || description;
-                    image = res.rows[0].event_image || image;
+                case 'events': {
+                    const res = await pool.query('SELECT event_name, event_description, event_image FROM events WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].event_name;
+                        description = res.rows[0].event_description || description;
+                        image = res.rows[0].event_image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'blog':
-            case 'blogs': {
-                const res = await pool.query('SELECT title, content, image FROM blogs WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].title;
-                    description = res.rows[0].content ? res.rows[0].content.substring(0, 160) : description;
-                    image = res.rows[0].image || image;
+                case 'blog':
+                case 'blogs': {
+                    const res = await pool.query('SELECT title, content, image FROM blogs WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].title;
+                        description = res.rows[0].content ? res.rows[0].content.substring(0, 160) : description;
+                        image = res.rows[0].image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'careers': {
-                const res = await pool.query('SELECT title, description FROM careers WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].title;
-                    description = res.rows[0].description || description;
+                case 'careers': {
+                    const res = await pool.query('SELECT title, description FROM careers WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].title;
+                        description = res.rows[0].description || description;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'themes': {
-                const res = await pool.query('SELECT theme_name, theme_description, theme_image FROM themes WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].theme_name;
-                    description = res.rows[0].theme_description || description;
-                    image = res.rows[0].theme_image || image;
+                case 'themes': {
+                    const res = await pool.query('SELECT theme_name, theme_description, theme_image FROM themes WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].theme_name;
+                        description = res.rows[0].theme_description || description;
+                        image = res.rows[0].theme_image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'power-lists': {
-                const res = await pool.query('SELECT nomination_name, company_name, description FROM powerlist_nominations WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = `${res.rows[0].nomination_name} - ${res.rows[0].company_name}`;
-                    description = res.rows[0].description || description;
+                case 'power-lists': {
+                    const res = await pool.query('SELECT nomination_name, company_name, description FROM powerlist_nominations WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = `${res.rows[0].nomination_name} - ${res.rows[0].company_name}`;
+                        description = res.rows[0].description || description;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'paparazzi': {
-                const res = await pool.query('SELECT instagram_page_name, category, profile_dp_logo FROM paparazzi_creations WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].instagram_page_name;
-                    description = `Social Media Page - Category: ${res.rows[0].category}` || description;
-                    image = res.rows[0].profile_dp_logo || image;
+                case 'paparazzi': {
+                    const res = await pool.query('SELECT instagram_page_name, category, profile_dp_logo FROM paparazzi_creations WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].instagram_page_name;
+                        description = `Social Media Page - Category: ${res.rows[0].category}`;
+                        image = res.rows[0].profile_dp_logo || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'awards': {
-                const res = await pool.query('SELECT award_name, industry, image FROM award_creations WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].award_name;
-                    description = res.rows[0].industry || description;
-                    image = res.rows[0].image || image;
+                case 'awards': {
+                    const res = await pool.query('SELECT award_name, industry, image FROM award_creations WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].award_name;
+                        description = res.rows[0].industry || description;
+                        image = res.rows[0].image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'real-estate-professionals': {
-                const res = await pool.query('SELECT full_name, bio, profile_image FROM real_estate_professionals WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].full_name;
-                    description = res.rows[0].bio || description;
-                    image = res.rows[0].profile_image || image;
+                case 'real-estate-professionals': {
+                    const res = await pool.query('SELECT full_name, bio, profile_image FROM real_estate_professionals WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].full_name;
+                        description = res.rows[0].bio || description;
+                        image = res.rows[0].profile_image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'radio': {
-                const res = await pool.query('SELECT station_name, description, logo FROM radios WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].station_name;
-                    description = res.rows[0].description || description;
-                    image = res.rows[0].logo || image;
+                case 'radio': {
+                    const res = await pool.query('SELECT station_name, description, logo FROM radios WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].station_name;
+                        description = res.rows[0].description || description;
+                        image = res.rows[0].logo || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'podcasters': {
-                const res = await pool.query('SELECT name, description, image FROM podcasters WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].name;
-                    description = res.rows[0].description || description;
-                    image = res.rows[0].image || image;
+                case 'podcasters': {
+                    const res = await pool.query('SELECT name, description, image FROM podcasters WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].name;
+                        description = res.rows[0].description || description;
+                        image = res.rows[0].image || image;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'press-packs': {
-                const res = await pool.query('SELECT pack_name, description, image FROM press_packs WHERE id = $1', [id]);
-                if (res.rows[0]) {
-                    title = res.rows[0].pack_name;
-                    description = res.rows[0].description || description;
-                    image = res.rows[0].image || image;
+                case 'press-packs': {
+                    const res = await pool.query('SELECT pack_name, description, image FROM press_packs WHERE id = $1', [id]);
+                    if (res.rows[0]) {
+                        title = res.rows[0].pack_name;
+                        description = res.rows[0].description || description;
+                        image = res.rows[0].image || image;
+                    }
+                    break;
                 }
-                break;
             }
         }
     } catch (error) {
-        console.error('Error fetching metadata (db):', error);
+        console.error('Error fetching metadata (db query failed):', error);
+        // We catch the error locally to ensure the rest of the function proceeds with generated fallbacks
     }
 
     // Ensure absolute image URL with improved logic
