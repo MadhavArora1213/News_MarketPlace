@@ -272,7 +272,7 @@ const RadioPage = () => {
               {t('radio.hero.disclaimer')}
             </p>
 
-            {/* Search Bar & Share Buttons */}
+            {/* Search Bar */}
             <div className="max-w-4xl mx-auto mt-6 sm:mt-10 flex flex-col items-stretch gap-4 px-2">
               <div className="relative flex-1 group">
                 <input
@@ -291,21 +291,6 @@ const RadioPage = () => {
                     ×
                   </button>
                 )}
-              </div>
-
-              <div className="flex flex-row items-center justify-between sm:justify-center gap-3 bg-white/80 backdrop-blur-sm p-2 sm:p-3 rounded-xl border border-blue-50 shadow-sm self-center">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-6 bg-blue-500 rounded-full"></div>
-                  <span className="text-xs sm:text-sm font-bold text-[#757575] uppercase tracking-wider">{t('common.share', 'Share Directory')}:</span>
-                </div>
-                <ShareButtons
-                  url={window.location.href}
-                  title="Radio Stations & Broadcasters | Global Media Directory"
-                  description="Explore the best Radio Stations & Broadcasters on VaaS Solutions."
-                  showLabel={false}
-                  variant="ghost"
-                  size="sm"
-                />
               </div>
             </div>
           </motion.div>
@@ -557,12 +542,22 @@ const RadioPage = () => {
                         </div>
 
                         {/* Bottom Content Overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white">
+                        <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent">
                           {/* Name and Rating */}
-                          <div className="mb-3">
-                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors line-clamp-1">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h3 className="text-xl font-bold text-white group-hover:text-blue-200 transition-colors line-clamp-1 flex-1">
                               {radio.radio_name}
                             </h3>
+                            <div className="relative z-30" onClick={(e) => e.stopPropagation()}>
+                              <ShareButtons
+                                url={`${window.location.origin}/radio/${createSlugPath(radio.radio_name, radio.id)}`}
+                                title={`${radio.radio_name} | Radio Station Broadcaster`}
+                                description={`Listen to ${radio.radio_name} on VaaS Solutions.`}
+                                showLabel={false}
+                                variant="ghost"
+                                className="!p-1 text-white hover:text-blue-300 hover:bg-white/10"
+                              />
+                            </div>
                           </div>
 
                           {/* Description */}
@@ -687,9 +682,21 @@ const RadioPage = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <span className="text-sm" style={{ color: theme.textPrimary }}>
-                                  {radio.frequency}
-                                </span>
+                                <div className="flex items-center gap-3">
+                                  <span className="text-sm" style={{ color: theme.textPrimary }}>
+                                    {radio.frequency}
+                                  </span>
+                                  <div className="relative z-30" onClick={(e) => e.stopPropagation()}>
+                                    <ShareButtons
+                                      url={`${window.location.origin}/radio/${createSlugPath(radio.radio_name, radio.id)}`}
+                                      title={`${radio.radio_name} | Radio Station Broadcaster`}
+                                      description={`Listen to ${radio.radio_name} on VaaS Solutions.`}
+                                      showLabel={false}
+                                      variant="ghost"
+                                      size="sm"
+                                    />
+                                  </div>
+                                </div>
                               </td>
                               <td className="px-6 py-4">
                                 <span className="text-sm" style={{ color: theme.textPrimary }}>

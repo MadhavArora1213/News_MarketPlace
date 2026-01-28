@@ -3,9 +3,13 @@
 from flask import Flask, request, jsonify
 from deep_translator import GoogleTranslator
 import os
-
 import sys
 import json
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -15,17 +19,22 @@ def translate_logic(text, target_lang, source_lang='auto'):
     if len(text) > 5000:
         return {"error": "Text too long (max 5000 characters)"}
     
-    translator = GoogleTranslator(source=source_lang, target=target_lang)
-    translation = translator.translate(text)
-    return {
-        "translation": translation,
-        "source_lang": source_lang,
-        "target_lang": target_lang,
-        "original_text": text
-    }
+    try:
+        translator = GoogleTranslator(source=source_lang, target=target_lang)
+        translation = translator.translate(text)
+        return {
+            "translation": translation,
+            "source_lang": source_lang,
+            "target_lang": target_lang,
+            "original_text": text
+        }
+    except Exception as e:
+        logger.error(f"Translation logic error: {str(e)}")
+        return {"error": str(e)}
 
 @app.route('/translate', methods=['POST'])
 def translate():
+    logger.info("Received request: POST /translate")
     try:
         data = request.get_json()
         if not data:
@@ -45,10 +54,12 @@ def translate():
         return jsonify(result)
 
     except Exception as e:
+        logger.error(f"Error in /translate: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/translate/batch', methods=['POST'])
 def translate_batch():
+    logger.info("Received request: POST /translate/batch")
     try:
         data = request.get_json()
         if not data:
@@ -75,26 +86,25 @@ def translate_batch():
         return jsonify({"results": results, "success": True})
 
     except Exception as e:
+        logger.error(f"Error in /translate/batch: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({"status": "healthy"})
+    return jsonify({"status": "healthy", "service": "translator"})
 
 if __name__ == "__main__":
     # Check for CLI arguments
     if len(sys.argv) > 1:
+        # (CLI logic remains unchanged for internal use)
         try:
-            # Handle batch translation via CLI if first arg is 'batch'
             if sys.argv[1] == 'batch':
                 source_lang = sys.argv[2]
                 target_lang = sys.argv[3]
-                # Rejoin remaining args as potential multiple texts or a single JSON array
-                # For simplicity with execFile, we'll expect a JSON string of texts as the 4th arg
                 try:
                     texts = json.loads(sys.argv[4])
                 except:
-                    texts = sys.argv[4:] # Fallback to remaining args
+                    texts = sys.argv[4:]
                 
                 results = []
                 for text in texts:
@@ -103,10 +113,8 @@ if __name__ == "__main__":
                         results.append({"success": False, "error": res["error"], "original": text})
                     else:
                         results.append({"success": True, "translation": res["translation"], "original": text})
-                
                 print(json.dumps({"results": results, "success": True}))
             else:
-                # Single translation: python translator.py <source> <target> <text>
                 source_lang = sys.argv[1]
                 target_lang = sys.argv[2]
                 text = " ".join(sys.argv[3:])
@@ -116,6 +124,7 @@ if __name__ == "__main__":
             print(json.dumps({"error": str(e)}))
         sys.exit(0)
     else:
-        # Flask Mode
+        # Flask Mode - Standard production-ready check
         port = int(os.environ.get('PORT', 5005))
+        logger.info(f"Starting Translator Flask App on port {port}...")
         app.run(host='0.0.0.0', port=port, debug=False)

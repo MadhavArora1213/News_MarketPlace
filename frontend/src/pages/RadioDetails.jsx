@@ -358,38 +358,45 @@ const RadioDetails = () => {
               </div>
 
               {/* Action Card */}
-              <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 order-1 lg:order-2 ring-2 ring-blue-500/5">
-                <h3 className="text-lg font-bold mb-4 text-[#212121]">
-                  {t('radioDetails.quickActions')}
-                </h3>
-                <div className="space-y-4">
-                  <button
-                    className="w-full text-white font-bold py-4 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/20 active:scale-95"
-                    style={{ backgroundColor: theme.primary }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
-                    onClick={handlePlaceOrder}
-                    disabled={isOrdering}
-                  >
-                    {isOrdering ? t('radioDetails.processing') : (isAuthenticated ? t('radioDetails.checkout') : t('radioDetails.signInOrder'))}
-                  </button>
-
-                  <div className="flex flex-col items-center gap-3 py-2">
-                    <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Share Station</span>
+              <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-6 order-1 lg:order-2 ring-1 ring-black/5">
+                <div className="space-y-5">
+                  {/* Share Section - Moved to Top for better UX */}
+                  <div className="flex flex-col items-center gap-2 pb-5 border-b border-slate-50">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{t('common.share_station', 'Share Station')}</span>
                     <ShareButtons
                       url={window.location.href}
                       title={translatedRadio?.radio_name || 'Radio Station'}
                       description={translatedRadio?.description || ''}
+                      direction="down"
+                      variant="outline"
+                      className="!rounded-full !py-2 shadow-sm scale-90 sm:scale-100"
                     />
                   </div>
 
-                  <button
-                    onClick={handleBack}
-                    className="w-full flex items-center justify-center gap-2 text-slate-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 border border-slate-200 hover:bg-slate-50 active:scale-95"
-                  >
-                    <ArrowLeft size={16} />
-                    {t('radioDetails.backToStations')}
-                  </button>
+                  <h3 className="text-base sm:text-lg font-bold text-[#212121] text-center lg:text-left">
+                    {t('radioDetails.quickActions')}
+                  </h3>
+
+                  <div className="space-y-3">
+                    <button
+                      className="w-full text-white font-bold py-3.5 sm:py-4 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/20 active:scale-95 text-sm sm:text-base"
+                      style={{ backgroundColor: theme.primary }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
+                      onClick={handlePlaceOrder}
+                      disabled={isOrdering}
+                    >
+                      {isOrdering ? t('radioDetails.processing') : (isAuthenticated ? t('radioDetails.checkout') : t('radioDetails.signInOrder'))}
+                    </button>
+
+                    <button
+                      onClick={handleBack}
+                      className="w-full flex items-center justify-center gap-2 text-slate-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 border border-slate-100 hover:bg-slate-50 active:scale-95 text-xs sm:text-sm"
+                    >
+                      <ArrowLeft size={14} />
+                      {t('radioDetails.backToStations')}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

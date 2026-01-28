@@ -29,7 +29,7 @@ const TelegramIcon = ({ size = 20 }) => (
     </svg>
 );
 
-const ShareButtons = ({ url, title, description, image, variant = 'default', showLabel = true, className = "", fullWidth = false }) => {
+const ShareButtons = ({ url, title, description, image, variant = 'default', showLabel = true, className = "", fullWidth = false, direction = 'up' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -104,10 +104,10 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: -10 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                        className="absolute bottom-full mb-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 sm:p-3 flex flex-row items-center gap-1 sm:gap-2 z-[150] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 flex-nowrap"
+                        initial={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
+                        animate={{ opacity: 1, scale: 1, y: direction === 'up' ? -10 : 10 }}
+                        exit={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
+                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 sm:p-3 flex flex-row items-center gap-1 sm:gap-2 z-[200] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 flex-nowrap`}
                         style={{ width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}
                     >
                         <div className="flex flex-row items-center gap-1.5 sm:gap-2 px-1">
@@ -135,7 +135,7 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
 
