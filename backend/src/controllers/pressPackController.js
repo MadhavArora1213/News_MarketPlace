@@ -1,6 +1,7 @@
 const PressPack = require('../models/PressPack');
 const Publication = require('../models/Publication');
 const { body, validationResult } = require('express-validator');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class PressPackController {
   constructor() {
@@ -122,6 +123,9 @@ class PressPackController {
             errors: errors,
             createdPressPacks
           });
+
+          // Trigger SEO and Sitemap update
+          triggerSEOUpdate();
         })
         .on('error', (error) => {
           console.error('CSV Parsing error:', error);
@@ -339,6 +343,9 @@ class PressPackController {
         message: 'Press pack created successfully',
         pressPack: pressPack.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create press pack error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -429,6 +436,9 @@ class PressPackController {
         message: 'Press pack updated successfully',
         pressPack: updatedPressPack.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update press pack error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -447,6 +457,9 @@ class PressPackController {
 
       await pressPack.delete();
       res.json({ message: 'Press pack deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete press pack error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -519,6 +532,9 @@ class PressPackController {
         created: createdPressPacks,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk create press packs error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -620,6 +636,9 @@ class PressPackController {
         updated: updatedPressPacks,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update press packs error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -659,6 +678,9 @@ class PressPackController {
         deleted: deletedCount,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete press packs error:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -2,6 +2,7 @@ const PowerlistNominationSubmission = require('../models/PowerlistNominationSubm
 const PowerlistNomination = require('../models/PowerlistNomination');
 const { body, validationResult } = require('express-validator');
 const emailService = require('../../services/emailService');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class PowerlistNominationSubmissionController {
   // Validation rules for create
@@ -81,6 +82,9 @@ class PowerlistNominationSubmissionController {
         message: 'Nomination submitted successfully! You will receive email confirmations shortly.',
         submission: submission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create nomination submission error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -298,6 +302,9 @@ class PowerlistNominationSubmissionController {
         message: 'Nomination submission updated successfully',
         submission: updatedSubmission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update nomination submission error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -320,6 +327,9 @@ class PowerlistNominationSubmissionController {
 
       await submission.delete();
       res.json({ message: 'Nomination submission deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete nomination submission error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -389,6 +399,9 @@ class PowerlistNominationSubmissionController {
         message: 'Nomination submission status updated successfully',
         submission: updatedSubmission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update nomination submission status error:', error);
       res.status(500).json({ error: 'Internal server error' });

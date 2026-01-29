@@ -1,4 +1,5 @@
 const Podcaster = require('../models/Podcaster');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const { s3Service } = require('../services/s3Service');
@@ -265,6 +266,9 @@ class PodcasterController {
         message: req.user ? 'Podcaster profile submitted successfully and is pending review' : 'Podcaster profile created successfully',
         podcaster: podcaster.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create podcaster error:', error);
       console.error('Error stack:', error.stack);
@@ -596,6 +600,9 @@ class PodcasterController {
         message: 'Podcaster profile updated successfully',
         podcaster: updatedPodcaster.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update podcaster error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -637,6 +644,9 @@ class PodcasterController {
 
       await podcaster.update({ is_active: false });
       res.json({ message: 'Podcaster profile deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete podcaster error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -710,6 +720,9 @@ class PodcasterController {
         message: 'Podcaster profile approved successfully',
         podcaster: updatedPodcaster.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve podcaster error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -787,6 +800,9 @@ class PodcasterController {
         message: 'Podcaster profile rejected successfully',
         podcaster: updatedPodcaster.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject podcaster error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -866,6 +882,9 @@ class PodcasterController {
         approvedPodcasters: approvedPodcasters,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve podcasters error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -1420,6 +1439,9 @@ class PodcasterController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
 const { s3Service } = require('../services/s3Service');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminPublicationManagementController {
   // Configure multer for file uploads (using memory storage for S3)
@@ -242,6 +243,9 @@ class AdminPublicationManagementController {
         message: 'Publication management record created successfully',
         publication: publication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create publication management error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -304,6 +308,9 @@ class AdminPublicationManagementController {
         message: 'Publication management record updated successfully',
         publication: updatedPublication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update publication management error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -326,6 +333,9 @@ class AdminPublicationManagementController {
 
       await publication.delete();
       res.json({ message: 'Publication management record deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete publication management error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -450,6 +460,9 @@ class AdminPublicationManagementController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

@@ -1,4 +1,5 @@
 const EventDisclaimer = require('../models/EventDisclaimer');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { body, validationResult } = require('express-validator');
 
 class EventDisclaimerController {
@@ -34,6 +35,9 @@ class EventDisclaimerController {
         message: 'Disclaimer created successfully',
         disclaimer: disclaimer.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create disclaimer error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -123,6 +127,9 @@ class EventDisclaimerController {
         message: 'Disclaimer updated successfully',
         disclaimer: updatedDisclaimer.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update disclaimer error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -141,6 +148,9 @@ class EventDisclaimerController {
 
       await disclaimer.delete();
       res.json({ message: 'Disclaimer deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete disclaimer error:', error);
       res.status(500).json({ error: 'Internal server error' });

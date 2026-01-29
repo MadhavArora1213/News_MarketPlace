@@ -1,4 +1,5 @@
 const Award = require('../models/Award');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const AwardCreation = require('../models/AwardCreation');
 const { body, validationResult } = require('express-validator');
 const path = require('path');
@@ -53,6 +54,9 @@ class AwardController {
         message: 'Award created successfully',
         award: award.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create award error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -148,6 +152,9 @@ class AwardController {
         message: 'Award updated successfully',
         award: updatedAward.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update award error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -166,6 +173,9 @@ class AwardController {
 
       await award.destroy();
       res.json({ message: 'Award deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete award error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -355,6 +365,9 @@ class AwardController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

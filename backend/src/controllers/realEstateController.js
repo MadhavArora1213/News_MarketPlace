@@ -1,4 +1,5 @@
 const RealEstate = require('../models/RealEstate');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const { s3Service } = require('../services/s3Service');
@@ -155,6 +156,9 @@ class RealEstateController {
         message: req.user ? 'Real estate listing submitted successfully and is pending review' : 'Real estate listing created successfully',
         realEstate: realEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -499,6 +503,9 @@ class RealEstateController {
         message: 'Real estate listing updated successfully',
         realEstate: updatedRealEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -542,6 +549,9 @@ class RealEstateController {
 
       await realEstate.update({ is_active: false });
       res.json({ message: 'Real estate listing deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -597,6 +607,9 @@ class RealEstateController {
         message: 'Real estate listing approved successfully',
         realEstate: updatedRealEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -656,6 +669,9 @@ class RealEstateController {
         message: 'Real estate listing rejected successfully',
         realEstate: updatedRealEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -733,6 +749,9 @@ class RealEstateController {
         approvedRealEstates: approvedRealEstates,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve real estates error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -815,6 +834,9 @@ class RealEstateController {
         rejectedRealEstates: rejectedRealEstates,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk reject real estates error:', error);
       res.status(500).json({ error: 'Internal server error' });

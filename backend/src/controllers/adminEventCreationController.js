@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { exec } = require('child_process');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminEventCreationController {
   constructor() {
@@ -26,35 +27,6 @@ class AdminEventCreationController {
     this.downloadCSV = this.downloadCSV.bind(this);
   }
 
-  // Helper to trigger SEO regeneration and auto-push
-  async triggerAutoPush() {
-    try {
-      // Resolve path to the script in the root scripts folder
-      // __dirname is backend/src/controllers
-      // We need to go up to root: ../../../
-      const scriptPath = path.resolve(__dirname, '../../../../scripts/auto_push_master.sh');
-
-      console.log('🔄 Triggering auto-push and SEO regeneration...');
-
-      // Check if we are on Windows to try running with bash if possible, or just execute
-      // Assuming git bash or similar environment if .sh is used
-      const command = process.platform === 'win32' ? `bash "${scriptPath}"` : `"${scriptPath}"`;
-
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`❌ Auto-push execution error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          // git push usually writes to stderr, so we log it but don't treat as fatal error unless exit code was non-zero
-          console.log(`⚠️ Auto-push stderr: ${stderr}`);
-        }
-        console.log(`✅ Auto-push output: ${stdout}`);
-      });
-    } catch (err) {
-      console.error('❌ Failed to trigger auto-push:', err);
-    }
-  }
 
   // Download CSV Template
   async downloadTemplate(req, res) {
@@ -139,6 +111,9 @@ class AdminEventCreationController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -389,8 +364,8 @@ class AdminEventCreationController {
         eventCreation: eventCreation.toJSON()
       });
 
-      // Trigger auto-push
-      this.triggerAutoPush();
+      // Trigger SEO update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create event creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -522,8 +497,8 @@ class AdminEventCreationController {
         eventCreation: updatedEventCreation.toJSON()
       });
 
-      // Trigger auto-push
-      this.triggerAutoPush();
+      // Trigger SEO update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update event creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -547,8 +522,8 @@ class AdminEventCreationController {
       await eventCreation.delete();
       res.json({ message: 'Event creation deleted successfully' });
 
-      // Trigger auto-push
-      this.triggerAutoPush();
+      // Trigger SEO update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete event creation error:', error);
       res.status(500).json({ error: 'Internal server error' });

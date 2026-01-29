@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { s3Service } = require('../services/s3Service');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminPressPackController {
   constructor() {
@@ -282,6 +283,9 @@ class AdminPressPackController {
         message: 'Press pack created successfully',
         pressPack: pressPack.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminPressPackController.create - Error:', error);
       console.error('AdminPressPackController.create - Error stack:', error.stack);
@@ -371,6 +375,9 @@ class AdminPressPackController {
         message: 'Press pack updated successfully',
         pressPack: updatedPressPack.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminPressPackController.update - Error:', error);
       console.error('AdminPressPackController.update - Error stack:', error.stack);
@@ -394,6 +401,9 @@ class AdminPressPackController {
 
       await pressPack.delete();
       res.json({ message: 'Press pack deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete press pack error:', error);
       res.status(500).json({ error: 'Internal server error' });

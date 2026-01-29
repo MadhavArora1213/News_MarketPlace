@@ -1,4 +1,5 @@
 const Radio = require('../models/Radio');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { s3Service: S3Service } = require('../services/s3Service');
 const { body, validationResult } = require('express-validator');
 const { Readable } = require('stream');
@@ -62,6 +63,9 @@ class RadioController {
         message: 'Radio created successfully',
         radio: radio.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create radio error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -194,6 +198,9 @@ class RadioController {
         message: 'Radio updated successfully',
         radio: updatedRadio.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update radio error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -221,6 +228,9 @@ class RadioController {
 
       await radio.delete();
       res.json({ message: 'Radio deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete radio error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -333,6 +343,9 @@ class RadioController {
               errors: errors
             }
           });
+
+          // Trigger SEO and Sitemap update
+          triggerSEOUpdate();
         });
     } catch (error) {
       console.error('Bulk upload error:', error);

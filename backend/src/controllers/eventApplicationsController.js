@@ -5,6 +5,7 @@ const EventGuest = require('../models/EventGuest');
 const Event = require('../models/Event');
 const emailService = require('../services/emailService');
 const { body, validationResult } = require('express-validator');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class EventApplicationsController {
   // Validation rules for sponsor applications
@@ -140,9 +141,12 @@ class EventApplicationsController {
       }
 
       res.json({
-        message: 'Sponsor application updated successfully',
+        message: 'Sponsor status updated successfully',
         application: updatedSponsor.toJSON()
       });
+
+      // Trigger SEO update to refresh event data if needed
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update sponsor status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -219,9 +223,12 @@ class EventApplicationsController {
       }
 
       res.json({
-        message: 'Media partner application updated successfully',
+        message: 'Media partner status updated successfully',
         application: updatedMediaPartner.toJSON()
       });
+
+      // Trigger SEO update to refresh event data if needed
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update media partner status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -298,9 +305,12 @@ class EventApplicationsController {
       }
 
       res.json({
-        message: 'Speaker application updated successfully',
+        message: 'Speaker status updated successfully',
         application: updatedSpeaker.toJSON()
       });
+
+      // Trigger SEO update to refresh event data if needed
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update speaker status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -377,9 +387,12 @@ class EventApplicationsController {
       }
 
       res.json({
-        message: 'Guest application updated successfully',
+        message: 'Guest status updated successfully',
         application: updatedGuest.toJSON()
       });
+
+      // Trigger SEO update to refresh event data if needed
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update guest status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -504,11 +517,11 @@ class EventApplicationsController {
               </div>` : ''}
 
               ${status === 'approved' ?
-                `<p><strong>Congratulations!</strong> Your application has been approved. We look forward to seeing you at the event.</p>
+        `<p><strong>Congratulations!</strong> Your application has been approved. We look forward to seeing you at the event.</p>
                  <p>Please keep this email for your records. We'll send you additional information closer to the event date.</p>` :
-                `<p>Unfortunately, your application has not been approved at this time. ${notes ? 'Please review the notes above for more details.' : ''}</p>
+        `<p>Unfortunately, your application has not been approved at this time. ${notes ? 'Please review the notes above for more details.' : ''}</p>
                  <p>You can apply for future events or contact us if you have any questions.</p>`
-              }
+      }
 
               <p>If you have any questions, please don't hesitate to contact us.</p>
             </div>

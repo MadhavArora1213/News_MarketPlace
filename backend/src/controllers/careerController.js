@@ -1,4 +1,5 @@
 const Career = require('../models/Career');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const User = require('../models/User');
@@ -86,6 +87,9 @@ class CareerController {
         message: req.user ? 'Career submitted successfully and is pending review' : 'Career created successfully',
         career: career.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create career error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -291,6 +295,9 @@ class CareerController {
         message: 'Career updated successfully',
         career: updatedCareer.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update career error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -320,6 +327,9 @@ class CareerController {
 
       await career.delete();
       res.json({ message: 'Career deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete career error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -394,6 +404,9 @@ class CareerController {
         message: 'Career posting approved successfully',
         career: updatedCareer.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve career error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -472,6 +485,9 @@ class CareerController {
         message: 'Career posting rejected successfully',
         career: updatedCareer.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject career error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -563,6 +579,9 @@ class CareerController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -724,6 +743,9 @@ class CareerController {
         approvedCareers: approvedCareers,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve careers error:', error);
       res.status(500).json({ error: 'Internal server error' });

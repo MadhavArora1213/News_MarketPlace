@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { s3Service } = require('../services/s3Service');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminPressReleaseController {
   constructor() {
@@ -423,6 +424,9 @@ class AdminPressReleaseController {
         message: 'Press release created successfully',
         pressRelease: pressRelease.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminPressReleaseController.create - Error:', error);
       console.error('AdminPressReleaseController.create - Error stack:', error.stack);
@@ -500,6 +504,9 @@ class AdminPressReleaseController {
         message: 'Press release updated successfully',
         pressRelease: updatedPressRelease.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminPressReleaseController.update - Error:', error);
       console.error('AdminPressReleaseController.update - Error stack:', error.stack);
@@ -536,6 +543,9 @@ class AdminPressReleaseController {
         message: 'Press release approved successfully',
         pressRelease: pressRelease.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve press release error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -596,6 +606,9 @@ class AdminPressReleaseController {
 
       await pressRelease.delete();
       res.json({ message: 'Press release deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete press release error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -728,6 +741,9 @@ class AdminPressReleaseController {
           }
         }
         res.json({ message: `Processed ${results.length} rows. Created ${createdRecords.length} records.`, created: createdRecords.length, errors: errors, createdRecords });
+
+        // Trigger SEO and Sitemap update
+        triggerSEOUpdate();
       }).on('error', (err) => res.status(500).json({ error: 'Failed to process CSV' }));
     } catch (error) {
       console.error('Bulk upload error:', error);

@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { body, validationResult } = require('express-validator');
 
 class TicketController {
@@ -44,6 +45,9 @@ class TicketController {
         message: 'Ticket created successfully',
         ticket: ticket.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create ticket error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -117,6 +121,9 @@ class TicketController {
         message: 'Ticket updated successfully',
         ticket: updatedTicket.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update ticket error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -135,6 +142,9 @@ class TicketController {
 
       await ticket.delete();
       res.json({ message: 'Ticket deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete ticket error:', error);
       res.status(500).json({ error: 'Internal server error' });

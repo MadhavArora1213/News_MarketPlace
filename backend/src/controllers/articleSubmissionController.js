@@ -1,4 +1,5 @@
 const ArticleSubmission = require('../models/ArticleSubmission');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const Publication = require('../models/Publication');
 const PublicationManagement = require('../models/PublicationManagement');
 const { body, validationResult } = require('express-validator');
@@ -135,9 +136,9 @@ class ArticleSubmissionController {
         recaptcha_token
       } = req.body;
 
-      console.log('Extracted data:', { 
-        userId, 
-        publication_id, 
+      console.log('Extracted data:', {
+        userId,
+        publication_id,
         title: title ? title.substring(0, 50) + '...' : 'null',
         article_text_length: article_text ? article_text.length : 0
       });
@@ -311,6 +312,9 @@ class ArticleSubmissionController {
           message: 'Article submission created successfully',
           submission: submission.toJSON()
         });
+
+        // Trigger SEO and Sitemap update
+        triggerSEOUpdate();
       } catch (dbError) {
         console.error('Database operation error:', dbError);
         console.error('Database error stack:', dbError.stack);
@@ -322,10 +326,10 @@ class ArticleSubmissionController {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
       console.error('=== End Error Details ===');
-      
+
       // Send more detailed error in development
       const isDevelopment = process.env.NODE_ENV === 'development';
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Internal server error',
         ...(isDevelopment && {
           details: error.message,
@@ -611,6 +615,9 @@ class ArticleSubmissionController {
         message: 'Article submission updated successfully',
         submission: updatedSubmission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update submission error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -640,6 +647,9 @@ class ArticleSubmissionController {
 
       await submission.delete();
       res.json({ message: 'Article submission deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete submission error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -670,6 +680,9 @@ class ArticleSubmissionController {
         message: 'Article submission approved successfully',
         submission: approvedSubmission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve submission error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -700,6 +713,9 @@ class ArticleSubmissionController {
         message: 'Article submission rejected successfully',
         submission: rejectedSubmission.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject submission error:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -1,5 +1,6 @@
 const PaparazziCreation = require('../models/PaparazziCreation');
 const { body, validationResult } = require('express-validator');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminPaparazziCreationsController {
   constructor() {
@@ -172,6 +173,9 @@ class AdminPaparazziCreationsController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -270,6 +274,9 @@ class AdminPaparazziCreationsController {
         message: 'Paparazzi creation created successfully',
         paparazziCreation: paparazziCreation.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create paparazzi creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -303,6 +310,9 @@ class AdminPaparazziCreationsController {
         message: 'Paparazzi creation updated successfully',
         paparazziCreation: updatedPaparazziCreation.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update paparazzi creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -325,6 +335,9 @@ class AdminPaparazziCreationsController {
 
       await paparazziCreation.delete();
       res.json({ message: 'Paparazzi creation deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete paparazzi creation error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -439,6 +452,9 @@ class AdminPaparazziCreationsController {
         message: `Bulk delete completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
         results
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete paparazzi creations error:', error);
       res.status(500).json({ error: 'Internal server error' });

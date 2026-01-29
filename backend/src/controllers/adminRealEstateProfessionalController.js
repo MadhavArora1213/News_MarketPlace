@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { s3Service } = require('../services/s3Service');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminRealEstateProfessionalController {
   constructor() {
@@ -213,6 +214,9 @@ class AdminRealEstateProfessionalController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -409,6 +413,9 @@ class AdminRealEstateProfessionalController {
         message: 'Real estate professional created successfully',
         professional: professional.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminRealEstateProfessionalController.create - Error:', error);
       console.error('AdminRealEstateProfessionalController.create - Error stack:', error.stack);
@@ -481,6 +488,9 @@ class AdminRealEstateProfessionalController {
         message: 'Real estate professional updated successfully',
         professional: updatedProfessional.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('AdminRealEstateProfessionalController.update - Error:', error);
       console.error('AdminRealEstateProfessionalController.update - Error stack:', error.stack);
@@ -504,6 +514,9 @@ class AdminRealEstateProfessionalController {
 
       await professional.delete();
       res.json({ message: 'Real estate professional deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete real estate professional error:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const multer = require('multer');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminAwardCreationController {
   constructor() {
@@ -260,6 +261,9 @@ class AdminAwardCreationController {
         message: 'Award creation created successfully',
         awardCreation: awardCreation.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create award creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -390,6 +394,9 @@ class AdminAwardCreationController {
         message: 'Award creation updated successfully',
         awardCreation: updatedAwardCreation.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update award creation error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -412,6 +419,9 @@ class AdminAwardCreationController {
 
       await awardCreation.destroy();
       res.json({ message: 'Award creation deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete award creation error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -509,6 +519,9 @@ class AdminAwardCreationController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

@@ -1,4 +1,5 @@
 const Reporter = require('../models/Reporter');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const User = require('../models/User');
@@ -116,6 +117,9 @@ class ReporterController {
         message: req.user ? 'Reporter profile submitted successfully and is pending review' : 'Reporter profile created successfully',
         reporter: reporter.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create reporter error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -345,6 +349,9 @@ class ReporterController {
         message: 'Reporter profile updated successfully',
         reporter: updatedReporter.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update reporter error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -374,6 +381,9 @@ class ReporterController {
 
       await reporter.delete();
       res.json({ message: 'Reporter profile deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete reporter error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -448,6 +458,9 @@ class ReporterController {
         message: 'Reporter profile approved successfully',
         reporter: updatedReporter.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve reporter error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -526,6 +539,9 @@ class ReporterController {
         message: 'Reporter profile rejected successfully',
         reporter: updatedReporter.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject reporter error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -604,6 +620,9 @@ class ReporterController {
         approvedReporters: approvedReporters,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve reporters error:', error);
       res.status(500).json({ error: `Bulk approve failed: ${error.message} | Valid Body: ${!!req.body}` });
@@ -689,6 +708,9 @@ class ReporterController {
         rejectedReporters: rejectedReporters,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk reject reporters error:', error);
       res.status(500).json({ error: `Bulk reject failed: ${error.message} | Valid Body: ${!!req.body}` });
@@ -800,6 +822,9 @@ class ReporterController {
               count: createdReporters.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

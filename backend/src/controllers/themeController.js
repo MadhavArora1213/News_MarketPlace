@@ -1,4 +1,5 @@
 const Theme = require('../models/Theme');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const BulkOperations = require('../utils/bulkOperations');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
@@ -103,6 +104,9 @@ class ThemeController {
         message: req.user ? 'Theme submitted successfully and is pending review' : 'Theme created successfully',
         theme: theme.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create theme error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -217,6 +221,9 @@ class ThemeController {
         message: 'Theme updated successfully',
         theme: updatedTheme.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update theme error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -235,6 +242,9 @@ class ThemeController {
 
       await theme.delete();
       res.json({ message: 'Theme deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete theme error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -297,6 +307,9 @@ class ThemeController {
         created: createdThemes,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk create themes error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -361,6 +374,9 @@ class ThemeController {
         updated: updatedThemes,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update themes error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -424,6 +440,9 @@ class ThemeController {
         deleted: deletedCount,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete themes error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -495,6 +514,9 @@ class ThemeController {
         results,
         errors: errors.length > 0 ? errors : undefined
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -522,6 +544,9 @@ class ThemeController {
         message: 'Theme status updated successfully',
         theme: updatedTheme.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update theme status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -596,6 +621,9 @@ class ThemeController {
         message: 'Theme approved successfully',
         theme: updatedTheme.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve theme error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -747,6 +775,9 @@ class ThemeController {
               count: createdThemes.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

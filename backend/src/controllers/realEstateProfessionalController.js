@@ -1,4 +1,5 @@
 const RealEstateProfessional = require('../models/RealEstateProfessional');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const { s3Service } = require('../services/s3Service');
 const { body, validationResult } = require('express-validator');
@@ -116,6 +117,9 @@ class RealEstateProfessionalController {
         message: 'Real estate professional submission created successfully and is pending review',
         professional: professional.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create real estate professional error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });

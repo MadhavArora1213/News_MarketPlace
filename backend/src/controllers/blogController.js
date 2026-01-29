@@ -1,5 +1,6 @@
 const Blog = require('../models/Blog');
 const { body, validationResult } = require('express-validator');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class BlogController {
   constructor() {
@@ -66,6 +67,9 @@ class BlogController {
         message: 'Blog created successfully',
         blog: blog.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create blog error:', error);
       res.status(500).json({ error: error.message });
@@ -182,6 +186,9 @@ class BlogController {
         message: 'Blog updated successfully',
         blog: updatedBlog.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update blog error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -206,6 +213,9 @@ class BlogController {
       await blog.delete();
 
       res.json({ message: 'Blog deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete blog error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -287,6 +297,9 @@ class BlogController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

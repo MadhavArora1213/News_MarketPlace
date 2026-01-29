@@ -1,4 +1,5 @@
 const Powerlist = require('../models/Powerlist');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
@@ -103,6 +104,9 @@ class PowerlistController {
         message: 'Powerlist entry created successfully',
         powerlist: powerlist.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create powerlist error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -168,6 +172,9 @@ class PowerlistController {
         message: 'Powerlist submitted successfully',
         powerlist: powerlist.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Submit powerlist error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -387,6 +394,9 @@ class PowerlistController {
         message: 'Powerlist updated successfully',
         powerlist: updatedPowerlist.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update powerlist error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -410,6 +420,9 @@ class PowerlistController {
 
       await powerlist.delete();
       res.json({ message: 'Powerlist deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete powerlist error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -484,6 +497,9 @@ class PowerlistController {
         message: 'Powerlist status updated successfully',
         powerlist: updatedPowerlist.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update powerlist status error:', error);
       res.status(500).json({ error: 'Internal server error' });

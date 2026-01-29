@@ -1,4 +1,5 @@
 const Group = require('../models/Group');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { body, validationResult } = require('express-validator');
 
 class GroupController {
@@ -98,6 +99,9 @@ class GroupController {
               count: createdGroups.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -210,6 +214,9 @@ class GroupController {
         message: 'Group created successfully',
         group: group.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create group error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -305,6 +312,9 @@ class GroupController {
         message: 'Group updated successfully',
         group: updatedGroup.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update group error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -323,6 +333,9 @@ class GroupController {
 
       await group.delete();
       res.json({ message: 'Group deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete group error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -381,6 +394,9 @@ class GroupController {
         created: createdGroups,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk create groups error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -421,6 +437,9 @@ class GroupController {
         updated: updatedGroups,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update groups error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -460,6 +479,9 @@ class GroupController {
         deleted: deletedCount,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete groups error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -487,6 +509,9 @@ class GroupController {
         message: 'Group status updated successfully',
         group: updatedGroup.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update group status error:', error);
       res.status(500).json({ error: 'Internal server error' });

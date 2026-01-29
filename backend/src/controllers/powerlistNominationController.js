@@ -1,5 +1,6 @@
 const PowerlistNomination = require('../models/PowerlistNomination');
 const { body, validationResult } = require('express-validator');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
 const { rateLimiter } = require('../middleware/rateLimit');
@@ -111,6 +112,9 @@ class PowerlistNominationController {
         message: 'Powerlist nomination created successfully',
         nomination: nomination.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create powerlist nomination error:', error);
       console.error('Error stack:', error.stack);
@@ -230,6 +234,9 @@ class PowerlistNominationController {
         message: 'Powerlist nomination submitted successfully',
         nomination: nomination.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Submit powerlist nomination error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -393,6 +400,9 @@ class PowerlistNominationController {
         message: 'Powerlist nomination updated successfully',
         nomination: updatedNomination.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update powerlist nomination error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -415,6 +425,9 @@ class PowerlistNominationController {
 
       await nomination.delete();
       res.json({ message: 'Powerlist nomination deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete powerlist nomination error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -563,6 +576,9 @@ class PowerlistNominationController {
         message: 'Powerlist nomination status updated successfully',
         nomination: updatedNomination.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update powerlist nomination status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -737,6 +753,9 @@ class PowerlistNominationController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

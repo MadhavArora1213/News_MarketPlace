@@ -1,4 +1,5 @@
 const Website = require('../models/Website');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const User = require('../models/User');
 const emailService = require('../services/emailService');
 const otpService = require('../services/otpService');
@@ -526,6 +527,9 @@ class WebsiteController {
         message: 'Website submitted successfully',
         website: website.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('=== Website Submission Error ===');
       console.error('Error type:', error.constructor.name);
@@ -801,6 +805,9 @@ class WebsiteController {
         message: 'Website status updated successfully',
         website: website.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update website status error:', error);
       res.status(500).json({ error: 'Internal server error' });

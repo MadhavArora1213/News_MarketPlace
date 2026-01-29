@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
 const { s3Service } = require('../services/s3Service');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 
 class AdminRealEstateController {
   // Configure multer for file uploads (using memory storage for S3)
@@ -217,6 +218,9 @@ class AdminRealEstateController {
         message: 'Real estate record created successfully',
         realEstate: realEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create real estate error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -281,6 +285,9 @@ class AdminRealEstateController {
         message: 'Real estate record updated successfully',
         realEstate: updatedRealEstate.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update real estate error:', error);
       res.status(500).json({ error: error.message || 'Internal server error' });
@@ -303,6 +310,9 @@ class AdminRealEstateController {
 
       await realEstate.delete();
       res.json({ message: 'Real estate record deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete real estate error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -466,6 +476,9 @@ class AdminRealEstateController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });

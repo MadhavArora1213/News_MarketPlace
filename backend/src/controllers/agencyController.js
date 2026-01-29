@@ -1,4 +1,5 @@
 const Agency = require('../models/Agency');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const emailService = require('../services/emailService');
 const otpService = require('../services/otpService');
 const { s3Service } = require('../services/s3Service');
@@ -188,6 +189,9 @@ class AgencyController {
         message: 'Agency registered successfully',
         agency: agency.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Agency registration error:', error);
       console.error('Error stack:', error.stack);
@@ -429,6 +433,9 @@ class AgencyController {
         message: 'Agency status updated successfully',
         agency: agency.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update agency status error:', error);
       res.status(500).json({ error: 'Internal server error' });

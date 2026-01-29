@@ -1,4 +1,5 @@
 const PublishedWork = require('../models/PublishedWork');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const { body, validationResult } = require('express-validator');
 const publicationExtractorService = require('../services/publicationExtractorService');
 
@@ -55,6 +56,9 @@ class PublishedWorkController {
         message: 'Published work created successfully',
         publishedWork: publishedWork.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create published work error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -241,6 +245,9 @@ class PublishedWorkController {
         message: 'Published work updated successfully',
         publishedWork: updatedPublishedWork.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update published work error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -259,6 +266,9 @@ class PublishedWorkController {
 
       await publishedWork.delete();
       res.json({ message: 'Published work deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete published work error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -315,6 +325,9 @@ class PublishedWorkController {
         created: createdPublishedWorks,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk create published works error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -355,6 +368,9 @@ class PublishedWorkController {
         updated: updatedPublishedWorks,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update published works error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -394,6 +410,9 @@ class PublishedWorkController {
         deleted: deletedCount,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete published works error:', error);
       res.status(500).json({ error: 'Internal server error' });

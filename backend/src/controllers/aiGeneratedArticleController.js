@@ -1,4 +1,5 @@
 const AiGeneratedArticle = require('../models/AiGeneratedArticle');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const Publication = require('../models/Publication');
 const { body, validationResult } = require('express-validator');
 const { verifyRecaptcha } = require('../services/recaptchaService');
@@ -400,6 +401,9 @@ class AiGeneratedArticleController {
         message: `Article status updated to ${status} successfully`,
         article: article.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -432,6 +436,9 @@ class AiGeneratedArticleController {
       await article.destroy();
 
       res.json({ message: 'AI generated article deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete article error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -523,6 +530,9 @@ class AiGeneratedArticleController {
         message: 'Article status updated successfully',
         article: article.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update article status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -544,6 +554,9 @@ class AiGeneratedArticleController {
       await article.destroy();
 
       res.json({ message: 'Article deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete article error:', error);
       res.status(500).json({ error: 'Internal server error' });

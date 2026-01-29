@@ -1,4 +1,5 @@
 const Paparazzi = require('../models/Paparazzi');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const User = require('../models/User');
 const emailService = require('../services/emailService');
 const { body, validationResult } = require('express-validator');
@@ -87,6 +88,9 @@ class PaparazziController {
         message: req.user ? 'Paparazzi submission created successfully' : 'Paparazzi created successfully',
         paparazzi: paparazzi.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -199,6 +203,9 @@ class PaparazziController {
         message: 'Paparazzi updated successfully',
         paparazzi: updatedPaparazzi.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -227,6 +234,9 @@ class PaparazziController {
 
       await paparazzi.delete();
       res.json({ message: 'Paparazzi deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -265,6 +275,9 @@ class PaparazziController {
         message: 'Paparazzi approved successfully',
         paparazzi: paparazzi.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -547,6 +560,9 @@ class PaparazziController {
               count: createdRecords.length,
               errors: errors.length > 0 ? errors : undefined
             });
+
+            // Trigger SEO and Sitemap update
+            triggerSEOUpdate();
           } catch (error) {
             console.error('Processing batch error:', error);
             res.status(500).json({ error: 'Error processing bulk upload' });
@@ -611,6 +627,9 @@ class PaparazziController {
         message: `Bulk approval completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
         results
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -715,6 +734,9 @@ class PaparazziController {
         message: `Bulk delete completed. ${results.success.length} succeeded, ${results.errors.length} failed.`,
         results
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete paparazzi error:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -1,4 +1,5 @@
 const Publication = require('../models/Publication');
+const { triggerSEOUpdate } = require('../utils/seoUtility');
 const BulkOperations = require('../utils/bulkOperations');
 const { verifyRecaptcha } = require('../services/recaptchaService');
 const emailService = require('../services/emailService');
@@ -120,6 +121,9 @@ class PublicationController {
         message: req.user ? 'Publication submitted successfully and is pending review' : 'Publication created successfully',
         publication: publication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Create publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -256,6 +260,9 @@ class PublicationController {
         message: 'Publication updated successfully',
         publication: updatedPublication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -274,6 +281,9 @@ class PublicationController {
 
       await publication.delete();
       res.json({ message: 'Publication deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Delete publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -300,6 +310,9 @@ class PublicationController {
       await query('DELETE FROM publications WHERE id = $1', [id]);
 
       res.json({ message: 'Publication permanently deleted successfully' });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Hard delete publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -362,6 +375,9 @@ class PublicationController {
         created: createdPublications,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk create publications error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -426,6 +442,9 @@ class PublicationController {
         updated: updatedPublications,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk update publications error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -542,6 +561,9 @@ class PublicationController {
         approvedPublications: approvedPublications,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk approve publications error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -663,6 +685,9 @@ class PublicationController {
         rejectedPublications: rejectedPublications,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk reject publications error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -726,6 +751,9 @@ class PublicationController {
         deleted: deletedCount,
         errors: errors
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Bulk delete publications error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -753,6 +781,9 @@ class PublicationController {
         message: 'Publication status updated successfully',
         publication: updatedPublication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Update publication status error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -827,6 +858,9 @@ class PublicationController {
         message: 'Publication approved successfully',
         publication: updatedPublication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Approve publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -905,6 +939,9 @@ class PublicationController {
         message: 'Publication rejected successfully',
         publication: updatedPublication.toJSON()
       });
+
+      // Trigger SEO and Sitemap update
+      triggerSEOUpdate();
     } catch (error) {
       console.error('Reject publication error:', error);
       res.status(500).json({ error: 'Internal server error' });
