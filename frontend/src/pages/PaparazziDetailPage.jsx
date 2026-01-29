@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Camera, Globe, Users, Filter, MapPin, Calendar, Heart, Instagram, Youtube, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import UserHeader from '../components/common/UserHeader';
