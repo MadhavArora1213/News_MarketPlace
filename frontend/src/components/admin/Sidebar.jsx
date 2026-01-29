@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 import Icon from '../common/Icon';
 
 export default function Sidebar({
   admin,
   roleDisplayNames = {},
+  theme = {
+    primary: '#1976D2',
+    primaryDark: '#0D47A1',
+    primaryLight: '#E3F2FD',
+    secondary: '#00796B',
+    secondaryDark: '#004D40',
+    secondaryLight: '#E0F2F1',
+    success: '#4CAF50',
+    warning: '#FF9800',
+    danger: '#F44336',
+    info: '#9C27B0',
+    textPrimary: '#212121',
+    textSecondary: '#757575',
+    textDisabled: '#BDBDBD',
+    background: '#FFFFFF',
+    backgroundAlt: '#FAFAFA',
+    backgroundSoft: '#F5F5F5',
+    borderLight: '#E0E0E0',
+    borderMedium: '#BDBDBD',
+    borderDark: '#757575',
+  },
   sidebarOpen,
   setSidebarOpen,
   sidebarStyles,
@@ -22,15 +42,6 @@ export default function Sidebar({
   const statTile = { flex: 1, background: '#FAFAFA', padding: 12, borderRadius: 10, textAlign: 'center', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)' };
   const navItemBase = { display: 'flex', alignItems: 'center', gap: 12, color: '#212121', textDecoration: 'none', padding: '10px 12px', borderRadius: 10, transition: 'background 140ms, transform 140ms', cursor: 'pointer' };
   const navIconCircle = (bg) => ({ width: 36, height: 36, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' });
-
-  const [powerlistDropdownOpen, setPowerlistDropdownOpen] = useState(false);
-  const [publicationDropdownOpen, setPublicationDropdownOpen] = useState(false);
-  const [paparazziDropdownOpen, setPaparazziDropdownOpen] = useState(false);
-  const [eventDropdownOpen, setEventDropdownOpen] = useState(false);
-  const [awardsDropdownOpen, setAwardsDropdownOpen] = useState(false);
-  const [radioDropdownOpen, setRadioDropdownOpen] = useState(false);
-  const [realEstateDropdownOpen, setRealEstateDropdownOpen] = useState(false);
-  const [pressReleaseDropdownOpen, setPressReleaseDropdownOpen] = useState(false);
 
   // compute desktop fixed styles so sidebar sticks to viewport left (matches screenshot)
   const desktopFixedStyles = {
@@ -98,46 +109,45 @@ export default function Sidebar({
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <li style={{ marginBottom: 12 }}>
-              <Link
-                to="/admin/dashboard"
+              <a
+                href="/admin/dashboard"
                 style={{
                   ...navItemBase,
                   background: '#1976D2',
                   color: '#fff',
                   fontWeight: 700,
-                  boxShadow: '0 6px 14px rgba(25,118,210,0.12)',
-                  textDecoration: 'none'
+                  boxShadow: '0 6px 14px rgba(25,118,210,0.12)'
                 }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = ''}
               >
                 <span style={navIconCircle('#0b3a61')}><Icon name="home" size="sm" style={{ color: '#fff' }} /></span>
                 <span>Dashboard</span>
-              </Link>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <Link
-                to="/admin/affiliate-enquiries"
-                style={{ ...navItemBase, textDecoration: 'none' }}
+              <a
+                href="/admin/affiliate-enquiries"
+                style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Affiliate Enquiries</span>
-              </Link>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <Link
-                to="/admin/agencies"
-                style={{ ...navItemBase, textDecoration: 'none' }}
+              <a
+                href="/admin/agencies"
+                style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#f3e5f5')}><Icon name="building" size="sm" style={{ color: '#9C27B0' }} /></span>
                 <span>Agency Management</span>
-              </Link>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -177,44 +187,15 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/awards"
                 style={navItemBase}
-                onClick={() => setAwardsDropdownOpen(!awardsDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fff9c4')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
                 <span>Awards</span>
-                <span style={{ marginLeft: 'auto', transform: awardsDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#FF9800' }} />
-                </span>
-              </div>
-              {awardsDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/awards"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff9c4')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>All Awards</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/award-creation"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff9c4')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Award Creation</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -266,44 +247,15 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/events"
                 style={navItemBase}
-                onClick={() => setEventDropdownOpen(!eventDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fff3e0')}><Icon name="calendar" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Event</span>
-                <span style={{ marginLeft: 'auto', transform: eventDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#FF9800' }} />
-                </span>
-              </div>
-              {eventDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/events"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff3e0')}><Icon name="calendar" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Events</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/event-creation"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff3e0')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Event Creation</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+                <span>Event Management</span>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -319,44 +271,15 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/paparazzi"
                 style={navItemBase}
-                onClick={() => setPaparazziDropdownOpen(!paparazziDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
                 <span>Paparazzi Management</span>
-                <span style={{ marginLeft: 'auto', transform: paparazziDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#E91E63' }} />
-                </span>
-              </div>
-              {paparazziDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/paparazzi"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fce4ec')}><Icon name="shopping-cart" size="sm" style={{ color: '#E91E63' }} /></span>
-                      <span>Add to cart</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/paparazzi-creation"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fce4ec')}><Icon name="cog" size="sm" style={{ color: '#E91E63' }} /></span>
-                      <span>Paparazzi Creation</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -372,280 +295,75 @@ export default function Sidebar({
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/power-lists"
                 style={navItemBase}
-                onClick={() => setPowerlistDropdownOpen(!powerlistDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fff8e1')}><Icon name="star" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Powerlist</span>
-                <span style={{ marginLeft: 'auto', transform: powerlistDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#FF9800' }} />
-                </span>
-              </div>
-              {powerlistDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/power-lists"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff8e1')}><Icon name="shopping-cart" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Add to Cart</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/powerlist-management"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff8e1')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Powerlist Management</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/powerlist-orders"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff8e1')}><Icon name="document-text" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Orders</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+                <span>Power Lists</span>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/press-packs"
                 style={navItemBase}
-                onClick={() => setPublicationDropdownOpen(!publicationDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Press Pack Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/publications"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
                 <span>Publications</span>
-                <span style={{ marginLeft: 'auto', transform: publicationDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#4CAF50' }} />
-                </span>
-              </div>
-              {publicationDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/publications"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-cart" size="sm" style={{ color: '#4CAF50' }} /></span>
-                      <span>Add to cart</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/publication-management"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f5e8')}><Icon name="cog" size="sm" style={{ color: '#4CAF50' }} /></span>
-                      <span>publication management</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="phone" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Order Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/paparazzi-orders"
+                href="/admin/published-works"
                 style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Order Management</span>
+                <span style={navIconCircle('#e8f5e8')}><Icon name="folder" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Published Works Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
               <a
-                href="/admin/theme-orders"
+                href="/admin/radios"
                 style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="shopping-cart" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Theme Order Management</span>
-              </a>
-            </li>
-
-
-
-
-            <li style={{ marginBottom: 10 }}>
-              <div
-                style={navItemBase}
-                onClick={() => setRadioDropdownOpen(!radioDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Radio</span>
-                <span style={{ marginLeft: 'auto', transform: radioDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#1976D2' }} />
-                </span>
-              </div>
-              {radioDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/radios"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
-                      <span>Radio Management</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/radio-orders"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f4f8')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
-                      <span>Radio Orders</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+                <span>Radio Management</span>
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <div
+              <a
+                href="/admin/real-estates"
                 style={navItemBase}
-                onClick={() => setRealEstateDropdownOpen(!realEstateDropdownOpen)}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
                 <span>Real Estate Management</span>
-                <span style={{ marginLeft: 'auto', transform: realEstateDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#FF9800' }} />
-                </span>
-              </div>
-              {realEstateDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/real-estates"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff3e0')}><Icon name="shopping-cart" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Add to Cart</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/real-estate-creation"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff3e0')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Real Estate Creation</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <Link
-                      to="/admin/real-estate-orders"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px', textDecoration: 'none' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#fff3e0')}><Icon name="document-text" size="sm" style={{ color: '#FF9800' }} /></span>
-                      <span>Real Estate Orders</span>
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <div
-                style={navItemBase}
-                onClick={() => setPressReleaseDropdownOpen(!pressReleaseDropdownOpen)}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Press Release</span>
-                <span style={{ marginLeft: 'auto', transform: pressReleaseDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                  <Icon name="chevron-down" size="sm" style={{ color: '#4CAF50' }} />
-                </span>
-              </div>
-              {pressReleaseDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/press-packs"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-cart" size="sm" style={{ color: '#4CAF50' }} /></span>
-                      <span>add to cart</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/press-pack-creation"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f5e8')}><Icon name="cog" size="sm" style={{ color: '#4CAF50' }} /></span>
-                      <span>Press Pack Creation</span>
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: 5 }}>
-                    <a
-                      href="/admin/press-pack-orders"
-                      style={{ ...navItemBase, fontSize: '14px', padding: '8px 12px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
-                      <span>Press Pack Order Management</span>
-                    </a>
-                  </li>
-                </ul>
-              )}
+              </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
@@ -727,90 +445,21 @@ export default function Sidebar({
             <li style={{ marginBottom: 12 }}><a href="/admin/ai-articles" style={{ color: '#212121', textDecoration: 'none' }}>AI Articles</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/article-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Article Submissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setAwardsDropdownOpen(!awardsDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Awards</div>
-              {awardsDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>All Awards</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/award-creation" style={{ color: '#212121', textDecoration: 'none' }}>Award Creation</a></li>
-                </ul>
-              )}
-            </li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/blogs" style={{ color: '#212121', textDecoration: 'none' }}>Blog Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/careers" style={{ color: '#212121', textDecoration: 'none' }}>Career Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/contacts" style={{ color: '#212121', textDecoration: 'none' }}>Contact Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/event-enquiries" style={{ color: '#212121', textDecoration: 'none' }}>Event Enquiries</a></li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setEventDropdownOpen(!eventDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Event</div>
-              {eventDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/events" style={{ color: '#212121', textDecoration: 'none' }}>Events</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/event-creation" style={{ color: '#212121', textDecoration: 'none' }}>Event Creation</a></li>
-                </ul>
-              )}
-            </li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/events" style={{ color: '#212121', textDecoration: 'none' }}>Event Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/groups" style={{ color: '#212121', textDecoration: 'none' }}>Group Management</a></li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setPaparazziDropdownOpen(!paparazziDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Paparazzi Management</div>
-              {paparazziDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Add to cart</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/paparazzi-creation" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Creation</a></li>
-                </ul>
-              )}
-            </li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/podcasters" style={{ color: '#212121', textDecoration: 'none' }}>Podcaster Management</a></li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setPowerlistDropdownOpen(!powerlistDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Powerlist</div>
-              {powerlistDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Add to Cart</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/powerlist-management" style={{ color: '#212121', textDecoration: 'none' }}>Powerlist Management</a></li>
-                </ul>
-              )}
-            </li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setPublicationDropdownOpen(!publicationDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Publications</div>
-              {publicationDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Add to cart</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/publication-management" style={{ color: '#212121', textDecoration: 'none' }}>publication management</a></li>
-                </ul>
-              )}
-            </li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/orders" style={{ color: '#212121', textDecoration: 'none' }}>Order Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi-orders" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Order Management</a></li>
-            <li style={{ marginBottom: 12 }}><a href="/admin/theme-orders" style={{ color: '#212121', textDecoration: 'none' }}>Theme Order Management</a></li>
-
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setRadioDropdownOpen(!radioDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Radio</div>
-              {radioDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/radio-orders" style={{ color: '#212121', textDecoration: 'none' }}>Radio Orders</a></li>
-                </ul>
-              )}
-            </li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setRealEstateDropdownOpen(!realEstateDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Real Estate Management</div>
-              {realEstateDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><Link to="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Add to Cart</Link></li>
-                  <li style={{ marginBottom: 5 }}><Link to="/admin/real-estate-creation" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Creation</Link></li>
-                  <li style={{ marginBottom: 5 }}><Link to="/admin/real-estate-orders" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Orders</Link></li>
-                </ul>
-              )}
-            </li>
-            <li style={{ marginBottom: 12 }}>
-              <div onClick={() => setPressReleaseDropdownOpen(!pressReleaseDropdownOpen)} style={{ color: '#212121', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}>Press Release</div>
-              {pressReleaseDropdownOpen && (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginLeft: 20 }}>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>add to cart</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/press-pack-creation" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Creation</a></li>
-                  <li style={{ marginBottom: 5 }}><a href="/admin/press-pack-orders" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Order Management</a></li>
-                </ul>
-              )}
-            </li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Publications</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/published-works" style={{ color: '#212121', textDecoration: 'none' }}>Published Works Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/reporters" style={{ color: '#212121', textDecoration: 'none' }}>Reporter Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/roles-permissions" style={{ color: '#212121', textDecoration: 'none' }}>Roles & Permissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>
