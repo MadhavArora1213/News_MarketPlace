@@ -381,7 +381,47 @@ Most management modules (e.g., Agencies, Events, Users) follow a standardized **
 ---
 ## A.4 Specific Management Modules
 
-Below is the detailed list of all administrative modules accessible from the sidebar.
+Below is the detailed list of all administrative modules accessible from the **collapsible dropdown sidebar**.
+
+### Admin Sidebar Navigation Structure
+
+The admin panel features a **modern dropdown/collapsible navigation system** for better organization and usability. The sidebar groups related functionality together:
+
+**📁 Dropdown Categories:**
+- **Awards** → Award Creation, Award Submissions, Awards Management
+- **Events** → Event Creation, Event Enquiries, Event Management
+- **Orders** → Order Management
+- **Paparazzi** → Paparazzi Creation, Paparazzi Management, Paparazzi Orders
+- **Power Lists** → Power Lists, Powerlist Management, Powerlist Orders
+- **Press Packs** → Press Pack Creation, Press Pack Management, Press Pack Orders
+- **Publications** → Publications, Publication Management
+- **Radio** → Radio Management, Radio Orders
+- **Real Estate** → Real Estate Creation, Real Estate Management, Real Estate Orders
+- **Themes** → Theme Management, Theme Orders
+
+**📄 Single Navigation Items:**
+- Dashboard (always highlighted)
+- Affiliate Enquiries
+- Agencies
+- AI Articles
+- Article Submissions
+- Blogs
+- Careers
+- Contacts
+- Groups
+- Podcasters
+- Published Works
+- Reporters
+- Roles & Permissions
+- Users
+- Websites
+
+**Navigation Features:**
+- Click on any category header to expand/collapse its sub-items
+- Chevron icon indicates expand/collapse state
+- Color-coded by category with hover effects
+- Indented sub-items for clear hierarchy
+- Mobile-responsive with hamburger menu
 
 ## A.1 Dashboard
 
@@ -407,7 +447,7 @@ The **Admin Dashboard** is the command center of the VaaS Solutions platform. It
     *   **System Administration**: Access to sensitive settings.
     *   **Content Management**: Ability to edit/publish content.
     *   **Editorial Access**: Rights to review submissions.
-*   **Mobile Responsiveness**: On mobile devices, the sidebar collapses into a hamburger menu, and the layout adjusts to a single-column view for readability.
+*   **Mobile Responsiveness**: On mobile devices, the sidebar collapses into a hamburger menu. The dropdown categories remain functional, and the layout adjusts to a single-column view for readability.
 
 ---
 

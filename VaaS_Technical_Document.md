@@ -935,7 +935,7 @@ components/
 │   ├── FeaturedSection.jsx
 │   └── StatsSection.jsx
 ├── admin/
-│   ├── Sidebar.jsx        # Admin navigation (26 modules)
+│   ├── Sidebar.jsx        # Admin navigation with dropdown/collapsible groups
 │   ├── Dashboard.jsx      # Admin dashboard
 │   └── [ModuleName]Management.jsx
 └── forms/
@@ -943,6 +943,39 @@ components/
     ├── ContactForm.jsx
     └── SubmissionForm.jsx
 ```
+
+### Admin Sidebar Structure
+
+The admin sidebar uses a **dropdown/collapsible navigation** pattern with the following groups:
+
+**Dropdown Categories:**
+- **Awards** → Award Creation, Award Submissions, Awards Management
+- **Events** → Event Creation, Event Enquiries, Event Management
+- **Orders** → Order Management
+- **Paparazzi** → Paparazzi Creation, Paparazzi Management, Paparazzi Orders
+- **Power Lists** → Power Lists, Powerlist Management, Powerlist Orders
+- **Press Packs** → Press Pack Creation, Press Pack Management, Press Pack Orders
+- **Publications** → Publications, Publication Management
+- **Radio** → Radio Management, Radio Orders
+- **Real Estate** → Real Estate Creation, Real Estate Management, Real Estate Orders
+- **Themes** → Theme Management, Theme Orders
+
+**Single Navigation Items:**
+- Dashboard (highlighted)
+- Affiliate Enquiries
+- Agencies
+- AI Articles
+- Article Submissions
+- Blogs
+- Careers
+- Contacts
+- Groups
+- Podcasters
+- Published Works
+- Reporters
+- Roles & Permissions
+- Users
+- Websites
 
 ### State Management
 
