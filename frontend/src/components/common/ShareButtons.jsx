@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from './Icon';
 
-const ShareButtons = ({ url, title, description, image, variant = 'default', showLabel = true, className = "", fullWidth = false, direction = 'up', onToggle }) => {
+const ShareButtons = ({ url, title, description, image, variant = 'default', showLabel = true, className = "", fullWidth = false, direction = 'up', align = 'center', onToggle }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
@@ -90,14 +90,32 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: direction === 'up' ? 10 : -10 }}
-                        animate={{ opacity: 1, scale: 1, y: direction === 'up' ? -10 : 10 }}
-                        exit={{ opacity: 0, scale: 0.9, y: direction === 'up' ? 10 : -10 }}
-                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white border border-slate-200 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] p-3 z-[10000] left-1/2 -translate-x-1/2`}
+                        initial={{
+                            opacity: 0,
+                            scale: 0.9,
+                            y: direction === 'up' ? 10 : -10,
+                            x: align === 'center' ? '-50%' : '0%'
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            y: direction === 'up' ? -10 : 10,
+                            x: align === 'center' ? '-50%' : '0%'
+                        }}
+                        exit={{
+                            opacity: 0,
+                            scale: 0.9,
+                            y: direction === 'up' ? 10 : -10,
+                            x: align === 'center' ? '-50%' : '0%'
+                        }}
+                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white border border-slate-200 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] p-3 z-[10000] 
+                            ${align === 'center' ? 'left-1/2' : align === 'right' ? 'right-0' : 'left-0'}`}
                         style={{
                             width: 'max-content',
                             maxWidth: '90vw',
-                            transformOrigin: 'top center'
+                            transformOrigin: direction === 'up'
+                                ? (align === 'center' ? 'bottom center' : align === 'right' ? 'bottom right' : 'bottom left')
+                                : (align === 'center' ? 'top center' : align === 'right' ? 'top right' : 'top left')
                         }}
                     >
                         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">

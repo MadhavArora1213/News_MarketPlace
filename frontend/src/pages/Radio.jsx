@@ -530,6 +530,7 @@ const RadioPage = () => {
                                 showLabel={false}
                                 variant="ghost"
                                 direction="up"
+                                align="right"
                                 onToggle={(isOpen) => setActiveShareId(isOpen ? radio.id : null)}
                                 className="!p-1 text-white hover:text-blue-300 hover:bg-white/10"
                               />
