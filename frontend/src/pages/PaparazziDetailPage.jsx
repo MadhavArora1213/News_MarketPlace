@@ -142,13 +142,25 @@ const PaparazziDetailPage = () => {
       const response = await api.get(`/admin/paparazzi-creations/public/${realId}`);
       console.log('Paparazzi details response:', response.data);
 
-      setPaparazzi(response.data.paparazziCreation || response.data);
+      // Extract paparazzi data from response
+      const paparazziData = response.data.paparazziCreation || response.data;
+      console.log('Paparazzi data:', paparazziData);
+      
+      // Ensure we have valid data
+      if (paparazziData && paparazziData.id) {
+        setPaparazzi(paparazziData);
+      } else {
+        console.error('Invalid paparazzi data received');
+        navigate('/paparazzi');
+      }
     } catch (error) {
       console.error('Error fetching paparazzi details:', error);
       if (error.response?.status === 401) {
         setShowAuth(true);
+      } else if (error.response?.status === 404) {
+        console.error('Paparazzi not found');
+        navigate('/paparazzi');
       } else {
-        // Handle error - maybe navigate back or show error message
         console.error('Failed to load paparazzi details');
         navigate('/paparazzi');
       }
@@ -266,14 +278,23 @@ const PaparazziDetailPage = () => {
       const orderData = {
         paparazziId: paparazzi.id,
         paparazziName: paparazzi.instagram_page_name,
-        category: paparazzi.category,
-        followers: paparazzi.no_of_followers,
-        customerInfo: orderFormData,
-        orderDate: new Date().toISOString()
+        price: 0, // Contact for pricing
+        customerInfo: {
+          fullName: orderFormData.fullName,
+          email: orderFormData.email,
+          phone: orderFormData.phone,
+          message: orderFormData.message
+        },
+        orderDate: new Date().toISOString(),
+        status: 'pending'
       };
+
+      console.log('Submitting order data:', orderData);
 
       // Submit order to backend
       const response = await api.post('/paparazzi-orders', orderData);
+
+      console.log('Order response:', response.data);
 
       if (response.data.success) {
         alert('Call booking request submitted successfully! Our team will contact you soon.');
