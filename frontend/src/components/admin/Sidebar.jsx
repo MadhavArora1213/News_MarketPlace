@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from '../common/Icon';
 
 export default function Sidebar({
@@ -35,6 +35,13 @@ export default function Sidebar({
   sidebarZ = 200,
   mobileOverlayZ = 500
 }) {
+  // Dropdown state management
+  const [openDropdowns, setOpenDropdowns] = useState({});
+
+  const toggleDropdown = (key) => {
+    setOpenDropdowns(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // NEW: nicer style tokens used inline (declare first to avoid reference errors)
   const headingStyle = { fontWeight: 900, letterSpacing: 2, marginBottom: 18, color: '#212121', fontSize: 13 };
   const cardStyle = { background: '#ffffff', borderRadius: 12, padding: 14, boxShadow: '0 8px 24px rgba(7,22,48,0.06)', marginBottom: 18 };
@@ -42,6 +49,8 @@ export default function Sidebar({
   const statTile = { flex: 1, background: '#FAFAFA', padding: 12, borderRadius: 10, textAlign: 'center', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)' };
   const navItemBase = { display: 'flex', alignItems: 'center', gap: 12, color: '#212121', textDecoration: 'none', padding: '10px 12px', borderRadius: 10, transition: 'background 140ms, transform 140ms', cursor: 'pointer' };
   const navIconCircle = (bg) => ({ width: 36, height: 36, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' });
+  const dropdownHeader = { ...navItemBase, justifyContent: 'space-between', fontWeight: 600 };
+  const subItemStyle = { ...navItemBase, paddingLeft: '48px', fontSize: '14px' };
 
   // compute desktop fixed styles so sidebar sticks to viewport left (matches screenshot)
   const desktopFixedStyles = {
@@ -108,6 +117,7 @@ export default function Sidebar({
 
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {/* Dashboard - No dropdown */}
             <li style={{ marginBottom: 12 }}>
               <a
                 href="/admin/dashboard"
@@ -126,469 +136,276 @@ export default function Sidebar({
               </a>
             </li>
 
+            {/* Single Items */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/affiliate-enquiries"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/affiliate-enquiries" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Affiliate Enquiries</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/agencies"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/agencies" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#f3e5f5')}><Icon name="building" size="sm" style={{ color: '#9C27B0' }} /></span>
                 <span>Agency Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/ai-articles"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E3F2FD'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/ai-articles" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E3F2FD'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e3f2fd')}><Icon name="light-bulb" size="sm" style={{ color: '#1976D2' }} /></span>
                 <span>AI Articles</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/article-submissions"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/article-submissions" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Article Submissions</span>
               </a>
             </li>
 
+            {/* Awards Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/award-creation"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Award Creation</span>
-              </a>
+              <div onClick={() => toggleDropdown('awards')} style={{ ...dropdownHeader, background: openDropdowns.awards ? '#FFF3E0' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.awards ? '#FFF3E0' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#fff3e0')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
+                  <span>Awards</span>
+                </div>
+                <Icon name={openDropdowns.awards ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#FF9800' }} />
+              </div>
+              {openDropdowns.awards && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/award-creation" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Award Creation</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/award-submissions" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Award Submissions</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/awards" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Awards Management</a></li>
+                </ul>
+              )}
             </li>
 
+            {/* Blogs */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/award-submissions"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="trophy" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Award Submissions</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/awards"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF9C4'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff9c4')}><Icon name="trophy" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Awards</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/blogs"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/blogs" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="document-text" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Blog Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/careers"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/careers" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#fff3e0')}><Icon name="building" size="sm" style={{ color: '#FF9800' }} /></span>
                 <span>Career Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/contacts"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E0F2FE'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/contacts" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E0F2FE'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e6f3ff')}><Icon name="chat-bubble-left" size="sm" style={{ color: '#0369a1' }} /></span>
                 <span>Contact Management</span>
               </a>
             </li>
 
+            {/* Events Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/event-creation"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Event Creation</span>
-              </a>
+              <div onClick={() => toggleDropdown('events')} style={{ ...dropdownHeader, background: openDropdowns.events ? '#FFF3E0' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.events ? '#FFF3E0' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#fff3e0')}><Icon name="calendar" size="sm" style={{ color: '#FF9800' }} /></span>
+                  <span>Events</span>
+                </div>
+                <Icon name={openDropdowns.events ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#FF9800' }} />
+              </div>
+              {openDropdowns.events && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/event-creation" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Event Creation</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/event-enquiries" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Event Enquiries</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/events" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Event Management</a></li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/event-enquiries"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="calendar" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Event Enquiries</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/events"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="calendar" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Event Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/groups"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/groups" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#fff3e0')}><Icon name="users" size="sm" style={{ color: '#f57c00' }} /></span>
                 <span>Group Management</span>
               </a>
             </li>
 
+            {/* Orders Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8EAF6'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8eaf6')}><Icon name="shopping-cart" size="sm" style={{ color: '#3F51B5' }} /></span>
-                <span>Order Management</span>
-              </a>
+              <div onClick={() => toggleDropdown('orders')} style={{ ...dropdownHeader, background: openDropdowns.orders ? '#E8EAF6' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#E8EAF6'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.orders ? '#E8EAF6' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#e8eaf6')}><Icon name="shopping-cart" size="sm" style={{ color: '#3F51B5' }} /></span>
+                  <span>Orders</span>
+                </div>
+                <Icon name={openDropdowns.orders ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#3F51B5' }} />
+              </div>
+              {openDropdowns.orders && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8EAF6'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Order Management</a></li>
+                </ul>
+              )}
+            </li>
+
+            {/* Paparazzi Dropdown */}
+            <li style={{ marginBottom: 10 }}>
+              <div onClick={() => toggleDropdown('paparazzi')} style={{ ...dropdownHeader, background: openDropdowns.paparazzi ? '#FCE4EC' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.paparazzi ? '#FCE4EC' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
+                  <span>Paparazzi</span>
+                </div>
+                <Icon name={openDropdowns.paparazzi ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#E91E63' }} />
+              </div>
+              {openDropdowns.paparazzi && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/paparazzi-creation" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Paparazzi Creation</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/paparazzi" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Paparazzi Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/paparazzi-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Paparazzi Orders</a></li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/paparazzi-creation"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="plus-circle" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Creation</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/paparazzi"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/paparazzi-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fce4ec')}><Icon name="shopping-bag" size="sm" style={{ color: '#E91E63' }} /></span>
-                <span>Paparazzi Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/podcasters"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/podcasters" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="microphone" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Podcaster Management</span>
               </a>
             </li>
 
+            {/* Powerlist Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/power-lists"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff8e1')}><Icon name="star" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Power Lists</span>
-              </a>
+              <div onClick={() => toggleDropdown('powerlist')} style={{ ...dropdownHeader, background: openDropdowns.powerlist ? '#FFF8E1' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.powerlist ? '#FFF8E1' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#fff8e1')}><Icon name="star" size="sm" style={{ color: '#FF9800' }} /></span>
+                  <span>Power Lists</span>
+                </div>
+                <Icon name={openDropdowns.powerlist ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#FF9800' }} />
+              </div>
+              {openDropdowns.powerlist && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/power-lists" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Power Lists</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/powerlist-management" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Powerlist Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/powerlist-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Powerlist Orders</a></li>
+                </ul>
+              )}
+            </li>
+
+            {/* Press Packs Dropdown */}
+            <li style={{ marginBottom: 10 }}>
+              <div onClick={() => toggleDropdown('pressPacks')} style={{ ...dropdownHeader, background: openDropdowns.pressPacks ? '#E8F5E8' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.pressPacks ? '#E8F5E8' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
+                  <span>Press Packs</span>
+                </div>
+                <Icon name={openDropdowns.pressPacks ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#4CAF50' }} />
+              </div>
+              {openDropdowns.pressPacks && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/press-pack-creation" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Press Pack Creation</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/press-packs" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Press Pack Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/press-pack-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Press Pack Orders</a></li>
+                </ul>
+              )}
+            </li>
+
+            {/* Publications Dropdown */}
+            <li style={{ marginBottom: 10 }}>
+              <div onClick={() => toggleDropdown('publications')} style={{ ...dropdownHeader, background: openDropdowns.publications ? '#E8F5E8' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.publications ? '#E8F5E8' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
+                  <span>Publications</span>
+                </div>
+                <Icon name={openDropdowns.publications ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#1976D2' }} />
+              </div>
+              {openDropdowns.publications && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/publications" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Publications</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/publication-management" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Publication Management</a></li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/powerlist-management"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff8e1')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Powerlist Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/powerlist-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff8e1')}><Icon name="shopping-bag" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Powerlist Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/press-pack-creation"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="plus-circle" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Press Pack Creation</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/press-packs"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="newspaper" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Press Pack Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/press-pack-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-bag" size="sm" style={{ color: '#4CAF50' }} /></span>
-                <span>Press Pack Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/publications"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Publications</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/publication-management"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e6f0ff')}><Icon name="cog" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Publication Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/published-works"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/published-works" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="folder" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Published Works Management</span>
               </a>
             </li>
 
+            {/* Radio Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/radios"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Radio Management</span>
-              </a>
+              <div onClick={() => toggleDropdown('radio')} style={{ ...dropdownHeader, background: openDropdowns.radio ? '#E8F4F8' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.radio ? '#E8F4F8' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#e8f4f8')}><Icon name="radio" size="sm" style={{ color: '#1976D2' }} /></span>
+                  <span>Radio</span>
+                </div>
+                <Icon name={openDropdowns.radio ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#1976D2' }} />
+              </div>
+              {openDropdowns.radio && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/radios" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Radio Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/radio-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Radio Orders</a></li>
+                </ul>
+              )}
+            </li>
+
+            {/* Real Estate Dropdown */}
+            <li style={{ marginBottom: 10 }}>
+              <div onClick={() => toggleDropdown('realEstate')} style={{ ...dropdownHeader, background: openDropdowns.realEstate ? '#FFF3E0' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.realEstate ? '#FFF3E0' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
+                  <span>Real Estate</span>
+                </div>
+                <Icon name={openDropdowns.realEstate ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#FF9800' }} />
+              </div>
+              {openDropdowns.realEstate && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/real-estate-creation" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Real Estate Creation</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/real-estates" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Real Estate Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/real-estate-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#FFF9E0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Real Estate Orders</a></li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/radio-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#e8f4f8')}><Icon name="shopping-bag" size="sm" style={{ color: '#1976D2' }} /></span>
-                <span>Radio Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/real-estate-creation"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Real Estate Creation</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/real-estates"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Real Estate Management</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/real-estate-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#fff3e0')}><Icon name="shopping-bag" size="sm" style={{ color: '#FF9800' }} /></span>
-                <span>Real Estate Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/reporters"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/reporters" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="user-group" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Reporter Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/roles-permissions"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/roles-permissions" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e8f5e8')}><Icon name="shield-check" size="sm" style={{ color: '#4CAF50' }} /></span>
                 <span>Roles & Permissions</span>
               </a>
             </li>
 
+            {/* Themes Dropdown */}
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/themes"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="swatch" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Theme Management</span>
-              </a>
+              <div onClick={() => toggleDropdown('themes')} style={{ ...dropdownHeader, background: openDropdowns.themes ? '#F3E5F5' : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'} onMouseLeave={e => e.currentTarget.style.background = openDropdowns.themes ? '#F3E5F5' : 'transparent'}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={navIconCircle('#f3e5f5')}><Icon name="swatch" size="sm" style={{ color: '#9C27B0' }} /></span>
+                  <span>Themes</span>
+                </div>
+                <Icon name={openDropdowns.themes ? 'chevron-up' : 'chevron-down'} size="sm" style={{ color: '#9C27B0' }} />
+              </div>
+              {openDropdowns.themes && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/themes" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Theme Management</a></li>
+                  <li style={{ marginBottom: 8 }}><a href="/admin/theme-orders" style={subItemStyle} onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Theme Orders</a></li>
+                </ul>
+              )}
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/theme-orders"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={navIconCircle('#f3e5f5')}><Icon name="shopping-bag" size="sm" style={{ color: '#9C27B0' }} /></span>
-                <span>Theme Orders</span>
-              </a>
-            </li>
-
-            <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/users"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F0F9FF'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/users" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#F0F9FF'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#e0f2fe')}><Icon name="users" size="sm" style={{ color: '#0369a1' }} /></span>
                 <span>User Management</span>
               </a>
             </li>
 
             <li style={{ marginBottom: 10 }}>
-              <a
-                href="/admin/websites"
-                style={navItemBase}
-                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
+              <a href="/admin/websites" style={navItemBase} onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={navIconCircle('#f3e5f5')}><Icon name="globe" size="sm" style={{ color: '#9C27B0' }} /></span>
                 <span>Website Management</span>
               </a>
