@@ -125,12 +125,18 @@ const ThemesPage = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 share-menu-container
+        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-2 sm:p-3 share-menu-container
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '220px' : '280px' }}
+        style={{
+          width: isMobile ? '180px' : '280px',
+          maxWidth: 'calc(100vw - 40px)'
+        }}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseEnter={() => setActiveShareId(id)}
+        onTouchStart={(e) => e.stopPropagation()}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
@@ -138,20 +144,25 @@ const ThemesPage = () => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95"
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={18} />
+              <Icon name={p.icon} size={isMobile ? 14 : 18} />
             </a>
           ))}
           <button
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               handleCopy(url, id);
             }}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={isMobile ? 14 : 18} />
           </button>
         </div>
       </motion.div>
@@ -746,15 +757,26 @@ const ThemesPage = () => {
                           </button>
                           <div
                             className="relative share-menu-container"
-                            onClick={(e) => e.stopPropagation()}
-                            onMouseEnter={() => setActiveShareId(theme.id)}
-                            onMouseLeave={() => setActiveShareId(null)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setActiveShareId(activeShareId === theme.id ? null : theme.id);
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onTouchStart={(e) => e.stopPropagation()}
+                            onMouseEnter={() => !isMobile && setActiveShareId(theme.id)}
+                            onMouseLeave={() => !isMobile && setActiveShareId(null)}
                           >
                             <button
-                              onClick={(e) => e.stopPropagation()}
-                              className="p-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onTouchStart={(e) => e.stopPropagation()}
+                              className="p-2 sm:p-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
                             >
-                              <Icon name="share" size={18} />
+                              <Icon name="share" size={isMobile ? 14 : 18} />
                             </button>
                             {renderShareMenu(
                               window.location.origin + `/themes/${createSlugPath(theme.page_name, theme.id)}`,
@@ -896,15 +918,26 @@ const ThemesPage = () => {
                                 </button>
                                 <div
                                   className="relative share-menu-container"
-                                  onClick={(e) => e.stopPropagation()}
-                                  onMouseEnter={() => setActiveShareId(theme.id)}
-                                  onMouseLeave={() => setActiveShareId(null)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setActiveShareId(activeShareId === theme.id ? null : theme.id);
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onTouchStart={(e) => e.stopPropagation()}
+                                  onMouseEnter={() => !isMobile && setActiveShareId(theme.id)}
+                                  onMouseLeave={() => !isMobile && setActiveShareId(null)}
                                 >
                                   <button
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                    }}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
                                   >
-                                    <Icon name="share" size={16} />
+                                    <Icon name="share" size={isMobile ? 14 : 16} />
                                   </button>
                                   {renderShareMenu(
                                     window.location.origin + `/themes/${createSlugPath(theme.page_name, theme.id)}`,

@@ -62,16 +62,26 @@ const BlogListingPage = () => {
     const isOpen = activeShareId === id;
     if (!isOpen) return null;
 
+    // Position classes for responsive design
+    const positionClass = align === 'center'
+      ? 'left-1/2 -translate-x-1/2'
+      : 'right-0 sm:right-0';
+
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 share-menu-container
-          ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '220px' : '280px' }}
+        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-2 sm:p-3 share-menu-container ${positionClass}`}
+        style={{
+          width: isMobile ? '180px' : '280px',
+          maxWidth: 'calc(100vw - 40px)'
+        }}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseEnter={() => setActiveShareId(id)}
+        onTouchStart={(e) => e.stopPropagation()}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
@@ -79,20 +89,25 @@ const BlogListingPage = () => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={18} />
+              <Icon name={p.icon} size={isMobile ? 14 : 18} />
             </a>
           ))}
           <button
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               handleCopy(url, id);
             }}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={isMobile ? 14 : 18} />
           </button>
         </div>
       </motion.div>
@@ -250,14 +265,18 @@ const BlogListingPage = () => {
               />
             </div>
             <div
-              className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2 relative share-menu-container"
-              onMouseEnter={() => setActiveShareId('hero')}
-              onMouseLeave={() => setActiveShareId(null)}
+              className="bg-white p-1.5 sm:p-2 px-2 sm:px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-1 sm:gap-2 relative share-menu-container"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveShareId(activeShareId === 'hero' ? null : 'hero');
+              }}
+              onMouseEnter={() => !isMobile && setActiveShareId('hero')}
+              onMouseLeave={() => !isMobile && setActiveShareId(null)}
             >
-              <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
+              <span className="hidden sm:inline text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 rounded-lg hover:bg-slate-50 text-slate-500 transition-colors flex items-center justify-center"
+                className="p-1 sm:p-1.5 rounded-lg hover:bg-slate-50 text-slate-500 transition-colors flex items-center justify-center"
                 title="Share this page"
               >
                 <Icon name="share" size={16} />
@@ -367,16 +386,27 @@ const BlogListingPage = () => {
                         </Link>
                         <div
                           className="bg-white text-[#1976D2] p-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white share-menu-container"
-                          onClick={(e) => e.stopPropagation()}
-                          onMouseEnter={() => setActiveShareId(blog.id)}
-                          onMouseLeave={() => setActiveShareId(null)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setActiveShareId(activeShareId === blog.id ? null : blog.id);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          onMouseEnter={() => !isMobile && setActiveShareId(blog.id)}
+                          onMouseLeave={() => !isMobile && setActiveShareId(null)}
                         >
-                          <div className="relative" onClick={(e) => e.stopPropagation()}>
+                          <div className="relative" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
                             <button
-                              onClick={(e) => e.stopPropagation()}
-                              className="p-2 rounded-full hover:bg-white/10 text-inherit transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onTouchStart={(e) => e.stopPropagation()}
+                              className="p-1 sm:p-2 rounded-full hover:bg-white/10 text-inherit transition-colors"
                             >
-                              <Icon name="share" size={18} />
+                              <Icon name="share" size={16} className="sm:w-[18px] sm:h-[18px]" />
                             </button>
                             {renderShareMenu(
                               `${window.location.origin}/blog/${createSlugPath(blog.title, blog.id)}`,
