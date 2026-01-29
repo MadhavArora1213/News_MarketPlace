@@ -209,8 +209,8 @@ const PublicationsPage = () => {
   };
 
   const getSortIcon = (field) => {
-    if (sortField !== field) return <ArrowUpDown size={14} />;
-    return sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />;
+    if (sortField !== field) return <Icon name="arrow-up-down" size={14} />;
+    return sortDirection === 'asc' ? <Icon name="arrow-up" size={14} /> : <Icon name="arrow-down" size={14} />;
   };
 
   const clearAllFilters = () => {
@@ -485,7 +485,7 @@ const PublicationsPage = () => {
               {/* Enhanced Filter Sections */}
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <Globe size={16} className="text-[#1976D2]" />
+                  <Icon name="globe" size={16} className="text-[#1976D2]" />
                   {t('publications.filters.basic')}
                 </h4>
 
@@ -547,7 +547,7 @@ const PublicationsPage = () => {
               {/* Price Range Section */}
               <div className="bg-[#FFF8E1] rounded-lg p-4 border border-[#FF9800]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <DollarSign size={16} className="text-[#FF9800]" />
+                  <Icon name="dollar-sign" size={16} className="text-[#FF9800]" />
                   {t('publications.filters.priceRange')}
                 </h4>
                 <div>
@@ -580,8 +580,8 @@ const PublicationsPage = () => {
               {/* SEO Metrics Section */}
               <div className="bg-[#E3F2FD] rounded-lg p-4 border border-[#1976D2]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <BarChart3 size={16} className="text-[#1976D2]" />
-                  {t('publications.filters.seoMetrics')}
+                  <Icon name="bar-chart" size={16} className="text-[#1976D2]" />
+                  {t('publications.filters.stats')}
                 </h4>
 
                 {/* DA Range */}
@@ -628,7 +628,7 @@ const PublicationsPage = () => {
                       min="0"
                       max="100"
                       value={drRange[1]}
-                      onChange={(e) => setDrRange([drRange[0], parseInt(e.target.value)])}
+                      onChange={(e) => setDrRange([daRange[0], parseInt(e.target.value)])}
                       className="w-full accent-[#1976D2]"
                     />
                   </div>
@@ -663,7 +663,7 @@ const PublicationsPage = () => {
               {/* TAT Filter */}
               <div className="bg-[#FFF3E0] rounded-lg p-4 border border-[#FF9800]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <Clock size={16} className="text-[#FF9800]" />
+                  <Icon name="clock" size={16} className="text-[#FF9800]" />
                   {t('publications.filters.tat')}
                 </h4>
                 <div className="space-y-3">
@@ -709,7 +709,7 @@ const PublicationsPage = () => {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
                     style={{ borderColor: theme.borderLight }}
                   >
-                    <Filter size={16} />
+                    <Icon name="filter" size={16} />
                     <span className="text-[#212121]">{t('publications.filters.mobileToggle')}</span>
                   </button>
                 )}
@@ -723,7 +723,7 @@ const PublicationsPage = () => {
                       : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
-                    <Grid size={16} />
+                    <Icon name="grid" size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
@@ -732,7 +732,7 @@ const PublicationsPage = () => {
                       : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
-                    <List size={16} />
+                    <Icon name="list" size={16} />
                   </button>
                 </div>
 
@@ -860,11 +860,11 @@ const PublicationsPage = () => {
                               {publication.publication_name}
                             </h3>
                             <div className="flex items-center text-xs mb-1" style={{ color: theme.textSecondary }}>
-                              <Globe size={12} className="mr-1" />
+                              <Icon name="globe" size={12} className="mr-1" />
                               <span>{publication.region}</span>
                             </div>
                             <div className="flex items-center text-xs" style={{ color: theme.textSecondary }}>
-                              <BookOpen size={12} className="mr-1" />
+                              <Icon name="book-open" size={12} className="mr-1" />
                               <span>{publication.language}</span>
                             </div>
                           </div>
@@ -919,7 +919,7 @@ const PublicationsPage = () => {
                             {publication.word_limit ? t('publications.badges.wordCount', { count: publication.word_limit }) : t('publications.badges.wordCountTba')}
                           </span>
                           <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#FFF8E1', color: theme.warning }}>
-                            <Clock size={10} className="inline mr-1" />
+                            <Icon name="clock" size={10} className="inline mr-1" />
                             {formatTAT(publication.committed_tat)}
                           </span>
                         </div>
@@ -936,7 +936,7 @@ const PublicationsPage = () => {
                               handlePublicationClick(publication);
                             }}
                           >
-                            <Eye size={16} />
+                            <Icon name="eye" size={16} />
                             {t('publications.table.viewDetails')}
                           </button>
                           <div onClick={(e) => e.stopPropagation()} className="flex">
@@ -1138,7 +1138,7 @@ const PublicationsPage = () => {
                                     handlePublicationClick(publication);
                                   }}
                                 >
-                                  <Eye size={14} className="inline mr-1" />
+                                  <Icon name="eye" size={14} className="inline mr-1" />
                                   {t('publications.table.view')}
                                 </button>
                                 <div onClick={(e) => e.stopPropagation()}>
@@ -1240,7 +1240,7 @@ const PublicationsPage = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{ backgroundColor: theme.backgroundSoft }}
               >
-                <Newspaper size={48} style={{ color: theme.textDisabled }} />
+                <Icon name="newspaper" size={48} style={{ color: theme.textDisabled }} />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
                 {t('publications.empty.title')}
