@@ -131,22 +131,27 @@ const RealEstateProfessionalsList = () => {
     );
   };
 
+  // Keep track of the last window width to avoid unnecessary sidebar toggles
+  const [prevWidth, setPrevWidth] = useState(window.innerWidth);
+
   useEffect(() => {
     const onResize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 768);
       setIsTablet(width < 1024);
 
-      if (width < 1024) {
+      // Auto-toggle sidebar only when crossing the 1024 breakpoint
+      if (width < 1024 && prevWidth >= 1024) {
         setSidebarOpen(false);
-      } else {
+      } else if (width >= 1024 && prevWidth < 1024) {
         setSidebarOpen(true);
       }
+      setPrevWidth(width);
     };
     window.addEventListener('resize', onResize);
     onResize();
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [prevWidth]);
 
   useEffect(() => {
     fetchAllProfessionals(); // Initial load to get all data for filter options
@@ -356,7 +361,7 @@ const RealEstateProfessionalsList = () => {
                 <div className="h-8 w-32 bg-slate-100 rounded" />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="bg-white p-6 border border-slate-200 rounded-lg flex flex-col animate-pulse">
                   <div className="flex justify-between mb-6">
@@ -480,11 +485,10 @@ const RealEstateProfessionalsList = () => {
         <aside
           className={`
             fixed lg:sticky lg:top-20 top-0 left-0 h-full lg:h-[calc(100vh-80px)] 
-            bg-white shadow-2xl lg:shadow-none z-[110] lg:z-40
-            transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:hidden'}
-            w-[280px] sm:w-[320px] lg:w-[300px] flex-shrink-0
-            border-r border-gray-100
+            bg-white shadow-2xl lg:shadow-none z-[110] lg:z-30
+            transition-all duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0 w-[280px] sm:w-[320px] lg:w-[280px]' : '-translate-x-full w-0 lg:translate-x-0 lg:opacity-0 lg:pointer-events-none lg:overflow-hidden'}
+            flex-shrink-0 border-r border-gray-100
           `}
         >
           <div className="p-6 h-full overflow-y-auto">
@@ -511,7 +515,7 @@ const RealEstateProfessionalsList = () => {
                   {t('realEstateProfessionals.filters.basicFilters')}
                 </h4>
 
-                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                <div className="grid gap-4 grid-cols-1">
                   {/* Profession Type Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
@@ -604,17 +608,16 @@ const RealEstateProfessionalsList = () => {
           }}>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                {/* Mobile Filter Toggle */}
-                {isMobile && (
-                  <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
-                    style={{ borderColor: theme.borderLight }}
-                  >
-                    <Filter size={16} />
-                    <span className="text-[#212121] text-sm">{t('realEstateProfessionals.filters.mobileTitle')}</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                  style={{ borderColor: theme.borderLight }}
+                >
+                  <Filter size={16} />
+                  <span className="text-[#212121] text-sm">
+                    {sidebarOpen ? (isMobile ? t('realEstateProfessionals.filters.mobileTitle') : t('common.hideFilters', 'Hide Filters')) : (isMobile ? t('realEstateProfessionals.filters.mobileTitle') : t('realEstateProfessionals.filters.title'))}
+                  </span>
+                </button>
 
                 {/* View Toggle */}
                 <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
@@ -677,9 +680,8 @@ const RealEstateProfessionalsList = () => {
           {/* Professionals Display */}
           {sortedProfessionals.length > 0 ? (
             <>
-              {/* Enhanced Grid View */}
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                   {sortedProfessionals.map((professional, index) => (
                     <motion.div
                       key={professional.id}
