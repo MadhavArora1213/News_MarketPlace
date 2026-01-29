@@ -23,7 +23,18 @@ RSS_SITEMAP_FILES=(
 # Combined list for monitoring
 ALL_MONITORED_PATHS=("${STORAGE_DIRS[@]}" "${RSS_SITEMAP_FILES[@]}")
 
-COMMIT_MESSAGE=${1:-"Auto: content and SEO updates $(date '+%Y-%m-%d %H:%M:%S')"}
+# Argument Parsing
+MONITOR_MODE=false
+CUSTOM_MSG=""
+
+for arg in "$@"; do
+    if [[ "$arg" == "--monitor" ]]; then
+        MONITOR_MODE=true
+    else
+        CUSTOM_MSG="$arg"
+    fi
+done
+
 LOG_FILE="$PROJECT_ROOT/automation.log"
 
 log_message() {
@@ -56,7 +67,7 @@ has_changes() {
 main() {
     cd "$PROJECT_ROOT" || exit 1
 
-    # Optional: Regenerate before checking (uncomment if you want auto-regen on every run)
+    # Optional: Regenerate before checking
     regenerate_seo
 
     if ! has_changes; then
@@ -66,14 +77,21 @@ main() {
 
     log_message "🚀 Changes detected. Starting auto-push..."
 
+    # Determine commit message (dynamic date if explicit message not provided)
+    if [[ -n "$CUSTOM_MSG" ]]; then
+        FINAL_MSG="$CUSTOM_MSG"
+    else
+        FINAL_MSG="Auto: content and SEO updates $(date '+%Y-%m-%d %H:%M:%S')"
+    fi
+
     # Add changes
     for path in "${ALL_MONITORED_PATHS[@]}"; do
         git add "$path" 2>/dev/null
     done
 
     # Commit
-    if git commit -m "$COMMIT_MESSAGE"; then
-        log_message "💾 Committed changes: $COMMIT_MESSAGE"
+    if git commit -m "$FINAL_MSG"; then
+        log_message "💾 Committed changes: $FINAL_MSG"
         
         # Push
         log_message "⬆️ Pushing to GitHub..."
@@ -88,7 +106,7 @@ main() {
 }
 
 # Execute
-if [[ "$1" == "--monitor" ]]; then
+if [ "$MONITOR_MODE" = true ]; then
     log_message "👀 Monitoring mode started (checking every 30 minutes)..."
     while true; do
         main
