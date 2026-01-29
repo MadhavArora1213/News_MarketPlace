@@ -508,6 +508,12 @@ const BlogManagement = () => {
     }
   };
 
+  const handleFormSave = () => {
+    setShowFormModal(false);
+    setEditingBlog(null);
+    fetchBlogs();
+  };
+
   const clearAllFilters = () => {
     setSearchTerm('');
     setDebouncedSearchTerm('');
