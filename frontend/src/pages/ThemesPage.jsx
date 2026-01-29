@@ -744,12 +744,14 @@ const ThemesPage = () => {
                             <Eye size={16} />
                             {t('themes.card.viewProfile')}
                           </button>
-                          <div className="relative share-menu-container" onClick={(e) => e.stopPropagation()}>
+                          <div
+                            className="relative share-menu-container"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseEnter={() => setActiveShareId(theme.id)}
+                            onMouseLeave={() => setActiveShareId(null)}
+                          >
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveShareId(activeShareId === theme.id ? null : theme.id);
-                              }}
+                              onClick={(e) => e.stopPropagation()}
                               className="p-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
                             >
                               <Icon name="share" size={18} />
@@ -892,12 +894,14 @@ const ThemesPage = () => {
                                   <Eye size={14} className="inline mr-1" />
                                   {t('themes.table.view')}
                                 </button>
-                                <div className="relative share-menu-container" onClick={(e) => e.stopPropagation()}>
+                                <div
+                                  className="relative share-menu-container"
+                                  onClick={(e) => e.stopPropagation()}
+                                  onMouseEnter={() => setActiveShareId(theme.id)}
+                                  onMouseLeave={() => setActiveShareId(null)}
+                                >
                                   <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setActiveShareId(activeShareId === theme.id ? null : theme.id);
-                                    }}
+                                    onClick={(e) => e.stopPropagation()}
                                     className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
                                   >
                                     <Icon name="share" size={16} />
