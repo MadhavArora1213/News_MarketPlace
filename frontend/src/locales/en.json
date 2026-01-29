@@ -2713,5 +2713,6 @@
             "performanceDesc": "This podcast shows strong engagement with high listener retention and positive community feedback. The {{rating}}★ rating reflects excellent content quality and audience satisfaction.",
             "close": "Close"
         }
-    }
+    },
+    "publications.results.sort.newest": "Newest"
 }

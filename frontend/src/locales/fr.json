@@ -2664,5 +2664,6 @@
             "performanceDesc": "Ce podcast montre un fort engagement avec une rétention élevée des auditeurs et des retours positifs de la communauté. La note de {{rating}}★ reflète une excellente qualité de contenu et la satisfaction du public.",
             "close": "Fermer"
         }
-    }
+    },
+    "publications.results.sort.newest": "Le plus récent"
 }

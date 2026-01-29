@@ -2702,5 +2702,6 @@
             "performanceDesc": "这个播客显示出强劲的参与度，具有高听众保留率和积极的社区反馈。{{rating}}★ 评分反映了优秀的内容质量和观众满意度。",
             "close": "关闭"
         }
-    }
+    },
+    "publications.results.sort.newest": "最新"
 }
