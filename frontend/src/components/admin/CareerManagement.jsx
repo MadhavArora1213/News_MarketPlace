@@ -147,7 +147,129 @@ const CareerManagement = () => {
 
   const [totalCareers, setTotalCareers] = useState(0);
 
-  // ... (previous state declarations)
+  const [careers, setCareers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [dateFromFilter, setDateFromFilter] = useState('');
+  const [dateToFilter, setDateToFilter] = useState('');
+  const [sortField, setSortField] = useState('created_at');
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedCareers, setSelectedCareers] = useState([]);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCareer, setCurrentCareer] = useState(null);
+  const fileInputRef = React.useRef(null);
+
+  // Layout constants
+  const headerHeight = 64;
+  const sidebarWidth = 280;
+  const leftGap = 24;
+  const mainPaddingTop = 40;
+  const headerZ = 40;
+  const sidebarZ = 50;
+  const mobileOverlayZ = 45;
+
+  const isMobile = window.innerWidth < 768; // Simple check, ideally use a hook
+
+  const sidebarStyles = {
+    position: 'fixed',
+    top: headerHeight,
+    bottom: 0,
+    left: 0,
+    width: sidebarWidth,
+    backgroundColor: '#fff',
+    borderRight: `1px solid ${theme.borderLight}`,
+    zIndex: sidebarZ,
+    display: 'flex',
+    flexDirection: 'column',
+    transition: 'transform 0.3s ease-in-out',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
+  };
+
+  const mobileSidebarOverlay = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: mobileOverlayZ,
+    display: isMobile && sidebarOpen ? 'block' : 'none'
+  };
+
+  const btnPrimary = {
+    backgroundColor: theme.primary,
+    color: '#fff',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '10px 20px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    boxShadow: '0 2px 4px rgba(25, 118, 210, 0.2)',
+    transition: 'all 0.2s'
+  };
+
+  const getRoleStyle = (role) => {
+    return {
+      display: 'inline-block',
+      padding: '4px 12px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '600',
+      textTransform: 'capitalize',
+      ...theme.roleColors[role] || theme.roleColors.other
+    };
+  };
+
+  const roleDisplayNames = {
+    super_admin: 'Super Admin',
+    content_manager: 'Content Manager',
+    editor: 'Editor',
+    registered_user: 'User',
+    agency: 'Agency'
+  };
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const clearFilters = () => {
+    setCompanyFilter('');
+    setLocationFilter('');
+    setTypeFilter('');
+    setStatusFilter('');
+    setDateFromFilter('');
+    setDateToFilter('');
+    setSearchTerm('');
+    setDebouncedSearchTerm('');
+    setSortField('created_at');
+    setSortDirection('desc');
+    setCurrentPage(1);
+  };
+
+  const handleCreateCareer = () => {
+    setCurrentCareer(null);
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     fetchCareers();
@@ -795,10 +917,7 @@ const CareerManagement = () => {
               {/* Search Results Summary */}
               <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                  Showing <strong>{paginatedCareers.length}</strong> of <strong>{sortedCareers.length}</strong> careers
-                  {sortedCareers.length !== careers.length && (
-                    <span> (filtered from {careers.length} total)</span>
-                  )}
+                  Showing <strong>{paginatedCareers.length}</strong> of <strong>{totalCareers}</strong> careers
                 </div>
               </div>
             </div>

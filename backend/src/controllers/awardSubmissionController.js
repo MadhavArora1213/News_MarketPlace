@@ -8,7 +8,7 @@ const { rateLimiter } = require('../middleware/rateLimit');
 class AwardSubmissionController {
   // Validation for user submission
   submitValidation = [
-    body('award_id').isUUID().withMessage('Valid award ID is required'),
+    body('award_id').notEmpty().withMessage('Award ID is required'),
     body('name').trim().isLength({ min: 1 }).withMessage('Name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
     body('terms_agreed').equals('true').withMessage('Agreement to terms is required'),

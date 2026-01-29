@@ -107,7 +107,7 @@ class AwardSubmission {
     let paramCount = 1;
 
     if (filters.award_id) {
-      sql += ` AND asub.award_id = $${paramCount}`;
+      sql += ` AND asub.award_id::text = $${paramCount}`;
       values.push(filters.award_id);
       paramCount++;
     }
@@ -341,7 +341,7 @@ class AwardSubmission {
       let paramCount = 1;
 
       if (filters.award_id) {
-        sql += ` AND asub.award_id = $${paramCount}`;
+        sql += ` AND asub.award_id::text = $${paramCount}`;
         values.push(filters.award_id);
         paramCount++;
       }
@@ -409,7 +409,7 @@ class AwardSubmission {
       let paramCount = 1;
 
       if (filters.award_id) {
-        sql += ` AND asub.award_id = $${paramCount}`;
+        sql += ` AND asub.award_id::text = $${paramCount}`;
         values.push(filters.award_id);
         paramCount++;
       }
