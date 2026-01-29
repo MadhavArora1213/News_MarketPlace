@@ -107,17 +107,21 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
                         initial={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
                         animate={{ opacity: 1, scale: 1, y: direction === 'up' ? -10 : 10 }}
                         exit={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
-                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 sm:p-3 flex flex-row items-center gap-1 sm:gap-2 z-[200] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 flex-nowrap`}
-                        style={{ width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}
+                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 sm:p-4 z-[3000] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2`}
+                        style={{
+                            width: 'max-content',
+                            maxWidth: 'min(calc(100vw - 40px), 320px)',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.15)'
+                        }}
                     >
-                        <div className="flex flex-row items-center gap-1.5 sm:gap-2 px-1">
+                        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                             {shareLinks.map((plat) => (
                                 <a
                                     key={plat.name}
                                     href={plat.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90"
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90 shadow-sm hover:shadow-md"
                                     style={{ backgroundColor: plat.color }}
                                     title={`Share on ${plat.name}`}
                                 >
@@ -126,10 +130,10 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
                             ))}
                             <button
                                 onClick={copyToClipboard}
-                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                                 title="Copy link"
                             >
-                                {copied ? <CheckCircle size={18} /> : <Link2 size={18} />}
+                                {copied ? <CheckCircle size={20} /> : <Link2 size={20} />}
                             </button>
                         </div>
                     </motion.div>

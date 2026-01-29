@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Calendar, User, ArrowRight, Clock, Eye, MessageCircle, TrendingUp } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Skeleton from '../components/common/Skeleton';
+import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
@@ -159,14 +159,16 @@ const BlogListingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-4 mb-6 items-center">
             {/* Search Bar */}
-            <div className="flex-1 relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#757575] w-5 h-5" />
+            <div className="flex-1 relative w-full group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                <Icon name="search" size="sm" className="text-gray-400 group-focus-within:text-[#1976D2] transition-colors" />
+              </div>
               <input
                 type="text"
                 placeholder={t('blogs.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E0E0E0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent text-[#212121] shadow-sm"
+                className="w-full pl-12 pr-12 py-3.5 sm:py-4 border border-[#E0E0E0] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#1976D2] bg-white shadow-lg shadow-blue-900/5 transition-all"
               />
             </div>
             <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2">
@@ -248,7 +250,7 @@ const BlogListingPage = () => {
                         <div className="w-full h-full bg-gradient-to-br from-[#E3F2FD] to-[#F3E5F5] flex items-center justify-center relative">
                           <div className="text-center z-20">
                             <div className="w-20 h-20 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                              <User className="w-10 h-10 text-[#1976D2]" />
+                              <Icon name="user" size="md" className="text-[#1976D2]" />
                             </div>
                             <span className="text-sm text-[#757575] font-medium">{t('articles.featured', 'Featured Article')}</span>
                           </div>
@@ -311,18 +313,18 @@ const BlogListingPage = () => {
                       {/* Meta Information */}
                       <div className="flex items-center justify-between text-sm mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1 text-gray-500">
-                            <Calendar className="w-4 h-4 text-[#1976D2]" />
-                            <span className="font-medium">{formatDate(blog.publishDate)}</span>
+                          <div className="flex items-center gap-1 text-gray-500 text-[10px] sm:text-xs">
+                            <Icon name="calendar" size="xs" className="text-[#1976D2]" />
+                            <span className="font-semibold">{formatDate(blog.publishDate)}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 text-gray-500">
+                        <div className="flex items-center gap-2 text-gray-400 text-[10px] sm:text-xs">
                           <div className="flex items-center gap-1">
-                            <Eye className="w-4 h-4 text-[#FF9800]" />
+                            <Icon name="user" size="xs" className="text-[#FF9800]" />
                             <span className="font-medium">{Math.floor(Math.random() * 500) + 100}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4 text-[#4CAF50]" />
+                            <Icon name="message" size="xs" className="text-[#4CAF50]" />
                             <span className="font-medium">{Math.floor(Math.random() * 20) + 1}</span>
                           </div>
                         </div>
@@ -331,15 +333,15 @@ const BlogListingPage = () => {
                       {/* Author Info */}
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                         <div className="w-8 h-8 bg-gradient-to-br from-[#1976D2] to-[#9C27B0] rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-white" />
+                          <Icon name="user" size="xs" className="text-white" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-[#212121]">News Marketplace</p>
-                          <p className="text-xs text-gray-500">Content Team</p>
+                          <p className="text-[10px] sm:text-xs font-bold text-[#212121]">News Marketplace</p>
+                          <p className="text-[8px] sm:text-[10px] text-gray-500">Content Team</p>
                         </div>
                         <div className="flex items-center gap-1">
-                          <TrendingUp className="w-4 h-4 text-green-500" />
-                          <span className="text-xs font-medium text-green-600">{t('Popular', 'Popular')}</span>
+                          <Icon name="trending-up" size="xs" className="text-green-500" />
+                          <span className="text-[8px] sm:text-[10px] font-bold text-green-600 uppercase tracking-wider">{t('Popular', 'Popular')}</span>
                         </div>
                       </div>
                     </div>
@@ -389,10 +391,10 @@ const BlogListingPage = () => {
             </>
           )}
         </div>
-      </section >
+      </section>
 
       <UserFooter />
-    </div >
+    </div>
   );
 };
 

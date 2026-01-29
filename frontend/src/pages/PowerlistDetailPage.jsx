@@ -6,13 +6,7 @@ import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
-import {
-  ArrowLeft, Globe, BookOpen, Star, ExternalLink, Shield,
-  Link as LinkIcon, Image as ImageIcon, FileText, CheckCircle,
-  DollarSign, Clock, BarChart3, Target, Award, TrendingUp,
-  MapPin, Calendar, Users, Zap, Eye, Heart, Share, User, Building,
-  Mail, Phone, MessageSquare, Bookmark, Award as AwardIcon, ExternalLink as ExternalLinkIcon
-} from 'lucide-react';
+import Icon from '../components/common/Icon';
 import { useLanguage } from '../context/LanguageContext';
 import { getIdFromSlug } from '../utils/slugify';
 import SEO from '../components/common/SEO';
@@ -226,7 +220,7 @@ const PowerlistDetailPage = () => {
               className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
               style={{ backgroundColor: theme.backgroundSoft }}
             >
-              <AwardIcon size={48} style={{ color: theme.textDisabled }} />
+              <Icon name="award" size="xl" style={{ color: theme.textDisabled }} />
             </div>
             <h1 className="text-2xl font-semibold mb-4" style={{ color: theme.textPrimary }}>
               {t('powerlistDetail.notFound.title')}
@@ -239,7 +233,7 @@ const PowerlistDetailPage = () => {
               className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               style={{ backgroundColor: theme.primary }}
             >
-              <ArrowLeft size={16} />
+              <Icon name="arrow-left" size="sm" />
               {t('powerlistDetail.notFound.back')}
             </button>
           </div>
@@ -288,7 +282,7 @@ const PowerlistDetailPage = () => {
               onClick={() => navigate('/power-lists')}
               className="flex items-center gap-1 hover:opacity-80"
             >
-              <ArrowLeft size={16} />
+              <Icon name="arrow-left" size="sm" />
               {t('powerlistDetail.breadcrumb.back')}
             </button>
             <span>/</span>
@@ -300,46 +294,44 @@ const PowerlistDetailPage = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Header with Image Background */}
-                <div className="relative mb-8">
+                <div className="relative mb-6 sm:mb-8">
                   {/* Cover Image */}
-                  <div className="h-64 rounded-lg overflow-hidden mb-6">
+                  <div className="h-48 sm:h-64 lg:h-80 rounded-2xl overflow-hidden mb-6 shadow-lg border border-slate-100">
                     {powerlistNomination.image ? (
                       <img
                         src={powerlistNomination.image}
                         alt={powerlistNomination.publication_name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       />
                     ) : (
-                      <img
-                        src="/logo.png"
-                        alt="Logo"
-                        className="w-full h-full object-contain"
-                      />
+                      <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                        <img
+                          src="/logo.png"
+                          alt="Logo"
+                          className="w-1/2 h-1/2 object-contain opacity-50"
+                        />
+                      </div>
                     )}
                   </div>
 
                   {/* Publication and Power List Info */}
-                  <div className="flex items-start gap-6">
+                  <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                     <div className="flex-1">
-                      <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
+                      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-3 leading-tight" style={{ color: theme.textPrimary }}>
                         {powerlistNomination.publication_name}
                       </h1>
-                      <div className="flex flex-wrap items-center gap-6 text-sm mb-4" style={{ color: theme.textSecondary }}>
-                        <div className="flex items-center gap-2">
-                          <AwardIcon size={16} />
-                          <span className="font-medium">{powerlistNomination.power_list_name}</span>
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm mb-4" style={{ color: theme.textSecondary }}>
+                        <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full text-blue-700 font-semibold border border-blue-100">
+                          <Icon name="award" size="xs" />
+                          <span>{powerlistNomination.power_list_name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Users size={16} />
+                          <Icon name="users" size="xs" />
                           <span>{powerlistNomination.company_or_individual}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin size={16} />
+                          <Icon name="map-pin" size="xs" />
                           <span>{powerlistNomination.location_region || t('powerlistDetail.defaults.global')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} />
-                          <span>{t('powerlistDetail.meta.created', { date: formatDate(powerlistNomination.created_at) })}</span>
                         </div>
                       </div>
                     </div>
@@ -347,30 +339,30 @@ const PowerlistDetailPage = () => {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold" style={{ color: theme.primary }}>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+                  <div className="text-center p-3 sm:p-4 rounded-xl border border-blue-50 transition-all duration-300 hover:shadow-md" style={{ backgroundColor: theme.primaryLight }}>
+                    <div className="text-sm sm:text-lg font-bold truncate mb-1" style={{ color: theme.primary }}>
                       {powerlistNomination.industry || t('powerlistDetail.defaults.general')}
                     </div>
-                    <div className="text-sm" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.industry')}</div>
+                    <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.industry')}</div>
                   </div>
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold" style={{ color: theme.secondary }}>
+                  <div className="text-center p-3 sm:p-4 rounded-xl border border-teal-50 transition-all duration-300 hover:shadow-md" style={{ backgroundColor: theme.secondaryLight }}>
+                    <div className="text-sm sm:text-lg font-bold truncate mb-1" style={{ color: theme.secondary }}>
                       {powerlistNomination.company_or_individual}
                     </div>
-                    <div className="text-sm" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.type')}</div>
+                    <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.type')}</div>
                   </div>
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold" style={{ color: theme.info }}>
+                  <div className="text-center p-3 sm:p-4 rounded-xl border border-purple-50 transition-all duration-300 hover:shadow-md" style={{ backgroundColor: '#F3E5F5' }}>
+                    <div className="text-sm sm:text-lg font-bold truncate mb-1" style={{ color: theme.info }}>
                       {powerlistNomination.location_region || t('powerlistDetail.defaults.global')}
                     </div>
-                    <div className="text-sm" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.region')}</div>
+                    <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.region')}</div>
                   </div>
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: theme.backgroundSoft }}>
-                    <div className="text-2xl font-bold" style={{ color: theme.success }}>
+                  <div className="text-center p-3 sm:p-4 rounded-xl border border-green-50 transition-all duration-300 hover:shadow-md" style={{ backgroundColor: '#E8F5E9' }}>
+                    <div className="text-sm sm:text-lg font-bold truncate mb-1" style={{ color: theme.success }}>
                       {powerlistNomination.tentative_month || 'TBD'}
                     </div>
-                    <div className="text-sm" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.timeline')}</div>
+                    <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider" style={{ color: theme.textSecondary }}>{t('powerlistDetail.stats.timeline')}</div>
                   </div>
                 </div>
 
@@ -389,9 +381,9 @@ const PowerlistDetailPage = () => {
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
                           style={{ backgroundColor: theme.primary, color: 'white' }}
                         >
-                          <Globe size={16} />
+                          <Icon name="globe" size="sm" />
                           {t('powerlistDetail.buttons.visitWebsite')}
-                          <ExternalLinkIcon size={14} />
+                          <Icon name="external-link" size="xs" />
                         </a>
                       )}
                       {powerlistNomination.last_power_list_url && (
@@ -402,9 +394,9 @@ const PowerlistDetailPage = () => {
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
                           style={{ backgroundColor: theme.secondary, color: 'white' }}
                         >
-                          <BookOpen size={16} />
+                          <Icon name="book-open" size="sm" />
                           {t('powerlistDetail.buttons.lastPowerList')}
-                          <ExternalLinkIcon size={14} />
+                          <Icon name="external-link" size="xs" />
                         </a>
                       )}
                     </div>
@@ -469,9 +461,9 @@ const PowerlistDetailPage = () => {
                       onMouseEnter={(e) => e.target.style.backgroundColor = theme.primaryDark}
                       onMouseLeave={(e) => e.target.style.backgroundColor = theme.primary}
                     >
-                      <Globe size={16} />
+                      <Icon name="globe" size="sm" />
                       {t('powerlistDetail.buttons.visitWebsite')}
-                      <ExternalLinkIcon size={14} />
+                      <Icon name="external-link" size="xs" />
                     </a>
                   )}
 
@@ -485,9 +477,9 @@ const PowerlistDetailPage = () => {
                       onMouseEnter={(e) => e.target.style.backgroundColor = theme.secondaryDark}
                       onMouseLeave={(e) => e.target.style.backgroundColor = theme.secondary}
                     >
-                      <BookOpen size={16} />
+                      <Icon name="book-open" size="sm" />
                       {t('powerlistDetail.buttons.viewLastList')}
-                      <ExternalLinkIcon size={14} />
+                      <Icon name="external-link" size="xs" />
                     </a>
                   )}
 
@@ -498,7 +490,7 @@ const PowerlistDetailPage = () => {
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#7B1FA2'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = theme.info}
                   >
-                    <ArrowLeft size={16} />
+                    <Icon name="arrow-left" size="sm" />
                     {t('powerlistDetail.buttons.backToNominations')}
                   </button>
                 </div>
@@ -604,7 +596,7 @@ const PowerlistDetailPage = () => {
                 color: isSaved ? theme.danger : theme.textSecondary
               }}
             >
-              <Heart size={16} style={{ color: isSaved ? theme.danger : theme.danger, fill: isSaved ? theme.danger : 'none' }} />
+              <Icon name="heart" size="sm" className={isSaved ? 'fill-current' : 'none'} style={{ color: theme.danger }} />
               <span style={{ color: isSaved ? theme.danger : theme.textSecondary }}>
                 {isSaved ? t('powerlistDetail.buttons.saved') : t('powerlistDetail.buttons.save')}
               </span>

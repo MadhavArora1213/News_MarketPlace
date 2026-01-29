@@ -10,13 +10,6 @@ import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import { createSlugPath } from '../utils/slugify';
 import PublicationSubmissionForm from '../components/user/PublicationSubmissionForm';
-import {
-  Search, Filter, Eye, Heart, Share, Grid, List, Star, Clock,
-  TrendingUp, Globe, BookOpen, Award, Target, Zap, CheckCircle,
-  ExternalLink, MapPin, Calendar, DollarSign, BarChart3, Users,
-  Link as LinkIcon, Image as ImageIcon, FileText, Shield,
-  ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Newspaper, Plus
-} from 'lucide-react';
 import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
@@ -424,9 +417,11 @@ const PublicationsPage = () => {
                   placeholder={t('publications.search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 border border-[#E0E0E0] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent bg-white shadow-sm"
+                  className="w-full pl-11 pr-11 py-3.5 sm:py-4 border border-[#E0E0E0] rounded-xl text-base focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#1976D2] bg-white shadow-lg shadow-blue-900/5 transition-all"
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} style={{ color: theme.textSecondary }} />
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
+                  <Icon name="search" size="xs" className="text-gray-400" />
+                </div>
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
@@ -473,7 +468,7 @@ const PublicationsPage = () => {
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
-                <Filter size={20} className="text-[#1976D2]" />
+                <Icon name="filter" size="sm" className="text-[#1976D2]" />
                 {t('publications.filters.title')}
               </h3>
               {isMobile && (

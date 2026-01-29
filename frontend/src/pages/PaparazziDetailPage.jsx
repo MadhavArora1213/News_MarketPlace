@@ -7,12 +7,7 @@ import UserFooter from '../components/common/UserFooter';
 import api from '../services/api';
 import AuthModal from '../components/auth/AuthModal';
 import Skeleton from '../components/common/Skeleton';
-import {
-  ArrowLeft, Camera, Globe, Star, ExternalLink, Shield,
-  Link as LinkIcon, FileText, CheckCircle, DollarSign, Clock,
-  BarChart3, Target, Award, TrendingUp, MapPin, Calendar,
-  Users, Zap, Eye, Heart, Share, Instagram, Youtube, Twitter, Filter
-} from 'lucide-react';
+import Icon from '../components/common/Icon';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { useLanguage } from '../context/LanguageContext';
@@ -397,16 +392,16 @@ const PaparazziDetailPage = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-8 border-b" style={{ backgroundColor: theme.background }}>
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm mb-6" style={{ color: theme.textSecondary }}>
+          <div className="flex items-center gap-2 text-[10px] sm:text-xs md:text-sm mb-4 sm:mb-8" style={{ color: theme.textSecondary }}>
             <button
               onClick={() => navigate('/paparazzi')}
-              className="flex items-center gap-1 hover:opacity-80"
+              className="flex items-center gap-1 hover:text-[#1976D2] transition-all duration-300"
             >
-              <ArrowLeft size={16} />
+              <Icon name="arrow-left" size="sm" />
               {t('paparazziDetails.backToPaparazzi')}
             </button>
-            <span>/</span>
-            <span>{t('paparazziDetails.details')}</span>
+            <span className="opacity-40">/</span>
+            <span className="font-semibold text-[#1976D2]">{t('paparazziDetails.details')}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -414,35 +409,31 @@ const PaparazziDetailPage = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Paparazzi Header */}
-                <div className="flex items-start gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-8 sm:mb-12">
                   <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0"
+                    className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center flex-shrink-0 bg-white shadow-sm border border-slate-100 transition-transform duration-500 hover:scale-105"
                     style={{ backgroundColor: theme.primaryLight }}
                   >
-                    <PlatformIcon size={32} style={{ color: theme.primary }} />
+                    <PlatformIcon size={isMobile ? 24 : 40} style={{ color: theme.primary }} />
                   </div>
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black mb-3 sm:mb-6 tracking-tight leading-tight" style={{ color: theme.textPrimary }}>
                       {translatedPaparazzi?.instagram_page_name}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
-                      <div className="flex items-center gap-2">
-                        <Globe size={16} />
-                        <span>{t('paparazziDetails.instagramProfile')}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users size={16} />
-                        <span>{formatFollowers(translatedPaparazzi?.no_of_followers)} {t('paparazziDetails.followers')}</span>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 text-[10px] sm:text-sm" style={{ color: theme.textSecondary }}>
+                      <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 text-blue-700">
+                        <Icon name="users" size="xs" />
+                        <span className="font-semibold">{formatFollowers(translatedPaparazzi?.no_of_followers)} {t('paparazziDetails.followers')}</span>
                       </div>
                       {translatedPaparazzi?.region_focused && (
-                        <div className="flex items-center gap-2">
-                          <MapPin size={16} />
-                          <span>{translatedPaparazzi.region_focused}</span>
+                        <div className="flex items-center gap-1.5 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100 text-teal-700">
+                          <Icon name="map-pin" size="xs" />
+                          <span className="font-semibold">{translatedPaparazzi.region_focused}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <Calendar size={16} />
-                        <span>{t('paparazziDetails.added')} {formatDate(translatedPaparazzi?.created_at)}</span>
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200 text-slate-600">
+                        <Icon name="calendar" size="xs" />
+                        <span className="font-semibold">{t('paparazziDetails.added')} {formatDate(translatedPaparazzi?.created_at)}</span>
                       </div>
                     </div>
                   </div>

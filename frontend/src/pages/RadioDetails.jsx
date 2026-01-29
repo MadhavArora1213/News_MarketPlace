@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, ArrowLeft, Globe, MapPin, User, ExternalLink, MessageSquare, Link as LinkIcon, Share2, Instagram } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
+import Icon from '../components/common/Icon';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
@@ -179,42 +179,42 @@ const RadioDetails = () => {
       <UserHeader />
 
       {/* Back Button */}
-      <section className="py-3 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
+      <section className="py-2 sm:py-3 px-4 sm:px-6 lg:px-8 bg-white border-b border-[#E0E0E0]">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 text-[#1976D2] hover:text-[#1565C0] transition-colors text-sm sm:text-base font-medium"
+            className="flex items-center gap-1.5 text-[#1976D2] hover:text-[#1565C0] transition-all duration-300 text-xs sm:text-sm font-semibold group"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Icon name="arrow-left" size="xs" className="group-hover:-translate-x-1 transition-transform" />
             {t('radioDetails.backToStations')}
           </button>
         </div>
       </section>
 
       {/* Hero Section */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white">
+      <section className="py-6 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#E3F2FD] to-white overflow-hidden">
         <div className="max-w-4xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#212121] mb-4">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#212121] mb-4 sm:mb-6 tracking-tight leading-tight">
               {translatedRadio.radio_name}
             </h1>
-            <div className="flex justify-center mb-6">
-              <span className="text-lg sm:text-xl font-medium text-[#1976D2] bg-[#E3F2FD] px-6 py-2 rounded-full border border-blue-100">
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <span className="text-sm sm:text-lg font-bold text-[#1976D2] bg-[#E3F2FD] px-4 sm:px-6 py-1.5 sm:py-2 rounded-full border border-blue-200 shadow-sm">
                 {translatedRadio.frequency}
               </span>
             </div>
             <div className="flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-blue-400/20 rounded-full blur-2xl -z-10 animate-pulse"></div>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-blue-400/20 rounded-full blur-3xl -z-10 group-hover:bg-blue-400/30 transition-all duration-500 animate-pulse"></div>
                 <img
                   src={translatedRadio.image_url || "/logo.png"}
                   alt={translatedRadio.radio_name}
-                  className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-xl"
+                  className="w-20 h-20 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white shadow-2xl transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
                     e.target.src = "/logo.png";
                   }}
@@ -233,35 +233,35 @@ const RadioDetails = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-8">
                 {/* Frequency and Basic Info */}
-                <div className="mb-8">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#212121] mb-6 flex items-center gap-2">
-                    <Radio className="w-5 h-5 sm:w-6 sm:h-6 text-[#1976D2]" />
+                <div className="mb-8 sm:mb-12">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#212121] mb-6 sm:mb-8 flex items-center gap-2">
+                    <Icon name="radio" size="sm" className="text-[#1976D2]" />
                     {t('radioDetails.stationDetails')}
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
-                      <div className="text-2xl font-bold text-[#1976D2] mb-2">
+                  <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-6">
+                    <div className="text-center p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-all duration-300">
+                      <div className="text-lg sm:text-2xl font-bold text-[#1976D2] mb-1">
                         {translatedRadio.frequency}
                       </div>
-                      <div className="text-sm text-[#757575]">{t('radioDetails.frequency')}</div>
+                      <div className="text-[10px] sm:text-sm font-semibold text-[#757575] uppercase tracking-wider">{t('radioDetails.frequency')}</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
-                      <div className="text-2xl font-bold text-[#00796B] mb-2">
+                    <div className="text-center p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-teal-200 transition-all duration-300">
+                      <div className="text-lg sm:text-2xl font-bold text-[#00796B] mb-1">
                         {translatedRadio.radio_language}
                       </div>
-                      <div className="text-sm text-[#757575]">{t('radioDetails.language')}</div>
+                      <div className="text-[10px] sm:text-sm font-semibold text-[#757575] uppercase tracking-wider">{t('radioDetails.language')}</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
-                      <div className="text-2xl font-bold text-[#9C27B0] mb-2">
+                    <div className="text-center p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-purple-200 transition-all duration-300">
+                      <div className="text-lg sm:text-2xl font-bold text-[#9C27B0] mb-1">
                         {translatedRadio.emirate_state}
                       </div>
-                      <div className="text-sm text-[#757575]">{t('radioDetails.emirate')}</div>
+                      <div className="text-[10px] sm:text-sm font-semibold text-[#757575] uppercase tracking-wider">{t('radioDetails.emirate')}</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-[#FAFAFA]">
-                      <div className="text-2xl font-bold text-[#FF9800] mb-2">
+                    <div className="text-center p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-orange-200 transition-all duration-300">
+                      <div className="text-lg sm:text-2xl font-bold text-[#FF9800] mb-1 truncate px-2">
                         {translatedRadio.radio_popular_rj || t('radioDetails.na')}
                       </div>
-                      <div className="text-sm text-[#757575]">{t('radioDetails.popularRj')}</div>
+                      <div className="text-[10px] sm:text-sm font-semibold text-[#757575] uppercase tracking-wider">{t('radioDetails.popularRj')}</div>
                     </div>
                   </div>
                 </div>
@@ -278,11 +278,11 @@ const RadioDetails = () => {
                           href={translatedRadio.radio_website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#1976D2] text-white hover:bg-[#0D47A1]"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 bg-[#1976D2] text-white hover:bg-[#0D47A1] shadow-lg shadow-blue-500/20 text-sm sm:text-base font-semibold"
                         >
-                          <Globe size={16} />
+                          <Icon name="globe" size="xs" />
                           {t('radioDetails.visitWebsite')}
-                          <ExternalLink size={14} />
+                          <Icon name="external-link" size="xs" />
                         </a>
                       )}
                       {translatedRadio.radio_linkedin && (
@@ -290,13 +290,11 @@ const RadioDetails = () => {
                           href={translatedRadio.radio_linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#00796B] text-white hover:bg-[#004D40]"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 bg-[#00796B] text-white hover:bg-[#004D40] shadow-lg shadow-teal-500/20 text-sm sm:text-base font-semibold"
                         >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                          </svg>
+                          <Icon name="linkedin" size="xs" />
                           LinkedIn
-                          <ExternalLink size={14} />
+                          <Icon name="external-link" size="xs" />
                         </a>
                       )}
                       {translatedRadio.radio_instagram && (
@@ -304,11 +302,11 @@ const RadioDetails = () => {
                           href={translatedRadio.radio_instagram}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-[#9C27B0] text-white hover:bg-[#7B1FA2]"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 bg-[#9C27B0] text-white hover:bg-[#7B1FA2] shadow-lg shadow-purple-500/20 text-sm sm:text-base font-semibold"
                         >
-                          <Instagram className="w-4 h-4" />
+                          <Icon name="instagram" size="xs" />
                           Instagram
-                          <ExternalLink size={14} />
+                          <Icon name="external-link" size="xs" />
                         </a>
                       )}
                     </div>
@@ -361,15 +359,15 @@ const RadioDetails = () => {
               <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-6 order-1 lg:order-2 ring-1 ring-black/5">
                 <div className="space-y-5">
                   {/* Share Section - Moved to Top for better UX */}
-                  <div className="flex flex-col items-center gap-2 pb-5 border-b border-slate-50">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{t('common.share_station', 'Share Station')}</span>
+                  <div className="flex flex-col items-center gap-3 pb-6 border-b border-slate-100">
+                    <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">{t('common.share_station', 'Share Station')}</span>
                     <ShareButtons
                       url={window.location.href}
                       title={translatedRadio?.radio_name || 'Radio Station'}
                       description={translatedRadio?.description || ''}
                       direction="down"
                       variant="outline"
-                      className="!rounded-full !py-2 shadow-sm scale-90 sm:scale-100"
+                      className="!rounded-full !py-2.5 shadow-sm hover:shadow-md border-slate-200"
                     />
                   </div>
 
@@ -391,9 +389,9 @@ const RadioDetails = () => {
 
                     <button
                       onClick={handleBack}
-                      className="w-full flex items-center justify-center gap-2 text-slate-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 border border-slate-100 hover:bg-slate-50 active:scale-95 text-xs sm:text-sm"
+                      className="w-full flex items-center justify-center gap-2 text-slate-500 font-bold py-3 px-4 rounded-xl transition-all duration-300 border-2 border-slate-100 hover:bg-slate-50 active:scale-95 text-xs sm:text-sm group"
                     >
-                      <ArrowLeft size={14} />
+                      <Icon name="arrow-left" size="xs" className="group-hover:-translate-x-1 transition-transform" />
                       {t('radioDetails.backToStations')}
                     </button>
                   </div>

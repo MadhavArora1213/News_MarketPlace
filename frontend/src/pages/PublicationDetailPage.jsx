@@ -259,33 +259,33 @@ const PublicationDetailPage = () => {
       <UserHeader onShowAuth={handleShowAuth} />
 
       {/* Header Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8 border-b" style={{ backgroundColor: theme.background }}>
+      <section className="px-4 sm:px-6 lg:px-8 py-6 sm:py-10 border-b overflow-hidden" style={{ backgroundColor: theme.background }}>
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm mb-6 flex-wrap" style={{ color: theme.textSecondary }}>
+          <div className="flex items-center gap-2 text-[10px] sm:text-xs md:text-sm mb-4 sm:mb-8 flex-wrap" style={{ color: theme.textSecondary }}>
             <button
               onClick={() => navigate('/publications')}
-              className="flex items-center gap-1 hover:text-[#1976D2] transition-colors"
+              className="flex items-center gap-1 hover:text-[#1976D2] transition-all duration-300"
             >
               <ArrowLeft size={16} />
               {t('publicationDetail.backToPublications')}
             </button>
             <span className="opacity-40">/</span>
-            <span className="font-medium">{t('publicationDetail.title')}</span>
+            <span className="font-semibold text-[#1976D2]">{t('publicationDetail.title')}</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-10">
             {/* Main Content */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Publication Header */}
-                <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
-                  <div className="w-40 h-28 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden p-3 border border-gray-100 shadow-inner">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-10 mb-8 sm:mb-12">
+                  <div className="w-32 h-24 sm:w-44 sm:h-32 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden p-3 border border-gray-100 shadow-sm transition-transform duration-500 hover:scale-105">
                     {publication.image ? (
                       <img
                         src={publication.image.startsWith('http') ? publication.image : `https://vaas.solutions${publication.image.startsWith('/') ? '' : '/'}${publication.image}`}
                         alt={publication.publication_name}
-                        className="max-w-full max-h-full object-contain"
+                        className="max-w-full max-h-full object-contain p-1"
                         onError={(e) => {
                           e.target.src = '/logo.png';
                         }}
@@ -299,21 +299,21 @@ const PublicationDetailPage = () => {
                     )}
                   </div>
                   <div className="flex-1 text-center md:text-left">
-                    <h1 className="text-3xl md:text-4xl font-black mb-4 tracking-tight leading-tight" style={{ color: theme.textPrimary }}>
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black mb-3 sm:mb-6 tracking-tight leading-tight" style={{ color: theme.textPrimary }}>
                       {publication.publication_name}
                     </h1>
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm" style={{ color: theme.textSecondary }}>
-                      <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                        <MapPin size={16} className="text-[#1976D2]" />
-                        <span className="font-medium">{publication.region}</span>
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-4 text-[10px] sm:text-sm" style={{ color: theme.textSecondary }}>
+                      <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 text-blue-700">
+                        <MapPin size={14} className="sm:w-4 sm:h-4" />
+                        <span className="font-semibold">{publication.region}</span>
                       </div>
-                      <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                        <BookOpen size={16} className="text-[#1976D2]" />
-                        <span className="font-medium">{publication.language}</span>
+                      <div className="flex items-center gap-1.5 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100 text-teal-700">
+                        <BookOpen size={14} className="sm:w-4 sm:h-4" />
+                        <span className="font-semibold">{publication.language}</span>
                       </div>
-                      <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                        <Calendar size={16} className="text-[#1976D2]" />
-                        <span className="font-medium">{t('publicationDetail.addedOn', { date: formatDate(publication.created_at) })}</span>
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200 text-slate-600">
+                        <Calendar size={14} className="sm:w-4 sm:h-4" />
+                        <span className="font-semibold">{t('publicationDetail.addedOn', { date: formatDate(publication.created_at) })}</span>
                       </div>
                     </div>
                   </div>

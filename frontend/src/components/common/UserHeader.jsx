@@ -163,9 +163,9 @@ const UserHeader = () => {
                 key={icon.name}
                 href={icon.href}
                 aria-label={icon.label}
-                className={`text-gray-600 ${icon.color} transition-all duration-300 p-1.5 rounded-lg hover:bg-white/50 hover:scale-110 backdrop-blur-sm`}
+                className={`text-gray-600 ${icon.color} transition-all duration-300 p-2 rounded-lg hover:bg-white/50 hover:scale-110 backdrop-blur-sm shadow-sm hover:shadow-md border border-transparent hover:border-white/40`}
               >
-                <Icon name={icon.name} size="xs" />
+                <Icon name={icon.name} size="sm" />
               </a>
             ))}
           </div>
@@ -229,22 +229,22 @@ const UserHeader = () => {
             </div>
 
             {/* Contact Icons */}
-            <div className="hidden xl:flex items-center space-x-1">
+            <div className="hidden xl:flex items-center space-x-1.5 ml-2 border-l border-gray-200/80 pl-3">
               {contactIcons.map((icon) => (
                 <a
                   key={icon.name}
                   href={icon.href}
                   aria-label={icon.label}
-                  className={`text-gray-600 ${icon.color} transition-all duration-300 p-1.5 rounded-lg hover:bg-white/50 hover:scale-110 backdrop-blur-sm`}
+                  className={`text-gray-600 ${icon.color} transition-all duration-300 p-2 rounded-lg hover:bg-white/50 hover:scale-110 backdrop-blur-sm shadow-sm hover:shadow-md border border-transparent hover:border-white/40`}
                 >
-                  <Icon name={icon.name} size="xs" />
+                  <Icon name={icon.name} size="sm" />
                 </a>
               ))}
             </div>
 
             {/* Mobile Menu Button */}
             <button
-              className="xl:hidden text-[#212121] hover:text-[#1976D2] p-2 rounded-lg hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
+              className="xl:hidden text-[#212121] hover:text-[#1976D2] p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 transition-all duration-300 border border-slate-100"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -395,10 +395,10 @@ const UserHeader = () => {
                               serviceItem.onClick();
                             }
                           }}
-                          className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
+                          className="flex flex-col items-center text-center p-2 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-xl transition-all duration-300 group"
                         >
-                          <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
-                          <span className="text-xs leading-tight truncate w-full">{item.name}</span>
+                          <Icon name={item.icon} size="sm" className="mb-1.5 text-gray-500 group-hover:text-[#1976D2] group-hover:scale-110 transition-all duration-300" />
+                          <span className="text-[10px] font-medium leading-tight truncate w-full">{item.name}</span>
                         </button>
                       );
                     }
@@ -406,10 +406,11 @@ const UserHeader = () => {
                       <Link
                         key={index}
                         to={item.href}
-                        className="flex flex-col items-center text-center p-1 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-md transition-all duration-200"
+                        onClick={() => setShowMobileMenu(false)}
+                        className="flex flex-col items-center text-center p-2 text-[#212121] hover:text-[#1976D2] hover:bg-white/50 rounded-xl transition-all duration-300 group"
                       >
-                        <Icon name={item.icon} size="xs" className="mb-1 text-gray-500 hover:text-[#1976D2] transition-colors" />
-                        <span className="text-xs leading-tight truncate w-full">{item.name}</span>
+                        <Icon name={item.icon} size="sm" className="mb-1.5 text-gray-500 group-hover:text-[#1976D2] group-hover:scale-110 transition-all duration-300" />
+                        <span className="text-[10px] font-medium leading-tight truncate w-full">{item.name}</span>
                       </Link>
                     );
                   })}
@@ -447,9 +448,9 @@ const UserHeader = () => {
                     </span>
                   </button>
                 ) : (
-                  <button onClick={logout} className="w-full bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold py-3 rounded-lg hover:from-[#D32F2F] hover:to-[#D32F2F] transition-all duration-300 shadow-md text-sm">
-                    <span className="flex items-center justify-center space-x-1.5">
-                      <Icon name="logout" size="xs" />
+                  <button onClick={logout} className="w-full bg-gradient-to-r from-[#F44336] to-[#D32F2F] text-white font-bold py-3.5 rounded-xl hover:from-[#D32F2F] hover:to-[#B71C1C] transition-all duration-300 shadow-lg text-sm group">
+                    <span className="flex items-center justify-center space-x-2">
+                      <Icon name="logout" size="sm" className="group-hover:translate-x-1 transition-transform" />
                       <span>{t('Logout')}</span>
                     </span>
                   </button>

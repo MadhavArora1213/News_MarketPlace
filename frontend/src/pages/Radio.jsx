@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, Search, Filter, Globe, MapPin, User, Grid, List, ExternalLink, Building, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import UserHeader from '../components/common/UserHeader';
 import UserFooter from '../components/common/UserFooter';
 import Skeleton from '../components/common/Skeleton';
+import Icon from '../components/common/Icon';
 import api from '../services/api';
 import { createSlugPath } from '../utils/slugify';
 import SEO from '../components/common/SEO';
@@ -282,7 +282,9 @@ const RadioPage = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-12 py-3.5 sm:py-4 border border-[#E0E0E0] rounded-xl text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#1976D2] bg-white shadow-lg shadow-blue-900/5 transition-all"
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within:text-[#1976D2] transition-colors" size={20} style={{ color: theme.textSecondary }} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <Icon name="search" size="sm" className="group-focus-within:text-[#1976D2] transition-colors text-gray-400" />
+                </div>
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
@@ -312,15 +314,15 @@ const RadioPage = () => {
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
-                <Filter size={20} className="text-[#1976D2]" />
+                <Icon name="filter" size="sm" className="text-[#1976D2]" />
                 {t('radio.filters.title')}
               </h3>
               {isMobile && (
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
+                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575] transition-colors"
                 >
-                  ×
+                  <Icon name="x" size="sm" />
                 </button>
               )}
             </div>
@@ -329,7 +331,7 @@ const RadioPage = () => {
               {/* Basic Filters */}
               <div className="bg-[#FAFAFA] rounded-lg p-4 border border-[#E0E0E0]">
                 <h4 className="font-semibold text-[#212121] mb-3 flex items-center gap-2">
-                  <Radio size={16} className="text-[#1976D2]" />
+                  <Icon name="radio" size="xs" className="text-[#1976D2]" />
                   {t('radio.filters.basic')}
                 </h4>
 
@@ -398,8 +400,8 @@ const RadioPage = () => {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
                     style={{ borderColor: theme.borderLight }}
                   >
-                    <Filter size={16} />
-                    <span className="text-[#212121]">{t('radio.controls.filters')}</span>
+                    <Icon name="filter" size="xs" />
+                    <span className="text-[#212121] font-medium">{t('radio.controls.filters')}</span>
                   </button>
                 )}
 
@@ -412,7 +414,7 @@ const RadioPage = () => {
                       : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
-                    <Grid size={16} />
+                    <Icon name="grid" size="xs" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
@@ -421,7 +423,7 @@ const RadioPage = () => {
                       : 'text-[#757575] hover:text-[#212121]'
                       }`}
                   >
-                    <List size={16} />
+                    <Icon name="list" size="xs" />
                   </button>
                 </div>
 
@@ -533,8 +535,8 @@ const RadioPage = () => {
                         <div className="absolute top-16 right-4 z-20 flex flex-col gap-2">
                           {radio.radio_popular_rj && (
                             <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                              <User className="w-4 h-4 text-white" />
-                              <span className="text-white text-xs font-medium">
+                              <Icon name="user" size="xs" className="text-white" />
+                              <span className="text-white text-[10px] font-medium">
                                 {radio.radio_popular_rj}
                               </span>
                             </div>
@@ -567,9 +569,9 @@ const RadioPage = () => {
 
                           {/* Location and Type Row */}
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center text-sm text-white/80">
-                              <MapPin size={14} className="mr-1" />
-                              <span>{radio.emirate_state || 'UAE'}</span>
+                            <div className="flex items-center text-xs text-white/80">
+                              <Icon name="map-pin" size="xs" className="mr-1" />
+                              <span className="font-medium">{radio.emirate_state || 'UAE'}</span>
                             </div>
 
                             <div className="text-right">
@@ -738,7 +740,7 @@ const RadioPage = () => {
                 className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{ backgroundColor: theme.backgroundSoft }}
               >
-                <Radio size={48} style={{ color: theme.textDisabled }} />
+                <Icon name="radio" size="md" className="text-slate-300" />
               </div>
               <h3 className="text-2xl font-semibold mb-3" style={{ color: theme.textPrimary }}>
                 {t('radio.empty.title')}
