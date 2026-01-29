@@ -5,7 +5,11 @@
   <link>https://vaas.solutions</link>
   <description>Latest premium publications, events, and media news from VaaS Solutions.</description>
   <language>en-us</language>
+<<<<<<< HEAD
   <lastBuildDate>Thu, 29 Jan 2026 16:44:10 GMT</lastBuildDate>
+=======
+  <lastBuildDate>Thu, 29 Jan 2026 16:45:23 GMT</lastBuildDate>
+>>>>>>> 721578cbfb3fa77384da46ed62d4c078ec50ab9b
   <atom:link href="https://vaas.solutions/rss.xml" rel="self" type="application/rss+xml"/>
 </channel>
 </rss>
