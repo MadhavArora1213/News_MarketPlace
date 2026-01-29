@@ -70,6 +70,8 @@ const PodcastersList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [prevWidth, setPrevWidth] = useState(window.innerWidth);
   const [podcasters, setPodcasters] = useState([]);
   const [userSubmissions, setUserSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,26 +108,26 @@ const PodcastersList = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '220px' : '280px' }}
+        style={{ width: (isMobile || isTablet) ? '220px' : '280px' }}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:flex md:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={18} />
+              <Icon name={p.icon} size={16} />
             </a>
           ))}
           <button
             onClick={() => handleCopy(url, id)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={16} />
           </button>
         </div>
       </motion.div>
@@ -134,16 +136,21 @@ const PodcastersList = () => {
 
   useEffect(() => {
     const onResize = () => {
-      try {
-        setIsMobile(window.innerWidth < 768);
-      } catch (error) {
-        console.warn('ResizeObserver error:', error);
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width < 1024);
+
+      if (width < 1024 && prevWidth >= 1024) {
+        setSidebarOpen(false);
+      } else if (width >= 1024 && prevWidth < 1024) {
+        setSidebarOpen(true);
       }
+      setPrevWidth(width);
     };
     window.addEventListener('resize', onResize);
     onResize();
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [prevWidth]);
 
   useEffect(() => {
     fetchPodcasters();
@@ -352,7 +359,7 @@ const PodcastersList = () => {
             <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6 animate-pulse">
               <div className="h-8 w-48 bg-slate-100 rounded" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="bg-white p-6 border border-slate-200 rounded-lg animate-pulse">
                   <div className="flex justify-between mb-6">
@@ -493,31 +500,35 @@ const PodcastersList = () => {
       </section>
 
       {/* Main Content with Enhanced Layout */}
-      <div className={`${isMobile ? 'flex flex-col' : 'flex'}`}>
-        {/* Enhanced Filters Sidebar - 25% width */}
-        <aside className={`${sidebarOpen ? (isMobile ? 'w-full' : 'w-80') : 'w-0'} transition-all duration-300 bg-white shadow-lg overflow-hidden ${isMobile ? 'order-2' : ''}`} style={{
-          minHeight: isMobile ? 'auto' : 'calc(100vh - 200px)',
-          position: isMobile ? 'static' : 'sticky',
-          top: isMobile ? 'auto' : '80px',
-          zIndex: 10,
-          borderRight: isMobile ? 'none' : `1px solid ${theme.borderLight}`,
-          borderTop: isMobile ? `1px solid ${theme.borderLight}` : 'none',
-          width: isMobile ? '100%' : '25%'
-        }}>
+      <div className={`max-w-[1600px] mx-auto flex flex-col lg:flex-row relative`}>
+        {/* Mobile/Tablet Filters Overlay */}
+        <div
+          className={`fixed inset-0 bg-black/50 transition-opacity duration-300 lg:hidden ${sidebarOpen ? 'opacity-100 z-[120]' : 'opacity-0 pointer-events-none z-[-1]'}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        {/* Enhanced Filters Sidebar */}
+        <aside
+          className={`
+            fixed lg:sticky lg:top-20 top-0 left-0 h-full lg:h-[calc(100vh-80px)] 
+            bg-white shadow-2xl lg:shadow-none z-[130] lg:z-30
+            transition-all duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0 w-[280px] sm:w-[320px] lg:w-[280px]' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:opacity-0 lg:pointer-events-none lg:overflow-hidden'}
+            flex-shrink-0 border-r border-gray-100
+          `}
+        >
           <div className="p-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#212121] flex items-center gap-2">
                 <Filter size={20} className="text-[#1976D2]" />
                 {t('podcasters.filters.title')}
               </h3>
-              {isMobile && (
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
-                >
-                  ×
-                </button>
-              )}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg text-[#757575] lg:hidden"
+              >
+                <Icon name="x" size={20} />
+              </button>
             </div>
 
             <div className="space-y-6">
@@ -529,7 +540,7 @@ const PodcastersList = () => {
                 </h4>
 
                 {/* Filters in row-wise layout for mobile */}
-                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1'}`}>
+                <div className="grid gap-4 grid-cols-1">
                   {/* Industry Filter */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.textPrimary }}>
@@ -598,17 +609,16 @@ const PodcastersList = () => {
           }}>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                {/* Mobile Filter Toggle */}
-                {isMobile && (
-                  <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
-                    style={{ borderColor: theme.borderLight }}
-                  >
-                    <Filter size={16} />
-                    <span className="text-[#212121]">Filters</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border bg-white hover:bg-slate-50 transition-all font-medium text-slate-700 shadow-sm"
+                  style={{ borderColor: theme.borderLight }}
+                >
+                  <Filter size={18} className="text-[#1976D2]" />
+                  <span>
+                    {(isMobile || isTablet) ? t('podcasters.filters.title') : sidebarOpen ? t('common.hideFilters', 'Hide Filters') : t('podcasters.filters.title')}
+                  </span>
+                </button>
 
                 <span className="text-sm font-medium text-[#212121]">
                   {t('podcasters.controls.found', { count: filteredPodcasters.length })}
@@ -626,14 +636,14 @@ const PodcastersList = () => {
           {filteredPodcasters.length > 0 ? (
             <>
               {/* Enhanced Grid View */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredPodcasters.map((podcaster, index) => (
                   <Link key={podcaster.id} to={`/podcasters/${createSlugPath(podcaster.podcast_name, podcaster.id)}`}>
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden"
+                      className={`bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden relative ${activeShareId === podcaster.id ? 'z-[100]' : 'z-10'}`}
                       style={{
                         borderColor: theme.borderLight,
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
@@ -782,22 +792,24 @@ const PodcastersList = () => {
       <UserFooter />
 
       {/* Podcaster Submission Form Modal */}
-      {showSubmissionForm && (
-        <PodcasterSubmissionForm
-          onClose={() => setShowSubmissionForm(false)}
-          onSuccess={() => {
-            setShowSubmissionForm(false);
-            // Refresh data based on active tab
-            if (activeTab === 'approved' || !isAuthenticated) {
-              fetchPodcasters();
-            }
-            if (activeTab === 'my-submissions') {
-              fetchUserSubmissions();
-            }
-          }}
-        />
-      )}
-    </div>
+      {
+        showSubmissionForm && (
+          <PodcasterSubmissionForm
+            onClose={() => setShowSubmissionForm(false)}
+            onSuccess={() => {
+              setShowSubmissionForm(false);
+              // Refresh data based on active tab
+              if (activeTab === 'approved' || !isAuthenticated) {
+                fetchPodcasters();
+              }
+              if (activeTab === 'my-submissions') {
+                fetchUserSubmissions();
+              }
+            }}
+          />
+        )
+      }
+    </div >
   );
 };
 

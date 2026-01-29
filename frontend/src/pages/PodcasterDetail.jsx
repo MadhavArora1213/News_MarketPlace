@@ -64,9 +64,13 @@ const PodcasterDetail = () => {
   const [activeShareId, setActiveShareId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    const onResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth < 1024);
+    };
     window.addEventListener('resize', onResize);
     onResize();
     return () => window.removeEventListener('resize', onResize);
@@ -96,26 +100,26 @@ const PodcasterDetail = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '220px' : '280px' }}
+        style={{ width: (isMobile || isTablet) ? '220px' : '280px' }}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:flex md:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={18} />
+              <Icon name={p.icon} size={16} />
             </a>
           ))}
           <button
             onClick={() => handleCopy(url, id)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={16} />
           </button>
         </div>
       </motion.div>
@@ -359,16 +363,16 @@ const PodcasterDetail = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-8 border-b" style={{ backgroundColor: theme.background }}>
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm mb-6" style={{ color: theme.textSecondary }}>
+          <div className="flex items-center gap-2 text-sm mb-6 flex-wrap" style={{ color: theme.textSecondary }}>
             <button
               onClick={() => navigate('/podcasters')}
-              className="flex items-center gap-1 hover:opacity-80"
+              className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
               <ArrowLeft size={16} />
               {t('podcasterDetail.breadcrumb.back')}
             </button>
             <span>/</span>
-            <span>{t('podcasterDetail.breadcrumb.current')}</span>
+            <span className="font-medium text-slate-900 line-clamp-1">{podcaster.podcast_name}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -376,30 +380,30 @@ const PodcasterDetail = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border p-8">
                 {/* Podcaster Header */}
-                <div className="flex items-start gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 text-center sm:text-left">
                   <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: theme.primaryLight }}
                   >
-                    <Mic size={32} style={{ color: theme.primary }} />
+                    <Mic size={40} style={{ color: theme.primary }} />
                   </div>
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold mb-3" style={{ color: theme.textPrimary }}>
+                  <div className="flex-1 w-full">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-4" style={{ color: theme.textPrimary }}>
                       {podcaster.podcast_name}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-6 text-sm" style={{ color: theme.textSecondary }}>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-y-3 gap-x-6 text-sm" style={{ color: theme.textSecondary }}>
                       <div className="flex items-center gap-2">
-                        <Mic size={16} />
+                        <Mic size={16} className="text-[#1976D2]" />
                         <span>{t('podcasterDetail.host')} {podcaster.podcast_host || t('podcasters.card.unknownHost')}</span>
                       </div>
                       {podcaster.podcast_region && (
                         <div className="flex items-center gap-2">
-                          <MapPin size={16} />
+                          <MapPin size={16} className="text-[#1976D2]" />
                           <span>{podcaster.podcast_region}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        <Calendar size={16} />
+                        <Calendar size={16} className="text-[#1976D2]" />
                         <span>{t('podcasterDetail.added')} {formatDate(podcaster.created_at)}</span>
                       </div>
                     </div>
@@ -416,10 +420,10 @@ const PodcasterDetail = () => {
                       href={podcaster.podcast_website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-2 text-white px-5 py-3 rounded-xl transition-all hover:shadow-lg active:scale-95 text-sm sm:text-base break-all"
                       style={{ backgroundColor: theme.primary }}
                     >
-                      <ExternalLink size={16} />
+                      <ExternalLink size={18} />
                       {podcaster.podcast_website}
                     </a>
                   </div>
@@ -452,16 +456,16 @@ const PodcasterDetail = () => {
                   <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
                     {t('podcasterDetail.social')}
                   </h3>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {podcaster.podcast_ig && (
                       <a
                         href={podcaster.podcast_ig}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#E4405F' }}
                       >
-                        <Instagram size={16} />
+                        <Instagram size={18} />
                         Instagram
                       </a>
                     )}
@@ -470,10 +474,10 @@ const PodcasterDetail = () => {
                         href={podcaster.youtube_channel_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#FF0000' }}
                       >
-                        <Youtube size={16} />
+                        <Youtube size={18} />
                         YouTube
                       </a>
                     )}
@@ -482,10 +486,10 @@ const PodcasterDetail = () => {
                         href={podcaster.spotify_channel_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#1DB954' }}
                       >
-                        <Mic size={16} />
+                        <Mic size={18} />
                         Spotify
                       </a>
                     )}
@@ -494,10 +498,10 @@ const PodcasterDetail = () => {
                         href={podcaster.podcast_linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#0077B5' }}
                       >
-                        <ExternalLink size={16} />
+                        <ExternalLink size={18} />
                         LinkedIn
                       </a>
                     )}
@@ -506,10 +510,10 @@ const PodcasterDetail = () => {
                         href={podcaster.podcast_facebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#1877F2' }}
                       >
-                        <Facebook size={16} />
+                        <Facebook size={18} />
                         Facebook
                       </a>
                     )}
@@ -518,61 +522,17 @@ const PodcasterDetail = () => {
                         href={podcaster.tiktok}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 text-white px-4 py-3 rounded-xl transition-all hover:opacity-90 active:scale-95 text-sm font-medium"
                         style={{ backgroundColor: '#000000' }}
                       >
-                        <MessageCircle size={16} />
+                        <MessageCircle size={18} />
                         TikTok
                       </a>
                     )}
                   </div>
                 </div>
 
-                {/* Instagram Embed */}
-                {podcaster.podcast_ig_username && (
-                  <div className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textPrimary }}>
-                      {t('podcasterDetail.instagramLatest')}
-                    </h3>
-                    <div className="bg-gray-100 rounded-lg p-4">
-                      <blockquote
-                        className="instagram-media"
-                        data-instgrm-permalink={`https://www.instagram.com/${podcaster.podcast_ig_username}/`}
-                        data-instgrm-version="14"
-                        style={{
-                          maxWidth: '540px',
-                          width: 'calc(100% - 2px)',
-                          borderRadius: '12px',
-                          border: '1px solid rgb(219, 219, 219)',
-                          boxShadow: 'none',
-                          display: 'block',
-                          margin: '0 auto',
-                          minWidth: '326px',
-                          padding: '0px'
-                        }}
-                      >
-                        <div style={{ padding: '16px' }}>
-                          <a
-                            href={`https://www.instagram.com/${podcaster.podcast_ig_username}/`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              background: '#FFFFFF',
-                              lineHeight: '0',
-                              padding: '0 0',
-                              textAlign: 'center',
-                              textDecoration: 'none',
-                              width: '100%'
-                            }}
-                          >
-                            View this post on Instagram
-                          </a>
-                        </div>
-                      </blockquote>
-                      <script async src="//www.instagram.com/embed.js"></script>
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Contact CTA */}
                 <div className="mb-8">
