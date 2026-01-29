@@ -13,13 +13,13 @@ import {
   Search, Filter, Award, Star, Clock, Globe, BookOpen,
   Target, Zap, CheckCircle, ExternalLink, MapPin, Calendar,
   DollarSign, BarChart3, Users, Link as LinkIcon, Image as ImageIcon,
-  FileText, Shield, User, Building, TrendingUp
+  FileText, Shield, User, Building, TrendingUp, Share2
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Skeleton from '../components/common/Skeleton';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
-// Removed ShareButtons import to implement manually
+import Icon from '../components/common/Icon';
 
 // Enhanced theme colors inspired by VideoTutorials
 const theme = {
@@ -66,8 +66,80 @@ const AwardsPage = () => {
   const [showAwardForm, setShowAwardForm] = useState(false);
   const [selectedAward, setSelectedAward] = useState(null);
   const [activeCardId, setActiveCardId] = useState(null);
+  const [activeShareId, setActiveShareId] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (activeShareId && !e.target.closest('.share-menu-container')) {
+        setActiveShareId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeShareId]);
 
+  const handleCopy = (url, id) => {
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const sharePlatforms = [
+    { name: 'Telegram', icon: 'telegram', color: '#0088cc', link: (u, t) => `https://t.me/share/url?url=${encodeURIComponent(u)}&text=${encodeURIComponent(t)}` },
+    { name: 'WhatsApp', icon: 'whatsapp', color: '#25D366', link: (u, t) => `https://api.whatsapp.com/send?text=${encodeURIComponent(t + '\n' + u)}` },
+    { name: 'Facebook', icon: 'facebook', color: '#1877F2', link: (u) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+    { name: 'X', icon: 'x-logo', color: '#000000', link: (u, t) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(t)}` },
+    { name: 'LinkedIn', icon: 'linkedin', color: '#0A66C2', link: (u) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` }
+  ];
+
+  const renderShareMenu = (url, title, id, align = 'center') => {
+    const isOpen = activeShareId === id;
+    if (!isOpen) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+        className={`absolute bottom-full mb-2 z-[9999] bg-white rounded-xl shadow-2xl border border-slate-200/80 p-2.5 share-menu-container
+          ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
+        style={{ minWidth: '200px', maxWidth: '240px' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          {sharePlatforms.map((p) => (
+            <a
+              key={p.name}
+              href={p.link(url, title)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
+              style={{ backgroundColor: p.color }}
+              title={p.name}
+            >
+              <Icon name={p.icon} size={16} />
+            </a>
+          ))}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopy(url, id);
+            }}
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all shadow-sm ${copiedId === id
+              ? 'bg-emerald-500 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            title={copiedId === id ? 'Copied!' : 'Copy link'}
+          >
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={16} />
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
 
   useEffect(() => {
     const onResize = () => {
@@ -310,11 +382,15 @@ const AwardsPage = () => {
             </p>
             {/* Hero Share Section */}
             <div className="mt-8 flex justify-center">
-              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 relative">
+              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 relative share-menu-container">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-r pr-3">{t('common.share', 'Share')}</span>
                 <button
-                  onClick={() => setActiveShareId(activeShareId === 'hero' ? null : 'hero')}
-                  className="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveShareId(activeShareId === 'hero' ? null : 'hero');
+                  }}
+                  className="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors flex items-center justify-center"
+                  title="Share this page"
                 >
                   <Icon name="share" size={18} />
                 </button>
