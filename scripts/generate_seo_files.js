@@ -368,6 +368,40 @@ async function generateFiles() {
             });
         }
 
+        // Helper to check if file content actually changed
+        const writeIfChanged = (filePath, newContent, isRss = false) => {
+            try {
+                if (fs.existsSync(filePath)) {
+                    const oldContent = fs.readFileSync(filePath, 'utf-8');
+
+                    if (isRss) {
+                        // For RSS, ignore <lastBuildDate> when comparing
+                        const dateRegex = /<lastBuildDate>.*?<\/lastBuildDate>/;
+                        const oldClean = oldContent.replace(dateRegex, '');
+                        const newClean = newContent.replace(dateRegex, '');
+
+                        if (oldClean === newClean) {
+                            console.log(`ℹ️ No content changes for ${path.basename(filePath)}, skipping write.`);
+                            return;
+                        }
+                    } else {
+                        // For exact matches (Sitemap)
+                        if (oldContent === newContent) {
+                            console.log(`ℹ️ No content changes for ${path.basename(filePath)}, skipping write.`);
+                            return;
+                        }
+                    }
+                }
+
+                fs.writeFileSync(filePath, newContent);
+                console.log(`✅ Updated ${path.basename(filePath)}`);
+            } catch (err) {
+                console.error(`Error checking/writing ${filePath}:`, err.message);
+                // Fallback to write if read failed
+                fs.writeFileSync(filePath, newContent);
+            }
+        };
+
         // 4. Generate the sitemap XML
         let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
@@ -389,8 +423,9 @@ async function generateFiles() {
         });
 
         sitemap += `</urlset>`;
-        fs.writeFileSync(existingSitemapPath, sitemap);
-        console.log(`✅ Sitemap updated with ${allUrls.size} URLs`);
+
+        // Write Sitemap if changed
+        writeIfChanged(existingSitemapPath, sitemap);
 
         // 5. Build rss.xml
         let rss = `<?xml version="1.0" encoding="UTF-8" ?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n`;
@@ -435,10 +470,11 @@ async function generateFiles() {
         }
 
         rss += `</channel>\n</rss>`;
-        fs.writeFileSync(path.join(PUBLIC_DIR, 'rss.xml'), rss);
-        console.log('✅ RSS feed updated');
 
-        console.log('✅ SEO files updated successfully!');
+        // Write RSS if changed (ignoring date)
+        writeIfChanged(path.join(PUBLIC_DIR, 'rss.xml'), rss, true);
+
+        console.log('✅ SEO files check complete!');
     } catch (error) {
         console.error('❌ Failed to regenerate SEO files:', error.message);
     }
