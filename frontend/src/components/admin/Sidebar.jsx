@@ -176,6 +176,18 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/award-creation"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Award Creation</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/award-submissions"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
@@ -236,6 +248,18 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/event-creation"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Event Creation</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/event-enquiries"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
@@ -272,6 +296,30 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8EAF6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8eaf6')}><Icon name="shopping-cart" size="sm" style={{ color: '#3F51B5' }} /></span>
+                <span>Order Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/paparazzi-creation"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fce4ec')}><Icon name="plus-circle" size="sm" style={{ color: '#E91E63' }} /></span>
+                <span>Paparazzi Creation</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/paparazzi"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
@@ -279,6 +327,18 @@ export default function Sidebar({
               >
                 <span style={navIconCircle('#fce4ec')}><Icon name="camera" size="sm" style={{ color: '#E91E63' }} /></span>
                 <span>Paparazzi Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/paparazzi-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FCE4EC'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fce4ec')}><Icon name="shopping-bag" size="sm" style={{ color: '#E91E63' }} /></span>
+                <span>Paparazzi Orders</span>
               </a>
             </li>
 
@@ -308,6 +368,42 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/powerlist-management"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff8e1')}><Icon name="cog" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Powerlist Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/powerlist-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF8E1'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff8e1')}><Icon name="shopping-bag" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Powerlist Orders</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/press-pack-creation"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="plus-circle" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Press Pack Creation</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/press-packs"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
@@ -320,6 +416,18 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/press-pack-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f5e8')}><Icon name="shopping-bag" size="sm" style={{ color: '#4CAF50' }} /></span>
+                <span>Press Pack Orders</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/publications"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
@@ -327,6 +435,18 @@ export default function Sidebar({
               >
                 <span style={navIconCircle('#e6f0ff')}><Icon name="document-text" size="sm" style={{ color: '#1976D2' }} /></span>
                 <span>Publications</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/publication-management"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F5E8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e6f0ff')}><Icon name="cog" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>Publication Management</span>
               </a>
             </li>
 
@@ -356,6 +476,30 @@ export default function Sidebar({
 
             <li style={{ marginBottom: 10 }}>
               <a
+                href="/admin/radio-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#E8F4F8'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#e8f4f8')}><Icon name="shopping-bag" size="sm" style={{ color: '#1976D2' }} /></span>
+                <span>Radio Orders</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/real-estate-creation"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="plus-circle" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Real Estate Creation</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
                 href="/admin/real-estates"
                 style={navItemBase}
                 onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
@@ -363,6 +507,18 @@ export default function Sidebar({
               >
                 <span style={navIconCircle('#fff3e0')}><Icon name="home" size="sm" style={{ color: '#FF9800' }} /></span>
                 <span>Real Estate Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/real-estate-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#FFF3E0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#fff3e0')}><Icon name="shopping-bag" size="sm" style={{ color: '#FF9800' }} /></span>
+                <span>Real Estate Orders</span>
               </a>
             </li>
 
@@ -399,6 +555,18 @@ export default function Sidebar({
               >
                 <span style={navIconCircle('#f3e5f5')}><Icon name="swatch" size="sm" style={{ color: '#9C27B0' }} /></span>
                 <span>Theme Management</span>
+              </a>
+            </li>
+
+            <li style={{ marginBottom: 10 }}>
+              <a
+                href="/admin/theme-orders"
+                style={navItemBase}
+                onMouseEnter={e => e.currentTarget.style.background = '#F3E5F5'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={navIconCircle('#f3e5f5')}><Icon name="shopping-bag" size="sm" style={{ color: '#9C27B0' }} /></span>
+                <span>Theme Orders</span>
               </a>
             </li>
 
@@ -444,25 +612,39 @@ export default function Sidebar({
             <li style={{ marginBottom: 12 }}><a href="/admin/agencies" style={{ color: '#212121', textDecoration: 'none' }}>Agency Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/ai-articles" style={{ color: '#212121', textDecoration: 'none' }}>AI Articles</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/article-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Article Submissions</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/award-creation" style={{ color: '#212121', textDecoration: 'none' }}>Award Creation</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/award-submissions" style={{ color: '#212121', textDecoration: 'none' }}>Award Submissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/awards" style={{ color: '#212121', textDecoration: 'none' }}>Awards</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/blogs" style={{ color: '#212121', textDecoration: 'none' }}>Blog Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/careers" style={{ color: '#212121', textDecoration: 'none' }}>Career Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/contacts" style={{ color: '#212121', textDecoration: 'none' }}>Contact Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/event-creation" style={{ color: '#212121', textDecoration: 'none' }}>Event Creation</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/event-enquiries" style={{ color: '#212121', textDecoration: 'none' }}>Event Enquiries</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/events" style={{ color: '#212121', textDecoration: 'none' }}>Event Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/groups" style={{ color: '#212121', textDecoration: 'none' }}>Group Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/orders" style={{ color: '#212121', textDecoration: 'none' }}>Order Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi-creation" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Creation</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/paparazzi-orders" style={{ color: '#212121', textDecoration: 'none' }}>Paparazzi Orders</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/podcasters" style={{ color: '#212121', textDecoration: 'none' }}>Podcaster Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/power-lists" style={{ color: '#212121', textDecoration: 'none' }}>Power Lists</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/powerlist-management" style={{ color: '#212121', textDecoration: 'none' }}>Powerlist Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/powerlist-orders" style={{ color: '#212121', textDecoration: 'none' }}>Powerlist Orders</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/press-pack-creation" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Creation</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/press-packs" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/press-pack-orders" style={{ color: '#212121', textDecoration: 'none' }}>Press Pack Orders</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/publications" style={{ color: '#212121', textDecoration: 'none' }}>Publications</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/publication-management" style={{ color: '#212121', textDecoration: 'none' }}>Publication Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/published-works" style={{ color: '#212121', textDecoration: 'none' }}>Published Works Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/radios" style={{ color: '#212121', textDecoration: 'none' }}>Radio Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/radio-orders" style={{ color: '#212121', textDecoration: 'none' }}>Radio Orders</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/real-estate-creation" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Creation</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/real-estates" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/real-estate-orders" style={{ color: '#212121', textDecoration: 'none' }}>Real Estate Orders</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/reporters" style={{ color: '#212121', textDecoration: 'none' }}>Reporter Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/roles-permissions" style={{ color: '#212121', textDecoration: 'none' }}>Roles & Permissions</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/themes" style={{ color: '#212121', textDecoration: 'none' }}>Theme Management</a></li>
+            <li style={{ marginBottom: 12 }}><a href="/admin/theme-orders" style={{ color: '#212121', textDecoration: 'none' }}>Theme Orders</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/users" style={{ color: '#212121', textDecoration: 'none' }}>User Management</a></li>
             <li style={{ marginBottom: 12 }}><a href="/admin/websites" style={{ color: '#212121', textDecoration: 'none' }}>Website Management</a></li>
           </ul>
