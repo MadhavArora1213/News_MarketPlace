@@ -444,12 +444,13 @@ const BlogDetailPage = () => {
             />
 
             {/* Share Buttons */}
-            <div className="mt-12 pt-8 border-t border-gray-100 flex justify-center relative share-menu-container">
+            <div
+              className="mt-12 pt-8 border-t border-gray-100 flex justify-center relative share-menu-container"
+              onMouseEnter={() => setActiveShareId('blog')}
+              onMouseLeave={() => setActiveShareId(null)}
+            >
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveShareId(activeShareId === 'blog' ? null : 'blog');
-                }}
+                onClick={(e) => e.stopPropagation()}
                 className="flex items-center gap-2 px-8 py-2.5 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all font-bold shadow-sm"
               >
                 <Icon name="share" size={18} />

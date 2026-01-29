@@ -249,13 +249,14 @@ const BlogListingPage = () => {
                 className="w-full pl-12 pr-12 py-3.5 sm:py-4 border border-[#E0E0E0] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#1976D2] bg-white shadow-lg shadow-blue-900/5 transition-all"
               />
             </div>
-            <div className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2 relative share-menu-container">
+            <div
+              className="bg-white p-2 px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-2 relative share-menu-container"
+              onMouseEnter={() => setActiveShareId('hero')}
+              onMouseLeave={() => setActiveShareId(null)}
+            >
               <span className="text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveShareId(activeShareId === 'hero' ? null : 'hero');
-                }}
+                onClick={(e) => e.stopPropagation()}
                 className="p-1.5 rounded-lg hover:bg-slate-50 text-slate-500 transition-colors flex items-center justify-center"
                 title="Share this page"
               >
@@ -367,14 +368,13 @@ const BlogListingPage = () => {
                         <div
                           className="bg-white text-[#1976D2] p-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white share-menu-container"
                           onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={() => setActiveShareId(blog.id)}
+                          onMouseLeave={() => setActiveShareId(null)}
                         >
                           <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveShareId(activeShareId === blog.id ? null : blog.id);
-                              }}
-                              className="p-2 rounded-full hover:bg-white/10 text-[#1976D2] transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-2 rounded-full hover:bg-white/10 text-inherit transition-colors"
                             >
                               <Icon name="share" size={18} />
                             </button>
