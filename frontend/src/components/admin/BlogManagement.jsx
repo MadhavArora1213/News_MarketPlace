@@ -148,9 +148,43 @@ const BlogManagement = () => {
     );
   }
 
+  // State declarations
+  const [blogs, setBlogs] = useState([]);
   const [totalBlogs, setTotalBlogs] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [sortField, setSortField] = useState('created_at');
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   // ... (previous state declarations)
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchBlogs();
@@ -283,6 +317,42 @@ const BlogManagement = () => {
     } finally {
       setDownloading(false);
     }
+  };
+
+  // Blog CRUD handlers
+  const handleCreateBlog = () => {
+    setSelectedBlog(null);
+    setShowModal(true);
+  };
+
+  const handleEditBlog = (blog) => {
+    setSelectedBlog(blog);
+    setShowModal(true);
+  };
+
+  const handleDeleteBlog = async (blog) => {
+    if (!window.confirm(`Are you sure you want to delete "${blog.title}"?`)) {
+      return;
+    }
+    
+    try {
+      await adminAPI.deleteBlog(blog.id);
+      fetchBlogs();
+      alert('Blog deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      alert('Failed to delete blog. Please try again.');
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedBlog(null);
+  };
+
+  const handleModalSave = () => {
+    fetchBlogs();
+    handleModalClose();
   };
 
 
