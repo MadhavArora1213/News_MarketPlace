@@ -90,14 +90,14 @@ const ShareButtons = ({ url, title, description, image, variant = 'default', sho
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
+                        initial={{ opacity: 0, scale: 0.9, y: direction === 'up' ? 10 : -10 }}
                         animate={{ opacity: 1, scale: 1, y: direction === 'up' ? -10 : 10 }}
-                        exit={{ opacity: 0, scale: 0.8, y: direction === 'up' ? 10 : -10 }}
-                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 sm:p-4 z-[9999] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2`}
+                        exit={{ opacity: 0, scale: 0.9, y: direction === 'up' ? 10 : -10 }}
+                        className={`absolute ${direction === 'up' ? 'bottom-full mb-4' : 'top-full mt-2'} bg-white border border-slate-200 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] p-3 z-[10000] left-1/2 -translate-x-1/2`}
                         style={{
                             width: 'max-content',
-                            maxWidth: 'min(calc(100vw - 40px), 320px)',
-                            boxShadow: '0 20px 50px rgba(0,0,0,0.15)'
+                            maxWidth: '90vw',
+                            transformOrigin: 'top center'
                         }}
                     >
                         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
