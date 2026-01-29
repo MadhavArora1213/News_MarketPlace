@@ -25,17 +25,17 @@ class AwardController {
   createValidation = [
     body('award_name').trim().isLength({ min: 1 }).withMessage('Award name is required'),
     body('organiser').trim().isLength({ min: 1 }).withMessage('Organiser is required'),
-    body('website').optional().isURL().withMessage('Website must be a valid URL'),
-    body('linkedin').optional().isURL().withMessage('LinkedIn must be a valid URL'),
-    body('instagram').optional().isURL().withMessage('Instagram must be a valid URL'),
+    body('website').optional({ checkFalsy: true }).isURL().withMessage('Website must be a valid URL'),
+    body('linkedin').optional({ checkFalsy: true }).isURL().withMessage('LinkedIn must be a valid URL'),
+    body('instagram').optional({ checkFalsy: true }).isURL().withMessage('Instagram must be a valid URL'),
   ];
 
   updateValidation = [
     body('award_name').optional().trim().isLength({ min: 1 }).withMessage('Award name is required'),
     body('organiser').optional().trim().isLength({ min: 1 }).withMessage('Organiser is required'),
-    body('website').optional().isURL().withMessage('Website must be a valid URL'),
-    body('linkedin').optional().isURL().withMessage('LinkedIn must be a valid URL'),
-    body('instagram').optional().isURL().withMessage('Instagram must be a valid URL'),
+    body('website').optional({ checkFalsy: true }).isURL().withMessage('Website must be a valid URL'),
+    body('linkedin').optional({ checkFalsy: true }).isURL().withMessage('LinkedIn must be a valid URL'),
+    body('instagram').optional({ checkFalsy: true }).isURL().withMessage('Instagram must be a valid URL'),
   ];
 
   // Create a new award (admin only)
@@ -108,6 +108,86 @@ class AwardController {
       });
     } catch (error) {
       console.error('Get awards error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Get all awards for admin panel (uses Award model)
+  async getAdminList(req, res) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        award_name,
+        organiser,
+        award_focus,
+        award_month
+      } = req.query;
+
+      const filters = {};
+      if (award_month) filters.award_month = award_month;
+      if (organiser) filters.organiser = organiser;
+      if (award_focus) filters.award_focus = award_focus;
+
+      // Search logic handled by findAll or search method
+      let searchSql = '';
+      const searchValues = [];
+
+      if (award_name) {
+        searchSql = ` AND (award_name ILIKE $${Object.keys(filters).length + 1} OR organiser ILIKE $${Object.keys(filters).length + 2})`;
+        searchValues.push(`%${award_name}%`, `%${award_name}%`);
+      }
+
+      const offset = (page - 1) * limit;
+      const awards = await Award.findAll(filters, searchSql, searchValues, limit, offset);
+
+      // Get total count
+      let countSql = 'SELECT COUNT(*) as total FROM awards WHERE 1=1';
+      const countValues = [];
+      let paramCount = 1;
+
+      if (filters.award_month) {
+        countSql += ` AND award_month = $${paramCount}`;
+        countValues.push(filters.award_month);
+        paramCount++;
+      }
+      if (filters.organiser) {
+        countSql += ` AND organiser = $${paramCount}`;
+        countValues.push(filters.organiser);
+        paramCount++;
+      }
+      if (filters.award_focus) {
+        // Award model doesn't strictly support filtering by award_focus in findAll, but we can add it here if needed
+        // Since findAll takes filters object but only checks award_month and organiser primarily, 
+        // we might need to enhance Award.findAll or just rely on search.
+        // Let's assume Award.findAll will be updated or we just handle it here.
+        // Actually, looking at Award.js, findAll only checks award_month and organiser.
+        // It does NOT check award_focus in filters.
+        // But let's look at getAdminList implementation again. 
+      }
+
+      // Let's use Award.search if we have a search term, or Award.findAll if not?
+      // Award.search calls findAll.
+
+      // We should probably rely on the count from a query similar to findAll.
+      if (award_name) {
+        countSql += ` AND (award_name ILIKE $${paramCount} OR organiser ILIKE $${paramCount + 1})`;
+        countValues.push(`%${award_name}%`, `%${award_name}%`);
+      }
+
+      const countResult = await require('../config/database').query(countSql, countValues);
+      const total = parseInt(countResult.rows[0].total);
+
+      res.json({
+        awards: awards.map(award => award.toJSON()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: total
+        }
+      });
+    } catch (error) {
+      console.error('Get admin awards error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
@@ -217,47 +297,44 @@ class AwardController {
   async downloadCSV(req, res) {
     try {
       const {
-        tentative_month,
-        company_focused_individual_focused,
         award_name,
-        award_organiser_name,
-        url,
-        industry,
-        regional_focused,
-        award_country,
-        award_city
+        organiser,
+        award_focus,
+        award_month
       } = req.query;
 
       const filters = {};
+      if (award_month) filters.award_month = award_month;
+      if (organiser) filters.organiser = organiser;
 
-      if (tentative_month) filters.tentative_month = tentative_month;
-      if (company_focused_individual_focused) filters.company_focused_individual_focused = company_focused_individual_focused;
-      if (award_organiser_name) filters.award_organiser_name = award_organiser_name;
-      if (url) filters.url = url;
-      if (industry) filters.industry = industry;
-      if (regional_focused !== undefined && regional_focused !== '') filters.regional_focused = regional_focused;
-      if (award_country) filters.award_country = award_country;
-      if (award_city) filters.award_city = award_city;
-      if (award_name) filters.award_name = award_name;
+      let searchSql = '';
+      const searchValues = [];
 
-      const awards = await AwardCreation.findAllFiltered(filters, 'createdAt', 'desc');
+      if (award_name) {
+        searchSql = ` AND (award_name ILIKE $1 OR organiser ILIKE $2)`;
+        searchValues.push(`%${award_name}%`, `%${award_name}%`);
+      }
 
-      const headers = ['ID', 'Name', 'Organiser', 'URL', 'Month', 'Industry', 'Region', 'Country', 'City', 'Focus', 'Created At'];
+      if (award_focus) filters.award_focus = award_focus;
+
+      // Fetch all matching records (no limit)
+      const awards = await Award.findAll(filters, searchSql, searchValues);
+
+      const headers = ['ID', 'Name', 'Organiser', 'Website', 'Month', 'Focus', 'LinkedIn', 'Instagram', 'Chief Guest', 'Created At'];
       let csv = headers.join(',') + '\n';
 
       awards.forEach(a => {
         const row = [
           a.id,
           `"${(a.award_name || '').replace(/"/g, '""')}"`,
-          `"${(a.award_organiser_name || '').replace(/"/g, '""')}"`,
-          `"${(a.url || '').replace(/"/g, '""')}"`,
-          `"${(a.tentative_month || '').replace(/"/g, '""')}"`,
-          `"${(a.industry || '').replace(/"/g, '""')}"`,
-          `"${a.regional_focused || ''}"`,
-          `"${(a.award_country || '').replace(/"/g, '""')}"`,
-          `"${(a.award_city || '').replace(/"/g, '""')}"`,
-          `"${(a.company_focused_individual_focused || '').replace(/"/g, '""')}"`,
-          a.createdAt ? new Date(a.createdAt).toISOString() : ''
+          `"${(a.organiser || '').replace(/"/g, '""')}"`,
+          `"${(a.website || '').replace(/"/g, '""')}"`,
+          `"${(a.award_month || '').replace(/"/g, '""')}"`,
+          `"${(a.award_focus || '').replace(/"/g, '""')}"`,
+          `"${(a.linkedin || '').replace(/"/g, '""')}"`,
+          `"${(a.instagram || '').replace(/"/g, '""')}"`,
+          `"${(a.chief_guest || '').replace(/"/g, '""')}"`,
+          a.created_at ? new Date(a.created_at).toISOString() : ''
         ];
         csv += row.join(',') + '\n';
       });

@@ -180,6 +180,7 @@ const AgencyManagement = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [totalAgencies, setTotalAgencies] = useState(0);
   const [downloading, setDownloading] = useState(false);
 
   // Layout constants (same as AdminDashboard)
@@ -275,27 +276,33 @@ const AgencyManagement = () => {
     return undefined;
   }, [sidebarOpen, isMobile]);
 
+  // Fetch agencies when params change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchAgencies();
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // If unauthorized, the API interceptor will handle redirect
-      }
-    };
+    fetchAgencies();
+  }, [currentPage, pageSize, debouncedSearchTerm, statusFilter]);
 
-    fetchData();
-  }, []);
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm, statusFilter]);
 
+  // Fetch agencies with server-side pagination and filtering
   const fetchAgencies = async () => {
+    setLoading(true);
     try {
-      const response = await api.get('/agencies');
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: pageSize,
+        ...(debouncedSearchTerm && { agency_name: debouncedSearchTerm }),
+        ...(statusFilter && { status: statusFilter })
+      });
+
+      const response = await api.get(`/agencies?${params}`);
       setAgencies(response.data.agencies || []);
+      setTotalAgencies(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching agencies:', error);
       if (error.response?.status === 401) {
-        // Token expired or invalid, redirect to login
         localStorage.removeItem('adminAccessToken');
         window.location.href = '/admin/login';
         return;
@@ -306,33 +313,11 @@ const AgencyManagement = () => {
     }
   };
 
-  // Filtered agencies
-  const filteredAgencies = useMemo(() => {
-    let filtered = agencies;
-
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(agency =>
-        agency.agency_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        agency.agency_owner_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        agency.agency_email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      );
-    }
-
-    if (statusFilter) {
-      filtered = filtered.filter(agency => agency.status === statusFilter);
-    }
-
-    return filtered;
-  }, [agencies, debouncedSearchTerm, statusFilter]);
-
-  // Update filtered agencies when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm, statusFilter]);
-
-  // Sorting logic
+  // Filtered/Sorted agencies - Client side sorting of CURRENT PAGE only
   const sortedAgencies = useMemo(() => {
-    return [...filteredAgencies].sort((a, b) => {
+    // If backend doesn't support sorting, we sort the displayed page client-side
+    // This is acceptable as a fallback
+    return [...agencies].sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
@@ -350,15 +335,12 @@ const AgencyManagement = () => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [filteredAgencies, sortField, sortDirection]);
+  }, [agencies, sortField, sortDirection]);
 
-  // Pagination logic
-  const paginatedAgencies = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedAgencies.slice(startIndex, startIndex + pageSize);
-  }, [sortedAgencies, currentPage, pageSize]);
+  // Pagination logic - Server side handles slicing, so we just display what we have
+  const paginatedAgencies = sortedAgencies;
 
-  const totalPages = Math.ceil(sortedAgencies.length / pageSize);
+  const totalPages = Math.ceil(totalAgencies / pageSize);
 
   const getStatusStyle = (status) => {
     const statusOption = statusOptions.find(opt => opt.value === status);
@@ -849,11 +831,11 @@ const AgencyManagement = () => {
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
                   {debouncedSearchTerm || statusFilter ? (
                     <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Filtered:</span> Found <strong>{sortedAgencies.length}</strong> agenc{sortedAgencies.length !== 1 ? 'ies' : 'y'}
+                      <span style={{ color: theme.primary, fontWeight: '600' }}>Filtered:</span> Found <strong>{totalAgencies}</strong> agenc{totalAgencies !== 1 ? 'ies' : 'y'}
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedAgencies.length}</strong> of <strong>{sortedAgencies.length}</strong> agenc{sortedAgencies.length !== 1 ? 'ies' : 'y'}
+                      Showing <strong>{paginatedAgencies.length}</strong> of <strong>{totalAgencies}</strong> agenc{totalAgencies !== 1 ? 'ies' : 'y'}
                     </>
                   )}
                 </div>
@@ -1112,7 +1094,7 @@ const AgencyManagement = () => {
               {totalPages > 1 && (
                 <div style={{ padding: '16px 20px', borderTop: '1px solid #e5e7eb', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '14px', color: theme.textSecondary }}>
-                    Page {currentPage} of {totalPages} ({sortedAgencies.length} total agencies)
+                    Page {currentPage} of {totalPages} ({totalAgencies} total agencies)
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -1269,7 +1251,7 @@ const AgencyManagement = () => {
                 <div>
                   <div>Download Filtered Data</div>
                   <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
-                    Export {sortedAgencies.length} agencies matching current filters
+                    Export {totalAgencies} agencies matching current filters
                   </div>
                 </div>
               </button>

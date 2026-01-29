@@ -349,6 +349,7 @@ const AwardManagement = () => {
 
   const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalAwards, setTotalAwards] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -469,21 +470,22 @@ const AwardManagement = () => {
   }, []);
 
   const fetchAwards = useCallback(async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams({
         page: currentPage,
         limit: pageSize,
-        ...(debouncedSearchTerm && { award_name: debouncedSearchTerm, organiser: debouncedSearchTerm }),
+        ...(debouncedSearchTerm && { award_name: debouncedSearchTerm }),
         ...(focusFilter && { award_focus: focusFilter }),
         ...(monthFilter && { award_month: monthFilter })
       });
 
-      const response = await api.get(`/awards?${params}`);
+      const response = await api.get(`/awards/admin/list?${params}`);
       setAwards(response.data.awards || []);
+      setTotalAwards(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching awards:', error);
       if (error.response?.status === 401) {
-        // Token expired or invalid, redirect to login
         localStorage.removeItem('adminAccessToken');
         window.location.href = '/admin/login';
         return;
@@ -494,36 +496,17 @@ const AwardManagement = () => {
     }
   }, [currentPage, pageSize, debouncedSearchTerm, focusFilter, monthFilter]);
 
-  // Simple search for awards
-  const filteredAwards = useMemo(() => {
-    let filtered = awards;
-
-    if (debouncedSearchTerm) {
-      filtered = filtered.filter(award =>
-        award.award_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        award.organiser.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-      );
-    }
-
-    if (focusFilter) {
-      filtered = filtered.filter(award => award.award_focus === focusFilter);
-    }
-
-    if (monthFilter) {
-      filtered = filtered.filter(award => award.award_month === monthFilter);
-    }
-
-    return filtered;
-  }, [awards, debouncedSearchTerm, focusFilter, monthFilter]);
-
-  // Update filtered awards when filters change
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [debouncedSearchTerm, focusFilter, monthFilter]);
-
-  // Sorting logic
+  // Client-side sorting of the fetched page
   const sortedAwards = useMemo(() => {
-    return [...filteredAwards].sort((a, b) => {
+    // We only filter/sort the current page data on client side for immediate responsiveness
+    // basic filtering is already done on server
+    let filtered = [...awards];
+
+    // Client-side filtering can be kept for immediate feedback if needed, 
+    // but since we fetch on filter change, mostly redundant unless we want double safety.
+    // We'll skip complex client filtering to avoid "no results" on a page that actually has results from server.
+
+    return filtered.sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
@@ -541,15 +524,12 @@ const AwardManagement = () => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [filteredAwards, sortField, sortDirection]);
+  }, [awards, sortField, sortDirection]);
 
-  // Pagination logic
-  const paginatedAwards = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedAwards.slice(startIndex, startIndex + pageSize);
-  }, [sortedAwards, currentPage, pageSize]);
+  // Pagination logic - Server handles slicing
+  const paginatedAwards = sortedAwards;
 
-  const totalPages = Math.ceil(sortedAwards.length / pageSize);
+  const totalPages = Math.ceil(totalAwards / pageSize);
 
   const formatDate = (dateString) => {
     if (!dateString) return '—';
@@ -1136,11 +1116,11 @@ const AwardManagement = () => {
                 <div style={{ fontSize: '14px', color: theme.textSecondary }}>
                   {debouncedSearchTerm || focusFilter || monthFilter ? (
                     <>
-                      <span style={{ color: theme.primary, fontWeight: '600' }}>Filtered:</span> Found <strong>{sortedAwards.length}</strong> awards
+                      <span style={{ color: theme.primary, fontWeight: '600' }}>Filtered:</span> Found <strong>{totalAwards}</strong> awards
                     </>
                   ) : (
                     <>
-                      Showing <strong>{paginatedAwards.length}</strong> of <strong>{sortedAwards.length}</strong> awards
+                      Showing <strong>{paginatedAwards.length}</strong> of <strong>{totalAwards}</strong> awards
                     </>
                   )}
                 </div>

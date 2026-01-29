@@ -19,6 +19,9 @@ router.post('/', verifyAdminToken, requireAdminPanelAccess, awardController.crea
 router.put('/:id', verifyAdminToken, requireAdminPanelAccess, awardController.updateValidation, awardController.update);
 router.delete('/:id', verifyAdminToken, requireAdminPanelAccess, awardController.delete);
 
+// Admin list route
+router.get('/admin/list', verifyAdminToken, requireAdminPanelAccess, awardController.getAdminList);
+
 // Admin search route
 router.get('/admin/search', verifyAdminToken, requireAdminPanelAccess, awardController.search);
 
