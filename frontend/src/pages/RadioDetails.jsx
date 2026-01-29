@@ -359,16 +359,18 @@ const RadioDetails = () => {
               <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-6 order-1 lg:order-2 ring-1 ring-black/5">
                 <div className="space-y-5">
                   {/* Share Section - Moved to Top for better UX */}
-                  <div className="flex flex-col items-center gap-3 pb-6 border-b border-slate-100">
+                  <div className="flex flex-col items-center justify-center text-center gap-3 pb-6 border-b border-slate-100">
                     <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-[0.2em]">{t('common.share_station', 'Share Station')}</span>
-                    <ShareButtons
-                      url={window.location.href}
-                      title={translatedRadio?.radio_name || 'Radio Station'}
-                      description={translatedRadio?.description || ''}
-                      direction="down"
-                      variant="outline"
-                      className="!rounded-full !py-2.5 shadow-sm hover:shadow-md border-slate-200"
-                    />
+                    <div className="flex justify-center w-full">
+                      <ShareButtons
+                        url={window.location.href}
+                        title={translatedRadio?.radio_name || 'Radio Station'}
+                        description={translatedRadio?.description || ''}
+                        direction="down"
+                        variant="outline"
+                        className="!rounded-full !py-2.5 !px-8 shadow-sm hover:shadow-md border-slate-200"
+                      />
+                    </div>
                   </div>
 
                   <h3 className="text-base sm:text-lg font-bold text-[#212121] text-center lg:text-left">
