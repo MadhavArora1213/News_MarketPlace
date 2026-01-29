@@ -10,8 +10,9 @@ const triggerSEOUpdate = () => {
 
         console.log('🔄 Triggering auto-push and SEO regeneration...');
 
-        // Check if we are on Windows to try running with bash if possible, or just execute
-        const command = process.platform === 'win32' ? `bash "${scriptPath}"` : `"${scriptPath}"`;
+        // Use bash to execute the script regardless of execute bit on Linux, 
+        // and ensure it runs correctly on Windows (via bash-emulation like Git Bash)
+        const command = `bash "${scriptPath}"`;
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
