@@ -33,6 +33,17 @@ const BlogListingPage = () => {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (activeShareId && !event.target.closest('.share-menu-container')) {
+        setActiveShareId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeShareId]);
+
   const handleCopy = (url, id) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
@@ -55,9 +66,10 @@ const BlogListingPage = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
+        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 share-menu-container
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
         style={{ width: isMobile ? '220px' : '280px' }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
@@ -66,6 +78,7 @@ const BlogListingPage = () => {
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
@@ -73,7 +86,10 @@ const BlogListingPage = () => {
             </a>
           ))}
           <button
-            onClick={() => handleCopy(url, id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopy(url, id);
+            }}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
             <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
@@ -349,12 +365,15 @@ const BlogListingPage = () => {
                           {t('blogs.readArticle')}
                         </Link>
                         <div
-                          className="bg-white text-[#1976D2] p-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white"
+                          className="bg-white text-[#1976D2] p-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:bg-[#1976D2] hover:text-white share-menu-container"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
-                              onClick={() => setActiveShareId(activeShareId === blog.id ? null : blog.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveShareId(activeShareId === blog.id ? null : blog.id);
+                              }}
                               className="p-2 rounded-full hover:bg-white/10 text-[#1976D2] transition-colors"
                             >
                               <Icon name="share" size={18} />

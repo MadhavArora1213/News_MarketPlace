@@ -92,6 +92,17 @@ const ThemesPage = () => {
   const [activeShareId, setActiveShareId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (activeShareId && !event.target.closest('.share-menu-container')) {
+        setActiveShareId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeShareId]);
+
   const handleCopy = (url, id) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
@@ -114,9 +125,10 @@ const ThemesPage = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
+        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 share-menu-container
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
         style={{ width: isMobile ? '220px' : '280px' }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
@@ -125,6 +137,7 @@ const ThemesPage = () => {
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95"
               style={{ backgroundColor: p.color }}
             >
@@ -132,7 +145,10 @@ const ThemesPage = () => {
             </a>
           ))}
           <button
-            onClick={() => handleCopy(url, id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopy(url, id);
+            }}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
             <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
@@ -728,7 +744,7 @@ const ThemesPage = () => {
                             <Eye size={16} />
                             {t('themes.card.viewProfile')}
                           </button>
-                          <div className="relative">
+                          <div className="relative share-menu-container" onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -876,7 +892,7 @@ const ThemesPage = () => {
                                   <Eye size={14} className="inline mr-1" />
                                   {t('themes.table.view')}
                                 </button>
-                                <div onClick={(e) => e.stopPropagation()}>
+                                <div className="relative share-menu-container" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
