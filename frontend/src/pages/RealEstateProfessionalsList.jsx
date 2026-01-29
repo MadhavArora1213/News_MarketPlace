@@ -105,9 +105,9 @@ const RealEstateProfessionalsList = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '220px' : '280px' }}
+        style={{ width: (isMobile || isTablet) ? '220px' : '280px' }}
       >
-        <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:flex md:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
@@ -140,7 +140,7 @@ const RealEstateProfessionalsList = () => {
       setIsMobile(width < 768);
       setIsTablet(width < 1024);
 
-      // Auto-toggle sidebar only when crossing the 1024 breakpoint
+      // Only auto-toggle when transitions across the 1024 breakpoint
       if (width < 1024 && prevWidth >= 1024) {
         setSidebarOpen(false);
       } else if (width >= 1024 && prevWidth < 1024) {
@@ -485,9 +485,11 @@ const RealEstateProfessionalsList = () => {
         <aside
           className={`
             fixed lg:sticky lg:top-20 top-0 left-0 h-full lg:h-[calc(100vh-80px)] 
-            bg-white shadow-2xl lg:shadow-none z-[110] lg:z-30
+            bg-white shadow-2xl lg:shadow-none z-[130] lg:z-30
             transition-all duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0 w-[280px] sm:w-[320px] lg:w-[280px]' : '-translate-x-full w-0 lg:translate-x-0 lg:opacity-0 lg:pointer-events-none lg:overflow-hidden'}
+            ${sidebarOpen
+              ? 'translate-x-0 w-[280px] sm:w-[320px] lg:w-[280px]'
+              : '-translate-x-full lg:translate-x-0 lg:w-0 lg:opacity-0 lg:pointer-events-none lg:overflow-hidden'}
             flex-shrink-0 border-r border-gray-100
           `}
         >
@@ -497,14 +499,12 @@ const RealEstateProfessionalsList = () => {
                 <Filter size={20} className="text-[#1976D2]" />
                 {t('realEstateProfessionals.filters.title')}
               </h3>
-              {isMobile && (
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg text-[#757575]"
-                >
-                  ×
-                </button>
-              )}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg text-[#757575] lg:hidden"
+              >
+                <Icon name="x" size={20} />
+              </button>
             </div>
 
             <div className="space-y-6">
@@ -610,12 +610,12 @@ const RealEstateProfessionalsList = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-[#F5F5F5] hover:bg-[#E0E0E0] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border bg-white hover:bg-slate-50 transition-all font-medium text-slate-700 shadow-sm"
                   style={{ borderColor: theme.borderLight }}
                 >
-                  <Filter size={16} />
-                  <span className="text-[#212121] text-sm">
-                    {sidebarOpen ? (isMobile ? t('realEstateProfessionals.filters.mobileTitle') : t('common.hideFilters', 'Hide Filters')) : (isMobile ? t('realEstateProfessionals.filters.mobileTitle') : t('realEstateProfessionals.filters.title'))}
+                  <Filter size={18} className="text-[#1976D2]" />
+                  <span>
+                    {isMobile || isTablet ? t('realEstateProfessionals.filters.title') : sidebarOpen ? t('common.hideFilters', 'Hide Filters') : t('realEstateProfessionals.filters.title')}
                   </span>
                 </button>
 
