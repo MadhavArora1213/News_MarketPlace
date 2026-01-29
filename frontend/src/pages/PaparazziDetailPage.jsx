@@ -137,31 +137,60 @@ const PaparazziDetailPage = () => {
     try {
       setLoading(true);
       const realId = getIdFromSlug(id);
-      console.log('Fetching paparazzi details for ID:', realId);
+      console.log('🔍 Fetching paparazzi details for ID:', realId);
+      console.log('🔍 Full slug/id param:', id);
 
       const response = await api.get(`/admin/paparazzi-creations/public/${realId}`);
-      console.log('Paparazzi details response:', response.data);
+      console.log('📦 Full API Response:', response);
+      console.log('📦 Response data:', response.data);
+      console.log('📦 Response data keys:', Object.keys(response.data || {}));
 
-      // Extract paparazzi data from response
-      const paparazziData = response.data.paparazziCreation || response.data;
-      console.log('Paparazzi data:', paparazziData);
+      // Extract paparazzi data from response - try multiple possible structures
+      let paparazziData = null;
+      
+      if (response.data.paparazziCreation) {
+        paparazziData = response.data.paparazziCreation;
+        console.log('✅ Found data in paparazziCreation property');
+      } else if (response.data.id) {
+        paparazziData = response.data;
+        console.log('✅ Found data directly in response.data');
+      } else if (response.data.data) {
+        paparazziData = response.data.data;
+        console.log('✅ Found data in data property');
+      }
+      
+      console.log('📋 Extracted paparazzi data:', paparazziData);
+      console.log('📋 Data fields:', {
+        id: paparazziData?.id,
+        name: paparazziData?.instagram_page_name,
+        followers: paparazziData?.no_of_followers,
+        category: paparazziData?.category,
+        region: paparazziData?.region_focused,
+        created_at: paparazziData?.created_at
+      });
       
       // Ensure we have valid data
       if (paparazziData && paparazziData.id) {
+        console.log('✅ Setting paparazzi state with valid data');
         setPaparazzi(paparazziData);
       } else {
-        console.error('Invalid paparazzi data received');
+        console.error('❌ Invalid paparazzi data received - no ID found');
+        console.error('❌ Data structure:', JSON.stringify(response.data, null, 2));
+        alert('Failed to load paparazzi details. The data structure is invalid.');
         navigate('/paparazzi');
       }
     } catch (error) {
-      console.error('Error fetching paparazzi details:', error);
+      console.error('❌ Error fetching paparazzi details:', error);
+      console.error('❌ Error response:', error.response);
       if (error.response?.status === 401) {
         setShowAuth(true);
       } else if (error.response?.status === 404) {
-        console.error('Paparazzi not found');
+        console.error('❌ Paparazzi not found (404)');
+        alert('Paparazzi not found.');
         navigate('/paparazzi');
       } else {
-        console.error('Failed to load paparazzi details');
+        console.error('❌ Failed to load paparazzi details');
+        alert('Failed to load paparazzi details. Please try again.');
         navigate('/paparazzi');
       }
     } finally {
