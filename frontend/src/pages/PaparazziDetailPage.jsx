@@ -133,6 +133,17 @@ const PaparazziDetailPage = () => {
     }
   }, [id]);
 
+  // Debug: Log when paparazzi state changes
+  useEffect(() => {
+    console.log('🔔 Paparazzi state changed:', paparazzi);
+  }, [paparazzi]);
+
+  // Debug: Log when translatedPaparazzi changes
+  useEffect(() => {
+    console.log('🌐 TranslatedPaparazzi changed:', translatedPaparazzi);
+    console.log('🌐 Translation status:', { isTranslating });
+  }, [translatedPaparazzi, isTranslating]);
+
   const fetchPaparazziDetails = async () => {
     try {
       setLoading(true);
@@ -172,7 +183,22 @@ const PaparazziDetailPage = () => {
       // Ensure we have valid data
       if (paparazziData && paparazziData.id) {
         console.log('✅ Setting paparazzi state with valid data');
+        console.log('📋 About to set state with:', {
+          id: paparazziData.id,
+          instagram_page_name: paparazziData.instagram_page_name,
+          no_of_followers: paparazziData.no_of_followers,
+          category: paparazziData.category,
+          region_focused: paparazziData.region_focused,
+          created_at: paparazziData.created_at,
+          instagram_url: paparazziData.instagram_url,
+          profile_dp_logo: paparazziData.profile_dp_logo
+        });
         setPaparazzi(paparazziData);
+        
+        // Log after a brief delay to check if state was set
+        setTimeout(() => {
+          console.log('🔄 State should be updated now');
+        }, 100);
       } else {
         console.error('❌ Invalid paparazzi data received - no ID found');
         console.error('❌ Data structure:', JSON.stringify(response.data, null, 2));
