@@ -45,7 +45,7 @@ const PaparazziDetailPage = () => {
   const { isAuthenticated, hasRole, hasAnyRole } = useAuth();
   const { t } = useLanguage();
   const [paparazzi, setPaparazzi] = useState(null);
-  const { translatedObj: translatedPaparazzi, isTranslating } = useTranslationObject(paparazzi, ['category', 'region_focused']);
+  const { translatedObject: translatedPaparazzi, isTranslating } = useTranslationObject(paparazzi, ['category', 'region_focused']);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
