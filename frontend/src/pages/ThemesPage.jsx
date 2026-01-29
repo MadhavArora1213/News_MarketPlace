@@ -127,44 +127,29 @@ const ThemesPage = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-2 sm:p-3 share-menu-container
+        className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 share-menu-container
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{
-          width: isMobile ? '180px' : '280px',
-          maxWidth: 'calc(100vw - 40px)'
-        }}
+        style={{ width: isMobile ? '220px' : '280px' }}
         onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseEnter={() => setActiveShareId(id)}
-        onTouchStart={(e) => e.stopPropagation()}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:flex md:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={isMobile ? 14 : 18} />
+              <Icon name={p.icon} size={16} />
             </a>
           ))}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              handleCopy(url, id);
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            onClick={() => handleCopy(url, id)}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={isMobile ? 14 : 18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={16} />
           </button>
         </div>
       </motion.div>
@@ -663,7 +648,7 @@ const ThemesPage = () => {
             <>
               {/* Modern Grid View */}
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6 sm:gap-8">
                   {sortedThemes.map((theme, index) => (
                     <motion.div
                       key={theme.id}
@@ -751,10 +736,10 @@ const ThemesPage = () => {
                         )}
 
                         {/* CTA Button */}
-                        <div className="flex gap-2 items-center">
+                        <div className="flex gap-2 items-center mt-auto">
                           <button
                             onClick={() => handleThemeClick(theme)}
-                            className="flex-1 bg-gradient-to-r from-[#1976D2] to-[#1565C0] hover:from-[#1565C0] hover:to-[#0D47A1] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="flex-1 bg-[#1976D2] hover:bg-[#1565C0] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
                           >
                             <Eye size={16} />
                             {t('themes.card.viewProfile')}
@@ -763,24 +748,16 @@ const ThemesPage = () => {
                             className="relative share-menu-container"
                             onClick={(e) => {
                               e.stopPropagation();
-                              e.preventDefault();
                               setActiveShareId(activeShareId === theme.id ? null : theme.id);
                             }}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            onTouchStart={(e) => e.stopPropagation()}
-                            onMouseEnter={() => !isMobile && setActiveShareId(theme.id)}
-                            onMouseLeave={() => !isMobile && setActiveShareId(null)}
                           >
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                e.preventDefault();
                               }}
-                              onMouseDown={(e) => e.stopPropagation()}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              className="p-2 sm:p-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+                              className={`p-3 rounded-xl border transition-all duration-300 ${activeShareId === theme.id ? 'bg-[#1976D2] border-[#1976D2] text-white' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
                             >
-                              <Icon name="share" size={isMobile ? 14 : 18} />
+                              <Icon name="share" size={18} />
                             </button>
                             {renderShareMenu(
                               window.location.origin + `/themes/${createSlugPath(theme.page_name, theme.id)}`,

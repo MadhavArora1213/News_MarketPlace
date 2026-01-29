@@ -247,25 +247,7 @@ const BlogListingPage = () => {
                 className="w-full pl-12 pr-12 py-3.5 sm:py-4 border border-[#E0E0E0] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#1976D2] bg-white shadow-lg shadow-blue-900/5 transition-all"
               />
             </div>
-            <div
-              className="bg-white p-1.5 sm:p-2 px-2 sm:px-4 rounded-lg border border-[#E0E0E0] shadow-sm flex items-center gap-1 sm:gap-2 relative share-menu-container"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveShareId(activeShareId === 'hero' ? null : 'hero');
-              }}
-              onMouseEnter={() => !isMobile && setActiveShareId('hero')}
-              onMouseLeave={() => !isMobile && setActiveShareId(null)}
-            >
-              <span className="hidden sm:inline text-sm font-medium text-[#757575] border-r pr-2 mr-2">{t('common.share', 'Share')}:</span>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="p-1 sm:p-1.5 rounded-lg hover:bg-slate-50 text-slate-500 transition-colors flex items-center justify-center"
-                title="Share this page"
-              >
-                <Icon name="share" size={16} />
-              </button>
-              {renderShareMenu(window.location.href, t('blogs.pageTitle'), 'hero')}
-            </div>
+
           </div>
 
           {/* Categories */}
