@@ -104,27 +104,27 @@ const RealEstateProfessionalsList = () => {
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-200 p-3 
-          ${align === 'center' ? 'left-1/2 -translate-x-1/2' : align === 'right' ? 'right-0' : 'left-0'}`}
-        style={{ width: isMobile ? '280px' : '320px' }}
+          ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
+        style={{ width: isMobile ? '220px' : '280px' }}
       >
-        <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center justify-center gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
               style={{ backgroundColor: p.color }}
             >
-              <Icon name={p.icon} size={18} />
+              <Icon name={p.icon} size={16} />
             </a>
           ))}
           <button
             onClick={() => handleCopy(url, id)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
-            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
+            <Icon name={copiedId === id ? 'check-circle' : 'link'} size={16} />
           </button>
         </div>
       </motion.div>
@@ -687,7 +687,7 @@ const RealEstateProfessionalsList = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       onClick={() => handleProfessionalClick(professional)}
-                      className="bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden relative"
+                      className={`bg-white rounded-lg shadow-lg border hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden relative ${activeShareId === professional.id ? 'z-[100]' : 'z-10'}`}
                       style={{
                         borderColor: theme.borderLight,
                         boxShadow: '0 8px 20px rgba(2,6,23,0.06)'
@@ -948,7 +948,7 @@ const RealEstateProfessionalsList = () => {
                                   <Eye size={14} className="inline mr-1" />
                                   {t('realEstateProfessionals.list.view')}
                                 </button>
-                                <div onClick={(e) => e.stopPropagation()}>
+                                <div className="relative" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
