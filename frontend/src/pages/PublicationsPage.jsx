@@ -126,16 +126,16 @@ const PublicationsPage = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className={`absolute bottom-full mb-3 z-[1000] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-100 p-3 
           ${align === 'center' ? 'left-1/2 -translate-x-1/2' : 'right-0'}`}
-        style={{ width: isMobile ? '240px' : '300px' }}
+        style={{ width: 'max-content', maxWidth: '90vw', minWidth: '220px' }}
       >
-        <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center justify-center gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {sharePlatforms.map((p) => (
             <a
               key={p.name}
               href={p.link(url, title)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-transform hover:scale-110 active:scale-95 shadow-sm mx-auto"
               style={{ backgroundColor: p.color }}
             >
               <Icon name={p.icon} size={18} />
@@ -143,7 +143,7 @@ const PublicationsPage = () => {
           ))}
           <button
             onClick={() => handleCopy(url, id)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all mx-auto ${copiedId === id ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >
             <Icon name={copiedId === id ? 'check-circle' : 'link'} size={18} />
           </button>
@@ -516,7 +516,7 @@ const PublicationsPage = () => {
         <aside
           className={`
             fixed lg:sticky lg:top-24 top-0 left-0 h-full lg:h-[calc(100vh-120px)] 
-            w-full sm:w-[320px] lg:w-[350px]
+            w-[85vw] sm:w-[320px] lg:w-[350px]
             bg-white z-[110] lg:z-10
             transform transition-transform duration-300 ease-in-out
             lg:transform-none
@@ -831,7 +831,7 @@ const PublicationsPage = () => {
             <>
               {/* Enhanced Grid View */}
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                   {publications.map((publication, index) => (
                     <motion.div
                       key={publication.id || index}
