@@ -16,7 +16,7 @@ import { useTranslationArray } from '../hooks/useTranslation';
 import SEO from '../components/common/SEO';
 import Schema from '../components/common/Schema';
 import { createSlugPath } from '../utils/slugify';
-// Removed ShareButtons import to implement manually
+import Icon from '../components/common/Icon';
 
 const EventsPage = () => {
   const { t, language } = useLanguage();
