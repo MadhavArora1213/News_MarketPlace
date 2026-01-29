@@ -170,6 +170,7 @@ const BlogManagement = () => {
   const [editingBlog, setEditingBlog] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingBlog, setDeletingBlog] = useState(null);
+  const [selectedBlogs, setSelectedBlogs] = useState([]);
   const fileInputRef = React.useRef(null);
 
   // Layout constants
@@ -465,6 +466,43 @@ const BlogManagement = () => {
     } catch (error) {
       console.error('Error deleting blog:', error);
       alert('Failed to delete blog. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedBlogs(paginatedBlogs.map(blog => blog.id));
+    } else {
+      setSelectedBlogs([]);
+    }
+  };
+
+  const handleSelectBlog = (blogId) => {
+    setSelectedBlogs(prev => 
+      prev.includes(blogId) 
+        ? prev.filter(id => id !== blogId)
+        : [...prev, blogId]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedBlogs.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to delete ${selectedBlogs.length} blog(s)? This action cannot be undone.`)) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      // Delete each selected blog
+      await Promise.all(selectedBlogs.map(id => adminAPI.deleteBlog(id)));
+      setSelectedBlogs([]);
+      fetchBlogs();
+    } catch (error) {
+      console.error('Error deleting selected blogs:', error);
+      alert('Failed to delete selected blogs. Please try again.');
     } finally {
       setLoading(false);
     }
