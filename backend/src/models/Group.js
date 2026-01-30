@@ -115,6 +115,34 @@ class Group {
     return result.rows.map(row => new Group(row));
   }
 
+  // Count all groups matching filters (for pagination)
+  static async count(filters = {}, searchSql = '', searchValues = []) {
+    let sql = 'SELECT COUNT(*) as total FROM groups WHERE 1=1';
+    const values = [];
+    let paramCount = 1;
+
+    if (filters.status) {
+      sql += ` AND status = $${paramCount}`;
+      values.push(filters.status);
+      paramCount++;
+    }
+
+    if (filters.is_active !== undefined) {
+      sql += ` AND is_active = $${paramCount}`;
+      values.push(filters.is_active);
+      paramCount++;
+    }
+
+    // Add search conditions
+    if (searchSql) {
+      sql += searchSql;
+      values.push(...searchValues);
+    }
+
+    const result = await query(sql, values);
+    return parseInt(result.rows[0].total, 10);
+  }
+
   // Update group
   async update(updateData) {
     const fields = [];

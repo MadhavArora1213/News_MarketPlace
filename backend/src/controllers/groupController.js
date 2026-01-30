@@ -231,7 +231,10 @@ class GroupController {
         limit = 10,
         status,
         is_active,
-        group_name
+        group_name,
+        search,
+        sortBy = 'created_at',
+        sortOrder = 'desc'
       } = req.query;
 
       const filters = {};
@@ -243,27 +246,44 @@ class GroupController {
       const searchValues = [];
       let searchParamCount = Object.keys(filters).length + 1;
 
-      if (group_name) {
-        searchSql += ` AND group_name ILIKE $${searchParamCount}`;
-        searchValues.push(`%${group_name}%`);
+      // Support both 'group_name' and 'search' query params
+      const searchTerm = group_name || search;
+      if (searchTerm) {
+        searchSql += ` AND (group_name ILIKE $${searchParamCount} OR group_sn ILIKE $${searchParamCount} OR group_location ILIKE $${searchParamCount})`;
+        searchValues.push(`%${searchTerm}%`);
         searchParamCount++;
       }
 
-      const offset = (page - 1) * limit;
-      const groups = await Group.findAll(filters, searchSql, searchValues, limit, offset);
+      const offset = (parseInt(page) - 1) * parseInt(limit);
+
+      // Get the paginated groups
+      const groups = await Group.findAll(filters, searchSql, searchValues, parseInt(limit), offset);
+
+      // Get total count for pagination (without all admins filter for admin routes)
+      const totalCount = await Group.count(filters, searchSql, searchValues);
 
       // For admin routes, return all groups. For regular user routes, filter to only approved and active groups
       let filteredGroups = groups;
+      let total = totalCount;
+
       if (!req.admin) {
         filteredGroups = groups.filter(group => group.status === 'approved' && group.is_active === true);
+        // For non-admin, we need to count only approved and active
+        const userFilters = { ...filters, status: 'approved', is_active: true };
+        total = await Group.count(userFilters, searchSql, searchValues);
       }
+
+      const totalPages = Math.ceil(total / parseInt(limit));
 
       res.json({
         groups: filteredGroups.map(group => group.toJSON()),
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          total: filteredGroups.length // This should be improved with a count query
+          total: total,
+          pages: totalPages,
+          hasNextPage: parseInt(page) < totalPages,
+          hasPrevPage: parseInt(page) > 1
         }
       });
     } catch (error) {
