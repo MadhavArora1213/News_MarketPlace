@@ -48,9 +48,9 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
             container: [
               [{ 'header': [1, 2, 3, false] }],
               ['bold', 'italic', 'underline', 'strike'],
-              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-              [{ 'script': 'sub'}, { 'script': 'super' }],
-              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],
+              [{ 'indent': '-1' }, { 'indent': '+1' }],
               [{ 'direction': 'rtl' }],
               [{ 'color': [] }, { 'background': [] }],
               [{ 'align': [] }],
@@ -60,7 +60,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
               ['clean']
             ],
             handlers: {
-              table: function() {
+              table: function () {
                 const tableHTML = `
                   <table style="border-collapse: collapse; width: 100%; margin: 10px 0;">
                     <thead>
@@ -274,7 +274,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '20px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Title *</label>
+              <label style={labelStyle}>Title <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.title}
@@ -290,7 +290,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Category</label>
+              <label style={labelStyle}>Category <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.category}
@@ -302,7 +302,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Publish Date *</label>
+            <label style={labelStyle}>Publish Date <span style={{ color: '#F44336' }}>*</span></label>
             <input
               type="date"
               value={formData.publishDate}
@@ -317,7 +317,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Image URL</label>
+            <label style={labelStyle}>Image URL <span style={{ color: '#F44336' }}>*</span></label>
             <input
               type="url"
               value={formData.image}
@@ -332,7 +332,7 @@ const BlogFormModal = ({ isOpen, onClose, blog, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Content *</label>
+            <label style={labelStyle}>Content <span style={{ color: '#F44336' }}>*</span></label>
             <div style={quillContainerStyle}>
               <div ref={quillRef} style={{ minHeight: '250px' }}></div>
             </div>

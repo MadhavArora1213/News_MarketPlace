@@ -171,7 +171,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Company</label>
+                <label style={labelStyle}>
+                  Company <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="text"
                   name="company"
@@ -183,7 +185,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Location</label>
+                <label style={labelStyle}>
+                  Location <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="text"
                   name="location"
@@ -195,7 +199,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Job Type</label>
+                <label style={labelStyle}>
+                  Job Type <span style={requiredAsterisk}>*</span>
+                </label>
                 <select
                   name="type"
                   value={formData.type}
@@ -209,7 +215,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Salary (USD)</label>
+                <label style={labelStyle}>
+                  Salary (USD) <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="number"
                   name="salary"
@@ -224,7 +232,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Job Description</label>
+              <label style={labelStyle}>
+                Job Description <span style={requiredAsterisk}>*</span>
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -245,7 +255,9 @@ const CareerFormModal = ({ isOpen, onClose, career, onSave }) => {
               <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: '#212121' }}>Admin Settings</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Status</label>
+                  <label style={labelStyle}>
+                    Status <span style={requiredAsterisk}>*</span>
+                  </label>
                   <select
                     name="status"
                     value={formData.status}

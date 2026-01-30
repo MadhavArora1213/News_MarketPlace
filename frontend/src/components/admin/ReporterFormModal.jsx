@@ -314,7 +314,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>WhatsApp</label>
+                <label style={labelStyle}>
+                  WhatsApp <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="tel"
                   name="whatsapp"
@@ -346,7 +348,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Website URL</label>
+                <label style={labelStyle}>
+                  Website URL <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="url"
                   name="website_url"
@@ -409,7 +413,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
             <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: '#212121' }}>Social Media Links</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>LinkedIn</label>
+                <label style={labelStyle}>
+                  LinkedIn <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="url"
                   name="linkedin"
@@ -421,7 +427,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Instagram</label>
+                <label style={labelStyle}>
+                  Instagram <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="url"
                   name="instagram"
@@ -433,7 +441,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Facebook</label>
+                <label style={labelStyle}>
+                  Facebook <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="url"
                   name="facebook"
@@ -451,7 +461,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
             <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: '#212121' }}>Content Policies & Requirements</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Minimum Expectation (USD)</label>
+                <label style={labelStyle}>
+                  Minimum Expectation (USD) <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="number"
                   name="minimum_expectation_usd"
@@ -464,7 +476,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Articles Per Month</label>
+                <label style={labelStyle}>
+                  Articles Per Month <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="number"
                   name="articles_per_month"
@@ -476,7 +490,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Turnaround Time</label>
+                <label style={labelStyle}>
+                  Turnaround Time <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="text"
                   name="turnaround_time"
@@ -488,7 +504,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Sample URL</label>
+                <label style={labelStyle}>
+                  Sample URL <span style={requiredAsterisk}>*</span>
+                </label>
                 <input
                   type="url"
                   name="sample_url"
@@ -621,7 +639,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Message</label>
+                <label style={labelStyle}>
+                  Message <span style={requiredAsterisk}>*</span>
+                </label>
                 <textarea
                   name="message"
                   value={formData.message}
@@ -643,7 +663,9 @@ const ReporterFormModal = ({ isOpen, onClose, reporter, onSave }) => {
               <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', color: '#212121' }}>Admin Settings</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}>Status</label>
+                  <label style={labelStyle}>
+                    Status <span style={requiredAsterisk}>*</span>
+                  </label>
                   <select
                     name="status"
                     value={formData.status}

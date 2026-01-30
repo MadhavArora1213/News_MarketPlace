@@ -168,7 +168,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Platform *</label>
+              <label style={labelStyle}>Platform <span style={{ color: '#F44336' }}>*</span></label>
               <select
                 value={formData.platform}
                 onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
@@ -187,7 +187,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Username *</label>
+              <label style={labelStyle}>Username <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.username}
@@ -198,7 +198,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Page Name *</label>
+              <label style={labelStyle}>Page Name <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.page_name}
@@ -209,7 +209,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Followers Count</label>
+              <label style={labelStyle}>Followers Count <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -220,7 +220,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Collaboration Type</label>
+              <label style={labelStyle}>Collaboration Type <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.collaboration}
@@ -231,7 +231,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Category</label>
+              <label style={labelStyle}>Category <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.category}
@@ -242,7 +242,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Location</label>
+              <label style={labelStyle}>Location <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.location}
@@ -253,7 +253,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Website URL</label>
+              <label style={labelStyle}>Website URL <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.page_website}
@@ -268,7 +268,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
             <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>Pricing Information</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Reel Price (No Tagging/Collab)</label>
+                <label style={labelStyle}>Reel Price (No Tagging/Collab) <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -280,7 +280,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Reel Price (With Tagging/Collab)</label>
+                <label style={labelStyle}>Reel Price (With Tagging/Collab) <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -292,7 +292,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Reel Price (With Tagging)</label>
+                <label style={labelStyle}>Reel Price (With Tagging) <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -304,7 +304,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Video Minutes Allowed</label>
+                <label style={labelStyle}>Video Minutes Allowed <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   min="0"
@@ -315,7 +315,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Pin Post Charges (Weekly)</label>
+                <label style={labelStyle}>Pin Post Charges (Weekly) <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -327,7 +327,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Story Charges</label>
+                <label style={labelStyle}>Story Charges <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"
@@ -339,7 +339,7 @@ const ThemeFormModal = ({ isOpen, onClose, theme, onSave }) => {
               </div>
 
               <div style={formGroupStyle}>
-                <label style={labelStyle}>Story + Reel Charges</label>
+                <label style={labelStyle}>Story + Reel Charges <span style={{ color: '#F44336' }}>*</span></label>
                 <input
                   type="number"
                   step="0.01"

@@ -261,7 +261,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Group SN *</label>
+              <label style={labelStyle}>Group SN <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.group_sn}
@@ -272,7 +272,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Group Name *</label>
+              <label style={labelStyle}>Group Name <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.group_name}
@@ -283,7 +283,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Location *</label>
+              <label style={labelStyle}>Location <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.group_location}
@@ -294,7 +294,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Website URL *</label>
+              <label style={labelStyle}>Website URL <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.group_website}
@@ -305,7 +305,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>LinkedIn</label>
+              <label style={labelStyle}>LinkedIn <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.group_linkedin}
@@ -315,7 +315,7 @@ const GroupFormModal = ({ isOpen, onClose, group, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Instagram</label>
+              <label style={labelStyle}>Instagram <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.group_instagram}

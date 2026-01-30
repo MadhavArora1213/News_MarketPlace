@@ -124,7 +124,7 @@ const PermissionFormModal = ({ isOpen, onClose, permission, onSave }) => {
 
         <form onSubmit={handleSubmit}>
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Permission Name *</label>
+            <label style={labelStyle}>Permission Name <span style={{ color: '#F44336' }}>*</span></label>
             <input
               type="text"
               value={formData.name}
@@ -136,7 +136,7 @@ const PermissionFormModal = ({ isOpen, onClose, permission, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Description</label>
+            <label style={labelStyle}>Description <span style={{ color: '#F44336' }}>*</span></label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -147,7 +147,7 @@ const PermissionFormModal = ({ isOpen, onClose, permission, onSave }) => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Resource *</label>
+              <label style={labelStyle}>Resource <span style={{ color: '#F44336' }}>*</span></label>
               <select
                 value={formData.resource}
                 onChange={(e) => setFormData({ ...formData, resource: e.target.value })}
@@ -171,7 +171,7 @@ const PermissionFormModal = ({ isOpen, onClose, permission, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Action *</label>
+              <label style={labelStyle}>Action <span style={{ color: '#F44336' }}>*</span></label>
               <select
                 value={formData.action}
                 onChange={(e) => setFormData({ ...formData, action: e.target.value })}

@@ -135,7 +135,7 @@ const RoleFormModal = ({ isOpen, onClose, role, permissions, onSave }) => {
 
         <form onSubmit={handleSubmit}>
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Role Name *</label>
+            <label style={labelStyle}>Role Name <span style={{ color: '#F44336' }}>*</span></label>
             <input
               type="text"
               value={formData.name}
@@ -147,7 +147,7 @@ const RoleFormModal = ({ isOpen, onClose, role, permissions, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Description</label>
+            <label style={labelStyle}>Description <span style={{ color: '#F44336' }}>*</span></label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -157,7 +157,7 @@ const RoleFormModal = ({ isOpen, onClose, role, permissions, onSave }) => {
           </div>
 
           <div style={formGroupStyle}>
-            <label style={labelStyle}>Level *</label>
+            <label style={labelStyle}>Level <span style={{ color: '#F44336' }}>*</span></label>
             <input
               type="number"
               min="0"

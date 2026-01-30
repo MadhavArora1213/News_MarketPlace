@@ -199,7 +199,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Group *</label>
+              <label style={labelStyle}>Group <span style={{ color: '#F44336' }}>*</span></label>
               <select
                 value={formData.group_id}
                 onChange={(e) => setFormData({ ...formData, group_id: e.target.value })}
@@ -214,7 +214,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Publication SN *</label>
+              <label style={labelStyle}>Publication SN <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_sn}
@@ -225,7 +225,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Publication Grade *</label>
+              <label style={labelStyle}>Publication Grade <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_grade}
@@ -236,7 +236,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Publication Name *</label>
+              <label style={labelStyle}>Publication Name <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_name}
@@ -247,7 +247,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Website URL *</label>
+              <label style={labelStyle}>Website URL <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.publication_website}
@@ -258,7 +258,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Price ($)</label>
+              <label style={labelStyle}>Price ($) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 step="0.01"
@@ -270,7 +270,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Agreement TAT (days)</label>
+              <label style={labelStyle}>Agreement TAT (days) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -281,7 +281,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Practical TAT (days)</label>
+              <label style={labelStyle}>Practical TAT (days) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -292,7 +292,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Language *</label>
+              <label style={labelStyle}>Language <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_language}
@@ -303,7 +303,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Region *</label>
+              <label style={labelStyle}>Region <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_region}
@@ -314,7 +314,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Primary Industry *</label>
+              <label style={labelStyle}>Primary Industry <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_primary_industry}
@@ -325,7 +325,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Website News Index</label>
+              <label style={labelStyle}>Website News Index <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -336,7 +336,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Domain Authority (DA)</label>
+              <label style={labelStyle}>Domain Authority (DA) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -348,7 +348,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Domain Rating (DR)</label>
+              <label style={labelStyle}>Domain Rating (DR) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -360,7 +360,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Words Limit</label>
+              <label style={labelStyle}>Words Limit <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -371,7 +371,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Number of Images</label>
+              <label style={labelStyle}>Number of Images <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -382,7 +382,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Example Link</label>
+              <label style={labelStyle}>Example Link <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.example_link}
@@ -392,7 +392,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Social Media Icons</label>
+              <label style={labelStyle}>Social Media Icons <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.publication_socials_icons}
@@ -405,7 +405,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Excluding Categories</label>
+              <label style={labelStyle}>Excluding Categories <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.excluding_categories}
                 onChange={(e) => setFormData({ ...formData, excluding_categories: e.target.value })}
@@ -415,7 +415,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Other Remarks</label>
+              <label style={labelStyle}>Other Remarks <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.other_remarks}
                 onChange={(e) => setFormData({ ...formData, other_remarks: e.target.value })}
@@ -425,7 +425,7 @@ const PublicationFormModal = ({ isOpen, onClose, publication, groups, onSave }) 
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Tags/Badges</label>
+              <label style={labelStyle}>Tags/Badges <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.tags_badges}

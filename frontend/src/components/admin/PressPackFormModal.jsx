@@ -186,7 +186,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Distribution Package *</label>
+              <label style={labelStyle}>Distribution Package <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.distribution_package}
@@ -197,7 +197,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Region *</label>
+              <label style={labelStyle}>Region <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.region}
@@ -208,7 +208,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Price ($)</label>
+              <label style={labelStyle}>Price ($) <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 step="0.01"
@@ -220,7 +220,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Industry *</label>
+              <label style={labelStyle}>Industry <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.industry}
@@ -231,7 +231,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Language *</label>
+              <label style={labelStyle}>Language <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.language}
@@ -242,7 +242,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Words Limit</label>
+              <label style={labelStyle}>Words Limit <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -253,7 +253,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Indexed Websites Count</label>
+              <label style={labelStyle}>Indexed Websites Count <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -264,7 +264,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Non-Indexed Websites Count</label>
+              <label style={labelStyle}>Non-Indexed Websites Count <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="number"
                 min="0"
@@ -275,7 +275,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Image URL</label>
+              <label style={labelStyle}>Image URL <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.image}
@@ -286,7 +286,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Link URL</label>
+              <label style={labelStyle}>Link URL <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.link}
@@ -299,7 +299,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
 
           <div style={{ marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>News Description</label>
+              <label style={labelStyle}>News Description <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.news}
                 onChange={(e) => setFormData({ ...formData, news: e.target.value })}
@@ -309,7 +309,7 @@ const PressPackFormModal = ({ isOpen, onClose, pressPack, publications, onSave }
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Disclaimer</label>
+              <label style={labelStyle}>Disclaimer <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.disclaimer}
                 onChange={(e) => setFormData({ ...formData, disclaimer: e.target.value })}

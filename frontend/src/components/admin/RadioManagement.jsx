@@ -281,7 +281,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>SN</label>
+              <label style={labelStyle}>SN <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.sn}
@@ -293,7 +293,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Owners Group *</label>
+              <label style={labelStyle}>Owners Group <span style={{ color: '#F44336' }}>*</span></label>
               <select
                 value={formData.group_id}
                 onChange={(e) => setFormData({ ...formData, group_id: e.target.value })}
@@ -308,7 +308,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio / FM Name *</label>
+              <label style={labelStyle}>Radio / FM Name <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.radio_name}
@@ -319,7 +319,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Frequency *</label>
+              <label style={labelStyle}>Frequency <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.frequency}
@@ -331,7 +331,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio Language *</label>
+              <label style={labelStyle}>Radio Language <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.radio_language}
@@ -342,7 +342,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Emirate / State *</label>
+              <label style={labelStyle}>Emirate / State <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.emirate_state}
@@ -353,7 +353,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio Website</label>
+              <label style={labelStyle}>Radio Website <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.radio_website}
@@ -364,7 +364,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio LinkedIn</label>
+              <label style={labelStyle}>Radio LinkedIn <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.radio_linkedin}
@@ -375,7 +375,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio Instagram</label>
+              <label style={labelStyle}>Radio Instagram <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="url"
                 value={formData.radio_instagram}
@@ -386,7 +386,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Radio Popular RJ</label>
+              <label style={labelStyle}>Radio Popular RJ <span style={{ color: '#F44336' }}>*</span></label>
               <input
                 type="text"
                 value={formData.radio_popular_rj}
@@ -469,7 +469,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
 
           <div style={{ marginTop: '16px' }}>
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Remarks</label>
+              <label style={labelStyle}>Remarks <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.remarks}
                 onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
@@ -479,7 +479,7 @@ const RadioFormModal = ({ isOpen, onClose, radio, groups, onSave }) => {
             </div>
 
             <div style={formGroupStyle}>
-              <label style={labelStyle}>Description</label>
+              <label style={labelStyle}>Description <span style={{ color: '#F44336' }}>*</span></label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
