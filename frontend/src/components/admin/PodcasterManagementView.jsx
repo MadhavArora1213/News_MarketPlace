@@ -1623,7 +1623,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '24px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Podcast Name *
+                Podcast Name <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1644,7 +1644,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Podcast Host
+                Podcast Host <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1663,7 +1663,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Focus Industry
+                Focus Industry <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1682,7 +1682,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Target Audience
+                Target Audience <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1701,7 +1701,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Region
+                Region <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1720,7 +1720,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Website
+                Website <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1739,7 +1739,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Instagram
+                Instagram <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1758,7 +1758,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                LinkedIn
+                LinkedIn <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1777,7 +1777,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Facebook
+                Facebook <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1796,7 +1796,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Instagram Username
+                Instagram Username <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1815,7 +1815,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Instagram Followers
+                Instagram Followers <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="number"
@@ -1834,7 +1834,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Engagement Rate (%)
+                Engagement Rate (%) <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="number"
@@ -1856,7 +1856,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Spotify Channel Name
+                Spotify Channel Name <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1875,7 +1875,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Spotify URL
+                Spotify URL <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1894,7 +1894,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                YouTube Channel Name
+                YouTube Channel Name <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1913,7 +1913,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                YouTube URL
+                YouTube URL <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="url"
@@ -1932,7 +1932,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                TikTok
+                TikTok <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1951,7 +1951,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Call to Action
+                Call to Action <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -1970,7 +1970,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Gender
+                Gender <span style={{ color: '#F44336' }}>*</span>
               </label>
               <select
                 name="gender"
@@ -1993,7 +1993,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Nationality
+                Nationality <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -2012,7 +2012,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Contact for Podcast
+                Contact for Podcast <span style={{ color: '#F44336' }}>*</span>
               </label>
               <input
                 type="text"
@@ -2031,7 +2031,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Prominent Guests
+                Prominent Guests <span style={{ color: '#F44336' }}>*</span>
               </label>
               <textarea
                 name="podcast_ig_prominent_guests"
@@ -2051,7 +2051,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Status
+                Status <span style={{ color: '#F44336' }}>*</span>
               </label>
               <select
                 name="status"
@@ -2073,7 +2073,7 @@ const PodcasterFormModal = ({ podcaster, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Podcast Image
+                Podcast Image <span style={{ color: '#F44336' }}>*</span>
               </label>
               {podcaster?.image && (
                 <div style={{ marginBottom: '12px' }}>

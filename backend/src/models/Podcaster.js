@@ -167,17 +167,18 @@ class Podcaster {
 
   // Update podcaster
   async update(updateData) {
-    // For status updates, only validate the status field to avoid issues with existing invalid data
-    if ('status' in updateData) {
-      const validStatuses = ['pending', 'approved', 'rejected'];
-      if (!validStatuses.includes(updateData.status)) {
-        throw new Error('Validation errors: Status must be one of: pending, approved, rejected');
+    // For status updates or is_active updates (soft delete), skip full validation
+    if ('status' in updateData || 'is_active' in updateData) {
+      // Validate status if present
+      if ('status' in updateData) {
+        const validStatuses = ['pending', 'approved', 'rejected'];
+        if (!validStatuses.includes(updateData.status)) {
+          throw new Error('Validation errors: Status must be one of: pending, approved, rejected');
+        }
       }
-
-      // For status updates, skip full validation to avoid issues with existing invalid data
-      // Only validate the status field
+      // For soft delete (is_active) and status updates, skip full validation to avoid issues with existing data
     } else {
-      // For other updates (non-status updates), validate all fields
+      // For other updates (non-status, non-delete updates), validate all fields
       const validationErrors = Podcaster.validate({ ...this, ...updateData });
       if (validationErrors.length > 0) {
         throw new Error(`Validation errors: ${validationErrors.join(', ')}`);

@@ -708,6 +708,18 @@ const theme = {
 const PublishedWorkManagement = () => {
   const { admin, logout, hasRole } = useAdminAuth();
 
+  // State declarations must come before any conditional returns (React hooks rule)
+  const [publishedWorks, setPublishedWorks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingPublishedWork, setEditingPublishedWork] = useState(null);
+  const [viewingPublishedWork, setViewingPublishedWork] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const roleDisplayNames = {
     'super_admin': 'Super Administrator',
     'content_manager': 'Content Manager',
@@ -718,7 +730,7 @@ const PublishedWorkManagement = () => {
   };
 
   // Check if user has permission to manage published works
-  if (loading || !hasRole || !hasRole('super_admin')) {
+  if (!hasRole || !hasRole('super_admin')) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: theme.backgroundSoft }}>
         <div style={{ textAlign: 'center' }}>
@@ -732,17 +744,6 @@ const PublishedWorkManagement = () => {
       </div>
     );
   }
-
-  const [publishedWorks, setPublishedWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [showFormModal, setShowFormModal] = useState(false);
-  const [editingPublishedWork, setEditingPublishedWork] = useState(null);
-  const [viewingPublishedWork, setViewingPublishedWork] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
 
   // Layout constants
   const headerZ = 1000;
@@ -876,9 +877,9 @@ const PublishedWorkManagement = () => {
 
   const filteredPublishedWorks = publishedWorks.filter(work => {
     const matchesSearch = work.publication_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         work.person_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         work.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         work.industry.toLowerCase().includes(searchQuery.toLowerCase());
+      work.person_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      work.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      work.industry.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
