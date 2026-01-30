@@ -829,9 +829,17 @@ const PublishedWorkManagement = () => {
     fetchPublishedWorks();
   }, []);
 
+  // Reset to first page when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const fetchPublishedWorks = async () => {
     try {
-      const response = await api.get('/published-works/admin');
+      // Fetch all records for client-side pagination and filtering
+      const response = await api.get('/published-works/admin', {
+        params: { limit: 10000 }
+      });
       setPublishedWorks(response.data.publishedWorks || []);
     } catch (error) {
       console.error('Error fetching published works:', error);
