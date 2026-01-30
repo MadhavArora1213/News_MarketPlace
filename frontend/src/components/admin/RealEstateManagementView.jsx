@@ -172,7 +172,10 @@ const RealEstateManagementView = () => {
 
       const response = await api.get(`/admin/real-estates?${params}`);
       setRealEstates(response.data.realEstates || []);
-      setServerTotalPages(response.data.pagination?.pages || 1);
+      // Calculate total pages from total count for robustness
+      const total = response.data.pagination?.total || 0;
+      const pages = response.data.pagination?.pages || Math.ceil(total / pageSize) || 1;
+      setServerTotalPages(pages);
     } catch (error) {
       console.error('Error fetching real estates:', error.response?.data || error.message || error);
       // ... error handling
@@ -1453,12 +1456,15 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
+    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    if (!formData.property_type.trim()) newErrors.property_type = 'Property Type is required';
+    if (!formData.price) newErrors.price = 'Price is required';
+    if (!formData.bedrooms) newErrors.bedrooms = 'Bedrooms is required';
+    if (!formData.bathrooms) newErrors.bathrooms = 'Bathrooms is required';
+    if (!formData.area_sqft) newErrors.area_sqft = 'Area is required';
+    if (!formData.description.trim()) newErrors.description = 'Description is required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -1577,7 +1583,7 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Location
+                Location *
               </label>
               <input
                 type="text"
@@ -1587,16 +1593,18 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.location ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.location && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.location}</div>}
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Property Type
+                Property Type *
               </label>
               <input
                 type="text"
@@ -1606,16 +1614,18 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.property_type ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.property_type && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.property_type}</div>}
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Price
+                Price *
               </label>
               <input
                 type="number"
@@ -1625,16 +1635,18 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.price ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.price && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.price}</div>}
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Bedrooms
+                Bedrooms *
               </label>
               <input
                 type="number"
@@ -1644,16 +1656,18 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.bedrooms ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.bedrooms && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.bedrooms}</div>}
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Bathrooms
+                Bathrooms *
               </label>
               <input
                 type="number"
@@ -1663,16 +1677,18 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.bathrooms ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.bathrooms && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.bathrooms}</div>}
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Area (sq ft)
+                Area (sq ft) *
               </label>
               <input
                 type="number"
@@ -1682,11 +1698,13 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  border: `1px solid ${theme.borderLight}`,
+                  border: `1px solid ${errors.area_sqft ? '#f44336' : theme.borderLight}`,
                   borderRadius: '8px',
                   fontSize: '14px'
                 }}
+                required
               />
+              {errors.area_sqft && <div style={{ color: '#f44336', fontSize: '12px', marginTop: '4px' }}>{errors.area_sqft}</div>}
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
@@ -1713,7 +1731,7 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
 
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Status
+                Status *
               </label>
               <select
                 name="status"
@@ -1735,7 +1753,7 @@ const RealEstateFormModal = ({ realEstate, onClose, onSuccess }) => {
 
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: theme.textPrimary, marginBottom: '6px' }}>
-                Images
+                Images *
               </label>
 
               {/* Existing Images */}

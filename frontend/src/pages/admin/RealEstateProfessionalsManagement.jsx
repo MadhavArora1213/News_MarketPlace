@@ -311,19 +311,20 @@ const RealEstateProfessionalsManagementFormModal = ({ isOpen, onClose, record, o
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Current Residence City</label>
-              <select
+              <input
+                type="text"
+                list="cities-list"
                 value={formData.current_residence_city}
                 onChange={(e) => setFormData({ ...formData, current_residence_city: e.target.value })}
                 style={inputStyle}
                 disabled={!formData.nationality}
-              >
-                <option value="">Select City</option>
+                placeholder={!formData.nationality ? "Select Nationality First" : "Select or Type City"}
+              />
+              <datalist id="cities-list">
                 {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
+                  <option key={city} value={city} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div style={formGroupStyle}>
