@@ -703,6 +703,14 @@ const theme = {
   borderLight: '#E0E0E0',    // Border Light
   borderMedium: '#BDBDBD',   // Border Medium
   borderDark: '#757575',     // Border Dark
+  roleColors: {
+    super_admin: { bg: '#E3F2FD', color: '#0D47A1' },
+    content_manager: { bg: '#E8F5E9', color: '#2E7D32' },
+    editor: { bg: '#FFF3E0', color: '#E65100' },
+    registered_user: { bg: '#F3E5F5', color: '#7B1FA2' },
+    agency: { bg: '#E0F2F1', color: '#00796B' },
+    other: { bg: '#F5F5F5', color: '#757575' }
+  }
 };
 
 const PublishedWorkManagement = () => {
